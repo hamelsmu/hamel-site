@@ -1,6 +1,8 @@
 ## Welcome To Hamel's Webpage
 
-I'm a data scientist specializing in Machine Learning.  Lately, I have been working on NLP problems using deep learning to learn representations from code and text at Github.  Prior to this, I worked as a data scientist in growth marketing at Airbnb, and before that I helped build [Automated Machine Learning](https://www.kdnuggets.com/2017/01/current-state-automated-machine-learning.html) technologies at DataRobot.     
+I'm a data scientist specializing in Machine Learning.  Lately, I have been working on NLP problems using deep learning to learn representations from code and text at Github.  Prior to this, I worked as a data scientist in growth marketing at Airbnb, and before that I helped build [Automated Machine Learning](https://www.kdnuggets.com/2017/01/current-state-automated-machine-learning.html) technologies at DataRobot.    
+
+The purpose of this page is to serve as a central point of reference for the talks I give.  Any materials (slides, videos, links, blogs) that I reference in my talks will be made available here. 
 
 ### How To Get In Touch
 
@@ -30,4 +32,18 @@ Links to associated github repos (and live demos if available) are located in bl
  - [Ml4all, Portland May 2018](http://ml4all.org/): "How to Create Magical Data Products Using Sequence-to-Sequence Models".  [Slides](https://docs.google.com/presentation/d/1pqkOWcIjpaXJPiP3_MT9KrdiZd0LoAWxh6Ei28i4CM8/edit?usp=sharing)
  
  - [ODSC, San Francisco Nov 2017](https://old.opendatascience.com/conferences/advice-for-new-and-junior-data-scientists-hamel-husain-l-odsc-west-2017/): "Advice For New And Junior Data Scientists" [Video](https://www.youtube.com/watch?v=eDK1R6tpZlA&feature=youtu.be)
+ 
+ 
+ ### Frequently Cited Materials
+ Below are resources that I often refer to when people ask me for recommendations on various subjects:
+ 
+ ##### Books
+
+ - [Deep Learning with Python](https://www.amazon.com/Deep-Learning-Python-Francois-Chollet/dp/1617294438), by Francois Chollet.
+ - [Machine Learning](https://www.cs.ubbcluj.ro/~gabis/ml/ml-books/McGrawHill%20-%20Machine%20Learning%20-Tom%20Mitchell.pdf), by Tom M. Mitchell
+ - [An Introduction To Statistical Learning](https://www.amazon.com/Introduction-Statistical-Learning-Applications-Statistics/dp/1461471370/ref=sr_1_1_sspa?s=books&ie=UTF8&qid=1527458015&sr=1-1-spons&keywords=an+introduction+to+statistical+learning&psc=1) by James, Witten, Hastie, Tibshirani.
+ - [Algorithms](http://algorithmics.lsi.upc.edu/docs/Dasgupta-Papadimitriou-Vazirani.pdf) by Dasgupta, Papadimitriou, Vazirani.
+ 
+ ##### MOOCs:
+ - [Fast.AI](http://www.fast.ai/) by Jeremy Howard
 
