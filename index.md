@@ -6,11 +6,7 @@ The purpose of this page is to serve as a central point of reference for talks a
 
 ### How To Get In Touch
 
-[Twitter](https://twitter.com/HamelHusain)
-
-[Linkedin](https://www.linkedin.com/in/hamelhusain/)
-
-[Github](http://www.github.com/hamelsmu)
+[Twitter](https://twitter.com/HamelHusain) | [Linkedin](https://www.linkedin.com/in/hamelhusain/) | [Github](http://www.github.com/hamelsmu)
 
 
 ### Blog Articles
@@ -45,4 +41,3 @@ Links to associated github repos (and live demos if available) are located in bl
  
  #### MOOCs:
  - [Fast.AI](http://www.fast.ai/) by Jeremy Howard
-
