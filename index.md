@@ -1,8 +1,8 @@
-## Welcome To Hamel's Webpage
+## Welcome To Hamel's "Technical Talks" Page
 
 I'm a data scientist specializing in Machine Learning.  Lately, I have been working on NLP problems using deep learning to learn representations from code and text at Github.  Prior to this, I worked as a data scientist in growth marketing at Airbnb, and before that I helped build [Automated Machine Learning](https://www.kdnuggets.com/2017/01/current-state-automated-machine-learning.html) technologies at DataRobot.    
 
-The purpose of this page is to serve as a central point of reference for the talks I give.  Any materials (slides, videos, links, blogs) that I reference in my talks will be made available here. 
+**The purpose of this page is to serve as a central point of reference for the talks I give.  Any materials (slides, videos, links, blogs) that I reference in my talks will be made available here.**
 
 ### How To Get In Touch
 
