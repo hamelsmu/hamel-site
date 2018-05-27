@@ -1,37 +1,25 @@
-## Welcome to GitHub Pages
+### How To Get In Touch
 
-You can use the [editor on GitHub](https://github.com/hamelsmu/hamel/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
+[Twitter](https://twitter.com/HamelHusain)
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+[Linkedin](https://www.linkedin.com/in/hamelhusain/)
 
-### Markdown
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+### Blog Articles
+Links to associated github repos (and live demos if available) are located in blog articles.
 
-```markdown
-Syntax highlighted code block
+- [How To Create A Natural Language Semantic Search Engine For Arbitrary Objects With Deep Learning]()
 
-# Header 1
-## Header 2
-### Header 3
+- [How To Create Magical Data Products Using Sequence-to-Sequence Models](https://towardsdatascience.com/how-to-create-data-products-that-are-magical-using-sequence-to-sequence-models-703f86a231f8)
 
-- Bulleted
-- List
+- [How Docker Can Make You A More Effective Data Scientist](https://towardsdatascience.com/how-docker-can-help-you-become-a-more-effective-data-scientist-7fc048ef91d5)
 
-1. Numbered
-2. List
+### Future Talks
+- [KDD, London August 2018](http://www.kdd.org/kdd2018/hands-on-tutorials):  Hands on tutorial, "Feature Extraction and Summarization With Sequence to Sequence Learning"
 
-**Bold** and _Italic_ and `Code` text
 
-[Link](url) and ![Image](src)
-```
+### Previous Talks
+ - [Ml4all, Portland May 2018](http://ml4all.org/): "How to Create Magical Data Products Using Sequence-to-Sequence Models".  [Slides](https://docs.google.com/presentation/d/1pqkOWcIjpaXJPiP3_MT9KrdiZd0LoAWxh6Ei28i4CM8/edit?usp=sharing)
+ 
+ - [ODSC, San Francisco Nov 2017](https://old.opendatascience.com/conferences/advice-for-new-and-junior-data-scientists-hamel-husain-l-odsc-west-2017/): "Advice For New And Junior Data Scientists" [Video](https://www.youtube.com/watch?v=eDK1R6tpZlA&feature=youtu.be)
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/hamelsmu/hamel/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
