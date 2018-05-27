@@ -37,14 +37,14 @@ Links to associated github repos (and live demos if available) are located in bl
   ----
  
  
-### Frequently Cited Materials
+#### Frequently Cited Materials
  Below are resources that I often refer to when people ask me for recommendations on various subjects:
  
-#### Books
+##### Books
  - [Deep Learning with Python](https://www.amazon.com/Deep-Learning-Python-Francois-Chollet/dp/1617294438), by Francois Chollet.
  - [Machine Learning](https://www.cs.ubbcluj.ro/~gabis/ml/ml-books/McGrawHill%20-%20Machine%20Learning%20-Tom%20Mitchell.pdf), by Tom M. Mitchell
  - [An Introduction To Statistical Learning](https://www.amazon.com/Introduction-Statistical-Learning-Applications-Statistics/dp/1461471370/ref=sr_1_1_sspa?s=books&ie=UTF8&qid=1527458015&sr=1-1-spons&keywords=an+introduction+to+statistical+learning&psc=1) by James, Witten, Hastie, Tibshirani.
  - [Algorithms](http://algorithmics.lsi.upc.edu/docs/Dasgupta-Papadimitriou-Vazirani.pdf) by Dasgupta, Papadimitriou, Vazirani.
 
-#### MOOCs:
+##### MOOCs:
  - [Fast.AI](http://www.fast.ai/) by Jeremy Howard
