@@ -14,7 +14,7 @@ I'm a data scientist specializing in Machine Learning.  The purpose of this page
 ### Blog Articles
 Links to associated github repos (and live demos if available) are located in blog articles.
 
-- [How To Create Natural Language Semantic Search for Arbitrary Objects With Deep Learning]()
+- [How To Create Natural Language Semantic Search for Arbitrary Objects With Deep Learning](https://medium.com/@hamelhusain/semantic-code-search-3cd6d244a39c)
 
 - [How To Create Magical Data Products Using Sequence-to-Sequence Models](https://towardsdatascience.com/how-to-create-data-products-that-are-magical-using-sequence-to-sequence-models-703f86a231f8)
 
