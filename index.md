@@ -22,11 +22,11 @@ Links to associated github repos (and live demos if available) are located in bl
 
 - [Automated Machine Learning, A Paradigm Shift That Accelerates Data Scientst Productivity At Airbnb](https://medium.com/airbnb-engineering/automated-machine-learning-a-paradigm-shift-that-accelerates-data-scientist-productivity-airbnb-f1f8a10d61f8)
 
-### Future Talks
-- [KDD, London August 2018](http://www.kdd.org/kdd2018/hands-on-tutorials):  Hands on tutorial, "Feature Extraction and Summarization With Sequence to Sequence Learning"
 
+### Talks
 
-### Previous Talks
+- [KDD, London August 2018](https://kddseq2seq.com/):  Hands on tutorial, "Feature Extraction and Summarization With Sequence to Sequence Learning"
+
  - [Ml4all, Portland May 2018](http://ml4all.org/): "How to Create Magical Data Products Using Sequence-to-Sequence Models".  [Slides](https://docs.google.com/presentation/d/1pqkOWcIjpaXJPiP3_MT9KrdiZd0LoAWxh6Ei28i4CM8/edit?usp=sharing),  [Video](https://www.youtube.com/watch?v=t063URlwyFM)
  
  - [ODSC, San Francisco Nov 2017](https://old.opendatascience.com/conferences/advice-for-new-and-junior-data-scientists-hamel-husain-l-odsc-west-2017/): "Advice For New And Junior Data Scientists" [Video](https://www.youtube.com/watch?v=eDK1R6tpZlA&feature=youtu.be)
