@@ -25,7 +25,7 @@ Links to associated github repos (and live demos if available) are located in bl
 
 ### Talks
 
-- [KDD, London August 2018](http://www.kdd.org/kdd2018/):  Hands on tutorial, "Feature Extraction and Summarization With Sequence to Sequence Learning".  [Tutorial site](https://kddseq2seq.com/)
+- [KDD, London August 2018](http://www.kdd.org/kdd2018/):  Hands on tutorial, "Feature Extraction and Summarization With Sequence to Sequence Learning".  [Tutorial-site](https://kddseq2seq.com/)
 
  - [Ml4all, Portland May 2018](http://ml4all.org/): "How to Create Magical Data Products Using Sequence-to-Sequence Models".  [Slides](https://docs.google.com/presentation/d/1pqkOWcIjpaXJPiP3_MT9KrdiZd0LoAWxh6Ei28i4CM8/edit?usp=sharing),  [Video](https://www.youtube.com/watch?v=t063URlwyFM)
  
