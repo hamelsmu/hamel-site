@@ -25,6 +25,8 @@ Links to associated github repos (and live demos if available) are located in bl
 
 ### Talks
 
+- [Data Skeptic Interview, Jan 2018](http://dataskeptic.com/blog/episodes/2019/semantic-search-at-github)"Semantic Search at Github".
+
 - [KubeCon 2018](https://events.linuxfoundation.org/events/kubecon-cloudnativecon-north-america-2018/), "Natural Language Code Search With Kubeflow". [Slides](https://docs.google.com/presentation/d/1jHE61fAqZNgaDrpItk5L_tCzLU0DuL86rCz4yAKz4Ss/edit?usp=sharing), [Video](https://www.youtube.com/watch?v=SF77UBvfTHU)
 
 - [KDD, London August 2018](http://www.kdd.org/kdd2018/):  Hands on tutorial, "Feature Extraction and Summarization With Sequence to Sequence Learning".  [Tutorial-site](https://kddseq2seq.com/)
