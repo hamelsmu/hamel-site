@@ -25,7 +25,7 @@ Links to associated github repos (and live demos if available) are located in bl
 
 ### Talks
 
-- [Data Skeptic Interview, Jan 2018](http://dataskeptic.com/blog/episodes/2019/semantic-search-at-github)"Semantic Search at Github".
+- [Data Skeptic Interview, Jan 2018](http://dataskeptic.com/blog/episodes/2019/semantic-search-at-github):  "Semantic Search at Github".
 
 - [KubeCon 2018](https://events.linuxfoundation.org/events/kubecon-cloudnativecon-north-america-2018/), "Natural Language Code Search With Kubeflow". [Slides](https://docs.google.com/presentation/d/1jHE61fAqZNgaDrpItk5L_tCzLU0DuL86rCz4yAKz4Ss/edit?usp=sharing), [Video](https://www.youtube.com/watch?v=SF77UBvfTHU)
 
