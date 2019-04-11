@@ -18,6 +18,8 @@ Links to associated github repos (and live demos if available) are located in bl
 
 - [How To Create Magical Data Products Using Sequence-to-Sequence Models](https://towardsdatascience.com/how-to-create-data-products-that-are-magical-using-sequence-to-sequence-models-703f86a231f8)
 
+- [How to Automate Tasks on GitHub With Machine Learning for Fun and Profit](https://medium.com/@hamelhusain/mlapp-419f90e8f007?source=friends_link&sk=760e18a2d6e60999d7eb2887352a92a8)
+
 - [How Docker Can Make You A More Effective Data Scientist](https://towardsdatascience.com/how-docker-can-help-you-become-a-more-effective-data-scientist-7fc048ef91d5)
 
 - [Automated Machine Learning, A Paradigm Shift That Accelerates Data Scientst Productivity At Airbnb](https://medium.com/airbnb-engineering/automated-machine-learning-a-paradigm-shift-that-accelerates-data-scientist-productivity-airbnb-f1f8a10d61f8)
