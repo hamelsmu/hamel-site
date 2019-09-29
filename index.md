@@ -14,7 +14,7 @@ I'm a data scientist specializing in Machine Learning.  The purpose of this page
 ### Blog Articles / Papers
 Links to associated github repos (and live demos if available) are located in blog articles.
 
-- [CodeSearchNet Challenge: Evaluating the State of Semantic Code Search](https://arxiv.org/abs/1909.09436): by _Hamel Husain, Ho-Hsiang Wu, Tiferet Gazit, Miltiadis Allamanis, Marc Brockschmidt_ [GitHub Repo](https://github.com/github/codesearchnet)
+- [CodeSearchNet Challenge: Evaluating the State of Semantic Code Search](https://arxiv.org/abs/1909.09436): by _Miltiadis Allamanis, Marc Brockschmidt, Hamel Husain, Ho-Hsiang Wu, Tiferet Gazit_ [GitHub Repo](https://github.com/github/codesearchnet)
 
 - [How To Create Natural Language Semantic Search for Arbitrary Objects With Deep Learning](https://medium.com/@hamelhusain/semantic-code-search-3cd6d244a39c).  (_Related: GitHub engineering_ [_blog article_](https://githubengineering.com/towards-natural-language-semantic-code-search/),  _Live_ [_demo_](https://experiments.github.com/semantic-code-search))
 
