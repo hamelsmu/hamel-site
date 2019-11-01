@@ -29,7 +29,7 @@ Links to associated github repos (and live demos if available) are located in bl
 
 ### Talks
 
-- TensorFlow World, 2019: "Automating your developer workflow on GitHub with Tensorflow".  [Slides](http://bit.ly/tf-github), [Video - TBD]()
+- TensorFlow World, 2019: "Automating your developer workflow on GitHub with Tensorflow".  [Slides](http://bit.ly/tf-github), Video - TBD
 
 - [Data Skeptic Interview, Jan 2018](http://dataskeptic.com/blog/episodes/2019/semantic-search-at-github):  "Semantic Search at Github".
 
