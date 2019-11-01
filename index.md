@@ -29,6 +29,8 @@ Links to associated github repos (and live demos if available) are located in bl
 
 ### Talks
 
+- TensorFlow World, 2019: "Automating your developer workflow on GitHub with Tensorflow".  [Slides](http://bit.ly/tf-github), [Video - TBD]()
+
 - [Data Skeptic Interview, Jan 2018](http://dataskeptic.com/blog/episodes/2019/semantic-search-at-github):  "Semantic Search at Github".
 
 - [KubeCon 2018](https://events.linuxfoundation.org/events/kubecon-cloudnativecon-north-america-2018/), "Natural Language Code Search With Kubeflow". [Slides](https://docs.google.com/presentation/d/1jHE61fAqZNgaDrpItk5L_tCzLU0DuL86rCz4yAKz4Ss/edit?usp=sharing), [Video](https://www.youtube.com/watch?v=SF77UBvfTHU)
