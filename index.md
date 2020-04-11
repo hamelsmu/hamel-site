@@ -16,7 +16,7 @@ Links to associated github repos (and live demos if available) are located in bl
 
 - [Introducing fastpages, An easy to use blogging platform with extra features for Jupyter Notebooks.](https://fastpages.fast.ai/fastpages/jupyter/2020/02/21/introducing-fastpages.html) by _Jeremy Howard & Hamel Husain_, [GitHub Repo](https://github.com/fastai/fastpages)
 
-- [GitHub Actions: Providing Data Scientists With New Superpowers](https://fastpages.fast.ai/actions/markdown/2020/03/06/fastpages-actions.html) by _Hamel Husain & Jeremy Howard_
+- [GitHub Actions: Providing Data Scientists With New Superpowers](https://fastpages.fast.ai/actions/markdown/2020/03/06/fastpages-actions.html) by _Jeremy Howard & Hamel Husain_.
 
 - [CodeSearchNet Challenge: Evaluating the State of Semantic Code Search](https://arxiv.org/abs/1909.09436): by _Miltiadis Allamanis, Marc Brockschmidt, Hamel Husain, Ho-Hsiang Wu, Tiferet Gazit_ [GitHub Repo](https://github.com/github/codesearchnet)
 
