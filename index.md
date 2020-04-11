@@ -1,6 +1,6 @@
 ## Welcome To Hamel's Professional Page
 
-I'm a data scientist specializing in Machine Learning.  The purpose of this page is to serve as a central point of reference for talks and blogs I write.  Furthermore, any materials that I reference in my talks will be made available here.
+I'm a data scientist specializing in Machine Learning.  The purpose of this page is to serve as a central point of reference for talks and blogs I write. 
 
 ### Get In Touch
 
