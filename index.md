@@ -2,13 +2,9 @@
 
 I'm a data scientist specializing in Machine Learning.  The purpose of this page is to serve as a central point of reference for talks and blogs I write.  Furthermore, any materials that I reference in my talks will be made available here.
 
-### How To Get In Touch
+### Get In Touch
 
-[Twitter](https://twitter.com/HamelHusain)
-
-[Linkedin](https://www.linkedin.com/in/hamelhusain/)
-
-[Github](http://www.github.com/hamelsmu)
+[![](icons8-twitter-48.png)](https://twitter.com/HamelHusain) [![](icons8-linkedin-48.png)](https://www.linkedin.com/in/hamelhusain/) [![](icons8-github-48.png)](http://www.github.com/hamelsmu)
 
 
 ### Blog Articles / Papers
