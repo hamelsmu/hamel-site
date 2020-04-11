@@ -14,6 +14,10 @@ I'm a data scientist specializing in Machine Learning.  The purpose of this page
 ### Blog Articles / Papers
 Links to associated github repos (and live demos if available) are located in blog articles.
 
+- [Introducing fastpages, An easy to use blogging platform with extra features for Jupyter Notebooks.](https://fastpages.fast.ai/fastpages/jupyter/2020/02/21/introducing-fastpages.html) by _Jeremy Howard & Hamel Husain_, [GitHub Repo](https://github.com/fastai/fastpages)
+
+- [GitHub Actions: Providing Data Scientists With New Superpowers](https://fastpages.fast.ai/actions/markdown/2020/03/06/fastpages-actions.html)
+
 - [CodeSearchNet Challenge: Evaluating the State of Semantic Code Search](https://arxiv.org/abs/1909.09436): by _Miltiadis Allamanis, Marc Brockschmidt, Hamel Husain, Ho-Hsiang Wu, Tiferet Gazit_ [GitHub Repo](https://github.com/github/codesearchnet)
 
 - [How To Create Natural Language Semantic Search for Arbitrary Objects With Deep Learning](https://medium.com/@hamelhusain/semantic-code-search-3cd6d244a39c).  (_Related: GitHub engineering_ [_blog article_](https://githubengineering.com/towards-natural-language-semantic-code-search/),  _Live_ [_demo_](https://experiments.github.com/semantic-code-search))
