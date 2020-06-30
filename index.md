@@ -3,6 +3,14 @@
 I'm a data scientist specializing in Machine Learning.  The purpose of this page is to serve as a central point of reference for talks and blogs I write. 
 
 
+### Open-Source Projects
+
+- [Machine Learning Ops](https://mlops-github.com/), A collection of resources on how to facilitate Machine Learning Ops with GitHub.
+- [fastpages](https://github.com/fastai/fastpages), an easy to use blogging platform for Jupyter Notebooks.
+- [CodeSearchNet](https://github.com/github/CodeSearchNet), Datasets, tools, and benchmarks for representation learning of code. 
+- [Issue Label Bot](https://github.com/machine-learning-apps/Issue-Label-Bot) A GitHub App powered by machine learning.
+- [Semantic Code Search](https://github.com/hamelsmu/code_search), Semantic search of code through learning a joint embedding of natural language and code. (This work was further refined in [CodeSearchNet](https://github.com/github/CodeSearchNet)).
+
 ### Blog Articles / Papers
 Links to associated github repos (and live demos if available) are located in blog articles.
 
@@ -41,9 +49,3 @@ Links to associated github repos (and live demos if available) are located in bl
  
  - [ODSC, San Francisco Nov 2017](https://old.opendatascience.com/conferences/advice-for-new-and-junior-data-scientists-hamel-husain-l-odsc-west-2017/): "Advice For New And Junior Data Scientists" [Video](https://www.youtube.com/watch?v=eDK1R6tpZlA&feature=youtu.be)
  
-
-### Projects
-
-- [Machine Learning Ops](https://mlops-github.com/), A collection of resources on how to facilitate Machine Learning Ops with GitHub.
-- [fastpages](https://github.com/fastai/fastpages), an easy to use blogging platform for Jupyter Notebooks.
-- [CodeSearchNet](https://github.com/github/CodeSearchNet), Datasets, tools, and benchmarks for representation learning of code. 
