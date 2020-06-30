@@ -27,7 +27,7 @@ Links to associated github repos (and live demos if available) are located in bl
 
 - GitHub Universe 2019: "Machine Learning Ops With GitHub Actions & Kubernetes".  [Video](https://youtu.be/Ll50l3fsoYs)
 
-- TensorFlow World, 2019: "Automating your developer workflow on GitHub with Tensorflow".  [Slides](http://bit.ly/tf-github)
+- TensorFlow World, 2019: "Automating your developer workflow on GitHub with Tensorflow".  [Slides](http://bit.ly/tf-github), [Link](https://conferences.oreilly.com/tensorflow/tf-ca-2019/public/schedule/detail/78380)
 
 - [Data Skeptic Interview, Jan 2018](http://dataskeptic.com/blog/episodes/2019/semantic-search-at-github):  "Semantic Search at Github".
 
