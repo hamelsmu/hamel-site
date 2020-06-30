@@ -25,6 +25,8 @@ Links to associated github repos (and live demos if available) are located in bl
 
 ### Talks
 
+- Gradient Descent by Weights & Biases: "Building Machine Learning Tools with Hamel Husain": A discussion on Automated Machine Learning, CodeSearchNet, GitHub Actions and MLOps: [Video](https://youtu.be/TMe8xz4cUKs)
+
 - GitHub Universe 2019: "Machine Learning Ops With GitHub Actions & Kubernetes".  [Video](https://youtu.be/Ll50l3fsoYs)
 
 - TensorFlow World, 2019: "Automating your developer workflow on GitHub with Tensorflow".  [Slides](http://bit.ly/tf-github), [Link](https://conferences.oreilly.com/tensorflow/tf-ca-2019/public/schedule/detail/78380)
@@ -39,3 +41,9 @@ Links to associated github repos (and live demos if available) are located in bl
  
  - [ODSC, San Francisco Nov 2017](https://old.opendatascience.com/conferences/advice-for-new-and-junior-data-scientists-hamel-husain-l-odsc-west-2017/): "Advice For New And Junior Data Scientists" [Video](https://www.youtube.com/watch?v=eDK1R6tpZlA&feature=youtu.be)
  
+
+### Projects
+
+- [Machine Learning Ops](https://mlops-github.com/), A collection of resources on how to facilitate Machine Learning Ops with GitHub.
+- [fastpages](https://github.com/fastai/fastpages), an easy to use blogging platform for Jupyter Notebooks.
+- [CodeSearchNet](https://github.com/github/CodeSearchNet), Datasets, tools, and benchmarks for representation learning of code. 
