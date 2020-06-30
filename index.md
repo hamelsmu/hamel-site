@@ -11,7 +11,7 @@ I'm a data scientist specializing in Machine Learning.  The purpose of this page
 
 - [CodeSearchNet](https://github.com/github/CodeSearchNet), Datasets, tools, and benchmarks for representation learning of code. 
 
-- [Issue Label Bot](https://github.com/machine-learning-apps/Issue-Label-Bot) A GitHub App powered by machine learning.
+- [Issue Label Bot](https://github.com/machine-learning-apps/Issue-Label-Bot), A GitHub App powered by machine learning.
 
 - [Semantic Code Search](https://github.com/hamelsmu/code_search), Semantic search of code through learning a joint embedding of natural language and code. (This work was further refined in [CodeSearchNet](https://github.com/github/CodeSearchNet)).
 
