@@ -53,3 +53,5 @@ Links to associated github repos (and live demos if available) are located in bl
  
  - [ODSC, San Francisco Nov 2017](https://old.opendatascience.com/conferences/advice-for-new-and-junior-data-scientists-hamel-husain-l-odsc-west-2017/): "Advice For New And Junior Data Scientists" [Video](https://www.youtube.com/watch?v=eDK1R6tpZlA&feature=youtu.be)
  
+
+_[Edit on GitHub](https://github.com/hamelsmu/hamel)_
