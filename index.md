@@ -7,16 +7,21 @@ I'm a data scientist specializing in Machine Learning.  The purpose of this page
 
 - [Machine Learning Ops](https://mlops-github.com/), A collection of resources on how to facilitate Machine Learning Ops with GitHub.
 
+- [fastai](https://github.com/fastai) I am a regular contributor to various fastai projects.
+
 - [fastpages](https://github.com/fastai/fastpages), an easy to use blogging platform for Jupyter Notebooks.
 
-- [CodeSearchNet](https://github.com/github/CodeSearchNet), Datasets, tools, and benchmarks for representation learning of code. 
+- [CodeSearchNet](https://github.com/github/CodeSearchNet), Datasets, tools, and benchmarks for representation learning of code.  This was a follow up project to [Semantic Code Search](https://github.com/hamelsmu/code_search).
 
 - [Issue Label Bot](https://github.com/machine-learning-apps/Issue-Label-Bot), A GitHub App powered by machine learning.
 
-- [Semantic Code Search](https://github.com/hamelsmu/code_search), Semantic search of code through learning a joint embedding of natural language and code. (This work was further refined in [CodeSearchNet](https://github.com/github/CodeSearchNet)).
 
 ### Blog Articles / Papers
 Links to associated github repos (and live demos if available) are located in blog articles.
+
+- [fastcore: An Underrated Python Library](https://fastpages.fast.ai/fastcore/) by _Hamel Husain, Jeremy Howard_, [GitHub Repo](https://github.com/fastai/fastcore).
+
+- [Data Science Meets Devops: MLOps with Jupyter, Git, & Kubernetes](https://blog.kubeflow.org/mlops/): An end-to-end example of deploying a machine learning product using Jupyter, Papermill, Tekton, GitOps and Kubeflow. by _Jeremy Lewi, Hamel_Husain_, The Kubeflow Blog.  
 
 - [Introducing fastpages, An easy to use blogging platform with extra features for Jupyter Notebooks.](https://fastpages.fast.ai/fastpages/jupyter/2020/02/21/introducing-fastpages.html) by _Jeremy Howard & Hamel Husain_, [GitHub Repo](https://github.com/fastai/fastpages)
 
