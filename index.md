@@ -7,7 +7,7 @@ I'm a data scientist specializing in Machine Learning.  The purpose of this page
 
 - [Machine Learning Ops](https://mlops-github.com/), A collection of resources on how to facilitate Machine Learning Ops with GitHub.
 
-- [fastai](https://github.com/fastai) I am a regular contributor to various fastai projects.
+- [fastai](https://github.com/fastai), I am a regular contributor to various fastai projects.
 
 - [fastpages](https://github.com/fastai/fastpages), an easy to use blogging platform for Jupyter Notebooks.
 
