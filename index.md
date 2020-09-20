@@ -42,6 +42,8 @@ Links to associated github repos (and live demos if available) are located in bl
 
 ### Talks
 
+- JupyterCon 2020: "fastpages - A new, open source Jupyter notebook blogging system.".  [Slides](http://bit.ly/jc-fastpages), Video - TBD
+
 - Gradient Descent by Weights & Biases: A discussion on Automated Machine Learning, CodeSearchNet, GitHub Actions and MLOps: [Video](https://youtu.be/TMe8xz4cUKs)
 
 - GitHub Universe 2019: "Machine Learning Ops With GitHub Actions & Kubernetes".  [Video](https://youtu.be/Ll50l3fsoYs)
