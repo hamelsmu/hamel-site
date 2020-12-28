@@ -7,9 +7,9 @@ I'm a data scientist specializing in Machine Learning.  The purpose of this page
 
 - [Machine Learning Ops](https://mlops-github.com/), A collection of resources on how to facilitate Machine Learning Ops with GitHub.
 
-- [fastai](https://github.com/fastai), I am a regular contributor to various fastai projects.
+- [fastai](https://github.com/fastai), I am a regular contributor to various fastai projects: most recently [nbdev](https://github.com/fastai/nbdev), [fastcore](https://github.com/fastai/fastcore), [fastpages](https://github.com/fastai/fastpages), [ghapi](https://github.com/fastai/ghapi)
 
-- [fastpages](https://github.com/fastai/fastpages), an easy to use blogging platform for Jupyter Notebooks.
+- Creator of [fastpages](https://github.com/fastai/fastpages), an easy to use blogging platform for Jupyter Notebooks.
 
 - [CodeSearchNet](https://github.com/github/CodeSearchNet), Datasets, tools, and benchmarks for representation learning of code.  This was a follow up project to [Semantic Code Search](https://github.com/hamelsmu/code_search).
 
@@ -44,7 +44,7 @@ Links to associated github repos (and live demos if available) are located in bl
 
 ### Talks
 
-- JupyterCon 2020: "fastpages - A new, open source Jupyter notebook blogging system.".  [Slides](http://bit.ly/jc-fastpages), Video - TBD
+- JupyterCon 2020: "fastpages - A new, open source Jupyter notebook blogging system.".  [Slides](http://bit.ly/jc-fastpages), [Video](https://www.youtube.com/watch?v=cduXZwZaBbM).
 
 - Gradient Descent by Weights & Biases: A discussion on Automated Machine Learning, CodeSearchNet, GitHub Actions and MLOps: [Video](https://youtu.be/TMe8xz4cUKs)
 
