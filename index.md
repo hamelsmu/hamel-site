@@ -19,6 +19,8 @@ I'm a data scientist specializing in Machine Learning.  The purpose of this page
 ### Blog Articles / Papers
 Links to associated github repos (and live demos if available) are located in blog articles.
 
+- [ghapi, a new third-party Python client for the GitHub API](https://github.blog/2020-12-18-learn-about-ghapi-a-new-third-party-python-client-for-the-github-api/) by _Jeremy Howard & Hamel Husain_, [GitHub Repo](https://github.com/fastai/ghapi).
+
 - [fastcore: An Underrated Python Library](https://fastpages.fast.ai/fastcore/) by _Hamel Husain, Jeremy Howard_, [GitHub Repo](https://github.com/fastai/fastcore).
 
 - [Data Science Meets Devops: MLOps with Jupyter, Git, & Kubernetes](https://blog.kubeflow.org/mlops/): An end-to-end example of deploying a machine learning product using Jupyter, Papermill, Tekton, GitOps and Kubeflow. by _Jeremy Lewi, Hamel_Husain_, The Kubeflow Blog.  
