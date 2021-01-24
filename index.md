@@ -1,6 +1,6 @@
 ## Welcome To Hamel's Professional Page
 
-I'm a data scientist specializing in Machine Learning.  The purpose of this page is to serve as a central point of reference for talks and blogs I write. 
+I'm a data scientist specializing in Machine Learning and Machine Learning Infrastructure, with a focus on making tools for data scientists.  I'm currently on secondment from GitHub to work at [fast.ai](https://www.fast.ai/about/) full time. My current focus is on infrastructure, developer tools, DevOps, and software engineering.  I've also created and helped maintain many of the CI, integration tests, and build tools for the fastai ecosystem.
 
 
 ### Open-Source Projects
