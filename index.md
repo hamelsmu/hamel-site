@@ -6,7 +6,7 @@ I'm currently on secondment from GitHub to work at [fast.ai](https://www.fast.ai
 
 ### Open-Source Projects
 
-- [fastai](https://github.com/fastai) I maintain and contribute to a variety of fastai projects.   More recently, I've been involved with the following projects: [nbdev](https://github.com/fastai/nbdev), [fastcore](https://github.com/fastai/fastcore), [fastpages](https://github.com/fastai/fastpages), [ghapi](https://github.com/fastai/ghapi)
+- I maintain and contribute to a variety of [fastai](https://github.com/fastai) projects.   Recently, I've been involved with the following projects: [nbdev](https://github.com/fastai/nbdev), [fastcore](https://github.com/fastai/fastcore), [fastpages](https://github.com/fastai/fastpages), [ghapi](https://github.com/fastai/ghapi)
 
 - [Machine Learning Ops](https://mlops-github.com/), A collection of resources on how to facilitate Machine Learning Ops with GitHub.
 
