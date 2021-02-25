@@ -1,6 +1,10 @@
 ## Welcome To Hamel's Professional Page
 
-I'm a data scientist specializing in Machine Learning and Machine Learning Infrastructure, with a focus on making tools for data scientists.  I am a staff ML Engineer at GitHub, and have previously held ML roles at [Airbnb](https://www.airbnb.com/) and [DataRobot](https://www.datarobot.com/).
+I'm a data scientist at GitHub specializing in Machine Learning and Machine Learning Infrastructure, with a focus on making tools for data scientists.  I have previously held ML roles at [Airbnb](https://www.airbnb.com/) and [DataRobot](https://www.datarobot.com/), as well as a long stint in management consulting.
+
+I have the privilege of building open source tools for both work and leisure.  For example, I have created data-science flavored [integrations with GitHub products](https://github.blog/author/hamelsmu/) such as Actions, CodeSpaces and Pages. Furthermore, I am currently a core developer for [fastai](https://github.com/fastai).  
+
+I am always looking for new open source projects in the data science tooling/infrastructure space to partner with.  In the recent past, I have contributed to projects such as [Kubeflow](https://github.com/kubeflow), [Jupyter](https://github.com/jupyter), and [Great Expectations](https://github.com/great-expectations).
 
 ### Open-Source Projects
 
