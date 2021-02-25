@@ -2,8 +2,6 @@
 
 I'm a data scientist specializing in Machine Learning and Machine Learning Infrastructure, with a focus on making tools for data scientists.  I am a staff ML Engineer at GitHub, and have previously held ML roles at [Airbnb](https://www.airbnb.com/) and [DataRobot](https://www.datarobot.com/).
 
-I'm currently on secondment from GitHub to work at [fast.ai](https://www.fast.ai/about/) full time.
-
 ### Open-Source Projects
 
 - I maintain and contribute to a variety of [fastai](https://github.com/fastai) projects.   Recently, I've been involved with the following projects: [nbdev](https://github.com/fastai/nbdev), [fastcore](https://github.com/fastai/fastcore), [fastpages](https://github.com/fastai/fastpages), [ghapi](https://github.com/fastai/ghapi)
