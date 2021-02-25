@@ -18,10 +18,6 @@ In the recent past, I have contributed to data infrastructure projects such as [
 
 - [Issue Label Bot](https://github.com/machine-learning-apps/Issue-Label-Bot), A GitHub App powered by machine learning.
 
-- Great Expectations [GitHub Action](https://github.com/great-expectations/great_expectations_action)
-
-- Repo2Docker (Jupyter) [GitHub Action](https://github.com/jupyterhub/repo2docker-action)
-
 
 ### Blog Articles / Papers
 Links to associated github repos (and live demos if available) are located in blog articles.
