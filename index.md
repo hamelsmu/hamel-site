@@ -2,7 +2,7 @@
 
 I'm a data scientist at GitHub specializing in Machine Learning infrastructure and developer tools.  I have previously held ML roles at [Airbnb](https://www.airbnb.com/) and [DataRobot](https://www.datarobot.com/), as well as a long stint in management consulting.
 
-I have the privilege of building open source tools for both work and leisure.  I have created many data-science flavored [integrations with GitHub products](https://github.blog/author/hamelsmu/). Furthermore, I am currently a core developer for [fastai](https://github.com/fastai).  
+I have created many data-science flavored [integrations with GitHub products](https://github.blog/author/hamelsmu/). Furthermore, I am currently a core developer for [fastai](https://github.com/fastai).  
 
 In the recent past, I have contributed to data infrastructure projects such as [Kubeflow](https://github.com/kubeflow/code-intelligence), [Jupyter](https://github.com/jupyterhub/repo2docker-action), and [Great Expectations](https://github.com/great-expectations/great_expectations_action).
 
