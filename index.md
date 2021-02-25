@@ -1,10 +1,10 @@
 ## Welcome To Hamel's Professional Page
 
-I'm a data scientist at GitHub specializing in Machine Learning and Machine Learning Infrastructure, with a focus on making tools for data scientists.  I have previously held ML roles at [Airbnb](https://www.airbnb.com/) and [DataRobot](https://www.datarobot.com/), as well as a long stint in management consulting.
+I'm a data scientist at GitHub specializing in Machine Learning infrastructure and developer tools.  I have previously held ML roles at [Airbnb](https://www.airbnb.com/) and [DataRobot](https://www.datarobot.com/), as well as a long stint in management consulting.
 
-I have the privilege of building open source tools for both work and leisure.  For example, I have created data-science flavored [integrations with GitHub products](https://github.blog/author/hamelsmu/) such as Actions, CodeSpaces and Pages. Furthermore, I am currently a core developer for [fastai](https://github.com/fastai).  
+I have the privilege of building open source tools for both work and leisure.  I have created many data-science flavored [integrations with GitHub products](https://github.blog/author/hamelsmu/). Furthermore, I am currently a core developer for [fastai](https://github.com/fastai).  
 
-I am always looking for new open source projects in the data science tooling/infrastructure space to partner with.  In the recent past, I have contributed to projects such as [Kubeflow](https://github.com/kubeflow), [Jupyter](https://github.com/jupyter), and [Great Expectations](https://github.com/great-expectations).
+In the recent past, I have contributed to data infrastructure projects such as [Kubeflow](https://github.com/kubeflow/code-intelligence), [Jupyter](https://github.com/jupyterhub/repo2docker-action), and [Great Expectations](https://github.com/great-expectations/great_expectations_action).
 
 ### Open-Source Projects
 
@@ -17,6 +17,10 @@ I am always looking for new open source projects in the data science tooling/inf
 - [CodeSearchNet](https://github.com/github/CodeSearchNet), Datasets, tools, and benchmarks for representation learning of code.  This was a follow up project to [Semantic Code Search](https://github.com/hamelsmu/code_search).
 
 - [Issue Label Bot](https://github.com/machine-learning-apps/Issue-Label-Bot), A GitHub App powered by machine learning.
+
+- Great Expectations [GitHub Action](https://github.com/great-expectations/great_expectations_action)
+
+- Repo2Docker (Jupyter) [GitHub Action](https://github.com/jupyterhub/repo2docker-action)
 
 
 ### Blog Articles / Papers
