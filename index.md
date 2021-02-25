@@ -4,7 +4,7 @@ I'm a data scientist at GitHub specializing in Machine Learning infrastructure a
 
 I have created many data-science flavored [integrations with GitHub products](https://github.blog/author/hamelsmu/). Furthermore, I am currently a core developer for [fastai](https://github.com/fastai).  
 
-In the recent past, I have contributed to data infrastructure projects such as [Kubeflow](https://github.com/kubeflow/code-intelligence), [Jupyter](https://github.com/jupyterhub/repo2docker-action), and [Great Expectations](https://github.com/great-expectations/great_expectations_action).
+In the recent past, I have contributed to data infrastructure/tools such as [Kubeflow](https://github.com/kubeflow/code-intelligence), [Jupyter](https://github.com/jupyterhub/repo2docker-action), and [Great Expectations](https://github.com/great-expectations/great_expectations_action).
 
 ### Open-Source Projects
 
