@@ -26,6 +26,8 @@ Links to associated github repos (and live demos if available) are located in bl
 
 - [ghapi, a new third-party Python client for the GitHub API](https://github.blog/2020-12-18-learn-about-ghapi-a-new-third-party-python-client-for-the-github-api/) by _Jeremy Howard & Hamel Husain_, [GitHub Repo](https://github.com/fastai/ghapi).
 
+- [Nbdev: A literate programming environment that democratizes software engineering best practices](https://github.blog/2020-11-20-nbdev-a-literate-programming-environment-that-democratizes-software-engineering-best-practices/) by _Hamel Husain, Jeremy Howard_, The GitHub Blog.
+
 - [fastcore: An Underrated Python Library](https://fastpages.fast.ai/fastcore/) by _Hamel Husain, Jeremy Howard_, [GitHub Repo](https://github.com/fastai/fastcore).
 
 - [Data Science Meets Devops: MLOps with Jupyter, Git, & Kubernetes](https://blog.kubeflow.org/mlops/): An end-to-end example of deploying a machine learning product using Jupyter, Papermill, Tekton, GitOps and Kubeflow. by _Jeremy Lewi, Hamel_Husain_, The Kubeflow Blog.  
