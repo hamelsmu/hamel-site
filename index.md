@@ -1,6 +1,6 @@
 ## Welcome To Hamel's Professional Page
 
-I'm a Machine Learning Engineer who loves building data-science infrastructure and developer tools.  I have previously held ML roles at [Airbnb](https://www.airbnb.com/), [DataRobot](https://www.datarobot.com/), and [GitHub](https://github.com/) as well as a long stint in management consulting.
+I'm a Machine Learning Engineer who loves building data-science infrastructure and developer tools.  I have previously held related roles at [Airbnb](https://www.airbnb.com/), [DataRobot](https://www.datarobot.com/), and [GitHub](https://github.com/) as well as a long stint in management consulting.
 
 I have created many data-science flavored [integrations with GitHub products](https://github.blog/author/hamelsmu/). Furthermore, I am currently a core developer for [fastai](https://github.com/fastai).  
 
