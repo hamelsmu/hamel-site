@@ -49,6 +49,8 @@ Links to associated github repos (and live demos if available) are located in bl
 
 ### Talks
 
+- How to evaluate ML Tooling: Guest Lecutre for Stanford CS 329S ML Systems Design, Feb 2022. [Slides](https://docs.google.com/presentation/d/1BVWmp7pfEp6_ffilcvz--_KbFqK-c9bElfbuxHFWPKo/edit?usp=sharing), [Video](https://youtu.be/GHk5HMW4XMA)
+
 - JupyterCon 2020: "fastpages - A new, open source Jupyter notebook blogging system.".  [Slides](http://bit.ly/jc-fastpages), [Video](https://www.youtube.com/watch?v=cduXZwZaBbM).
 
 - Gradient Descent by Weights & Biases: A discussion on Automated Machine Learning, CodeSearchNet, GitHub Actions and MLOps: [Video](https://youtu.be/TMe8xz4cUKs)
