@@ -1,6 +1,6 @@
 ## Welcome To Hamel's Professional Page
 
-I'm a Machine Learning Engineer who loves building data-science infrastructure and developer tools.  I have previously held related roles at [Airbnb](https://www.airbnb.com/), [DataRobot](https://www.datarobot.com/), and [GitHub](https://github.com/) as well as a long stint in management consulting.
+I'm a Machine Learning Engineer who loves building data-science infrastructure and developer tools.  I currently work at [Outerbounds](https://outerbounds.com/), a company that is commercializing the open source project [Metaflow](https://github.com/Netflix/metaflow).  I have previously held related roles at [Airbnb](https://www.airbnb.com/), [DataRobot](https://www.datarobot.com/), and [GitHub](https://github.com/) as well as a long stint in management consulting.
 
 I am a core developer for [fastai](https://github.com/fastai).  Additionally, I have contributed to data infrastructure/tools such as [Kubeflow](https://github.com/kubeflow/code-intelligence), [Jupyter](https://github.com/jupyterhub/repo2docker-action), and [Great Expectations](https://github.com/great-expectations/great_expectations_action).
 
@@ -8,11 +8,14 @@ I am a core developer for [fastai](https://github.com/fastai).  Additionally, I 
 
 - I maintain and contribute to a variety of [fastai](https://github.com/fastai) projects.   Recently, I've been involved with the following projects: [nbdev](https://github.com/fastai/nbdev), [fastcore](https://github.com/fastai/fastcore), [fastpages](https://github.com/fastai/fastpages), [ghapi](https://github.com/fastai/ghapi)
 
-- [Machine Learning Ops](https://mlops-github.com/), A collection of resources on how to facilitate Machine Learning Ops with GitHub.
-
 - Creator of [fastpages](https://github.com/fastai/fastpages), an easy to use blogging platform for Jupyter Notebooks.
 
+- Various [Metaflow](https://github.com/Netflix/metaflow) contributions via [Outerbounds](https://github.com/outerbounds), such as the [notebook card](https://github.com/outerbounds/metaflow-card-notebook)
+
 - [CodeSearchNet](https://github.com/github/CodeSearchNet), Datasets, tools, and benchmarks for representation learning of code.  This was a follow up project to [Semantic Code Search](https://github.com/hamelsmu/code_search).
+
+
+- [Machine Learning Ops](https://mlops-github.com/), A collection of resources on how to facilitate Machine Learning Ops with GitHub.
 
 - [Issue Label Bot](https://github.com/machine-learning-apps/Issue-Label-Bot), A GitHub App powered by machine learning.
 
@@ -20,7 +23,9 @@ I am a core developer for [fastai](https://github.com/fastai).  Additionally, I 
 ### Blog Articles / Papers
 Links to associated github repos (and live demos if available) are located in blog articles.
 
-- [Python Concurrency: The Tricky Bits](https://python.hamel.dev/concurrency/): An exploration of threads, processes, and coroutines in Python, with interesting examples that illuminate the differences between each.
+- [Notebooks in production with Metaflow](https://outerbounds.com/blog/notebooks-in-production-with-metaflow/) Introduces a new Metaflow feature that allows users to use notebooks in production ML workflows.
+
+- - [Python Concurrency: The Tricky Bits](https://python.hamel.dev/concurrency/): An exploration of threads, processes, and coroutines in Python, with interesting examples that illuminate the differences between each.
 
 - [ghapi, a new third-party Python client for the GitHub API](https://github.blog/2020-12-18-learn-about-ghapi-a-new-third-party-python-client-for-the-github-api/) by _Jeremy Howard & Hamel Husain_, [GitHub Repo](https://github.com/fastai/ghapi).
 
