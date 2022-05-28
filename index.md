@@ -25,7 +25,7 @@ Links to associated github repos (and live demos if available) are located in bl
 
 - [Notebooks in production with Metaflow](https://outerbounds.com/blog/notebooks-in-production-with-metaflow/) Introduces a new Metaflow feature that allows users to use notebooks in production ML workflows.
 
-- - [Python Concurrency: The Tricky Bits](https://python.hamel.dev/concurrency/): An exploration of threads, processes, and coroutines in Python, with interesting examples that illuminate the differences between each.
+- [Python Concurrency: The Tricky Bits](https://python.hamel.dev/concurrency/): An exploration of threads, processes, and coroutines in Python, with interesting examples that illuminate the differences between each.
 
 - [ghapi, a new third-party Python client for the GitHub API](https://github.blog/2020-12-18-learn-about-ghapi-a-new-third-party-python-client-for-the-github-api/) by _Jeremy Howard & Hamel Husain_, [GitHub Repo](https://github.com/fastai/ghapi).
 
