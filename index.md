@@ -23,6 +23,8 @@ I am a core developer for [fastai](https://github.com/fastai).  Additionally, I 
 ### Blog Articles / Papers
 Links to associated github repos (and live demos if available) are located in blog articles.
 
+- [nbdev + Quarto: A new secret weapon for productivity](https://www.fast.ai/2022/07/28/nbdev-v2/), the fastai blog, July 2022.
+
 - [Notebooks in production with Metaflow](https://outerbounds.com/blog/notebooks-in-production-with-metaflow/) Introduces a new Metaflow feature that allows users to use notebooks in production ML workflows.
 
 - [Python Concurrency: The Tricky Bits](https://python.hamel.dev/concurrency/): An exploration of threads, processes, and coroutines in Python, with interesting examples that illuminate the differences between each.
@@ -41,6 +43,9 @@ Links to associated github repos (and live demos if available) are located in bl
 
 - [CodeSearchNet Challenge: Evaluating the State of Semantic Code Search](https://arxiv.org/abs/1909.09436): by _Miltiadis Allamanis, Marc Brockschmidt, Hamel Husain, Ho-Hsiang Wu, Tiferet Gazit_ [GitHub Repo](https://github.com/github/codesearchnet)
 
+<details>
+    <summary>Show More</summary>
+
 - [How To Create Natural Language Semantic Search for Arbitrary Objects With Deep Learning](https://medium.com/@hamelhusain/semantic-code-search-3cd6d244a39c).  (_Related: GitHub engineering_ [_blog article_](https://githubengineering.com/towards-natural-language-semantic-code-search/),  _Live_ [_demo_](https://experiments.github.com/semantic-code-search))
 
 - [How To Create Magical Data Products Using Sequence-to-Sequence Models](https://towardsdatascience.com/how-to-create-data-products-that-are-magical-using-sequence-to-sequence-models-703f86a231f8)
@@ -51,8 +56,11 @@ Links to associated github repos (and live demos if available) are located in bl
 
 - [Automated Machine Learning, A Paradigm Shift That Accelerates Data Scientst Productivity At Airbnb](https://medium.com/airbnb-engineering/automated-machine-learning-a-paradigm-shift-that-accelerates-data-scientist-productivity-airbnb-f1f8a10d61f8)
 
-
+</details>
+ 
 ### Talks
+
+- [AutoML, Literate Programming, and Data Tooling Cargo Cults](https://vanishinggradients.fireside.fm/9), Vanishing Gradients Podcast with Hugo Bowne Anderson, July 2022.
 
 - How to evaluate ML Tooling: Guest Lecutre for Stanford CS 329S ML Systems Design, Feb 2022. [Slides](https://docs.google.com/presentation/d/1BVWmp7pfEp6_ffilcvz--_KbFqK-c9bElfbuxHFWPKo/edit?usp=sharing), [Video](https://youtu.be/GHk5HMW4XMA)
 
