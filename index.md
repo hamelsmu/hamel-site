@@ -10,7 +10,7 @@ I am a core developer for [fastai](https://github.com/fastai).  Additionally, I 
 
 - Creator of [fastpages](https://github.com/fastai/fastpages), an easy to use blogging platform for Jupyter Notebooks.
 
-- Various [Metaflow](https://github.com/Netflix/metaflow) contributions via [Outerbounds](https://github.com/outerbounds), such as the [notebook card](https://github.com/outerbounds/metaflow-card-notebook)
+- Various [Metaflow](https://github.com/Netflix/metaflow) contributions such as the [notebook card](https://github.com/outerbounds/metaflow-card-notebook)
 
 - [CodeSearchNet](https://github.com/github/CodeSearchNet), Datasets, tools, and benchmarks for representation learning of code.  This was a follow up project to [Semantic Code Search](https://github.com/hamelsmu/code_search).
 
@@ -43,8 +43,6 @@ Links to associated github repos (and live demos if available) are located in bl
 
 - [CodeSearchNet Challenge: Evaluating the State of Semantic Code Search](https://arxiv.org/abs/1909.09436): by _Miltiadis Allamanis, Marc Brockschmidt, Hamel Husain, Ho-Hsiang Wu, Tiferet Gazit_ [GitHub Repo](https://github.com/github/codesearchnet)
 
-<details>
-    <summary>Show More</summary>
 
 - [How To Create Natural Language Semantic Search for Arbitrary Objects With Deep Learning](https://medium.com/@hamelhusain/semantic-code-search-3cd6d244a39c).  (_Related: GitHub engineering_ [_blog article_](https://githubengineering.com/towards-natural-language-semantic-code-search/),  _Live_ [_demo_](https://experiments.github.com/semantic-code-search))
 
@@ -56,7 +54,6 @@ Links to associated github repos (and live demos if available) are located in bl
 
 - [Automated Machine Learning, A Paradigm Shift That Accelerates Data Scientst Productivity At Airbnb](https://medium.com/airbnb-engineering/automated-machine-learning-a-paradigm-shift-that-accelerates-data-scientist-productivity-airbnb-f1f8a10d61f8)
 
-</details>
  
 ### Talks
 
