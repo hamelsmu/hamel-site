@@ -2,7 +2,7 @@
 
 I'm a Machine Learning Engineer who loves building data-science infrastructure and developer tools.  I've recently caught the entrepreneurship bug and am building something new with [nbdev](https://nbdev.fast.ai/).  I have previously held related roles at [Airbnb](https://www.airbnb.com/), [DataRobot](https://www.datarobot.com/), [GitHub](https://github.com/), and [Outerbounds](https://outerbounds.com/) as well as a long stint in management consulting.
 
-I am a core developer for [fastai](https://github.com/fastai).  Additionally, I have contributed to data infrastructure/tools such as [Kubeflow](https://github.com/kubeflow/code-intelligence), [Jupyter](https://github.com/jupyterhub/repo2docker-action), and [Great Expectations](https://github.com/great-expectations/great_expectations_action).
+I am a core developer for [fastai](https://github.com/fastai).  Additionally, I have contributed to data infrastructure/tools such as [Metaflow](https://outerbounds.com/blog/notebooks-in-production-with-metaflow/), [Kubeflow](https://github.com/kubeflow/code-intelligence), [Jupyter](https://github.com/jupyterhub/repo2docker-action), and [Great Expectations](https://github.com/great-expectations/great_expectations_action).
 
 ### Open-Source Projects
 
