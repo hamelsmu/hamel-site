@@ -1,5 +1,7 @@
 ---
-title: 1_Fundamentals
+title: Fundamentals
+categories: [fastai]
+order: 1
 ---
 
 # fastai fundamentals

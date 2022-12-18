@@ -2,6 +2,7 @@
 title: Pod restart vs. replacement
 description: What's the difference b/w a restart and a replacement?
 image: https://user-images.githubusercontent.com/1483922/207999452-843eaa73-a36a-41e1-afea-58357620a4c3.png
+order: 19
 ---
 
 If you google Pod restart vs replacement, virutally every article conflates the two, but the distinction is very important!

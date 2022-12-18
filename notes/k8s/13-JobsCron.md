@@ -1,0 +1,94 @@
+---
+order: 13
+---
+
+## Jobs
+
+Thes are useful!  You can run ad-hoc jobs to completion, or schedule something to run!  Lots of DS workloads are like this.
+
+> Jobs aren’t just for stateful apps; they’re a great way to bring a standard approach to any batch-processing problems, where you can hand off all the scheduling and monitoring and retry logic to the cluster.  You can run any container image in the Pod for a Job, but it should start a process that ends; otherwise, your jobs will keep running forever.
+
+
+```yaml
+apiVersion: batch/v1
+kind: Job                           # Job is the object type.
+metadata:
+ name: pi-job
+spec:
+ template:
+   spec:                           # The standard Pod spec
+     containers:
+       - name: pi                  # The container should run and exit.
+         image: kiamol/ch05-pi     
+         command: ["dotnet", "Pi.Web.dll", "-m", "console", "-dp", "50"]
+     restartPolicy: Never          # If the container fails, replace the Pod.
+```
+
+
+### See Logs
+
+Run the above and get logs
+```bash
+kl apply -f pi/pi-job.yaml  # this is the filename  for the above
+kl logs jobs/pi-job
+```
+
+
+### Fields
+
+its like a Pod standard spec, but there is an additional required field `restartPolicy`.
+
+#### Optional Fields
+
+- **completions:**  how many times should the job run. 
+- **parallelism**:  How many Pods to run in parallel with multiple completions set.  
+
+#### Processing A Queue (Like data)
+
+>Parallel Jobs with a work queue:
+- do not specify .spec.completions, default to .spec.parallelism.
+- the Pods must coordinate amongst themselves or an external service to determine what each should work on. For example, a Pod might fetch a batch of up to N items from the work queue.
+- each Pod is independently capable of determining whether or not all its peers are done, and thus that the entire Job is done.
+- when any Pod from the Job terminates with success, no new Pods are created.
+- once at least one Pod has terminated with success and all Pods are terminated, then the Job is completed with success.
+- once any Pod has exited with success, no other Pod should still be doing any work for this task or writing any output. They should all be in the process of exiting.
+
+https://kubernetes.io/docs/concepts/workloads/controllers/job/
+
+
+
+Argo is basically a wrapper on Jobs. 
+
+
+## CronJob
+
+Just adds a few lines to the Job YAML:
+
+```yaml
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+ name: todo-db-backup
+spec:
+ schedule: "*/2 * * * *"          # Creates a Job every 2 minutes
+ concurrencyPolicy: Forbid        # Prevents overlap so a new Job won’t be
+ jobTemplate:                     # created if the previous one is running
+   spec:
+     # job template...
+```
+
+https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#cronjobspec-v1-batch
+
+###  CronJob Cleanup
+
+- CronJobs don’t perform an automatic cleanup for Pods and Jobs.
+	- CronJobs don’t follow the standard controller model, with a label selector to identify the Jobs it owns. You can add your own labels in the Job template for the CronJob, but if you don’t do that, you need to identify Jobs where the owner reference is the CronJob
+
+TLDR; Clean up lingering pods afer you are done, and organize everything with labels!
+
+### Pausing CronJobs
+- You can also move CronJobs to a suspended state, which means the object spec still exists in the cluster, but it doesn’t run until the CronJob is activated again
+- 
+
+
+

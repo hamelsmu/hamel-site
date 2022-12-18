@@ -1,12 +1,18 @@
 project:
   type: website
 
+exeucte:
+  eval: false
+
 website:
   title: "Hamel Husain"
+  site-url: "https://hamel.dev/"
+  repo-url: https://github.com/hamelsmu/hamel
+  repo-actions: [edit]
   navbar:
     background: dark
     pinned: true
-    collapse: false
+    collapse: true
     left:
     - text: 📮 Blog
       file: index.qmd
@@ -19,11 +25,54 @@ website:
       file: talks.qmd
     - text: 📚 Notes
       file: notes/index.qmd
+    # - text: 🍎 Teaching
+    #   file: about.qmd
+    right:
+      - icon: code-slash
+        href: https://github.com/hamelsmu/hamel
+
   sidebar:
     - title: Notes
       collapse-level: 1
       style: docked
-      contents: notes/**
+      contents:
+        - section: GitHub Actions
+          contents: notes/actions/*
+        - notes/docker/index.qmd
+        - section: fastai
+          contents: notes/fastai/*
+        - notes/how-to-learn/lhtl.qmd
+        - section: Jupyter
+          contents: notes/jupyter/*
+        - section: K8s
+          contents:
+            - notes/k8s/index.qmd
+            - notes/k8s/02-Basics.qmd
+            - notes/k8s/03-Secrets.qmd
+            - section: Storage
+              contents: notes/k8s/storage/*
+            - section: Scaling
+              contents: notes/k8s/scaling/*
+            - section: Multi-Container pods
+              contents: notes/k8s/multi_container_pods/*
+            - notes/k8s/12-StatefulSet.md
+            - notes/k8s/13-JobsCron.md
+            - notes/k8s/14-RolloutsRollbacks.md
+            - section: Helm
+              contents: notes/k8s/helm/*
+            - notes/k8s/18-Developer.md
+            - notes/k8s/19-Pod-Lifecycle.md
+            - notes/k8s/20-health-checks.md
+            - notes/k8s/99-Random.qmd
+        - section: Linux
+          contents: notes/linux/*
+        - text: Pandoc filters
+          href: notes/pandoc/filters.md
+        - text: Programming Languages  
+          href: notes/programming-languages/pl.md
+        - text: Web Scraping
+          href: notes/web-scraping/browser-to-python.md
+        - auto: "notes/*"
 
 format:
   html:

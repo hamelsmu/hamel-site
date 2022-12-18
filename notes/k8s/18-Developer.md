@@ -1,5 +1,6 @@
 ---
 title: Developer tips
+order: 18
 ---
 
 These notes provide tips on the developer workflow while using K8s.  Some people use Docker compose to work with things locally, however you can also run a Kubernetes cluster locally.

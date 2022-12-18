@@ -1,6 +1,6 @@
 ---
-layout: default
 title: Batch Predictions
+order: 4
 ---
 
 # How to make batch predictions in fastai

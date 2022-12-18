@@ -1,0 +1,115 @@
+---
+order: 5
+---
+
+[[k8s]]
+
+In [[3. Storage - Basics]], you were shown how to setup a PV, and a PVC that would bind to the PV, and finally how to create a deployment that would reference the PVC
+
+```mermaid
+graph TD;
+Deployment --> PVC --> PV;
+```
+
+
+However we can have K8s dynamically provision the PV.  So you just create the PVC, and K8s creates the PV for you!  You can have clusters configured with different storage classes.  You can also use the default class:
+
+```yaml
+% cat todo-list/postgres-persistentVolumeClaim-dynamic.yaml                                                                           
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc-dynamic
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+```
+
+So if we deploy ths, let's see what will happen!  `kl apply -f todo-list/postgres-persistentVolumeClaim-dynamic.yaml`
+
+If you do `kl get pv` you will see a PV has been automatically created. 
+
+:::note
+
+Docker Desktop uses a HostPath volume in the default storage class for dynamically provisioned PVs; AKS uses Azure Files; **K3s uses HostPath but with a different configuration from Docker Desktop, which means you won’t see the PV because it is created only when a Pod that uses the PVC is created.**
+
+:::
+
+
+## Storage Classes
+
+`kind: StorageClass`
+
+You can create a storage class and reference it from the PVC.  Three fields:
+
+- `provisioner`:  How to create PV on demand
+- `reclaimPolicy` what happens to dynamically created volumes when PVC is deleted
+- `volumeBindingMode` if pv is created now or when the related Pod is created
+
+Example of [[StorageClass]]
+
+```YAML
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"storage.k8s.io/v1","kind":"StorageClass","metadata":{"annotations":{},"name":"kiamol"},"provisioner":"docker.io/hostpath","reclaimPolicy":"Delete","volumeBindingMode":"Immediate"}
+  creationTimestamp: "2022-12-06T00:45:35Z"
+  name: kiamol
+  resourceVersion: "819084"
+  uid: 79a1b70e-6ebe-4aa8-92ce-595220fc6b14
+provisioner: docker.io/hostpath
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+```
+
+
+You can see all of the storage classes in your cluster with `kl get sc`
+
+```yaml
+% cat sktorageClass/postgres-persistentVolumeClaim-storageClass.yaml                                                                   
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc-kiamol
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: kiamol
+  resources:
+    requests:
+      storage: 100Mi
+```
+
+You would use the above storage class in a deployment like this:
+
+```yaml
+kind: Deployment
+...
+    spec:
+      containers:
+        - name: db
+          image: postgres:11.6-alpine
+...
+          volumeMounts:
+            - name: secret
+              mountPath: "/secrets"
+            - name: data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: secret
+          secret:
+            secretName: todo-db-secret
+            defaultMode: 0400
+            items:
+            - key: POSTGRES_PASSWORD
+              path: postgres_password
+        - name: data
+          persistentVolumeClaim:
+            claimName: postgres-pvc-kiamol
+```
+

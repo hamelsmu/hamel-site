@@ -1,6 +1,7 @@
 ---
 title: Probes
 description: Understand readiness and liveness probes, and how that iteracts with Helm to protect you against deploying bugs.
+order: 20
 ---
 
 This is [Chapter 12](https://livebook.manning.com/book/learn-kubernetes-in-a-month-of-lunches/chapter-12).

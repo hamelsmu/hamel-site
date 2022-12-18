@@ -1,5 +1,6 @@
 ---
 title: StatefulSet
+order: 12
 ---
 
 :::warning
