@@ -1,5 +1,6 @@
 ---
 title: Remote Browser For Jupyter
+description: fix the issue with lost connections to your remote kernel
 ---
 
 ## Background
