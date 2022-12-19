@@ -1,8 +1,8 @@
 ---
 order: 17
+title: Helm Upgrades & Rollbacks
+categories: [K8s]
 ---
-
-# Helm Upgrades & Rollbacks
 
 Recommended pattern:
 

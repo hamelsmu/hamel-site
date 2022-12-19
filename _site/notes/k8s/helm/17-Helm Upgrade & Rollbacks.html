@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Hamel Husain – helm-upgrade--rollbacks</title>
+<title>Hamel Husain - Helm Upgrades &amp; Rollbacks</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -129,30 +129,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+    <nav class="navbar navbar-expand navbar-dark ">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
     <a class="navbar-brand" href="../../../index.html">
     <span class="navbar-title">Hamel Husain</span>
     </a>
   </div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-  <span class="navbar-toggler-icon"></span>
-</button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav navbar-nav-scroll me-auto">
+          <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../../index.html">
+    <a class="nav-link" href="../../../index.html#blog-posts">
  <span class="menu-text">📮 Blog</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../../../about.html">
- <span class="menu-text">👨🏽‍💻 About</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../../opensource.html"><i class="bi bi-github" role="img">
 </i> 
- <span class="menu-text">Open Source</span></a>
+ <span class="menu-text">Projects</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../../talks.html">
@@ -163,20 +155,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
  <span class="menu-text">📚 Notes</span></a>
   </li>  
 </ul>
-            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/hamelsmu/hamel"><i class="bi bi-code-slash" role="img">
+    <a class="nav-link" href="https://www.linkedin.com/in/hamelhusain/"><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/HamelHusain"><i class="bi bi-twitter" role="img">
 </i> 
  <span class="menu-text"></span></a>
   </li>  
 </ul>
-              <div id="quarto-search" class="" title="Search"></div>
-          </div> <!-- /navcollapse -->
+            <div id="quarto-search" class="" title="Search"></div>
       </div> <!-- /container-fluid -->
     </nav>
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"></h1>
+      <h1 class="quarto-secondary-nav-title">Helm Upgrades &amp; Rollbacks</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -503,12 +499,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#helm-upgrades-rollbacks" id="toc-helm-upgrades-rollbacks" class="nav-link active" data-scroll-target="#helm-upgrades-rollbacks">Helm Upgrades &amp; Rollbacks</a>
-  <ul class="collapse">
-  <li><a href="#install-test-the-new-version" id="toc-install-test-the-new-version" class="nav-link" data-scroll-target="#install-test-the-new-version">1. Install &amp; test the new version</a></li>
+  <li><a href="#install-test-the-new-version" id="toc-install-test-the-new-version" class="nav-link active" data-scroll-target="#install-test-the-new-version">1. Install &amp; test the new version</a></li>
   <li><a href="#uninstall-the-test-release" id="toc-uninstall-the-test-release" class="nav-link" data-scroll-target="#uninstall-the-test-release">2. Uninstall the test release</a></li>
   <li><a href="#perform-an-upgrade" id="toc-perform-an-upgrade" class="nav-link" data-scroll-target="#perform-an-upgrade">3. Perform an upgrade</a></li>
-  </ul></li>
   <li><a href="#dealing-with-failed-upgrades" id="toc-dealing-with-failed-upgrades" class="nav-link" data-scroll-target="#dealing-with-failed-upgrades">Dealing With Failed Upgrades</a></li>
   <li><a href="#rollback" id="toc-rollback" class="nav-link" data-scroll-target="#rollback">Rollback</a></li>
   <li><a href="#uninstall-cleanup" id="toc-uninstall-cleanup" class="nav-link" data-scroll-target="#uninstall-cleanup">Uninstall / Cleanup</a></li>
@@ -518,10 +511,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Helm Upgrades &amp; Rollbacks</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">K8s</div>
+  </div>
+  </div>
 
 
-<section id="helm-upgrades-rollbacks" class="level1">
-<h1>Helm Upgrades &amp; Rollbacks</h1>
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
 <p>Recommended pattern:</p>
 <section id="install-test-the-new-version" class="level2">
 <h2 class="anchored" data-anchor-id="install-test-the-new-version">1. Install &amp; test the new version</h2>
@@ -563,7 +572,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="caution">
 <p>When you upgrade, the <code>--reuse-values</code> flag will often be handy. However, this can cause things to break if the api changes between versions. So use with extreme care!</p>
 </div>
-</section>
 </section>
 <section id="dealing-with-failed-upgrades" class="level1">
 <h1>Dealing With Failed Upgrades</h1>

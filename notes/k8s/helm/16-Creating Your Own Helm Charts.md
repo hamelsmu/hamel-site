@@ -1,6 +1,7 @@
 ---
 order: 16
 title: Creating Helm Charts
+categories: [K8s]
 ---
 
 
