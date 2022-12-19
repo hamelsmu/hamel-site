@@ -6,7 +6,7 @@ title: Cheatsheet
 - [Link](https://linuxacademy.com/linux/training/course/name/the-system-administrators-guidep-to-bash-scripting) to class.
 - [Link](https://github.com/hamelsmu/bash_scripting) to GitHub repo
 
-import TOCInline from '@theme/TOCInline';
+
 
 <TOCInline toc={toc} />;
 

@@ -4,7 +4,7 @@ title: 2_Computer_Vision
 
 # Image Classification
 
-import TOCInline from '@theme/TOCInline';
+
 
 <TOCInline toc={toc} />
 

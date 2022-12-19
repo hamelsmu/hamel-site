@@ -2,7 +2,7 @@
 title: Misc Utilities
 ---
 
-import TOCInline from '@theme/TOCInline';
+
 
 <TOCInline toc={toc} />;
 

@@ -2,7 +2,7 @@
 title: Processes, Permissions and Moving Data
 ---
 
-import TOCInline from '@theme/TOCInline';
+
 
 <TOCInline toc={toc} />;
 
