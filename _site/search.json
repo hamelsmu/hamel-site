@@ -7,13 +7,6 @@
     "text": "These are a list of talks I’ve given:\n\nAutoML, Literate Programming, and Data Tooling Cargo Cults, Vanishing Gradients Podcast with Hugo Bowne Anderson, July 2022.\nHow to evaluate ML Tooling: Guest Lecutre for Stanford CS 329S ML Systems Design, Feb 2022. Slides, Video\nJupyterCon 2020: “fastpages - A new, open source Jupyter notebook blogging system.”. Slides, Video.\nGradient Descent by Weights & Biases: A discussion on Automated Machine Learning, CodeSearchNet, GitHub Actions and MLOps: Video\nGitHub Universe 2019: “Machine Learning Ops With GitHub Actions & Kubernetes”. Video\nTensorFlow World, 2019: “Automating your developer workflow on GitHub with Tensorflow”. Slides, Link\nData Skeptic Interview, Jan 2018: “Semantic Search at Github”.\nKubeCon 2018, “Natural Language Code Search With Kubeflow”. Slides, Video\nKDD, London August 2018: Hands on tutorial, “Feature Extraction and Summarization With Sequence to Sequence Learning”. Tutorial-site\nMl4all, Portland May 2018: “How to Create Magical Data Products Using Sequence-to-Sequence Models”. Slides, Video\nODSC, San Francisco Nov 2017: “Advice For New And Junior Data Scientists” Video"
   },
   {
-    "objectID": "old/index.html",
-    "href": "old/index.html",
-    "title": "Home",
-    "section": "",
-    "text": "I’m a Machine Learning Engineer who loves building data-science infrastructure and developer tools. I’ve recently caught the entrepreneurship bug and am building something new with nbdev. I have previously held related roles at Airbnb, DataRobot, GitHub, and Outerbounds as well as a long stint in management consulting.\nI am a core developer for fastai. Additionally, I have contributed to data infrastructure/tools such as Metaflow, Kubeflow, Jupyter, and Great Expectations.\n\n\n\nI maintain and contribute to a variety of fastai projects. Recently, I’ve been involved with the following projects: nbdev, fastcore, fastpages, ghapi\nCreator of fastpages, an easy to use blogging platform for Jupyter Notebooks.\nVarious Metaflow contributions such as the notebook card\nCodeSearchNet, Datasets, tools, and benchmarks for representation learning of code. This was a follow up project to Semantic Code Search.\nMachine Learning Ops, A collection of resources on how to facilitate Machine Learning Ops with GitHub.\nIssue Label Bot, A GitHub App powered by machine learning.\n\n\n\n\nLinks to associated github repos (and live demos if available) are located in blog articles.\n\nHow to Automate Tasks on GitHub With Machine Learning for Fun and Profit\nHow Docker Can Make You A More Effective Data Scientist\nAutomated Machine Learning, A Paradigm Shift That Accelerates Data Scientst Productivity At Airbnb\n\n\n\n\n\nAutoML, Literate Programming, and Data Tooling Cargo Cults, Vanishing Gradients Podcast with Hugo Bowne Anderson, July 2022.\nHow to evaluate ML Tooling: Guest Lecutre for Stanford CS 329S ML Systems Design, Feb 2022. Slides, Video\nJupyterCon 2020: “fastpages - A new, open source Jupyter notebook blogging system.”. Slides, Video.\nGradient Descent by Weights & Biases: A discussion on Automated Machine Learning, CodeSearchNet, GitHub Actions and MLOps: Video\nGitHub Universe 2019: “Machine Learning Ops With GitHub Actions & Kubernetes”. Video\nTensorFlow World, 2019: “Automating your developer workflow on GitHub with Tensorflow”. Slides, Link\nData Skeptic Interview, Jan 2018: “Semantic Search at Github”.\nKubeCon 2018, “Natural Language Code Search With Kubeflow”. Slides, Video\nKDD, London August 2018: Hands on tutorial, “Feature Extraction and Summarization With Sequence to Sequence Learning”. Tutorial-site\nMl4all, Portland May 2018: “How to Create Magical Data Products Using Sequence-to-Sequence Models”. Slides, Video\nODSC, San Francisco Nov 2017: “Advice For New And Junior Data Scientists” Video\n\n\nEdit on GitHub"
-  },
-  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Hamel Husain",
@@ -581,6 +574,27 @@
     "text": "Recommended pattern:"
   },
   {
+    "objectID": "notes/k8s/helm/17-Helm Upgrade & Rollbacks.html#install-test-the-new-version",
+    "href": "notes/k8s/helm/17-Helm Upgrade & Rollbacks.html#install-test-the-new-version",
+    "title": "Helm Upgrades & Rollbacks",
+    "section": "1. Install & test the new version",
+    "text": "1. Install & test the new version\nlist all installed releases:\n% helm ls -q \nch10-vweb\nsee which versions are available\n% helm search repo vweb --versions  \nNAME        CHART VERSION   APP VERSION DESCRIPTION\nkiamol/vweb 2.0.0           2.0.0       Simple versioned web app\nkiamol/vweb 1.0.0           1.0.0       Simple versioned web app\nInstall the new version of the app\n# check the values for the new chart version:\nhelm show values kiamol/vweb --version 2.0.0\n\nhelm install --set servicePort=8020 --set replicaCount=1 --set serviceType=ClusterIP ch10-vweb-v2 kiamol/vweb --version 2.0.0\nAfter you test the app,"
+  },
+  {
+    "objectID": "notes/k8s/helm/17-Helm Upgrade & Rollbacks.html#uninstall-the-test-release",
+    "href": "notes/k8s/helm/17-Helm Upgrade & Rollbacks.html#uninstall-the-test-release",
+    "title": "Helm Upgrades & Rollbacks",
+    "section": "2. Uninstall the test release",
+    "text": "2. Uninstall the test release\nYou can see a list of all releases with helm list\n# see a list of releases\nhelm list\n....\n\nhelm uninstall ch10-vweb-v2"
+  },
+  {
+    "objectID": "notes/k8s/helm/17-Helm Upgrade & Rollbacks.html#perform-an-upgrade",
+    "href": "notes/k8s/helm/17-Helm Upgrade & Rollbacks.html#perform-an-upgrade",
+    "title": "Helm Upgrades & Rollbacks",
+    "section": "3. Perform an upgrade",
+    "text": "3. Perform an upgrade\nYou can upgrade like this, optionally using the --reuse-values and --atomic flags:\nThe --atomic flag is important, always use this!\n\nwith the atomic flag. It waits for all the resource updates to complete, and if any of them fails, it rolls back every other resource to the previous state.\n\nhelm upgrade --reuse-values --atomic ch10-vweb kiamol/vweb --version 2.0.0\n\nAlways use the --atomic flag!\n\n\nWhen you upgrade, the --reuse-values flag will often be handy. However, this can cause things to break if the api changes between versions. So use with extreme care!"
+  },
+  {
     "objectID": "notes/k8s/helm/15-Helm.html",
     "href": "notes/k8s/helm/15-Helm.html",
     "title": "Hamel Husain",
@@ -621,13 +635,6 @@
     "title": "📚 Notes",
     "section": "",
     "text": "See The Listing Menu\n\n\n\nClick on “📚 Notes” above to expand the listing menu.\n\n\nThis is a place where I share some of my notes. If you find an error with any of these notes, please submit a pull request. You can also get in touch with me here."
-  },
-  {
-    "objectID": "notes/index.html#recent-notes",
-    "href": "notes/index.html#recent-notes",
-    "title": "📚 Notes",
-    "section": "Recent notes",
-    "text": "Recent notes"
   },
   {
     "objectID": "notes/programming-languages/pl.html",
@@ -1176,13 +1183,6 @@
     "text": "Other tools to look into\n\nDescript\nRunwayML\ncapcut - from Rajeev\nAdobe Premiere\nFrame - Video collaboration that you use for Upwork etc"
   },
   {
-    "objectID": "notes/test.html",
-    "href": "notes/test.html",
-    "title": "Test notebook",
-    "section": "",
-    "text": "print('hello')\n\nhello"
-  },
-  {
     "objectID": "notes/jupyter/remote_browser.html",
     "href": "notes/jupyter/remote_browser.html",
     "title": "Remote Browser For Jupyter",
@@ -1279,40 +1279,5 @@
     "title": " Open Source",
     "section": " Other",
     "text": "Other\nI worked as a staff machine learning engineer at GitHub from 2017 - 2022. I led or created the following open source projects that explored the intersection of machine learning, data and the developer workflow:\n\n\n\nProject\nDescription\nRole\nOther References\n\n\n\n\nCode Search Net \nDatasets, tools, and benchmarks for representation learning of code. This was a big part of the inspiration for GitHub’s eventual work on CoPilot.\nLead\nBlog, Talk\n\n\nMachine Learning Ops\nA collection of resources on how to facilitate Machine Learning Ops with GitHub. This project explored integrations with a wide variety of data science tools with GitHub Actions.\nCreator\nBlog\n\n\nIssue Label Bot\nA GitHub App powered by machine learning that auto-labels issues.\nCreator\nBlog, Talk\n\n\nCovid19-dashboard \nA dashboard of Covid-19 analysis powered by Jupyter notebooks.\nCreator\nNews Article"
-  },
-  {
-    "objectID": "notes/index.html#recently-notes",
-    "href": "notes/index.html#recently-notes",
-    "title": "📚 Notes",
-    "section": "Recently notes",
-    "text": "Recently notes"
-  },
-  {
-    "objectID": "notes/index.html#recently-modified-notes",
-    "href": "notes/index.html#recently-modified-notes",
-    "title": "📚 Notes",
-    "section": "Recently Modified Notes",
-    "text": "Recently Modified Notes"
-  },
-  {
-    "objectID": "notes/k8s/helm/17-Helm Upgrade & Rollbacks.html#install-test-the-new-version",
-    "href": "notes/k8s/helm/17-Helm Upgrade & Rollbacks.html#install-test-the-new-version",
-    "title": "Helm Upgrades & Rollbacks",
-    "section": "1. Install & test the new version",
-    "text": "1. Install & test the new version\nlist all installed releases:\n% helm ls -q \nch10-vweb\nsee which versions are available\n% helm search repo vweb --versions  \nNAME        CHART VERSION   APP VERSION DESCRIPTION\nkiamol/vweb 2.0.0           2.0.0       Simple versioned web app\nkiamol/vweb 1.0.0           1.0.0       Simple versioned web app\nInstall the new version of the app\n# check the values for the new chart version:\nhelm show values kiamol/vweb --version 2.0.0\n\nhelm install --set servicePort=8020 --set replicaCount=1 --set serviceType=ClusterIP ch10-vweb-v2 kiamol/vweb --version 2.0.0\nAfter you test the app,"
-  },
-  {
-    "objectID": "notes/k8s/helm/17-Helm Upgrade & Rollbacks.html#uninstall-the-test-release",
-    "href": "notes/k8s/helm/17-Helm Upgrade & Rollbacks.html#uninstall-the-test-release",
-    "title": "Helm Upgrades & Rollbacks",
-    "section": "2. Uninstall the test release",
-    "text": "2. Uninstall the test release\nYou can see a list of all releases with helm list\n# see a list of releases\nhelm list\n....\n\nhelm uninstall ch10-vweb-v2"
-  },
-  {
-    "objectID": "notes/k8s/helm/17-Helm Upgrade & Rollbacks.html#perform-an-upgrade",
-    "href": "notes/k8s/helm/17-Helm Upgrade & Rollbacks.html#perform-an-upgrade",
-    "title": "Helm Upgrades & Rollbacks",
-    "section": "3. Perform an upgrade",
-    "text": "3. Perform an upgrade\nYou can upgrade like this, optionally using the --reuse-values and --atomic flags:\nThe --atomic flag is important, always use this!\n\nwith the atomic flag. It waits for all the resource updates to complete, and if any of them fails, it rolls back every other resource to the previous state.\n\nhelm upgrade --reuse-values --atomic ch10-vweb kiamol/vweb --version 2.0.0\n\nAlways use the --atomic flag!\n\n\nWhen you upgrade, the --reuse-values flag will often be handy. However, this can cause things to break if the api changes between versions. So use with extreme care!"
   }
 ]
