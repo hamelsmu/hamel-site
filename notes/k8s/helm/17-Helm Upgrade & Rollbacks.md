@@ -1,6 +1,7 @@
 ---
 order: 17
 title: Helm Upgrades & Rollbacks
+description: How Helm can assist you with upgrades and rollbacks.
 categories: [K8s]
 ---
 

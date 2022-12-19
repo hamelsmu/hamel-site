@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="Notes on working with GitHub Actions">
 
 <title>Hamel’s Blog - GitHub Actions</title>
 <style>
@@ -30,6 +31,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
 <link href="../../favicon.ico" rel="icon">
+<script src="../../site_libs/quarto-listing/list.min.js"></script>
+<script src="../../site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="../../site_libs/quarto-html/quarto.js"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -58,12 +61,44 @@ ul.task-list li input[type="checkbox"] {
     "search-submit-button-title": "Submit"
   }
 }</script>
+<script>
 
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-listing .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-title','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-title-sort'] }],
+      
+      searchColumns: ["listing-title","listing-author"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="Hamel’s Blog - GitHub Actions">
+<meta property="og:description" content="Notes on working with GitHub Actions">
 <meta property="og:site-name" content="Hamel's Blog">
 <meta name="twitter:title" content="Hamel’s Blog - GitHub Actions">
+<meta name="twitter:description" content="Notes on working with GitHub Actions">
 <meta name="twitter:creator" content="@HamelHusain">
 <meta name="twitter:card" content="summary">
 </head>
@@ -149,7 +184,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">fastai</a>
+            <a href="../../notes/fastai/index.html" class="sidebar-item-text sidebar-link">fastai</a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -178,13 +213,11 @@ ul.task-list li input[type="checkbox"] {
       </ul>
   </li>
         <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/how-to-learn/lhtl.html" class="sidebar-item-text sidebar-link">How to learn</a>
-  </div>
-</li>
+  notes/how-to-learn/lhtl.qmd
+  </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">Jupyter</a>
+            <a href="../../notes/jupyter/index.html" class="sidebar-item-text sidebar-link">Jupyter</a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -214,17 +247,12 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">K8s</a>
+            <a href="../../notes/k8s/index.html" class="sidebar-item-text sidebar-link">K8s</a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/index.html" class="sidebar-item-text sidebar-link">Why Should Data Scientists Learn Kubernetes?</a>
-  </div>
-</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../notes/k8s/02-Basics.html" class="sidebar-item-text sidebar-link">Basics</a>
@@ -237,7 +265,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">Storage</a>
+            <a href="../../notes/k8s/storage/index.html" class="sidebar-item-text sidebar-link">Storage</a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -245,19 +273,19 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/storage/04-Basics.html" class="sidebar-item-text sidebar-link">Pod Storage</a>
+  <a href="../../notes/k8s/storage/04-Basics.html" class="sidebar-item-text sidebar-link">Storage Basics</a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/storage/05-Dynamic Provisioning.html" class="sidebar-item-text sidebar-link">Storage Classes</a>
+  <a href="../../notes/k8s/storage/05-Dynamic Provisioning.html" class="sidebar-item-text sidebar-link">Dynamic Provisioning</a>
   </div>
 </li>
       </ul>
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">Scaling</a>
+            <a href="../../notes/k8s/scaling/index.html" class="sidebar-item-text sidebar-link">Scaling</a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -277,7 +305,7 @@ ul.task-list li input[type="checkbox"] {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">Multi-Container pods</a>
+            <a href="../../notes/k8s/multi_container_pods/index.html" class="sidebar-item-text sidebar-link">Multi-Container pods</a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -306,23 +334,17 @@ ul.task-list li input[type="checkbox"] {
       </ul>
   </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/12-StatefulSet.html" class="sidebar-item-text sidebar-link">StatefulSet</a>
-  </div>
-</li>
+  notes/k8s/12-StatefulSet.md
+  </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/13-JobsCron.html" class="sidebar-item-text sidebar-link">Jobs</a>
-  </div>
-</li>
+  notes/k8s/13-JobsCron.md
+  </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/14-RolloutsRollbacks.html" class="sidebar-item-text sidebar-link">Rollouts</a>
-  </div>
-</li>
+  notes/k8s/14-RolloutsRollbacks.md
+  </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">Helm</a>
+            <a href="../../notes/k8s/helm/index.html" class="sidebar-item-text sidebar-link">Helm</a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -330,7 +352,7 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/helm/15-Helm.html" class="sidebar-item-text sidebar-link">Terminology</a>
+  <a href="../../notes/k8s/helm/15-Helm.html" class="sidebar-item-text sidebar-link">Helm Intro</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -346,20 +368,14 @@ ul.task-list li input[type="checkbox"] {
       </ul>
   </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/18-Developer.html" class="sidebar-item-text sidebar-link">Developer tips</a>
-  </div>
-</li>
+  notes/k8s/18-Developer.md
+  </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/19-Pod-Lifecycle.html" class="sidebar-item-text sidebar-link">Pod restart vs.&nbsp;replacement</a>
-  </div>
-</li>
+  notes/k8s/19-Pod-Lifecycle.md
+  </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/20-health-checks.html" class="sidebar-item-text sidebar-link">Probes</a>
-  </div>
-</li>
+  notes/k8s/20-health-checks.md
+  </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../notes/k8s/99-Random.html" class="sidebar-item-text sidebar-link">Random TILs</a>
@@ -404,17 +420,17 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/pandoc/filters.html" class="sidebar-item-text sidebar-link">Pandoc filters</a>
+  <a href="../../notes/pandoc/index.html" class="sidebar-item-text sidebar-link">Pandoc filters</a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/programming-languages/pl.html" class="sidebar-item-text sidebar-link">Programming Languages</a>
+  <a href="../../notes/programming-languages/index.html" class="sidebar-item-text sidebar-link">Programming Languages</a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/web-scraping/browser-to-python.html" class="sidebar-item-text sidebar-link">Web Scraping</a>
+  <a href="../../notes/web-scraping/index.html" class="sidebar-item-text sidebar-link">Web Scraping</a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -442,6 +458,11 @@ ul.task-list li input[type="checkbox"] {
 <h1 class="title d-none d-lg-block">GitHub Actions</h1>
 </div>
 
+<div>
+  <div class="description">
+    Notes on working with GitHub Actions
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
@@ -457,7 +478,44 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-</main> <!-- /main -->
+
+<div class="quarto-listing quarto-listing-container-table" id="listing-listing">
+
+<table class="quarto-listing-table table">
+<thead>
+<tr>
+<th>
+Title
+</th>
+<th>
+Description
+</th>
+</tr>
+</thead>
+<tbody class="list">
+<tr data-index="0" data-listing-file-modified-sort="1671316937801" data-listing-reading-time-sort="0.285" data-listing-title-sort="Resources" data-listing-filename-sort="resources.md">
+<td class="listing-title">
+<a href="../../notes/actions/resources.html" class="title">Resources</a>
+</td>
+<td class="listing-description">
+These are resources that can help you get started with GitHub Actions:
+</td>
+</tr>
+<tr data-index="1" data-listing-file-modified-sort="1671316937801" data-listing-reading-time-sort="1.945" data-listing-title-sort="ocotokit.js" data-listing-filename-sort="ocotkit.md">
+<td class="listing-title">
+<a href="../../notes/actions/ocotkit.html" class="title">ocotokit.js</a>
+</td>
+<td class="listing-description">
+ocotokit.js is a javascript library that can help you interact with the GitHub API i…
+</td>
+</tr>
+</tbody>
+
+</table>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+</div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

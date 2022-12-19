@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="Notes from the course “Learning How To Learn”">
 
-<title>Hamel’s Blog - pandoc filters</title>
+<title>Hamel’s Blog - How to learn</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,69 +21,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1.6em;
   vertical-align: middle;
 }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { color: #008000; } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { color: #008000; font-weight: bold; } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
@@ -93,6 +31,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
 <link href="../../favicon.ico" rel="icon">
+<script src="../../site_libs/quarto-listing/list.min.js"></script>
+<script src="../../site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="../../site_libs/quarto-html/quarto.js"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -121,14 +61,44 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     "search-submit-button-title": "Submit"
   }
 }</script>
+<script>
 
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-listing .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-title','listing-description',{ data: ['index'] },{ data: ['categories'] }],
+      
+      searchColumns: [],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Hamel’s Blog - pandoc filters">
-<meta property="og:description" content="Two python packages">
+<meta property="og:title" content="Hamel’s Blog - How to learn">
+<meta property="og:description" content="Notes from the course &quot;Learning How To Learn&quot;">
 <meta property="og:site-name" content="Hamel's Blog">
-<meta name="twitter:title" content="Hamel’s Blog - pandoc filters">
-<meta name="twitter:description" content="Two python packages">
+<meta name="twitter:title" content="Hamel’s Blog - How to learn">
+<meta name="twitter:description" content="Notes from the course &quot;Learning How To Learn&quot;">
 <meta name="twitter:creator" content="@HamelHusain">
 <meta name="twitter:card" content="summary">
 </head>
@@ -169,7 +139,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </nav>
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">pandoc filters</h1>
+      <h1 class="quarto-secondary-nav-title">How to learn</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -214,7 +184,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">fastai</a>
+            <a href="../../notes/fastai/index.html" class="sidebar-item-text sidebar-link">fastai</a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -244,12 +214,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/how-to-learn/lhtl.html" class="sidebar-item-text sidebar-link">How to learn</a>
+  <a href="../../notes/how-to-learn/index.html" class="sidebar-item-text sidebar-link active">How to learn</a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">Jupyter</a>
+            <a href="../../notes/jupyter/index.html" class="sidebar-item-text sidebar-link">Jupyter</a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -279,17 +249,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">K8s</a>
+            <a href="../../notes/k8s/index.html" class="sidebar-item-text sidebar-link">K8s</a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/index.html" class="sidebar-item-text sidebar-link">Why Should Data Scientists Learn Kubernetes?</a>
-  </div>
-</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../notes/k8s/02-Basics.html" class="sidebar-item-text sidebar-link">Basics</a>
@@ -302,7 +267,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">Storage</a>
+            <a href="../../notes/k8s/storage/index.html" class="sidebar-item-text sidebar-link">Storage</a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -310,19 +275,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/storage/04-Basics.html" class="sidebar-item-text sidebar-link">Pod Storage</a>
+  <a href="../../notes/k8s/storage/04-Basics.html" class="sidebar-item-text sidebar-link">Storage Basics</a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/storage/05-Dynamic Provisioning.html" class="sidebar-item-text sidebar-link">Storage Classes</a>
+  <a href="../../notes/k8s/storage/05-Dynamic Provisioning.html" class="sidebar-item-text sidebar-link">Dynamic Provisioning</a>
   </div>
 </li>
       </ul>
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">Scaling</a>
+            <a href="../../notes/k8s/scaling/index.html" class="sidebar-item-text sidebar-link">Scaling</a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -342,7 +307,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">Multi-Container pods</a>
+            <a href="../../notes/k8s/multi_container_pods/index.html" class="sidebar-item-text sidebar-link">Multi-Container pods</a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -371,23 +336,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       </ul>
   </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/12-StatefulSet.html" class="sidebar-item-text sidebar-link">StatefulSet</a>
-  </div>
-</li>
+  notes/k8s/12-StatefulSet.md
+  </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/13-JobsCron.html" class="sidebar-item-text sidebar-link">Jobs</a>
-  </div>
-</li>
+  notes/k8s/13-JobsCron.md
+  </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/14-RolloutsRollbacks.html" class="sidebar-item-text sidebar-link">Rollouts</a>
-  </div>
-</li>
+  notes/k8s/14-RolloutsRollbacks.md
+  </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">Helm</a>
+            <a href="../../notes/k8s/helm/index.html" class="sidebar-item-text sidebar-link">Helm</a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -395,7 +354,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/helm/15-Helm.html" class="sidebar-item-text sidebar-link">Terminology</a>
+  <a href="../../notes/k8s/helm/15-Helm.html" class="sidebar-item-text sidebar-link">Helm Intro</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -411,20 +370,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       </ul>
   </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/18-Developer.html" class="sidebar-item-text sidebar-link">Developer tips</a>
-  </div>
-</li>
+  notes/k8s/18-Developer.md
+  </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/19-Pod-Lifecycle.html" class="sidebar-item-text sidebar-link">Pod restart vs.&nbsp;replacement</a>
-  </div>
-</li>
+  notes/k8s/19-Pod-Lifecycle.md
+  </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/20-health-checks.html" class="sidebar-item-text sidebar-link">Probes</a>
-  </div>
-</li>
+  notes/k8s/20-health-checks.md
+  </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../notes/k8s/99-Random.html" class="sidebar-item-text sidebar-link">Random TILs</a>
@@ -469,17 +422,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/pandoc/filters.html" class="sidebar-item-text sidebar-link active">Pandoc filters</a>
+  <a href="../../notes/pandoc/index.html" class="sidebar-item-text sidebar-link">Pandoc filters</a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/programming-languages/pl.html" class="sidebar-item-text sidebar-link">Programming Languages</a>
+  <a href="../../notes/programming-languages/index.html" class="sidebar-item-text sidebar-link">Programming Languages</a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/web-scraping/browser-to-python.html" class="sidebar-item-text sidebar-link">Web Scraping</a>
+  <a href="../../notes/web-scraping/index.html" class="sidebar-item-text sidebar-link">Web Scraping</a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -501,21 +454,30 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#the-minimal-notebook" id="toc-the-minimal-notebook" class="nav-link active" data-scroll-target="#the-minimal-notebook">The minimal notebook</a></li>
-  <li><a href="#minimal-ipynb-to-md-converstion-with-pandoc" id="toc-minimal-ipynb-to-md-converstion-with-pandoc" class="nav-link" data-scroll-target="#minimal-ipynb-to-md-converstion-with-pandoc">Minimal ipynb to md converstion with pandoc</a></li>
-  <li><a href="#minimal-ipynb-to-md-converstion-with-quarto" id="toc-minimal-ipynb-to-md-converstion-with-quarto" class="nav-link" data-scroll-target="#minimal-ipynb-to-md-converstion-with-quarto">Minimal ipynb to md converstion with quarto</a></li>
-  <li><a href="#how-to-use-panflute" id="toc-how-to-use-panflute" class="nav-link" data-scroll-target="#how-to-use-panflute">How to use panflute</a></li>
+  <li><a href="#focused-vs-diffused-mode" id="toc-focused-vs-diffused-mode" class="nav-link active" data-scroll-target="#focused-vs-diffused-mode">Focused vs Diffused Mode</a></li>
+  <li><a href="#procrastination-memory-and-sleep" id="toc-procrastination-memory-and-sleep" class="nav-link" data-scroll-target="#procrastination-memory-and-sleep">Procrastination Memory and Sleep</a></li>
+  <li><a href="#writing-tips-diffuse-mode" id="toc-writing-tips-diffuse-mode" class="nav-link" data-scroll-target="#writing-tips-diffuse-mode">Writing Tips Diffuse Mode</a></li>
+  <li><a href="#chunking" id="toc-chunking" class="nav-link" data-scroll-target="#chunking">Chunking</a></li>
+  <li><a href="#illusions-of-competence" id="toc-illusions-of-competence" class="nav-link" data-scroll-target="#illusions-of-competence">Illusions of competence</a></li>
+  <li><a href="#deliberate-practice" id="toc-deliberate-practice" class="nav-link" data-scroll-target="#deliberate-practice">Deliberate Practice</a></li>
+  <li><a href="#procrastination-and-memory" id="toc-procrastination-and-memory" class="nav-link" data-scroll-target="#procrastination-and-memory">Procrastination and Memory</a></li>
+  <li><a href="#juggling-life-and-learning" id="toc-juggling-life-and-learning" class="nav-link" data-scroll-target="#juggling-life-and-learning">Juggling Life and Learning</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel/edit/main/notes/pandoc/filters.md" class="toc-action">Edit this page</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel/edit/main/notes/how-to-learn/index.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">pandoc filters</h1>
+<h1 class="title d-none d-lg-block">How to learn</h1>
 </div>
 
+<div>
+  <div class="description">
+    Notes from the course “Learning How To Learn”
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
@@ -528,200 +490,76 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
-<p>Two python packages</p>
-<div>
+<p>I read the book <a href="https://www.amazon.com/Mindshit-Obstacles-Learning-Discover-Potential/dp/1101982853">Mindshift</a> and it was unituitively so good that I decided to take this class. As a parent, I learned a bunch of things that I think will be beneficial to my children’s education.</p>
+<p>Notes from class <a href="https://www.coursera.org/learn/learning-how-to-learn">Learning how to learn</a>. These notes are for me and may not make sense for others.</p>
+<section id="focused-vs-diffused-mode" class="level2">
+<h2 class="anchored" data-anchor-id="focused-vs-diffused-mode">Focused vs Diffused Mode</h2>
+<p>You can not access focus and diffused mode simultaneously.</p>
+<p>People have tried to access diffuse mode of thinking by bringing themselves to the point of sleep and waking up just as they fall asleep. For example, Salvador Dali - holding keys in your hand, and let the sound of keys falling the ground wake you up.</p>
+<p>Exercise, going for a walk good way to access diffuse thinking. You must take notes right away b/c diffuse thoughts may evaporate very fast.</p>
+</section>
+<section id="procrastination-memory-and-sleep" class="level2">
+<h2 class="anchored" data-anchor-id="procrastination-memory-and-sleep">Procrastination Memory and Sleep</h2>
+<p>They advocate the Pomodoro technique to combating procrastination. Its like HITT.</p>
+<p>Periodic relaxation (every ~ 30 minutes) is important for accessing your diffuse mode. “Its important for the mortar to dry”.</p>
+<p>Spaced repetition (like Anki) is important for building memory. i</p>
+<p><strong>Go over what you want to learn about right before you go to sleep</strong>, this will substantially improve the chances you will dream about it and form new connections about the subject.</p>
+<p>Exercise can help create new neurons in your hippocampus (new neurons can be created there in adulthood) and help them survive longer.</p>
+</section>
+<section id="writing-tips-diffuse-mode" class="level2">
+<h2 class="anchored" data-anchor-id="writing-tips-diffuse-mode">Writing Tips Diffuse Mode</h2>
+<p>Diffuse mode is very important for writing. Editing is like focus mode and creating ideas is diffuse mode. Some rules of thumb: - Do not outline, make a mind map - Do not edit while you are writing (this is really hard to do -&gt; turn off monitor and just write).https://writeordie.com - app that forces you to stay in diffuse mode. You really cannot look at the screen. - Repeating again, do not look at screen while you are writing! Only when editing.</p>
+</section>
+<section id="chunking" class="level2">
+<h2 class="anchored" data-anchor-id="chunking">Chunking</h2>
+<p>“Tying your shoes”. Best chunks are subconscious. Spoken language is the best example of chunking. You have to practice to build chunks, you cannot just observe. You have to perform the task yourself.</p>
+<p>You should scan a chapter before you read it: section headings, pictures, etc. This can help you build chunks.</p>
+</section>
+<section id="illusions-of-competence" class="level2">
+<h2 class="anchored" data-anchor-id="illusions-of-competence">Illusions of competence</h2>
+<p>Right after you read something, look away and repeat to yourself what you recall. You can also draw a concept map. The recall process actually improves memory.</p>
+<p>Recall is better than re-reading. Re-reading is effective when you let time pass so you get spaced repetition. You need to test yourself to make sure you are competent. Recall is a form of testing.</p>
+<p>Recall outside your place of study to strengthen your memory. This is because you can get queues from where you are studying.</p>
+</section>
+<section id="deliberate-practice" class="level2">
+<h2 class="anchored" data-anchor-id="deliberate-practice">Deliberate Practice</h2>
+<p>Focus on the bits that you find difficult. Interleaving is important, meaning learning different subjects or even sections within one subject at once. Thomas S. Khun discovered that two types of people tend to make scientific breakthroughs: (1) young people (2) those who are trained in another discipline.</p>
+</section>
+<section id="procrastination-and-memory" class="level2">
+<h2 class="anchored" data-anchor-id="procrastination-and-memory">Procrastination and Memory</h2>
+<p>You have already learned about the Pomodoro technique. There are other techniques.</p>
+<p>Focus on the process, not the product. Don’t focus on completing the homework, focus on the process that leads you to complete the homework. Process is the small chunks of time to chip away at the task. This is the idea behind the Pomodoro. Your only goal is to finish the Pomodoro, for example.</p>
+</section>
+<section id="juggling-life-and-learning" class="level2">
+<h2 class="anchored" data-anchor-id="juggling-life-and-learning">Juggling Life and Learning</h2>
+<p>You should make to-do list the night before for the next day and write it down. This will allow your subconscious to work on how it will conquer that task. Furthermore, writing it down will allow you to free it from working memory.</p>
+<p>Plan your quitting time is important.</p>
 
+
+
+</section>
+
+<div class="quarto-listing quarto-listing-container-table" id="listing-listing">
+
+<table class="quarto-listing-table table">
+<thead>
+<tr>
+<th>
+Title
+</th>
+<th>
+Description
+</th>
+</tr>
+</thead>
+<tbody class="list">
+</tbody>
+
+</table>
+<div class="listing-no-matching d-none">
+No matching items
 </div>
-<ul>
-<li><a href="http://scorreia.com/software/panflute/">panflute</a> - recommended</li>
-<li><a href="https://github.com/jgm/pandocfilters">pandocfilters</a></li>
-</ul>
-<p>The <a href="https://pandoc.org/filters.html">tutorial</a> on pandoc filters can help you get oriented to the general idea. If rolling your own filters, you probably want to use the JSON filters. Furthermore you can understand the pandoc AST by using the <code>-t native</code> flag (examples of this are shown later).</p>
-<section id="the-minimal-notebook" class="level2">
-<h2 class="anchored" data-anchor-id="the-minimal-notebook">The minimal notebook</h2>
-<p>Here is minimal notebook we are working with:</p>
-<p><code>json title="minimal.ipynb" {  "cells": [   {    "cell_type": "markdown",    "metadata": {},    "source": [     "## A minimal notebook"    ]   },   {    "cell_type": "markdown",    "metadata": {},    "source": [     "&lt;MyTag&gt;&lt;/MyTag&gt;"    ]   },   {    "cell_type": "code",    "execution_count": 1,    "metadata": {},    "outputs": [     {      "name": "stdout",      "output_type": "stream",      "text": [       "2\n"      ]     }    ],    "source": [     "# Do some arithmetic\n",     "print(1+1)"    ]   }  ],  "metadata": {   "interpreter": {    "hash": "42fd40e048e0585f88ec242f050f7ef0895cf845a8dd1159352394e5826cd102"   },   "kernelspec": {    "display_name": "Python 3.9.7 ('base')",    "language": "python",    "name": "python3"   },   "language_info": {    "codemirror_mode": {     "name": "ipython",     "version": 3    },    "file_extension": ".py",    "mimetype": "text/x-python",    "name": "python",    "nbconvert_exporter": "python",    "pygments_lexer": "ipython3",    "version": "3.9.7"   }  },  "nbformat": 4,  "nbformat_minor": 4 }</code></p>
-</section>
-<section id="minimal-ipynb-to-md-converstion-with-pandoc" class="level2">
-<h2 class="anchored" data-anchor-id="minimal-ipynb-to-md-converstion-with-pandoc">Minimal ipynb to md converstion with pandoc</h2>
-<pre><code>$ pandoc --to gfm minimal.ipynb
-&lt;div class="cell markdown"&gt;
-
-## A minimal notebook
-
-&lt;/div&gt;
-
-&lt;div class="cell markdown"&gt;
-
-&lt;MyTag&gt;&lt;/MyTag&gt;
-
-&lt;/div&gt;
-
-&lt;div class="cell code" execution_count="1"&gt;
-
-``` python
-# Do some arithmetic
-print(1+1)
-```
-
-&lt;div class="output stream stdout"&gt;
-
-    2
-
-&lt;/div&gt;
-
-&lt;/div&gt;</code></pre>
-</section>
-<section id="minimal-ipynb-to-md-converstion-with-quarto" class="level2">
-<h2 class="anchored" data-anchor-id="minimal-ipynb-to-md-converstion-with-quarto">Minimal ipynb to md converstion with quarto</h2>
-<pre><code>$ quarto render minimal.ipynb --to gfm
-pandoc
-  to: gfm+footnotes+tex_math_dollars-yaml_metadata_block
-  output-file: minimal.md
-  standalone: true
-  default-image-extension: png
-  filters:
-    - crossref
-
-Output created: minimal.md</code></pre>
-<p>This creates</p>
-<pre><code>
-## A minimal notebook
-
-&lt;MyTag&gt;&lt;/MyTag&gt;
-
-``` python
-# Do some arithmetic
-print(1+1)
-```
-
-    2</code></pre>
-<p>Running Pandoc With those Extensions</p>
-<p>running pandoc with <code>--standalone --to gfm+footnotes+tex_math_dollars-yaml_metadata_block</code> still adds the divs and looks different than quarto. Somewhere, maybe quarto is removing the divs. We can see the <code>Div</code> elements in the AST when we explore panflute in the sections below.</p>
-</section>
-<section id="how-to-use-panflute" class="level2">
-<h2 class="anchored" data-anchor-id="how-to-use-panflute">How to use panflute</h2>
-<p>The <a href="https://github.com/sergiocorreia/panflute-filters">examples</a> are helpful.</p>
-<p>This filter places <code>CodeOutput</code> blocks around code as well as changes the codefence to have <code>file=script.py</code> in order to hack the code fence.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/Users/hamel/opt/anaconda3/bin/python</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#flute.py</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Text</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> panflute <span class="im">import</span> <span class="op">*</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> logging <span class="im">import</span> warning</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> increase_header_level(elem, doc):</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">type</span>(elem) <span class="op">==</span> CodeBlock <span class="kw">and</span> <span class="bu">type</span>(elem.parent.prev) <span class="op">==</span> CodeBlock:</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> ([RawBlock(<span class="st">"&lt;CodeOutput&gt;"</span>), elem, RawBlock(<span class="st">"&lt;/CodeOutput&gt;"</span>)])</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> <span class="bu">type</span>(elem) <span class="op">==</span> CodeBlock:</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        elem.classes <span class="op">=</span> [<span class="st">'file=script.py'</span>]</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> main(doc<span class="op">=</span><span class="va">None</span>):</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> run_filter(increase_header_level, doc<span class="op">=</span>doc)</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">"__main__"</span>:</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    main()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>This is how we can use this filter and see the rendered output:</p>
-<pre><code>$ pandoc --to gfm minimal.ipynb --filter "flute.py"
-&lt;div class="cell markdown"&gt;
-
-## A minimal notebook
-
-&lt;/div&gt;
-
-&lt;div class="cell markdown"&gt;
-
-&lt;MyTag&gt;&lt;/MyTag&gt;
-
-&lt;/div&gt;
-
-&lt;div class="cell code" execution_count="1"&gt;
-
-``` file=script.py
-# Do some arithmetic
-print(1+1)
-```
-
-&lt;div class="output stream stdout"&gt;
-
-&lt;CodeOutput&gt;
-
-    2
-
-&lt;/CodeOutput&gt;
-
-&lt;/div&gt;
-
-&lt;/div&gt;</code></pre>
-<p>Note: we could probably replace the inner div with the <code>output</code> class with <code>&lt;CodeOutput&gt;</code> tag</p>
-<p>Just for completeness, this is the schema of the minimal notebook using the <code>--to native</code> flag <strong>prior to</strong> applying the filter:</p>
-<pre><code>$pandoc --to native minimal.ipynb
-[ Div
-    ( "" , [ "cell" , "markdown" ] , [] )
-    [ Header
-        2
-        ( "a-minimal-notebook" , [] , [] )
-        [ Str "A" , Space , Str "minimal" , Space , Str "notebook" ]
-    ]
-, Div
-    ( "" , [ "cell" , "markdown" ] , [] )
-    [ Para
-        [ RawInline (Format "html") "&lt;MyTag&gt;"
-        , RawInline (Format "html") "&lt;/MyTag&gt;"
-        ]
-    ]
-, Div
-    ( ""
-    , [ "cell" , "code" ]
-    , [ ( "execution_count" , "1" ) ]
-    )
-    [ CodeBlock
-        ( "" , [ "python" ] , [] )
-        "# Do some arithmetic\nprint(1+1)"
-    , Div
-        ( "" , [ "output" , "stream" , "stdout" ] , [] )
-        [ CodeBlock ( "" , [] , [] ) "2\n" ]
-    ]
-]</code></pre>
-<p>And <strong>after applying the filter</strong>:</p>
-<pre><code>$pandoc --to native minimal.ipynb --filter flute.py
-[ Div
-    ( "" , [ "cell" , "markdown" ] , [] )
-    [ Header
-        2
-        ( "a-minimal-notebook" , [] , [] )
-        [ Str "A" , Space , Str "minimal" , Space , Str "notebook" ]
-    ]
-, Div
-    ( "" , [ "cell" , "markdown" ] , [] )
-    [ Para
-        [ RawInline (Format "html") "&lt;MyTag&gt;"
-        , RawInline (Format "html") "&lt;/MyTag&gt;"
-        ]
-    ]
-, Div
-    ( ""
-    , [ "cell" , "code" ]
-    , [ ( "execution_count" , "1" ) ]
-    )
-    [ CodeBlock
-        ( "" , [ "file=script.py" ] , [] )
-        "# Do some arithmetic\nprint(1+1)"
-    , Div
-        ( "" , [ "output" , "stream" , "stdout" ] , [] )
-        [ RawBlock (Format "html") "&lt;CodeOutput&gt;"
-        , CodeBlock ( "" , [] , [] ) "2\n"
-        , RawBlock (Format "html") "&lt;/CodeOutput&gt;"
-        ]
-    ]
-]</code></pre>
-
-
-</section>
-
-</main> <!-- /main -->
+</div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

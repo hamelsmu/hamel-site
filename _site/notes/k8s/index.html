@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Learning K8s can give you an unreasonable advantage as a data scientist and unblock your teams.">
+<meta name="description" content="Notes on K8s from the perspective of data science tools">
 
-<title>Hamel’s Blog - Why Should Data Scientists Learn Kubernetes?</title>
+<title>Hamel’s Blog - K8s</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -31,6 +31,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
 <link href="../../favicon.ico" rel="icon">
+<script src="../../site_libs/quarto-listing/list.min.js"></script>
+<script src="../../site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="../../site_libs/quarto-html/quarto.js"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -59,18 +61,46 @@ ul.task-list li input[type="checkbox"] {
     "search-submit-button-title": "Submit"
   }
 }</script>
+<script>
 
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-listing .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-title','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-title-sort'] }],
+      
+      searchColumns: ["listing-title","listing-author"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Hamel’s Blog - Why Should Data Scientists Learn Kubernetes?">
-<meta property="og:description" content="Learning K8s can give you an unreasonable advantage as a data scientist and unblock your teams.">
-<meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208368976-37ea8413-7102-4e17-97f1-0832c7a071c8.png">
+<meta property="og:title" content="Hamel’s Blog - K8s">
+<meta property="og:description" content="Notes on K8s from the perspective of data science tools">
 <meta property="og:site-name" content="Hamel's Blog">
-<meta name="twitter:title" content="Hamel’s Blog - Why Should Data Scientists Learn Kubernetes?">
-<meta name="twitter:description" content="Learning K8s can give you an unreasonable advantage as a data scientist and unblock your teams.">
-<meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208368976-37ea8413-7102-4e17-97f1-0832c7a071c8.png">
+<meta name="twitter:title" content="Hamel’s Blog - K8s">
+<meta name="twitter:description" content="Notes on K8s from the perspective of data science tools">
 <meta name="twitter:creator" content="@HamelHusain">
-<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:card" content="summary">
 </head>
 
 <body class="nav-sidebar docked nav-fixed">
@@ -109,7 +139,7 @@ ul.task-list li input[type="checkbox"] {
     </nav>
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">Why Should Data Scientists Learn Kubernetes?</h1>
+      <h1 class="quarto-secondary-nav-title">K8s</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -154,7 +184,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">fastai</a>
+            <a href="../../notes/fastai/index.html" class="sidebar-item-text sidebar-link">fastai</a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -183,13 +213,11 @@ ul.task-list li input[type="checkbox"] {
       </ul>
   </li>
         <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/how-to-learn/lhtl.html" class="sidebar-item-text sidebar-link">How to learn</a>
-  </div>
-</li>
+  notes/how-to-learn/lhtl.qmd
+  </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">Jupyter</a>
+            <a href="../../notes/jupyter/index.html" class="sidebar-item-text sidebar-link">Jupyter</a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -219,17 +247,12 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">K8s</a>
+            <a href="../../notes/k8s/index.html" class="sidebar-item-text sidebar-link active">K8s</a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/index.html" class="sidebar-item-text sidebar-link active">Why Should Data Scientists Learn Kubernetes?</a>
-  </div>
-</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../notes/k8s/02-Basics.html" class="sidebar-item-text sidebar-link">Basics</a>
@@ -242,7 +265,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">Storage</a>
+            <a href="../../notes/k8s/storage/index.html" class="sidebar-item-text sidebar-link">Storage</a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -250,19 +273,19 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/storage/04-Basics.html" class="sidebar-item-text sidebar-link">Pod Storage</a>
+  <a href="../../notes/k8s/storage/04-Basics.html" class="sidebar-item-text sidebar-link">Storage Basics</a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/storage/05-Dynamic Provisioning.html" class="sidebar-item-text sidebar-link">Storage Classes</a>
+  <a href="../../notes/k8s/storage/05-Dynamic Provisioning.html" class="sidebar-item-text sidebar-link">Dynamic Provisioning</a>
   </div>
 </li>
       </ul>
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">Scaling</a>
+            <a href="../../notes/k8s/scaling/index.html" class="sidebar-item-text sidebar-link">Scaling</a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -282,7 +305,7 @@ ul.task-list li input[type="checkbox"] {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">Multi-Container pods</a>
+            <a href="../../notes/k8s/multi_container_pods/index.html" class="sidebar-item-text sidebar-link">Multi-Container pods</a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -311,23 +334,17 @@ ul.task-list li input[type="checkbox"] {
       </ul>
   </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/12-StatefulSet.html" class="sidebar-item-text sidebar-link">StatefulSet</a>
-  </div>
-</li>
+  notes/k8s/12-StatefulSet.md
+  </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/13-JobsCron.html" class="sidebar-item-text sidebar-link">Jobs</a>
-  </div>
-</li>
+  notes/k8s/13-JobsCron.md
+  </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/14-RolloutsRollbacks.html" class="sidebar-item-text sidebar-link">Rollouts</a>
-  </div>
-</li>
+  notes/k8s/14-RolloutsRollbacks.md
+  </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">Helm</a>
+            <a href="../../notes/k8s/helm/index.html" class="sidebar-item-text sidebar-link">Helm</a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -335,7 +352,7 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/helm/15-Helm.html" class="sidebar-item-text sidebar-link">Terminology</a>
+  <a href="../../notes/k8s/helm/15-Helm.html" class="sidebar-item-text sidebar-link">Helm Intro</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -351,20 +368,14 @@ ul.task-list li input[type="checkbox"] {
       </ul>
   </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/18-Developer.html" class="sidebar-item-text sidebar-link">Developer tips</a>
-  </div>
-</li>
+  notes/k8s/18-Developer.md
+  </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/19-Pod-Lifecycle.html" class="sidebar-item-text sidebar-link">Pod restart vs.&nbsp;replacement</a>
-  </div>
-</li>
+  notes/k8s/19-Pod-Lifecycle.md
+  </li>
           <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/20-health-checks.html" class="sidebar-item-text sidebar-link">Probes</a>
-  </div>
-</li>
+  notes/k8s/20-health-checks.md
+  </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../notes/k8s/99-Random.html" class="sidebar-item-text sidebar-link">Random TILs</a>
@@ -409,17 +420,17 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/pandoc/filters.html" class="sidebar-item-text sidebar-link">Pandoc filters</a>
+  <a href="../../notes/pandoc/index.html" class="sidebar-item-text sidebar-link">Pandoc filters</a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/programming-languages/pl.html" class="sidebar-item-text sidebar-link">Programming Languages</a>
+  <a href="../../notes/programming-languages/index.html" class="sidebar-item-text sidebar-link">Programming Languages</a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/web-scraping/browser-to-python.html" class="sidebar-item-text sidebar-link">Web Scraping</a>
+  <a href="../../notes/web-scraping/index.html" class="sidebar-item-text sidebar-link">Web Scraping</a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -437,35 +448,19 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#managed-services-are-not-always-an-option" id="toc-managed-services-are-not-always-an-option" class="nav-link active" data-scroll-target="#managed-services-are-not-always-an-option">Managed services are not always an option</a></li>
-  <li><a href="#nobody-is-coming-to-save-you" id="toc-nobody-is-coming-to-save-you" class="nav-link" data-scroll-target="#nobody-is-coming-to-save-you">Nobody is coming to save you</a></li>
-  <li><a href="#helm-charts-are-like-an-oss-app-store" id="toc-helm-charts-are-like-an-oss-app-store" class="nav-link" data-scroll-target="#helm-charts-are-like-an-oss-app-store">Helm Charts are like an OSS app store</a></li>
-  <li><a href="#ml-research-is-crowded.-compete-on-swe-skills." id="toc-ml-research-is-crowded.-compete-on-swe-skills." class="nav-link" data-scroll-target="#ml-research-is-crowded.-compete-on-swe-skills.">ML research is crowded. Compete on SWE skills.</a></li>
-  <li><a href="#your-company-likely-already-runs-k8s" id="toc-your-company-likely-already-runs-k8s" class="nav-link" data-scroll-target="#your-company-likely-already-runs-k8s">Your company likely already runs K8s</a></li>
-  <li><a href="#but-isnt-it-overkill" id="toc-but-isnt-it-overkill" class="nav-link" data-scroll-target="#but-isnt-it-overkill">But isn’t it overkill?</a></li>
-  <li><a href="#you-dont-need-to-become-an-expert" id="toc-you-dont-need-to-become-an-expert" class="nav-link" data-scroll-target="#you-dont-need-to-become-an-expert">You don’t need to become an expert</a></li>
-  <li><a href="#course-k8s-for-data-scientists" id="toc-course-k8s-for-data-scientists" class="nav-link" data-scroll-target="#course-k8s-for-data-scientists">Course: K8s for Data Scientists</a></li>
-  </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel/edit/main/notes/k8s/index.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">Why Should Data Scientists Learn Kubernetes?</h1>
-  <div class="quarto-categories">
-    <div class="quarto-category">K8s</div>
-  </div>
-  </div>
+<h1 class="title d-none d-lg-block">K8s</h1>
+</div>
 
 <div>
   <div class="description">
-    Learning K8s can give you an unreasonable advantage as a data scientist and unblock your teams.
+    Notes on K8s from the perspective of data science tools
   </div>
 </div>
 
@@ -480,145 +475,151 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p>For the uninitiated <a href="https://kubernetes.io/">Kubernetes</a>, also known as K8s, is “an open-source system for automating deployment, scaling, and management of containerized applications.”</p>
-<p>I agree with <a href="https://huyenchip.com/2021/09/13/data-science-infrastructure.html">Chip Huyen</a> that Data Scientists <strong>shouldn’t need to</strong> learn K8s. However, the cold truth is: <strong>Even though you shouldn’t have to, you should anyway!</strong> Even <a href="https://twitter.com/vboykis/status/1596610600511102976">Vicki Boykis</a> seems to agree<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="20221212131043.png" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">Sage wisdom from Vicki</figcaption><p></p>
-</figure>
-</div>
-<p>Below, I outline reasons why I think learning K8s is a good idea for data scientists<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. But if you are already convinced, feel free to jump ahead and read about my free course: <a href="#course-k8s-for-data-scientists">K8s For Data Scientists</a>.</p>
-<section id="managed-services-are-not-always-an-option" class="level2">
-<h2 class="anchored" data-anchor-id="managed-services-are-not-always-an-option">Managed services are not always an option</h2>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="bellman_ds.jpeg" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">A robot concierge helping a data scientist</figcaption><p></p>
-</figure>
-</div>
-<p>Major clouds offer some data science infrastructure as managed services, but it usually doesn’t cover everything you need. There are many popular open source infrastructure tools which data scienists consider to be staples or must-haves in their workflow. For example, many clouds offer only limited or no managed services for things like:</p>
-<ul>
-<li><a href="https://airflow.apache.org/">Airflow</a></li>
-<li><a href="https://jupyter.org/hub">JupyterHub</a></li>
-<li>ML workflow and experiment tracking systems. <a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></li>
-<li><a href="https://www.dask.org/">Dask</a></li>
-<li>etc.</li>
-</ul>
-<p>There is often a gap between cloud offerings and the needs of data science teams, which are often filled by open-source tools. When open source isn’t enough, third party vendors are happy to install their software on your cloud. However, you often need basic infrastructure skills to enable either of these things. These skills often intersect with Kubernetes.</p>
-</section>
-<section id="nobody-is-coming-to-save-you" class="level2">
-<h2 class="anchored" data-anchor-id="nobody-is-coming-to-save-you">Nobody is coming to save you</h2>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="20221212104110.png" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">A scientist dressed as a super hero</figcaption><p></p>
-</figure>
-</div>
-<p>A typical first experience as a data scientist or machine learning professional is that you don’t have the necessary tools to get started. This is incredibly frustrating, as making progress without the proper tools can be hard. This experience usually culminates in a conversation like this:</p>
-<hr>
-<p><em>Data Scientist: I’m excited to join ACME company! You’ve hired me to optimize marketing spend with predictive models. The issue is that we don’t have the basic infrastructure or tools are necessary for me to work efficiently.</em></p>
-<p><em>Manager: I’m confused. Can’t you install the tools you need? Isn’t that what you are for? I was expecting that you would figure it out.</em></p>
-<p><em>Data Scientist: No, I don’t know how to setup and deploy infrastructure. We need a special infrastructure or DevOps person for that.</em></p>
-<p><em>Manager: It will be hard to ask for more resources if we don’t know the expected return on investment. Can you do the ML project first, demonstrate some value, and then we can invest in infrastructure?</em></p>
-<p><em>Data Scientist: I need some minimum tools to allow me to more quickly experiment and develop proof of concepts. Also, I need tools that might help me collaborate better with my team…</em></p>
-<p><em>… At this point, the Manager and the Data Scientist are stuck debating the chicken and the egg problem. This impasse leads to career dissatisfaction and stagnation.</em></p>
-<hr>
-<p>By learning basic infra skills, you can unblock yourself and your team in many cases!</p>
-</section>
-<section id="helm-charts-are-like-an-oss-app-store" class="level2">
-<h2 class="anchored" data-anchor-id="helm-charts-are-like-an-oss-app-store">Helm Charts are like an OSS app store</h2>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="20221212110053.png" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">App store, abstract</figcaption><p></p>
-</figure>
-</div>
-<p><a href="https://helm.sh/">Helm</a> is a package mansger for K8s. It allows you to install a wide variety of software in the cloud quickly. Sure, you can install software on your laptop, <strong>but the whole point of many data science tools is to enable better collaboration with your team</strong>. To properly evaluate these tools, you will want to install them in an environment that your whole team can observe and interact with.</p>
-<p>You can install many data science tools with Helm:</p>
-<ul>
-<li>Airflow: https://airflow.apache.org/docs/helm-chart/stable/index.html</li>
-<li>Dask: https://docs.dask.org/en/stable/deploying-kubernetes-helm.html</li>
-<li>JuptyerHub: https://z2jh.jupyter.org/en/stable/jupyterhub/installation.html</li>
-<li>Metaflow: https://github.com/outerbounds/metaflow-tools#metaflow-services-on-kubernetes-k8s</li>
-<li>Prefect: https://github.com/PrefectHQ/prefect-helm</li>
-<li>ElasaticSearch: https://github.com/elastic/helm-charts</li>
-</ul>
-<p>You don’t need to become an expert in K8s to deploy and perform basic configuration of these tools. You might need deeper exercise to maintain them over a long period; however, you can get quite far with basic knowledge of K8s.</p>
-</section>
-<section id="ml-research-is-crowded.-compete-on-swe-skills." class="level2">
-<h2 class="anchored" data-anchor-id="ml-research-is-crowded.-compete-on-swe-skills.">ML research is crowded. Compete on SWE skills.</h2>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="20221212122136.png" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">A crowded space of scientists frantically trying to do work</figcaption><p></p>
-</figure>
-</div>
-<p>One of the best ways to set yourself apart as a data scientist is through your skills. Traditional education often emphasizes learning the latest ML techniques. However, cutting-edge ML research is very competitive. It also moves incredibly fast! In the last six months, we have seen Stable Diffusion and ChatGPT, with more to come. It’s also an extremely crowded space.</p>
-<p>In my experience, the bottleneck many teams face is not a lack of knowledge of cutting-edge ML techniques, but software engineering skills and partners to help operationalize models. If you take some time to learn how to stand up tools and infrastructure, you will be invaluable to your team.</p>
-</section>
-<section id="your-company-likely-already-runs-k8s" class="level2">
-<h2 class="anchored" data-anchor-id="your-company-likely-already-runs-k8s">Your company likely already runs K8s</h2>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="shaking_hands.jpeg" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">A scientist shaking hands with someone who runs infrastructure</figcaption><p></p>
-</figure>
-</div>
-<p>I believe that data scientists should have tools that meet them where they are. An example of an anti-pattern of failing to meet data scientists where they are is not allowing development in Jupyter Notebooks.</p>
-<p>By deploying and exploring tools in K8s you increase the likelihood that:</p>
-<ul>
-<li>Your DevOps counterparts will feel comfortable with the tools you want to deploy</li>
-<li>You will have a shared language in which to talk to your application administrators</li>
-<li>You will be more likely to attract people to help you with infra</li>
-<li>You will look smart for leveraging technology that’s (likely) already adopted</li>
-</ul>
-<p>These factors make it much more likely that you will get the tools that meet you where you are as opposed to something a software engineer without any data science experience thinks is a good idea (which I’ve seen happen a lot!)</p>
-<p><em>Even if your company doesn’t run K8s, you can recruit generalists that can administer K8s for you, as opposed to trying to find a unicorn that specializes in ML Infrastructure.</em></p>
-</section>
-<section id="but-isnt-it-overkill" class="level2">
-<h2 class="anchored" data-anchor-id="but-isnt-it-overkill">But isn’t it overkill?</h2>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="orange_chainsaw.jpeg" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">Cutting oranges with a chainsaw</figcaption><p></p>
-</figure>
-</div>
-<p>For simple apps that you want to stand up quickly or prototype, K8s is likely overkill. Instead, I’m advocating knowledge of K8s as useful when working within the typical constraints and environments in many companies. For example, if you want to deploy production software, hosting your data product on a single VM is often insufficient. Many companies even have infrastructure that may block you from doing this with paved paths that only include Kubernetes.</p>
-<p>Even if you are not deploying any production software, K8s can be invaluable in allowing you to deploy the tools you need.</p>
-</section>
-<section id="you-dont-need-to-become-an-expert" class="level2">
-<h2 class="anchored" data-anchor-id="you-dont-need-to-become-an-expert">You don’t need to become an expert</h2>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="20221212115117.png" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">A student sitting at a desk in a library</figcaption><p></p>
-</figure>
-</div>
-<p>K8s are complicated, but you don’t need to become an expert to unlock tons of value as a Data Scientist. I would focus on three capabilities:</p>
-<ol type="1">
-<li>Deploying tools/infra you need (with the help of managed cloud services)</li>
-<li>Basic debugging</li>
-<li>Familiarity with high-level concepts</li>
-</ol>
-<p>Furthermore, I’m not suggesting that data scientists become K8s administrators. That is a very involved task and worthy of its own role. However, we can use managed cloud services and some basic knowledge to get far. That’s why I’m teaching a course on this topic: <a href="#course-k8s-for-data-scientists">Kubernetes for Data Scientists</a>.</p>
-</section>
-<section id="course-k8s-for-data-scientists" class="level2">
-<h2 class="anchored" data-anchor-id="course-k8s-for-data-scientists">Course: K8s for Data Scientists</h2>
-<p>TODO</p>
 
 
-</section>
 
 
-<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+<div class="quarto-listing quarto-listing-container-table" id="listing-listing">
 
-<ol>
-<li id="fn1"><p><a href="https://vickiboykis.com/">Vicki</a> is a champion of data scientists on the ground. Her views resonate with people in the industry, especially those outside Silicon Valley, about the realities of being a data scientist. She is not someone who is impressed by flashy or new technologies and is someone who takes a pragmatic approach to get the job done. When she says you should learn K8s, you should pay attention!<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>Each subsection of this article has a picture that has been generated by Stable diffusion with a prompt that very similar to the image caption.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>Major cloud providers do have managed workflow systems (AWS - Sagemaker, Azure - AzureML, GCP - VertexAI), but these may not fit your needs.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
-</section></div></main> <!-- /main -->
+<table class="quarto-listing-table table">
+<thead>
+<tr>
+<th>
+Title
+</th>
+<th>
+Description
+</th>
+</tr>
+</thead>
+<tbody class="list">
+<tr data-index="0" data-categories="K8s" data-listing-file-modified-sort="1671471576505" data-listing-reading-time-sort="11.09" data-listing-title-sort="Basics" data-listing-filename-sort="02-Basics.qmd">
+<td class="listing-title">
+<a href="../../notes/k8s/02-Basics.html" class="title">Basics</a>
+</td>
+<td class="listing-description">
+K8s fundamentals
+</td>
+</tr>
+<tr data-index="1" data-categories="K8s" data-listing-file-modified-sort="1671471586954" data-listing-reading-time-sort="10.295" data-listing-title-sort="Secrets" data-listing-filename-sort="03-Secrets.qmd">
+<td class="listing-title">
+<a href="../../notes/k8s/03-Secrets.html" class="title">Secrets</a>
+</td>
+<td class="listing-description">
+How to handle secrets in K8s
+</td>
+</tr>
+<tr data-index="2" data-listing-file-modified-sort="1671472302473" data-listing-reading-time-sort="0.005" data-listing-title-sort="Storage" data-listing-filename-sort="index.qmd">
+<td class="listing-title">
+<a href="../../notes/k8s/storage/index.html" class="title">Storage</a>
+</td>
+<td class="listing-description">
+Notes on pod storage
+</td>
+</tr>
+<tr data-index="3" data-listing-file-modified-sort="1671471991255" data-listing-reading-time-sort="0.005" data-listing-title-sort="Scaling" data-listing-filename-sort="index.qmd">
+<td class="listing-title">
+<a href="../../notes/k8s/scaling/index.html" class="title">Scaling</a>
+</td>
+<td class="listing-description">
+How to horizontally scale resources
+</td>
+</tr>
+<tr data-index="4" data-listing-file-modified-sort="1671471609855" data-listing-reading-time-sort="5.77" data-listing-title-sort="StatefulSet" data-listing-filename-sort="12-StatefulSet.qmd">
+<td class="listing-title">
+<a href="../../notes/k8s/12-StatefulSet.html" class="title">StatefulSet</a>
+</td>
+<td class="listing-description">
+A special kind of controller for Pods
+</td>
+</tr>
+<tr data-index="5" data-listing-file-modified-sort="1671471638265" data-listing-reading-time-sort="3.29" data-listing-title-sort="Jobs &amp; CronJobs" data-listing-filename-sort="13-JobsCron.qmd">
+<td class="listing-title">
+<a href="../../notes/k8s/13-JobsCron.html" class="title">Jobs &amp; CronJobs</a>
+</td>
+<td class="listing-description">
+Ad-hoc and scheduled workloads
+</td>
+</tr>
+<tr data-index="6" data-listing-file-modified-sort="1671471676865" data-listing-reading-time-sort="3.26" data-listing-title-sort="Rollouts" data-listing-filename-sort="14-RolloutsRollbacks.qmd">
+<td class="listing-title">
+<a href="../../notes/k8s/14-RolloutsRollbacks.html" class="title">Rollouts</a>
+</td>
+<td class="listing-description">
+The mechanics of what happens when you update a Podspec or create a deployment.
+</td>
+</tr>
+<tr data-index="7" data-listing-file-modified-sort="1671472357207" data-listing-reading-time-sort="0.005" data-listing-title-sort="Helm" data-listing-filename-sort="index.qmd">
+<td class="listing-title">
+<a href="../../notes/k8s/helm/index.html" class="title">Helm</a>
+</td>
+<td class="listing-description">
+Helm Charts
+</td>
+</tr>
+<tr data-index="8" data-listing-file-modified-sort="1671472725638" data-listing-reading-time-sort="0.005" data-listing-title-sort="Multi-Container Pods" data-listing-filename-sort="index.qmd">
+<td class="listing-title">
+<a href="../../notes/k8s/multi_container_pods/index.html" class="title">Multi-Container Pods</a>
+</td>
+<td class="listing-description">
+Notes on multi-container pods
+</td>
+</tr>
+<tr data-index="9" data-listing-file-modified-sort="1671471404578" data-listing-reading-time-sort="5.385" data-listing-title-sort="Developer tips" data-listing-filename-sort="18-Developer.qmd">
+<td class="listing-title">
+<a href="../../notes/k8s/18-Developer.html" class="title">Developer tips</a>
+</td>
+<td class="listing-description">
+Tips on working with Kubernetes.
+</td>
+</tr>
+<tr data-index="10" data-listing-file-modified-sort="1671332419696" data-listing-reading-time-sort="2.465" data-listing-title-sort="Pod restart vs. replacement" data-listing-filename-sort="19-Pod-Lifecycle.qmd">
+<td class="listing-title">
+<a href="../../notes/k8s/19-Pod-Lifecycle.html" class="title">Pod restart vs.&nbsp;replacement</a>
+</td>
+<td class="listing-description">
+What’s the difference b/w a restart and a replacement?
+</td>
+</tr>
+<tr data-index="11" data-listing-file-modified-sort="1671332426329" data-listing-reading-time-sort="0.755" data-listing-title-sort="Probes" data-listing-filename-sort="20-health-checks.qmd">
+<td class="listing-title">
+<a href="../../notes/k8s/20-health-checks.html" class="title">Probes</a>
+</td>
+<td class="listing-description">
+Understand readiness and liveness probes, and how that iteracts with Helm to protect you against deploying bugs.
+</td>
+</tr>
+<tr data-index="12" data-listing-file-modified-sort="1671471434596" data-listing-reading-time-sort="0.005" data-listing-title-sort="Random TILs" data-listing-filename-sort="99-Random.qmd">
+<td class="listing-title">
+<a href="../../notes/k8s/99-Random.html" class="title">Random TILs</a>
+</td>
+<td class="listing-description">
+Misc notes about K8s
+</td>
+</tr>
+<tr data-index="13" data-listing-file-modified-sort="1671471256869" data-listing-reading-time-sort="0.07" data-listing-title-sort="DBs in K8s" data-listing-filename-sort="DBs on K8s.qmd">
+<td class="listing-title">
+<a href="../../notes/k8s/DBs on K8s.html" class="title">DBs in K8s</a>
+</td>
+<td class="listing-description">
+don’t do it.
+</td>
+</tr>
+<tr data-index="14" data-categories="K8s" data-listing-file-modified-sort="1671471127072" data-listing-reading-time-sort="6.53" data-listing-title-sort="Why Should Data Scientists Learn Kubernetes?" data-listing-filename-sort="blog_draft.qmd">
+<td class="listing-title">
+<a href="../../notes/k8s/blog_draft.html" class="title">Why Should Data Scientists Learn Kubernetes?</a>
+</td>
+<td class="listing-description">
+Learning K8s can give you an unreasonable advantage as a data scientist and unblock your teams.
+</td>
+</tr>
+</tbody>
+
+</table>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+</div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

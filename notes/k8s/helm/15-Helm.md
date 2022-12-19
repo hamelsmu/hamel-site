@@ -1,5 +1,7 @@
 ---
 order: 15
+title: Helm Intro
+description: Helm basics
 ---
 
 - It's a client-side tool
