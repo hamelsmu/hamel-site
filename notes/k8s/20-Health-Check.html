@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Example of how to generate listings for external blog posts">
+<meta name="description" content="Understand readiness and liveness probes, and how that iteracts with Helm to protect you against deploying bugs.">
 
-<title>Hamel’s Blog - Listings from data</title>
+<title>Hamel’s Blog - Probes</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -125,13 +125,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Hamel’s Blog - Listings from data">
-<meta property="og:description" content="Example of how to generate listings for external blog posts">
-<meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208547086-bc6c1f9a-ecd3-4fee-a495-48cc2a7dda84.png">
+<meta property="og:title" content="Hamel’s Blog - Probes">
+<meta property="og:description" content="Understand readiness and liveness probes, and how that iteracts with Helm to protect you against deploying bugs.">
+<meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta property="og:site-name" content="Hamel's Blog">
-<meta name="twitter:title" content="Hamel’s Blog - Listings from data">
-<meta name="twitter:description" content="Example of how to generate listings for external blog posts">
-<meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208547086-bc6c1f9a-ecd3-4fee-a495-48cc2a7dda84.png">
+<meta name="twitter:title" content="Hamel’s Blog - Probes">
+<meta name="twitter:description" content="Understand readiness and liveness probes, and how that iteracts with Helm to protect you against deploying bugs.">
+<meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta name="twitter:creator" content="@HamelHusain">
 <meta name="twitter:card" content="summary_large_image">
 </head>
@@ -172,7 +172,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </nav>
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">Listings from data</h1>
+      <h1 class="quarto-secondary-nav-title">Probes</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -298,11 +298,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a href="../../notes/k8s/index.html" class="sidebar-item-text sidebar-link">K8s</a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../notes/k8s/blog_draft.html" class="sidebar-item-text sidebar-link">Why Should Data Scientists Learn Kubernetes?</a>
@@ -345,7 +345,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/20-Health-Check.html" class="sidebar-item-text sidebar-link">Probes</a>
+  <a href="../../notes/k8s/20-Health-Check.html" class="sidebar-item-text sidebar-link active">Probes</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -508,14 +508,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a href="../../notes/quarto/index.html" class="sidebar-item-text sidebar-link">Quarto</a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="true">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="false">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/quarto/listings-from-data.html" class="sidebar-item-text sidebar-link active">Listings from data</a>
+  <a href="../../notes/quarto/listings-from-data.html" class="sidebar-item-text sidebar-link">Listings from data</a>
   </div>
 </li>
       </ul>
@@ -544,23 +544,32 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#results" id="toc-results" class="nav-link active" data-scroll-target="#results">Results</a></li>
-  <li><a href="#minimal-example" id="toc-minimal-example" class="nav-link" data-scroll-target="#minimal-example">Minimal Example</a></li>
-  <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources">Resources</a></li>
+  <li><a href="#readiness-probe" id="toc-readiness-probe" class="nav-link active" data-scroll-target="#readiness-probe">Readiness probe</a></li>
+  <li><a href="#liveness-probe" id="toc-liveness-probe" class="nav-link" data-scroll-target="#liveness-probe">Liveness Probe</a>
+  <ul class="collapse">
+  <li><a href="#testing-liveness-probe" id="toc-testing-liveness-probe" class="nav-link" data-scroll-target="#testing-liveness-probe">Testing Liveness Probe</a></li>
+  </ul></li>
+  <li><a href="#production" id="toc-production" class="nav-link" data-scroll-target="#production">Production</a>
+  <ul class="collapse">
+  <li><a href="#using-both-probes-together" id="toc-using-both-probes-together" class="nav-link" data-scroll-target="#using-both-probes-together">Using both probes together</a></li>
+  <li><a href="#prevents-bad-rollouts" id="toc-prevents-bad-rollouts" class="nav-link" data-scroll-target="#prevents-bad-rollouts">Prevents Bad Rollouts</a></li>
+  </ul></li>
+  <li><a href="#helm" id="toc-helm" class="nav-link" data-scroll-target="#helm">Helm</a></li>
+  <li><a href="#forcing-a-container-to-exit" id="toc-forcing-a-container-to-exit" class="nav-link" data-scroll-target="#forcing-a-container-to-exit">Forcing a container to exit</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel/edit/main/notes/quarto/listings-from-data.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel/edit/main/notes/k8s/20-Health-Check.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">Listings from data</h1>
+<h1 class="title d-none d-lg-block">Probes</h1>
 </div>
 
 <div>
   <div class="description">
-    Example of how to generate listings for external blog posts
+    Understand readiness and liveness probes, and how that iteracts with Helm to protect you against deploying bugs.
   </div>
 </div>
 
@@ -575,97 +584,117 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
-<p>You don’t need to have blog posts to create a <a href="https://quarto.org/docs/websites/website-listings.html">listing</a> on a Quarto page. For example, you can combine the following three yaml files:</p>
-<div class="code-with-filename">
-<div class="code-with-filename-file">
-<pre><strong>blog/_metadata.yml</strong></pre>
-</div>
-<div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">listing</span><span class="kw">:</span><span class="at"> </span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">max-description-length</span><span class="kw">:</span><span class="at"> </span><span class="dv">75</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">date-format</span><span class="kw">:</span><span class="at"> short</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">feed</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">filter-ui</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">type</span><span class="kw">:</span><span class="at"> table</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">sort-ui</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">sort</span><span class="kw">:</span><span class="at"> </span><span class="st">"date desc"</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">categories</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">fields</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">date</span><span class="kw">,</span><span class="at"> name</span><span class="kw">]</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">field-links</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">name</span><span class="kw">]</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">field-display-names</span><span class="kw">:</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Title</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">format</span><span class="kw">:</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">html</span><span class="kw">:</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">anchor-sections</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>This file specifies a list of blog posts that you can have elsewhere</p>
-<div class="code-with-filename">
-<div class="code-with-filename-file">
-<pre><strong>blog/blogs.yml</strong></pre>
-</div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> </span><span class="st">"nbdev + Quarto: A new secret weapon for productivity"</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">path</span><span class="kw">:</span><span class="at"> https://www.fast.ai/2022/07/28/nbdev-v2/</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">date</span><span class="kw">:</span><span class="at"> 2022-07-28</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">categories</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">Jupyter</span><span class="kw">,</span><span class="at"> Quarto</span><span class="kw">,</span><span class="at"> nbdev</span><span class="kw">]</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">  description</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    Our favorite tool for software engineering productivity–nbdev, now re-written with Quarto.</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Notebooks in production with Metaflow</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">path</span><span class="kw">:</span><span class="at"> https://outerbounds.com/blog/notebooks-in-production-with-metaflow/</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">date</span><span class="kw">:</span><span class="at"> 2022-02-09</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">categories</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">Metaflow</span><span class="kw">,</span><span class="at"> Jupyter</span><span class="kw">]</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">  description</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>   Introduces a new Metaflow feature that allows users to use notebooks in production ML workflows.</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>In the front matter of any page (like <code>index.qmd</code>) you can reference <code>blogs.yml</code> and <code>_metadata.yml</code> like so:</p>
-<div class="code-with-filename">
-<div class="code-with-filename-file">
-<pre><strong>index.qmd</strong></pre>
-</div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="an">sidebar:</span><span class="co"> false</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> "A collection of technical blogs and talks on machine learning and data science."</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="an">toc:</span><span class="co"> true</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="an">metadata-files:</span><span class="co"> </span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">  - blog/_metadata.yml</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="an">listing:</span><span class="co"> </span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">  id: blog-listings</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">  contents: blog/blogs.yml</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">## Reference the listing somewhere on the page like this</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>Subscribe via RSS: <span class="co">[</span><span class="ot">&lt;i class="bi bi-rss"&gt;&lt;/i&gt;</span><span class="co">](index.xml)</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>::: {#blog-listings}</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>:::</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="callout-tip callout callout-style-default callout-captioned">
+<p>This is <a href="https://livebook.manning.com/book/learn-kubernetes-in-a-month-of-lunches/chapter-12">Chapter 12</a>.</p>
+<section id="readiness-probe" class="level2">
+<h2 class="anchored" data-anchor-id="readiness-probe">Readiness probe</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span><span class="co">             # This is the Pod spec in the Deployment.</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">containers</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> kiamol/ch03-numbers-api</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">readinessProbe</span><span class="kw">:</span><span class="co">        # Probes are set at the container level.</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">httpGet</span><span class="kw">:</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">         </span><span class="fu">path</span><span class="kw">:</span><span class="at"> /healthz</span><span class="co">     # This is an HTTP GET, using the health URL.</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="at">         </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span><span class="at">       </span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">periodSeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">5</span><span class="co">     # The probe fires every five seconds.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This is using a <code>httpGet</code> action, which is suited more for web apps. Will be marked as ready if code returned is b/w 200 and 399. When a Pod is detected as not ready, the Pod’s IP address is removed from the Service endpoint list, so it won’t receive any more traffic.</p>
+<div class="callout-warning callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Overriding YAML configurations
+Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>You can override any option specified in <code>metadata.yml</code> by setting that after <code>metadata-files</code>. Things that come later in the front-matter will override any inherited files.</p>
+<p>Deployments do not replace Pods that leave the ready state when a probe fails, so we’re left with two Pods running but only one receiving traffic.</p>
+<p><strong>You can get into a situation where no pods are receiving traffic at all</strong></p>
 </div>
 </div>
-<section id="results" class="level2">
-<h2 class="anchored" data-anchor-id="results">Results</h2>
-<p>This will generate a list of blog posts that you can see here on <a href="https://hamel.dev">my page</a>, this is in the <code>table</code> format. However, you can have pictures on your listing as well, which you can see from the Minimal Example.</p>
+<p>This is why <strong>you absolutely have to have a liveness probe, a readiness probe on its own is dangerous!</strong></p>
 </section>
-<section id="minimal-example" class="level2">
-<h2 class="anchored" data-anchor-id="minimal-example">Minimal Example</h2>
-<p>Here is a <a href="https://hamelsmu.github.io/minimal-site/">minimal example</a> of creating an index page of all your blog posts. It uses slightly different options than I did in the above example. You can see the code for <a href="https://github.com/hamelsmu/minimal-site">that here</a>.</p>
+<section id="liveness-probe" class="level2">
+<h2 class="anchored" data-anchor-id="liveness-probe">Liveness Probe</h2>
+<p>Uses the same mechanism as readiness probes, it even looks the same, but it wil restart the Pods if they become unhealthy, unlike readiness probes.</p>
+<p>The Pod is not replaced, they are restarted (so run on the same node but new container).</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">livenessProbe</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">httpGet</span><span class="kw">:</span><span class="co">                 # HTTP GET actions can be used in liveness and</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="fu">path</span><span class="kw">:</span><span class="at"> /healthz</span><span class="co">         # readiness probes--they use the same spec.</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">periodSeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">10</span><span class="at">        </span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">initialDelaySeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">10</span><span class="co">  # Wait 10 seconds before running the first probe.</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">failureThreshold</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span><span class="co">      # Allow two probes to fail before taking action.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="testing-liveness-probe" class="level3">
+<h3 class="anchored" data-anchor-id="testing-liveness-probe">Testing Liveness Probe</h3>
+<p>This is a clever way of testing the livenessProbe:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">containers</span><span class="kw">:</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> liveness</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> repo/name</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">args</span><span class="kw">:</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> /bin/sh</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -c</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> touch /tmp/healthy; sleep 30; rm -f /tmp/healthy; sleep 600</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">livenessProbe</span><span class="kw">:</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">exec</span><span class="kw">:</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">command</span><span class="kw">:</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> cat</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> /tmp/healthy</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">initialDelaySeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">5</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">periodSeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-liveness-command">Source</a></p>
+<p>Failed liveness checks will cause a pod to restart, not to be replaced.</p>
+<p>For transient issues, it works well, provided the application can restart successfully in a replacement container. Probes are also useful to keep applications healthy during upgrades, because rollouts proceed only as new Pods enter the ready state, so if a readiness probe fails, that will pause the rollout.</p>
 </section>
-<section id="resources" class="level2">
-<h2 class="anchored" data-anchor-id="resources">Resources</h2>
-<ul>
-<li>Quarto <a href="https://quarto.org/docs/websites/website-listings.html">listings</a></li>
-<li>Quarto <a href="https://quarto.org/docs/projects/quarto-projects.html#shared-metadata">shared metadata</a></li>
-</ul>
+</section>
+<section id="production" class="level2">
+<h2 class="anchored" data-anchor-id="production">Production</h2>
+<section id="using-both-probes-together" class="level3">
+<h3 class="anchored" data-anchor-id="using-both-probes-together">Using both probes together</h3>
+<p>Also see the <code>exec.command</code> functionality which is very useful.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>todo-list/db/todo-db.yaml</strong></pre>
+</div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span><span class="at">             </span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">containers</span><span class="kw">:</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> postgres:11.6-alpine</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">     # full spec includes environment config</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">readinessProbe</span><span class="kw">:</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">tcpSocket</span><span class="kw">:</span><span class="co">           # The readiness probe tests the</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">         </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">5432</span><span class="co">         # database is listening on the port.</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">periodSeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">5</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">livenessProbe</span><span class="kw">:</span><span class="co">         # The liveness probe runs a Postgres tool,</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">exec</span><span class="kw">:</span><span class="co">                # which confirms the database is running.</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="at">         </span><span class="fu">command</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">"pg_isready"</span><span class="kw">,</span><span class="at"> </span><span class="st">"-h"</span><span class="kw">,</span><span class="at"> </span><span class="st">"localhost"</span><span class="kw">]</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">periodSeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">10</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">initialDelaySeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Database probes mean Postgres won’t get any traffic until the database is ready, and if the Postgres server fails, then the database Pod will be restarted, with the replacement using the same data files in the EmptyDir volume in the Pod.</p>
+</section>
+<section id="prevents-bad-rollouts" class="level3">
+<h3 class="anchored" data-anchor-id="prevents-bad-rollouts">Prevents Bad Rollouts</h3>
+<p>What commonly happens is someone repalces the startup command with <code>sleep</code> or something similar for debugging and forgets to revert it back. The probes would catch that and keep the app available (because it would prevent a rollout).</p>
+<p><strong>While the new Pod keeps failing, the old one is left running, and the app keeps working.</strong></p>
+<p><img src="2022-12-20-11-40-28.png" class="img-fluid"></p>
+</section>
+</section>
+<section id="helm" class="level2">
+<h2 class="anchored" data-anchor-id="helm">Helm</h2>
+<p>Because Helm supports atomic installs &amp; upgrades (<code>--atomic</code>) that rollback automatically if they fail, probes + Helm is a great combo.</p>
+<p>If the Pod isn’t ready within the Helm timeout period, so the upgrade is rolled back, and the new Pod is removed; it doesn’t keep restarting and hit CrashLoopBackOff as it did with the kubectl update.</p>
+<p>Just a reminder this is how to do a helm install and an upgrade</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">helm</span> install <span class="at">--atomic</span> todo-list todo-list/helm/v1/todo-list/</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># upgrade</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">helm</span> upgrade <span class="at">--atomic</span> <span class="at">--timeout</span> 30s todo-list todo-list/helm/v2/todo-list/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This is what an atomic rollback looks like:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>Error: UPGRADE FAILED: release todo-list failed, and has been rolled back due to atomic being set: timed out waiting for the condition</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="forcing-a-container-to-exit" class="level2">
+<h2 class="anchored" data-anchor-id="forcing-a-container-to-exit">Forcing a container to exit</h2>
+<p>You can force a container to exit with the following command. This might be useful for testing:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kl</span> exec <span class="at">-it</span> {pod name} <span class="at">--</span> killall5</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This will cause the pod to restart the container, not replace it.</p>
 
 
 </section>
