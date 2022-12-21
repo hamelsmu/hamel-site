@@ -1,0 +1,149 @@
+---
+title: StatefulSet
+description: A special kind of controller for Pods
+order: 12
+---
+
+:::warning
+
+Hamel: you probably don't need this. JUST SKIP THESE NOTES
+
+:::
+
+
+[[StatefulSet]] is a Pod controller, just like [[5. ReplicaSets]] or [[DaemonSets]]
+
+When you deploy a StatefulSet, it creates Pods with predictable names, which can be individually accessed over DNS, and starts them in order; the first Pod needs to be up and running before the second Pod is created.
+
+If you are trying to model database on K8s, you might use `StatefulSet`.  However, don't put DBs on K8s - use a managed service for that instead.  `StatefulSet` just gives you determinstic Pod names and networking, you have to take care of synching your apps yourself.   That would be outside the scope of what DS should do IMO.
+
+
+Here is `kind: StatefulSet`
+```yaml
+ % cat todo-list/db/todo-db.yaml                                                                                                      
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: todo-db
+  labels:
+    kiamol: ch08
+spec:
+  selector:
+    matchLabels:
+      app: todo-db
+  serviceName: todo-db
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: todo-db
+```
+
+When you get pods, they will be incremented from `0`, this allows you network/communicate with them deterministically. 
+
+```sh
+% kl get po                                                                                                                         
+NAME        READY   STATUS    RESTARTS   AGE
+todo-db-0   1/1     Running   0          23s
+todo-db-1   1/1     Running   0          21s
+```
+
+StatefulSet is a controller, so if you delete a pod the `StatefulSet` will recreate it.
+
+# InitContainers
+You can bootstrap pods with initcontainers and stateful sets.  For example. 
+
+```yaml
+apiVersion: apps/v1
+kind: StatefulSet
+...
+      initContainers:
+        - name: wait-service
+          image: kiamol/ch03-sleep
+          envFrom:
+          - configMapRef:
+              name: todo-db-env
+          command: ['/scripts/wait-service.sh']
+```
+The script says if its running in Pod 0 do nothing, but if its running in Pod 1 then replicate the master.  This is just an idea, you probably should never do this yourself. 
+
+# Networking In StatefulSets
+
+You need to have a special configuration "headless Service" to setup newtworking for StatefulSets, by setting `ClusterIP: None`
+
+```yaml
+%cat todo-list/db/todo-db-service.yaml                                                                                              
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-db
+  labels:
+    kiamol: ch08
+spec:
+  ports:                  # 5432 is the port Postgres uses
+    - port: 5432
+      targetPort: 5432 
+      name: postgres
+  selector:
+    app: todo-db
+  clusterIP: None             # Note how this is None
+```
+
+The pod will be reachable at `pod-name.service-name.cluster-domain-suffix`. for example:
+
+```
+todo-db-0.todo-db.default.svc.cluster.local
+```
+
+
+See: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#stable-network-id
+
+> A StatefulSet can use a Headless Service to control the domain of its Pods. The domain managed by this Service takes the form: $(service name).$(namespace).svc.cluster.local, where "cluster.local" is the cluster domain. As each Pod is created, it gets a matching DNS subdomain, taking the form: $(podname).$(governing service domain), where the governing service is defined by the serviceName field on the StatefulSet.
+
+This is also related to the `serviceName` field on the StatefulSet
+
+You can lookup the `cluster-domain-suffix` like this : 
+
+```bash
+kl exec deploy/sleep -- sh -c 'nslookup todo-db'`
+```
+
+The headless service still does load balancing, but lets you access the Pod
+
+# Storage
+
+For DBs you want each pod to have its own persistent disk, there is a shortcut: using `volumeClaimTemplates` which makes sure each Pod in the stateful set always gets its own persistent volume.  
+
+```yaml
+% cat sleep/sleep-with-pvc.yaml                                             
+...
+kind: StatefulSet
+  template:
+	...
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        kiamol: ch08
+    spec:
+      accessModes:
+       - ReadWriteOnce
+      resources:
+        requests:
+          storage: 5Mi
+```
+
+Each pod will get a PVC created dynamically, which will create a Persistent Volume using the default storage class (or the requested storage class if included in the spec).
+
+The link b/w each pod and its PVC is maintained when pods are replaced.   For example:
+
+```bash
+# create a file
+kl exec sleep-with-pvc-0 -- sh -c 'echo pod 0 > /data/pod.txt'
+
+#delete the pod
+kl delete po sleep-with-pvc-0
+
+# this will show the right contents
+kl exec sleep-with-pvc-0 -- cat /data/pod.txt
+```

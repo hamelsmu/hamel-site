@@ -1,0 +1,120 @@
+---
+title: Resource Limits
+description: Protect your apps with resource limits.
+order: 22
+---
+
+## Indicating Limits
+
+By default, Pods have no resource limits, which means they can use as much CPU and memory as the node has available. In order to prevent one Pod from monopolizing all available resources, you should set resource limits for Pods. You should set both a memory limit and a CPU limit. If a Pod is using more than its resource limit, it is restarted (new container). If it continues to fail, will go into a `CrashLoopBackoff` just like with liveness probes. 
+
+You can specify resource limits in the `spec.containers[].resources.limits` section of a Pod configuration. The following example sets a memory limit of 50 MiB for a container:
+
+```{.yaml filename="vmemory-allocator-with-limit.yaml"}
+spec:                       # The Pod spec in the Deployment
+ containers:
+   - image: kiamol/ch12-memory-allocator
+     resources:
+       limits:             # Resource limits constrain the compute power
+         memory: 50Mi      # for the container; this limits RAM to 50 MB.
+```
+
+When you create this Pod, the container is automatically assigned a memory limit of 256 MiB.  It will restart when it hits that limit
+
+
+
+## Namespace Quotas
+
+You can also set resource limits at the namespace level. This is useful if you want to prevent a single user from monopolizing all the resources on a cluster. You can set a quota for the total amount of CPU and memory that can be used by all Pods in a namespace. 
+
+```{.yaml filename="namespace-with-quota/02-memory-quota.yaml"}
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: memory-quota
+  namespace: kiamol-ch12-memory
+spec:
+  hard:
+    limits.memory: 150Mi
+```
+
+:::{.callout-important}
+
+Because resource quotas are proactive, Pods won’t be created if the limits they specify exceed what’s available in the quota. If there’s a quota in place, then every Pod spec needs to include a resource section so Kubernetes can compare what the spec needs to what’s currently available in the namespace. 
+
+:::
+
+Now, if a pod specifies a limit that is greater than the namespace quota, it will not be created. For example:
+
+```{.yaml filename="03-memory-allocator.yaml"}
+apiVersion: apps/v1
+kind: Deployment
+...
+    spec:
+      containers:
+        - name: api
+          image: kiamol/ch12-memory-allocator
+          resources:
+            limits:
+              memory: 200Mi
+```
+
+## CPU Limits
+
+ CPU limits to containers and quotas, but they work in a slightly different way. Containers with a CPU limit run with a fixed amount of processing power, and they can use as much of that CPU as they like—they aren’t replaced if they hit the limit
+
+
+You can use multiples to give your app container access to many cores or divide a single core into “millicores,” where one millicore is one-thousandth of a core
+
+```{.yaml filename="web-with-cpu-limit.yaml"}
+spec:
+ containers:
+   - image: kiamol/ch05-pi
+     command: ["dotnet", "Pi.Web.dll", "-m", "web"]
+     resources:
+       limits:
+            cpu: 250m    # 250 millicores limits the container to 0.25 cores.
+```
+
+
+include **both** CPU and memory limits in your Pod specs.
+
+## Resource Constraint Failures
+
+What if you have a namespace quota of 500m but you have two replicas with a limit of 300m each? It will only deploy one pod.  YOu can see it like this:
+
+```{.bash}
+# after deploying your app with two repolicas
+% kubectl get deploy -n kiamol-ch12-cpu                                                   
+
+NAME     READY   UP-TO-DATE   AVAILABLE   AGE
+pi-web   1/2     1            1           44s
+
+# Debug what happened, will tell you it ran out of quota
+% kubectl describe replicaset -n kiamol-ch12-cpu
+
+# Get resource quota
+% kl get resourcequota -n kiamol-ch12-memory
+```
+
+## Checking Available Resources
+
+You can check cpu available on a node like so:
+
+```bash
+kubectl get nodes -o jsonpath='{.items[].status.allocatable.cpu}'
+```
+
+:::{.callout-important}
+You can't use 100% of the node's CPU because Kubernetes system components allocate CPU themselves.
+:::
+
+Also, when you scale things up, it is helpful to check the ReplicaSet to see if it is scaling up.  If it is not, it is likely because it is hitting a resource limit.
+
+```bash
+kubectl get rs -l app=pi-web --all-namespaces
+```
+
+## Don't Use CPU Limits?
+
+[This blog post](https://home.robusta.dev/blog/stop-using-cpu-limits) is contraversial, Michal thinks it's bad advice.  I tend to agree with Michal.
