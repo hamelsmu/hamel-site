@@ -165,7 +165,7 @@
     "href": "notes/k8s/19-Pod-Lifecycle.html#what-causes-a-restart-vs-replacement",
     "title": "Pod restart vs. replacement",
     "section": "What causes a restart vs replacement",
-    "text": "What causes a restart vs replacement\n\nrestart:\n\nfailed liveliness probe (I confirmed with the UID that this restarts the Pod).\nWhen a container exits the pod will be restarted according to the restartPolicy in the podspec.\n\nreplacement:\n\nkubectl rollout restart Yes! It replaces the pod, I checked and the UID changes! Don’t get foooled by the word “restart”\ndeleting the resource (ex: kubectl delete deploy/...)\nscaling the resource to zero (ex: kubectl scale deployment ...)\nIf you change the podspec.\n\n\nIf unsure do some experiments!"
+    "text": "What causes a restart vs replacement\n\nrestart:\n\nfailed liveness probe (I confirmed with the UID that this restarts the Pod).\nWhen a container exits the pod will be restarted according to the restartPolicy in the podspec.\n\nreplacement:\n\nkubectl rollout restart Yes! It replaces the pod, I checked and the UID changes! Don’t get foooled by the word “restart”\ndeleting the resource (ex: kubectl delete deploy/...)\nscaling the resource to zero (ex: kubectl scale deployment ...)\nIf you change the podspec.\n\n\nIf unsure do some experiments!"
   },
   {
     "objectID": "notes/k8s/19-Pod-Lifecycle.html#forcing-a-container-to-exit",
@@ -1370,5 +1370,103 @@
     "title": "Hamel’s Blog",
     "section": "",
     "text": "This page is supposed to be secret!\n\n\n\nA listing of all my blog posts can be found here\n\n\n\n\n\n\n\n\n\n\n  \n\n\n\n\nnbdev+Quarto: A new secret weapon for productivity\n\n\n\n\n\nOur favorite tool for software engineering productivity–nbdev, now re-written with Quarto\n\n\n\n\n\n\nJul 28, 2022\n\n\nHamel Husain, Jeremy Howard\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "notes/k8s/20-health-checks.html#readiness-probe",
+    "href": "notes/k8s/20-health-checks.html#readiness-probe",
+    "title": "Probes",
+    "section": "Readiness probe",
+    "text": "Readiness probe\nspec:             # This is the Pod spec in the Deployment.\n containers:\n   - image: kiamol/ch03-numbers-api\n     readinessProbe:        # Probes are set at the container level.\n       httpGet:\n         path: /healthz     # This is an HTTP GET, using the health URL.\n         port: 80       \n       periodSeconds: 5     # The probe fires every five seconds.\nThis is using a httpGet action, which is suited more for web apps. Will be marked as ready if code returned is b/w 200 and 399. When a Pod is detected as not ready, the Pod’s IP address is removed from the Service endpoint list, so it won’t receive any more traffic.\n\n\n\n\n\n\nWarning\n\n\n\nDeployments do not replace Pods that leave the ready state when a probe fails, so we’re left with two Pods running but only one receiving traffic.\nYou can get into a situation where no pods are receiving traffic at all\n\n\nThis is why you absolutely have to have a liveliness probe, a readiness probe on its own is dangerous!"
+  },
+  {
+    "objectID": "notes/k8s/20-health-checks.html#liveliness-probe",
+    "href": "notes/k8s/20-health-checks.html#liveliness-probe",
+    "title": "Probes",
+    "section": "Liveliness Probe",
+    "text": "Liveliness Probe\nUses the same mechanism as readiness probes, it even looks the same, but it wil restart the Pods if they become unhealthy, unlike readiness probes.\nThe Pod is not replaced, they are restarted (so run on the same node but new container).\nlivenessProbe:\n httpGet:                 # HTTP GET actions can be used in liveness and\n   path: /healthz         # readiness probes--they use the same spec.\n   port: 80\n periodSeconds: 10        \n initialDelaySeconds: 10  # Wait 10 seconds before running the first probe.\n failureThreshold: 2      # Allow two probes to fail before taking action.\n\nTesting Liveness Probe\nThis is a clever way of testing the livenessProbe:\nspec:\n  containers:\n  - name: liveness\n    image: repo/name\n    args:\n    - /bin/sh\n    - -c\n    - touch /tmp/healthy; sleep 30; rm -f /tmp/healthy; sleep 600\n    livenessProbe:\n      exec:\n        command:\n        - cat\n        - /tmp/healthy\n      initialDelaySeconds: 5\n      periodSeconds: 5\nSource\nFailed liveness checks will cause a pod to restart, not to be replaced.\nFor transient issues, it works well, provided the application can restart successfully in a replacement container. Probes are also useful to keep applications healthy during upgrades, because rollouts proceed only as new Pods enter the ready state, so if a readiness probe fails, that will pause the rollout."
+  },
+  {
+    "objectID": "notes/k8s/20-health-checks.html#production-recipes",
+    "href": "notes/k8s/20-health-checks.html#production-recipes",
+    "title": "Probes",
+    "section": "Production Recipes",
+    "text": "Production Recipes\n\nUsing both probes together\nAlso see the exec.command functionality which is very useful.\n\n\ntodo-list/db/todo-db.yaml\n\nspec:             \n containers:\n   - image: postgres:11.6-alpine\n     # full spec includes environment config\n     readinessProbe:\n       tcpSocket:           # The readiness probe tests the\n         port: 5432         # database is listening on the port.\n       periodSeconds: 5\n     livenessProbe:         # The liveness probe runs a Postgres tool,\n       exec:                # which confirms the database is running.\n         command: [\"pg_isready\", \"-h\", \"localhost\"]\n       periodSeconds: 10\n       initialDelaySeconds: 10\n\nDatabase probes mean Postgres won’t get any traffic until the database is ready, and if the Postgres server fails, then the database Pod will be restarted, with the replacement using the same data files in the EmptyDir volume in the Pod.\n\n\nPrevents Bad Rollouts\nWhat commonly happens is someone repalces the startup command with sleep or something similar for debugging and forgets to revert it back. The probes would catch that and keep the app available (because it would prevent a rollout).\nWhile the new Pod keeps failing, the old one is left running, and the app keeps working."
+  },
+  {
+    "objectID": "notes/k8s/20-health-checks.html#production",
+    "href": "notes/k8s/20-health-checks.html#production",
+    "title": "Probes",
+    "section": "Production",
+    "text": "Production\n\nUsing both probes together\nAlso see the exec.command functionality which is very useful.\n\n\ntodo-list/db/todo-db.yaml\n\nspec:             \n containers:\n   - image: postgres:11.6-alpine\n     # full spec includes environment config\n     readinessProbe:\n       tcpSocket:           # The readiness probe tests the\n         port: 5432         # database is listening on the port.\n       periodSeconds: 5\n     livenessProbe:         # The liveness probe runs a Postgres tool,\n       exec:                # which confirms the database is running.\n         command: [\"pg_isready\", \"-h\", \"localhost\"]\n       periodSeconds: 10\n       initialDelaySeconds: 10\n\nDatabase probes mean Postgres won’t get any traffic until the database is ready, and if the Postgres server fails, then the database Pod will be restarted, with the replacement using the same data files in the EmptyDir volume in the Pod.\n\n\nPrevents Bad Rollouts\nWhat commonly happens is someone repalces the startup command with sleep or something similar for debugging and forgets to revert it back. The probes would catch that and keep the app available (because it would prevent a rollout).\nWhile the new Pod keeps failing, the old one is left running, and the app keeps working."
+  },
+  {
+    "objectID": "notes/k8s/20-health-checks.html#helm",
+    "href": "notes/k8s/20-health-checks.html#helm",
+    "title": "Probes",
+    "section": "Helm",
+    "text": "Helm\nBecause Helm supports atomic installs & upgrades (--atomic) that rollback automatically if they fail, probes + Helm is a great combo.\nIf the Pod isn’t ready within the Helm timeout period, so the upgrade is rolled back, and the new Pod is removed; it doesn’t keep restarting and hit CrashLoopBackOff as it did with the kubectl update.\nJust a reminder this is who to do a helm install and an upgrade\n# install\nhelm install --atomic todo-list todo-list/helm/v1/todo-list/\n# upgrade\nhelm upgrade --atomic --timeout 30s todo-list todo-list/helm/v2/todo-list/\nThis is what an atomic rollback looks like:\nError: UPGRADE FAILED: release todo-list failed, and has been rolled back due to atomic being set: timed out waiting for the condition"
+  },
+  {
+    "objectID": "notes/k8s/helm/16-Creating Your Own Helm Charts.html#notes.txt",
+    "href": "notes/k8s/helm/16-Creating Your Own Helm Charts.html#notes.txt",
+    "title": "Creating Helm Charts",
+    "section": "NOTES.txt",
+    "text": "NOTES.txt\nThis is a file you can put in /templates that will display a nice message. For example:\n\n\nch12/todo-list/helm/v1/todo-list/templates/NOTES.txt\n\nInstalled Kiamol to-do list {{ .Chart.Version }}. This is how to get the URL:\n $ kubectl get svc {{ .Release.Name }}-web -o jsonpath='http://{.status.loadBalancer.ingress[0].*}:{{ .Values.servicePort }}'%\n\nHere are the docs for NOTES.txt"
+  },
+  {
+    "objectID": "notes/k8s/helm/21-Testing-With-Helm.html",
+    "href": "notes/k8s/helm/21-Testing-With-Helm.html",
+    "title": "Testing With Helm",
+    "section": "",
+    "text": "In addition to liveness and readiness checks which helps Helm do automatic rollbacks, you can add explicit tests in the form of a Job. Example:\nThis is a cool use of a Job, which basically is running an integration test! We are making sure we can exeucte a SQL query against the database here.\nThis is an example of how you would execute this test:\nHelm manages Jobs for you. It doesn’t clean up completed Jobs, so you can check the Pod status and logs if you need to, but it replaces them when you repeat the test command, so you can rerun the test suite as often as you like."
+  },
+  {
+    "objectID": "notes/k8s/20-Health-Checks.html",
+    "href": "notes/k8s/20-Health-Checks.html",
+    "title": "Probes",
+    "section": "",
+    "text": "This is Chapter 12."
+  },
+  {
+    "objectID": "notes/k8s/20-Health-Checks.html#readiness-probe",
+    "href": "notes/k8s/20-Health-Checks.html#readiness-probe",
+    "title": "Probes",
+    "section": "Readiness probe",
+    "text": "Readiness probe\nspec:             # This is the Pod spec in the Deployment.\n containers:\n   - image: kiamol/ch03-numbers-api\n     readinessProbe:        # Probes are set at the container level.\n       httpGet:\n         path: /healthz     # This is an HTTP GET, using the health URL.\n         port: 80       \n       periodSeconds: 5     # The probe fires every five seconds.\nThis is using a httpGet action, which is suited more for web apps. Will be marked as ready if code returned is b/w 200 and 399. When a Pod is detected as not ready, the Pod’s IP address is removed from the Service endpoint list, so it won’t receive any more traffic.\n\n\n\n\n\n\nWarning\n\n\n\nDeployments do not replace Pods that leave the ready state when a probe fails, so we’re left with two Pods running but only one receiving traffic.\nYou can get into a situation where no pods are receiving traffic at all\n\n\nThis is why you absolutely have to have a liveness probe, a readiness probe on its own is dangerous!"
+  },
+  {
+    "objectID": "notes/k8s/20-Health-Checks.html#liveness-probe",
+    "href": "notes/k8s/20-Health-Checks.html#liveness-probe",
+    "title": "Probes",
+    "section": "Liveness Probe",
+    "text": "Liveness Probe\nUses the same mechanism as readiness probes, it even looks the same, but it wil restart the Pods if they become unhealthy, unlike readiness probes.\nThe Pod is not replaced, they are restarted (so run on the same node but new container).\nlivenessProbe:\n httpGet:                 # HTTP GET actions can be used in liveness and\n   path: /healthz         # readiness probes--they use the same spec.\n   port: 80\n periodSeconds: 10        \n initialDelaySeconds: 10  # Wait 10 seconds before running the first probe.\n failureThreshold: 2      # Allow two probes to fail before taking action.\n\nTesting Liveness Probe\nThis is a clever way of testing the livenessProbe:\nspec:\n  containers:\n  - name: liveness\n    image: repo/name\n    args:\n    - /bin/sh\n    - -c\n    - touch /tmp/healthy; sleep 30; rm -f /tmp/healthy; sleep 600\n    livenessProbe:\n      exec:\n        command:\n        - cat\n        - /tmp/healthy\n      initialDelaySeconds: 5\n      periodSeconds: 5\nSource\nFailed liveness checks will cause a pod to restart, not to be replaced.\nFor transient issues, it works well, provided the application can restart successfully in a replacement container. Probes are also useful to keep applications healthy during upgrades, because rollouts proceed only as new Pods enter the ready state, so if a readiness probe fails, that will pause the rollout."
+  },
+  {
+    "objectID": "notes/k8s/20-Health-Checks.html#production",
+    "href": "notes/k8s/20-Health-Checks.html#production",
+    "title": "Probes",
+    "section": "Production",
+    "text": "Production\n\nUsing both probes together\nAlso see the exec.command functionality which is very useful.\n\n\ntodo-list/db/todo-db.yaml\n\nspec:             \n containers:\n   - image: postgres:11.6-alpine\n     # full spec includes environment config\n     readinessProbe:\n       tcpSocket:           # The readiness probe tests the\n         port: 5432         # database is listening on the port.\n       periodSeconds: 5\n     livenessProbe:         # The liveness probe runs a Postgres tool,\n       exec:                # which confirms the database is running.\n         command: [\"pg_isready\", \"-h\", \"localhost\"]\n       periodSeconds: 10\n       initialDelaySeconds: 10\n\nDatabase probes mean Postgres won’t get any traffic until the database is ready, and if the Postgres server fails, then the database Pod will be restarted, with the replacement using the same data files in the EmptyDir volume in the Pod.\n\n\nPrevents Bad Rollouts\nWhat commonly happens is someone repalces the startup command with sleep or something similar for debugging and forgets to revert it back. The probes would catch that and keep the app available (because it would prevent a rollout).\nWhile the new Pod keeps failing, the old one is left running, and the app keeps working."
+  },
+  {
+    "objectID": "notes/k8s/20-Health-Checks.html#helm",
+    "href": "notes/k8s/20-Health-Checks.html#helm",
+    "title": "Probes",
+    "section": "Helm",
+    "text": "Helm\nBecause Helm supports atomic installs & upgrades (--atomic) that rollback automatically if they fail, probes + Helm is a great combo.\nIf the Pod isn’t ready within the Helm timeout period, so the upgrade is rolled back, and the new Pod is removed; it doesn’t keep restarting and hit CrashLoopBackOff as it did with the kubectl update.\nJust a reminder this is how to do a helm install and an upgrade\n# install\nhelm install --atomic todo-list todo-list/helm/v1/todo-list/\n# upgrade\nhelm upgrade --atomic --timeout 30s todo-list todo-list/helm/v2/todo-list/\nThis is what an atomic rollback looks like:\nError: UPGRADE FAILED: release todo-list failed, and has been rolled back due to atomic being set: timed out waiting for the condition"
+  },
+  {
+    "objectID": "notes/k8s/20-Health-Checks.html#forcing-a-container-to-exit",
+    "href": "notes/k8s/20-Health-Checks.html#forcing-a-container-to-exit",
+    "title": "Probes",
+    "section": "Forcing a container to exit",
+    "text": "Forcing a container to exit\nYou can force a container to exit with the following command. This might be useful for testing:\nkl exec -it {pod name} -- killall5\nThis will cause the pod to restart the container, not replace it."
+  },
+  {
+    "objectID": "notes/k8s/helm/21-Testing-With-Helm.html#pre-upgrade-jobs",
+    "href": "notes/k8s/helm/21-Testing-With-Helm.html#pre-upgrade-jobs",
+    "title": "Testing With Helm",
+    "section": "Pre-Upgrade Jobs",
+    "text": "Pre-Upgrade Jobs\nThere’s one other use for Jobs that helps to make sure upgrades are safe, by running them before upgrades so you can check the current release is in a valid state to be upgraded.\nA pre-upgrade job:\n\n\ntodo-db-check-job.yaml\n\napiVersion: batch/v1\nkind: Job                         # The standard Job spec again\nmetadata:\n  name:  {{ .Release.Name }}-db-check\n # metadata has labels\n annotations:\n   \"helm.sh/hook\": pre-upgrade   # This runs before an upgrade and\n   \"helm.sh/hook-weight\": \"10\"   # tells Helm the order in which to create\nspec:                             # the object after the ConfigMap\n template:                       # that the Job requires\n   spec:\n     restartPolicy: Never\n     containers:\n       - image: postgres:11.8-alpine\n         # env includes secrets\n         command: [\"/scripts/check-postgres-version.sh\"]\n         volumeMounts:\n           - name: scripts           # Mounts the ConfigMap volume\n             mountPath: \"/scripts\"\n\nFor reference, this is the ConfigMap that needs to run before the above job, and that is the background for the hook-weight\n\n\ntodo-db-check-configMap.yaml\n\napiVersion: v1\nkind: ConfigMap\nmetadata:\n  name:  {{ .Release.Name }}-db-check-scripts\n  labels:\n    kiamol: ch12\n  annotations:\n    \"helm.sh/hook\": pre-upgrade\n    \"helm.sh/hook-weight\": \"1\"\ndata:\n  check-postgres-version.sh: |-\n    #!/bin/sh\n    PG_VERSION=$(pg_config --version)\n    if [ \"$PG_VERSION\" == \"PostgreSQL 11.6\" ]; then\n      echo '** Postgres at expected version - good to upgrade **'\n      exit 0\n    else\n      echo \"** ERROR - Postgres not at expected version - wanted: 11.6, got: $PG_VERSION - CANNOT UPGRADE **\"\n      exit 1\n    fi\n\nIn this example, when we try to upgrade our app it will fail because of a pre-upgrade check:\n#this will fail\n% helm upgrade --atomic --timeout 30s todo-list todo-list/helm/v4/todo-list/\n\n#see logs of the failed job, first get name of job which\n#  corresponds with the YAML\n% kl get job\n\n# see logs\n% kl logs jobs/todo-list-db-check\nAnnotations control where Jobs run in the Helm lifecycle, so the above job will only run for upgrades.\npre-upgrade validation and automatic rollbacks help to keep your application upgrades self-healing, too. Helm isn’t a prerequisite for that, but if you’re not using Helm, you should consider implementing these features using kubectl in your deployment pipeline."
   }
 ]

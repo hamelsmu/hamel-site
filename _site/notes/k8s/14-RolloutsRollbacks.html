@@ -340,7 +340,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/20-health-checks.html" class="sidebar-item-text sidebar-link">Probes</a>
+  <a href="../../notes/k8s/20-Health-Checks.html" class="sidebar-item-text sidebar-link">Probes</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -356,6 +356,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../notes/k8s/Open Questions.html" class="sidebar-item-text sidebar-link">Open Questions</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/21-Testing-Helm.html" class="sidebar-item-text sidebar-link">Testing With Helm</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -573,26 +578,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Only triggered by change to the podspec, not other changes to a Deployment You can see rollout history like this</p>
 <pre><code>kl rollout history deploy/vweb</code></pre>
 <p>You can get details of a revision with the revision flag:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">% kl rollout history deploy/vweb                                                                                             </span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">deployment.apps/vweb</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">REVISION  CHANGE-CAUSE</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">1         &lt;none&gt;</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">2         kubectl apply --filename=vweb/update/vweb-v11.yaml --record=true</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="pp">% kl rollout history deploy/vweb  --revision=1                                                                               </span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">deployment.apps/vweb with revision</span><span class="co"> #1</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">Pod Template</span><span class="kw">:</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">Labels</span><span class="kw">:</span><span class="at">   app=vweb</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="at">    pod-template-hash=6ddb844d69</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="at">    version=v1</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">Containers</span><span class="kw">:</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="fu">web</span><span class="kw">:</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">Image</span><span class="kw">:</span><span class="at">  kiamol/ch09-vweb:v1</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">Port</span><span class="kw">:</span><span class="at">   80/TCP</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">Host Port</span><span class="kw">:</span><span class="at">  0/TCP</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">Environment</span><span class="kw">:</span><span class="at">    &lt;none&gt;</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">Mounts</span><span class="kw">:</span><span class="at"> &lt;none&gt;</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">Volumes</span><span class="kw">:</span><span class="at">  &lt;none&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre class="bahsh"><code>% kl rollout history deploy/vweb                                                                                             
+deployment.apps/vweb
+REVISION  CHANGE-CAUSE
+1         &lt;none&gt;
+2         kubectl apply --filename=vweb/update/vweb-v11.yaml --record=true
+
+% kl rollout history deploy/vweb  --revision=1                                                                               
+deployment.apps/vweb with revision #1
+Pod Template:
+  Labels:   app=vweb
+    pod-template-hash=6ddb844d69
+    version=v1
+  Containers:
+   web:
+    Image:  kiamol/ch09-vweb:v1
+    Port:   80/TCP
+    Host Port:  0/TCP
+    Environment:    &lt;none&gt;
+    Mounts: &lt;none&gt;
+  Volumes:  &lt;none&gt;</code></pre>
 <p>It’s helpful to include informational labels with version numbers.</p>
 <section id="undoing-a-rollout" class="level1">
 <h1>Undoing a rollout</h1>
