@@ -340,7 +340,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../notes/k8s/20-health-checks.html" class="sidebar-item-text sidebar-link">Probes</a>
+  <a href="../../../notes/k8s/20-Health-Checks.html" class="sidebar-item-text sidebar-link">Probes</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -356,6 +356,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../../notes/k8s/Open Questions.html" class="sidebar-item-text sidebar-link">Open Questions</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/22-Resource-Limits.html" class="sidebar-item-text sidebar-link">Resource Limits</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -424,6 +429,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../../notes/k8s/helm/17-Helm Upgrade &amp; Rollbacks.html" class="sidebar-item-text sidebar-link">Helm Upgrades &amp; Rollbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/helm/21-Testing-With-Helm.html" class="sidebar-item-text sidebar-link">Testing With Helm</a>
   </div>
 </li>
       </ul>
@@ -540,9 +550,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#validate-with-helm-lint" id="toc-validate-with-helm-lint" class="nav-link" data-scroll-target="#validate-with-helm-lint">Validate with <code>helm lint</code></a></li>
   <li><a href="#install" id="toc-install" class="nav-link" data-scroll-target="#install">Install</a></li>
   </ul></li>
-  <li><a href="#distributing-charts" id="toc-distributing-charts" class="nav-link" data-scroll-target="#distributing-charts">Distributing Charts</a></li>
+  <li><a href="#distributing-charts" id="toc-distributing-charts" class="nav-link" data-scroll-target="#distributing-charts">Distributing Charts</a>
+  <ul class="collapse">
+  <li><a href="#notes.txt" id="toc-notes.txt" class="nav-link" data-scroll-target="#notes.txt">NOTES.txt</a></li>
+  </ul></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel/edit/main/notes/k8s/helm/16-Creating Your Own Helm Charts.md" class="toc-action">Edit this page</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel/edit/main/notes/k8s/helm/16-Creating Your Own Helm Charts.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -663,8 +676,20 @@ generated: "2020-06-10T10:01:44.600496+01:00"</code></pre>
 <p>Charts need to be packaged before they can be published to a repository, and publishing is usually a three-stage process: package the chart into a zip archive, upload the archive to a server, and update the repository index to add the new chart.</p>
 <p>There is software called ChartMueseum that will help you package things.</p>
 <p>Lookup how to host helm charts on GitHub if interested.</p>
+<section id="notes.txt" class="level2">
+<h2 class="anchored" data-anchor-id="notes.txt">NOTES.txt</h2>
+<p>This is a file you can put in <code>/templates</code> that will display a nice message. For example:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>ch12/todo-list/helm/v1/todo-list/templates/NOTES.txt</strong></pre>
+</div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>Installed Kiamol to-do list {{ .Chart.Version }}. This is how to get the URL:</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a> $ kubectl get svc {{ .Release.Name }}-web -o jsonpath='http://{.status.loadBalancer.ingress[0].*}:{{ .Values.servicePort }}'%</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Here are <a href="https://helm.sh/docs/chart_template_guide/notes_files/">the docs for NOTES.txt</a></p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

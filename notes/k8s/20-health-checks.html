@@ -340,7 +340,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/20-health-checks.html" class="sidebar-item-text sidebar-link active">Probes</a>
+  <a href="../../notes/k8s/20-Health-Checks.html" class="sidebar-item-text sidebar-link active">Probes</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -356,6 +356,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../notes/k8s/Open Questions.html" class="sidebar-item-text sidebar-link">Open Questions</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/22-Resource-Limits.html" class="sidebar-item-text sidebar-link">Resource Limits</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -424,6 +429,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../notes/k8s/helm/17-Helm Upgrade &amp; Rollbacks.html" class="sidebar-item-text sidebar-link">Helm Upgrades &amp; Rollbacks</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/helm/21-Testing-With-Helm.html" class="sidebar-item-text sidebar-link">Testing With Helm</a>
   </div>
 </li>
       </ul>
@@ -534,10 +544,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#testing-liveness-probe" id="toc-testing-liveness-probe" class="nav-link active" data-scroll-target="#testing-liveness-probe">Testing Liveness Probe</a></li>
+  <li><a href="#readiness-probe" id="toc-readiness-probe" class="nav-link active" data-scroll-target="#readiness-probe">Readiness probe</a></li>
+  <li><a href="#liveness-probe" id="toc-liveness-probe" class="nav-link" data-scroll-target="#liveness-probe">Liveness Probe</a>
+  <ul class="collapse">
+  <li><a href="#testing-liveness-probe" id="toc-testing-liveness-probe" class="nav-link" data-scroll-target="#testing-liveness-probe">Testing Liveness Probe</a></li>
+  </ul></li>
+  <li><a href="#production" id="toc-production" class="nav-link" data-scroll-target="#production">Production</a>
+  <ul class="collapse">
+  <li><a href="#using-both-probes-together" id="toc-using-both-probes-together" class="nav-link" data-scroll-target="#using-both-probes-together">Using both probes together</a></li>
+  <li><a href="#prevents-bad-rollouts" id="toc-prevents-bad-rollouts" class="nav-link" data-scroll-target="#prevents-bad-rollouts">Prevents Bad Rollouts</a></li>
+  </ul></li>
+  <li><a href="#helm" id="toc-helm" class="nav-link" data-scroll-target="#helm">Helm</a></li>
   <li><a href="#forcing-a-container-to-exit" id="toc-forcing-a-container-to-exit" class="nav-link" data-scroll-target="#forcing-a-container-to-exit">Forcing a container to exit</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel/edit/main/notes/k8s/20-health-checks.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel/edit/main/notes/k8s/20-Health-Checks.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -565,31 +585,115 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </header>
 
 <p>This is <a href="https://livebook.manning.com/book/learn-kubernetes-in-a-month-of-lunches/chapter-12">Chapter 12</a>.</p>
-<section id="testing-liveness-probe" class="level2">
-<h2 class="anchored" data-anchor-id="testing-liveness-probe">Testing Liveness Probe</h2>
+<section id="readiness-probe" class="level2">
+<h2 class="anchored" data-anchor-id="readiness-probe">Readiness probe</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span><span class="co">             # This is the Pod spec in the Deployment.</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">containers</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> kiamol/ch03-numbers-api</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">readinessProbe</span><span class="kw">:</span><span class="co">        # Probes are set at the container level.</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">httpGet</span><span class="kw">:</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">         </span><span class="fu">path</span><span class="kw">:</span><span class="at"> /healthz</span><span class="co">     # This is an HTTP GET, using the health URL.</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="at">         </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span><span class="at">       </span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">periodSeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">5</span><span class="co">     # The probe fires every five seconds.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This is using a <code>httpGet</code> action, which is suited more for web apps. Will be marked as ready if code returned is b/w 200 and 399. When a Pod is detected as not ready, the Pod’s IP address is removed from the Service endpoint list, so it won’t receive any more traffic.</p>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Deployments do not replace Pods that leave the ready state when a probe fails, so we’re left with two Pods running but only one receiving traffic.</p>
+<p><strong>You can get into a situation where no pods are receiving traffic at all</strong></p>
+</div>
+</div>
+<p>This is why <strong>you absolutely have to have a liveness probe, a readiness probe on its own is dangerous!</strong></p>
+</section>
+<section id="liveness-probe" class="level2">
+<h2 class="anchored" data-anchor-id="liveness-probe">Liveness Probe</h2>
+<p>Uses the same mechanism as readiness probes, it even looks the same, but it wil restart the Pods if they become unhealthy, unlike readiness probes.</p>
+<p>The Pod is not replaced, they are restarted (so run on the same node but new container).</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">livenessProbe</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">httpGet</span><span class="kw">:</span><span class="co">                 # HTTP GET actions can be used in liveness and</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="fu">path</span><span class="kw">:</span><span class="at"> /healthz</span><span class="co">         # readiness probes--they use the same spec.</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">periodSeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">10</span><span class="at">        </span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">initialDelaySeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">10</span><span class="co">  # Wait 10 seconds before running the first probe.</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">failureThreshold</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span><span class="co">      # Allow two probes to fail before taking action.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="testing-liveness-probe" class="level3">
+<h3 class="anchored" data-anchor-id="testing-liveness-probe">Testing Liveness Probe</h3>
 <p>This is a clever way of testing the livenessProbe:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">containers</span><span class="kw">:</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> liveness</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> repo/name</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">args</span><span class="kw">:</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> /bin/sh</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -c</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> touch /tmp/healthy; sleep 30; rm -f /tmp/healthy; sleep 600</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">livenessProbe</span><span class="kw">:</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">exec</span><span class="kw">:</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">command</span><span class="kw">:</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> cat</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> /tmp/healthy</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">initialDelaySeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">5</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">periodSeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">containers</span><span class="kw">:</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> liveness</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> repo/name</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">args</span><span class="kw">:</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> /bin/sh</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> -c</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> touch /tmp/healthy; sleep 30; rm -f /tmp/healthy; sleep 600</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">livenessProbe</span><span class="kw">:</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">exec</span><span class="kw">:</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">command</span><span class="kw">:</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> cat</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> /tmp/healthy</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">initialDelaySeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">5</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">periodSeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-liveness-command">Source</a></p>
 <p>Failed liveness checks will cause a pod to restart, not to be replaced.</p>
+<p>For transient issues, it works well, provided the application can restart successfully in a replacement container. Probes are also useful to keep applications healthy during upgrades, because rollouts proceed only as new Pods enter the ready state, so if a readiness probe fails, that will pause the rollout.</p>
+</section>
+</section>
+<section id="production" class="level2">
+<h2 class="anchored" data-anchor-id="production">Production</h2>
+<section id="using-both-probes-together" class="level3">
+<h3 class="anchored" data-anchor-id="using-both-probes-together">Using both probes together</h3>
+<p>Also see the <code>exec.command</code> functionality which is very useful.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>todo-list/db/todo-db.yaml</strong></pre>
+</div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span><span class="at">             </span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">containers</span><span class="kw">:</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> postgres:11.6-alpine</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">     # full spec includes environment config</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">readinessProbe</span><span class="kw">:</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">tcpSocket</span><span class="kw">:</span><span class="co">           # The readiness probe tests the</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">         </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">5432</span><span class="co">         # database is listening on the port.</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">periodSeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">5</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">livenessProbe</span><span class="kw">:</span><span class="co">         # The liveness probe runs a Postgres tool,</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">exec</span><span class="kw">:</span><span class="co">                # which confirms the database is running.</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="at">         </span><span class="fu">command</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">"pg_isready"</span><span class="kw">,</span><span class="at"> </span><span class="st">"-h"</span><span class="kw">,</span><span class="at"> </span><span class="st">"localhost"</span><span class="kw">]</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">periodSeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">10</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">initialDelaySeconds</span><span class="kw">:</span><span class="at"> </span><span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Database probes mean Postgres won’t get any traffic until the database is ready, and if the Postgres server fails, then the database Pod will be restarted, with the replacement using the same data files in the EmptyDir volume in the Pod.</p>
+</section>
+<section id="prevents-bad-rollouts" class="level3">
+<h3 class="anchored" data-anchor-id="prevents-bad-rollouts">Prevents Bad Rollouts</h3>
+<p>What commonly happens is someone repalces the startup command with <code>sleep</code> or something similar for debugging and forgets to revert it back. The probes would catch that and keep the app available (because it would prevent a rollout).</p>
+<p><strong>While the new Pod keeps failing, the old one is left running, and the app keeps working.</strong></p>
+<p><img src="2022-12-20-11-40-28.png" class="img-fluid"></p>
+</section>
+</section>
+<section id="helm" class="level2">
+<h2 class="anchored" data-anchor-id="helm">Helm</h2>
+<p>Because Helm supports atomic installs &amp; upgrades (<code>--atomic</code>) that rollback automatically if they fail, probes + Helm is a great combo.</p>
+<p>If the Pod isn’t ready within the Helm timeout period, so the upgrade is rolled back, and the new Pod is removed; it doesn’t keep restarting and hit CrashLoopBackOff as it did with the kubectl update.</p>
+<p>Just a reminder this is how to do a helm install and an upgrade</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">helm</span> install <span class="at">--atomic</span> todo-list todo-list/helm/v1/todo-list/</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># upgrade</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">helm</span> upgrade <span class="at">--atomic</span> <span class="at">--timeout</span> 30s todo-list todo-list/helm/v2/todo-list/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This is what an atomic rollback looks like:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>Error: UPGRADE FAILED: release todo-list failed, and has been rolled back due to atomic being set: timed out waiting for the condition</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="forcing-a-container-to-exit" class="level2">
 <h2 class="anchored" data-anchor-id="forcing-a-container-to-exit">Forcing a container to exit</h2>
 <p>You can force a container to exit with the following command. This might be useful for testing:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kl</span> exec <span class="at">-it</span> {pod name} <span class="at">--</span> killall5</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kl</span> exec <span class="at">-it</span> {pod name} <span class="at">--</span> killall5</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>This will cause the pod to restart the container, not replace it.</p>
 
 

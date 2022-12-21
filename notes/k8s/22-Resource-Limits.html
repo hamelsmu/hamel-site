@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="A special kind of controller for Pods">
+<meta name="description" content="Protect your apps with resource limits.">
 
-<title>Hamel’s Blog - StatefulSet</title>
+<title>Hamel’s Blog - Resource Limits</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -123,15 +123,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   }
 }</script>
 
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Hamel’s Blog - StatefulSet">
-<meta property="og:description" content="A special kind of controller for Pods">
+<meta property="og:title" content="Hamel’s Blog - Resource Limits">
+<meta property="og:description" content="Protect your apps with resource limits.">
 <meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta property="og:site-name" content="Hamel's Blog">
-<meta name="twitter:title" content="Hamel’s Blog - StatefulSet">
-<meta name="twitter:description" content="A special kind of controller for Pods">
+<meta name="twitter:title" content="Hamel’s Blog - Resource Limits">
+<meta name="twitter:description" content="Protect your apps with resource limits.">
 <meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta name="twitter:creator" content="@HamelHusain">
 <meta name="twitter:card" content="summary_large_image">
@@ -173,7 +172,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </nav>
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">StatefulSet</h1>
+      <h1 class="quarto-secondary-nav-title">Resource Limits</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -316,7 +315,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/12-StatefulSet.html" class="sidebar-item-text sidebar-link active">StatefulSet</a>
+  <a href="../../notes/k8s/12-StatefulSet.html" class="sidebar-item-text sidebar-link">StatefulSet</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -361,7 +360,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/22-Resource-Limits.html" class="sidebar-item-text sidebar-link">Resource Limits</a>
+  <a href="../../notes/k8s/22-Resource-Limits.html" class="sidebar-item-text sidebar-link active">Resource Limits</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -545,23 +544,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#initcontainers" id="toc-initcontainers" class="nav-link active" data-scroll-target="#initcontainers">InitContainers</a></li>
-  <li><a href="#networking-in-statefulsets" id="toc-networking-in-statefulsets" class="nav-link" data-scroll-target="#networking-in-statefulsets">Networking In StatefulSets</a></li>
-  <li><a href="#storage" id="toc-storage" class="nav-link" data-scroll-target="#storage">Storage</a></li>
+  <li><a href="#indicating-limits" id="toc-indicating-limits" class="nav-link active" data-scroll-target="#indicating-limits">Indicating Limits</a></li>
+  <li><a href="#namespace-quotas" id="toc-namespace-quotas" class="nav-link" data-scroll-target="#namespace-quotas">Namespace Quotas</a></li>
+  <li><a href="#cpu-limits" id="toc-cpu-limits" class="nav-link" data-scroll-target="#cpu-limits">CPU Limits</a></li>
+  <li><a href="#resource-constraint-failures" id="toc-resource-constraint-failures" class="nav-link" data-scroll-target="#resource-constraint-failures">Resource Constraint Failures</a></li>
+  <li><a href="#checking-available-resources" id="toc-checking-available-resources" class="nav-link" data-scroll-target="#checking-available-resources">Checking Available Resources</a></li>
+  <li><a href="#dont-use-cpu-limits" id="toc-dont-use-cpu-limits" class="nav-link" data-scroll-target="#dont-use-cpu-limits">Don’t Use CPU Limits?</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel/edit/main/notes/k8s/12-StatefulSet.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel/edit/main/notes/k8s/22-Resource-Limits.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">StatefulSet</h1>
+<h1 class="title d-none d-lg-block">Resource Limits</h1>
 </div>
 
 <div>
   <div class="description">
-    A special kind of controller for Pods
+    Protect your apps with resource limits.
   </div>
 </div>
 
@@ -576,109 +578,125 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
-<div class="warning">
-<p>Hamel: you probably don’t need this. JUST SKIP THESE NOTES</p>
+<section id="indicating-limits" class="level2">
+<h2 class="anchored" data-anchor-id="indicating-limits">Indicating Limits</h2>
+<p>By default, Pods have no resource limits, which means they can use as much CPU and memory as the node has available. In order to prevent one Pod from monopolizing all available resources, you should set resource limits for Pods. You should set both a memory limit and a CPU limit. If a Pod is using more than its resource limit, it is restarted (new container). If it continues to fail, will go into a <code>CrashLoopBackoff</code> just like with liveness probes.</p>
+<p>You can specify resource limits in the <code>spec.containers[].resources.limits</code> section of a Pod configuration. The following example sets a memory limit of 50 MiB for a container:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>vmemory-allocator-with-limit.yaml</strong></pre>
 </div>
-<p>[[StatefulSet]] is a Pod controller, just like [[5. ReplicaSets]] or [[DaemonSets]]</p>
-<p>When you deploy a StatefulSet, it creates Pods with predictable names, which can be individually accessed over DNS, and starts them in order; the first Pod needs to be up and running before the second Pod is created.</p>
-<p>If you are trying to model database on K8s, you might use <code>StatefulSet</code>. However, don’t put DBs on K8s - use a managed service for that instead. <code>StatefulSet</code> just gives you determinstic Pod names and networking, you have to take care of synching your apps yourself. That would be outside the scope of what DS should do IMO.</p>
-<p>Here is <code>kind: StatefulSet</code></p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="at"> % cat todo-list/db/todo-db.yaml                                                                                                      </span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> apps/v1</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> StatefulSet</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> todo-db</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">labels</span><span class="kw">:</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">kiamol</span><span class="kw">:</span><span class="at"> ch08</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">matchLabels</span><span class="kw">:</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">app</span><span class="kw">:</span><span class="at"> todo-db</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">serviceName</span><span class="kw">:</span><span class="at"> todo-db</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">replicas</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">template</span><span class="kw">:</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">metadata</span><span class="kw">:</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">labels</span><span class="kw">:</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">app</span><span class="kw">:</span><span class="at"> todo-db</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>When you get pods, they will be incremented from <code>0</code>, this allows you network/communicate with them deterministically.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">%</span> kl get po                                                                                                                         </span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">NAME</span>        READY   STATUS    RESTARTS   AGE</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">todo-db-0</span>   1/1     Running   0          23s</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">todo-db-1</span>   1/1     Running   0          21s</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>StatefulSet is a controller, so if you delete a pod the <code>StatefulSet</code> will recreate it.</p>
-<section id="initcontainers" class="level1">
-<h1>InitContainers</h1>
-<p>You can bootstrap pods with initcontainers and stateful sets. For example.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span><span class="co">                       # The Pod spec in the Deployment</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">containers</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> kiamol/ch12-memory-allocator</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">resources</span><span class="kw">:</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">limits</span><span class="kw">:</span><span class="co">             # Resource limits constrain the compute power</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">         </span><span class="fu">memory</span><span class="kw">:</span><span class="at"> 50Mi</span><span class="co">      # for the container; this limits RAM to 50 MB.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>When you create this Pod, the container is automatically assigned a memory limit of 256 MiB. It will restart when it hits that limit</p>
+</section>
+<section id="namespace-quotas" class="level2">
+<h2 class="anchored" data-anchor-id="namespace-quotas">Namespace Quotas</h2>
+<p>You can also set resource limits at the namespace level. This is useful if you want to prevent a single user from monopolizing all the resources on a cluster. You can set a quota for the total amount of CPU and memory that can be used by all Pods in a namespace.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>namespace-with-quota/02-memory-quota.yaml</strong></pre>
+</div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> v1</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> ResourceQuota</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> memory-quota</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">namespace</span><span class="kw">:</span><span class="at"> kiamol-ch12-memory</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">hard</span><span class="kw">:</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">limits.memory</span><span class="kw">:</span><span class="at"> 150Mi</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout-important callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Because resource quotas are proactive, Pods won’t be created if the limits they specify exceed what’s available in the quota. If there’s a quota in place, then every Pod spec needs to include a resource section so Kubernetes can compare what the spec needs to what’s currently available in the namespace.</p>
+</div>
+</div>
+<p>Now, if a pod specifies a limit that is greater than the namespace quota, it will not be created. For example:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>03-memory-allocator.yaml</strong></pre>
+</div>
 <div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> apps/v1</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> StatefulSet</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Deployment</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">...</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">      initContainers:</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">        - name: wait-service</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">          image: kiamol/ch03-sleep</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">          envFrom:</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">          - configMapRef:</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">              name: todo-db-env</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">          command: ['/scripts/wait-service.sh']</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>The script says if its running in Pod 0 do nothing, but if its running in Pod 1 then replicate the master. This is just an idea, you probably should never do this yourself.</p>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">    spec:</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">      containers:</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">        - name: api</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">          image: kiamol/ch12-memory-allocator</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">          resources:</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">            limits:</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">              memory: 200Mi</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
-<section id="networking-in-statefulsets" class="level1">
-<h1>Networking In StatefulSets</h1>
-<p>You need to have a special configuration “headless Service” to setup newtworking for StatefulSets, by setting <code>ClusterIP: None</code></p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="pp">%cat todo-list/db/todo-db-service.yaml                                                                                              </span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> v1</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Service</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> todo-db</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">labels</span><span class="kw">:</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">kiamol</span><span class="kw">:</span><span class="at"> ch08</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">ports</span><span class="kw">:</span><span class="co">                  # 5432 is the port Postgres uses</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">5432</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">targetPort</span><span class="kw">:</span><span class="at"> </span><span class="dv">5432</span><span class="at"> </span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">name</span><span class="kw">:</span><span class="at"> postgres</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">app</span><span class="kw">:</span><span class="at"> todo-db</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">clusterIP</span><span class="kw">:</span><span class="at"> None</span><span class="co">             # Note how this is None</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>The pod will be reachable at <code>pod-name.service-name.cluster-domain-suffix</code>. for example:</p>
-<pre><code>todo-db-0.todo-db.default.svc.cluster.local</code></pre>
-<p>See: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#stable-network-id</p>
-<blockquote class="blockquote">
-<p>A StatefulSet can use a Headless Service to control the domain of its Pods. The domain managed by this Service takes the form: <span class="math inline">\((service name).\)</span>(namespace).svc.cluster.local, where “cluster.local” is the cluster domain. As each Pod is created, it gets a matching DNS subdomain, taking the form: <span class="math inline">\((podname).\)</span>(governing service domain), where the governing service is defined by the serviceName field on the StatefulSet.</p>
-</blockquote>
-<p>This is also related to the <code>serviceName</code> field on the StatefulSet</p>
-<p>You can lookup the <code>cluster-domain-suffix</code> like this :</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kl</span> exec deploy/sleep <span class="at">--</span> sh <span class="at">-c</span> <span class="st">'nslookup todo-db'</span><span class="kw">`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>The headless service still does load balancing, but lets you access the Pod</p>
+<section id="cpu-limits" class="level2">
+<h2 class="anchored" data-anchor-id="cpu-limits">CPU Limits</h2>
+<p>CPU limits to containers and quotas, but they work in a slightly different way. Containers with a CPU limit run with a fixed amount of processing power, and they can use as much of that CPU as they like—they aren’t replaced if they hit the limit</p>
+<p>You can use multiples to give your app container access to many cores or divide a single core into “millicores,” where one millicore is one-thousandth of a core</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>web-with-cpu-limit.yaml</strong></pre>
+</div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">containers</span><span class="kw">:</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> kiamol/ch05-pi</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">command</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">"dotnet"</span><span class="kw">,</span><span class="at"> </span><span class="st">"Pi.Web.dll"</span><span class="kw">,</span><span class="at"> </span><span class="st">"-m"</span><span class="kw">,</span><span class="at"> </span><span class="st">"web"</span><span class="kw">]</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">resources</span><span class="kw">:</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">limits</span><span class="kw">:</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">cpu</span><span class="kw">:</span><span class="at"> 250m</span><span class="co">    # 250 millicores limits the container to 0.25 cores.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>include <strong>both</strong> CPU and memory limits in your Pod specs.</p>
 </section>
-<section id="storage" class="level1">
-<h1>Storage</h1>
-<p>For DBs you want each pod to have its own persistent disk, there is a shortcut: using <code>volumeClaimTemplates</code> which makes sure each Pod in the stateful set always gets its own persistent volume.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="pp">% cat sleep/sleep-with-pvc.yaml                                             </span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">...</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">kind: StatefulSet</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">  template:</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">    ...</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">  volumeClaimTemplates:</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">  - metadata:</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">      name: data</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">      labels:</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">        kiamol: ch08</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">    spec:</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">      accessModes:</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co">       - ReadWriteOnce</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co">      resources:</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co">        requests:</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">          storage: 5Mi</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Each pod will get a PVC created dynamically, which will create a Persistent Volume using the default storage class (or the requested storage class if included in the spec).</p>
-<p>The link b/w each pod and its PVC is maintained when pods are replaced. For example:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a file</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kl</span> exec sleep-with-pvc-0 <span class="at">--</span> sh <span class="at">-c</span> <span class="st">'echo pod 0 &gt; /data/pod.txt'</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">#delete the pod</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ex">kl</span> delete po sleep-with-pvc-0</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># this will show the right contents</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="ex">kl</span> exec sleep-with-pvc-0 <span class="at">--</span> cat /data/pod.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="resource-constraint-failures" class="level2">
+<h2 class="anchored" data-anchor-id="resource-constraint-failures">Resource Constraint Failures</h2>
+<p>What if you have a namespace quota of 500m but you have two replicas with a limit of 300m each? It will only deploy one pod. YOu can see it like this:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># after deploying your app with two repolicas</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">%</span> kubectl get deploy <span class="at">-n</span> kiamol-ch12-cpu                                                   </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">NAME</span>     READY   UP-TO-DATE   AVAILABLE   AGE</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">pi-web</span>   1/2     1            1           44s</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Debug what happened, will tell you it ran out of quota</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="ex">%</span> kubectl describe replicaset <span class="at">-n</span> kiamol-ch12-cpu</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Get resource quota</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="ex">%</span> kl get resourcequota <span class="at">-n</span> kiamol-ch12-memory</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="checking-available-resources" class="level2">
+<h2 class="anchored" data-anchor-id="checking-available-resources">Checking Available Resources</h2>
+<p>You can check cpu available on a node like so:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> get nodes <span class="at">-o</span> jsonpath=<span class="st">'{.items[].status.allocatable.cpu}'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="callout-important callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You can’t use 100% of the node’s CPU because Kubernetes system components allocate CPU themselves.</p>
+</div>
+</div>
+<p>Also, when you scale things up, it is helpful to check the ReplicaSet to see if it is scaling up. If it is not, it is likely because it is hitting a resource limit.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> get rs <span class="at">-l</span> app=pi-web <span class="at">--all-namespaces</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="dont-use-cpu-limits" class="level2">
+<h2 class="anchored" data-anchor-id="dont-use-cpu-limits">Don’t Use CPU Limits?</h2>
+<p><a href="https://home.robusta.dev/blog/stop-using-cpu-limits">This blog post</a> is contraversial, Michal thinks it’s bad advice. I tend to agree with Michal.</p>
 
 
 </section>
