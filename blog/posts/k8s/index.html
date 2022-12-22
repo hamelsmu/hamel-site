@@ -119,7 +119,10 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#hosted-solutions-are-not-always-an-option" id="toc-hosted-solutions-are-not-always-an-option" class="nav-link active" data-scroll-target="#hosted-solutions-are-not-always-an-option">Hosted solutions are not always an option</a></li>
+  <li><a href="#hosted-solutions-are-not-always-an-option" id="toc-hosted-solutions-are-not-always-an-option" class="nav-link active" data-scroll-target="#hosted-solutions-are-not-always-an-option">Hosted solutions are not always an option</a>
+  <ul class="collapse">
+  <li><a href="#data-access-privacy-security" id="toc-data-access-privacy-security" class="nav-link" data-scroll-target="#data-access-privacy-security">Data Access, Privacy &amp; Security</a></li>
+  </ul></li>
   <li><a href="#nobody-is-coming-to-save-you" id="toc-nobody-is-coming-to-save-you" class="nav-link" data-scroll-target="#nobody-is-coming-to-save-you">Nobody is coming to save you</a></li>
   <li><a href="#k8s-are-like-an-oss-app-store" id="toc-k8s-are-like-an-oss-app-store" class="nav-link" data-scroll-target="#k8s-are-like-an-oss-app-store">K8s are like an OSS app store</a></li>
   <li><a href="#ml-research-is-crowded.-compete-on-swe-skills." id="toc-ml-research-is-crowded.-compete-on-swe-skills." class="nav-link" data-scroll-target="#ml-research-is-crowded.-compete-on-swe-skills.">ML research is crowded. Compete on SWE skills.</a></li>
@@ -210,6 +213,11 @@ K8s For Data Scientists Course
 <li>etc.</li>
 </ul>
 <p>When open source isn’t enough, third-party vendors are happy to install their software on your cloud. However, you often need basic infrastructure skills to enable either of these things. These skills often intersect with Kubernetes.</p>
+<section id="data-access-privacy-security" class="level3">
+<h3 class="anchored" data-anchor-id="data-access-privacy-security">Data Access, Privacy &amp; Security</h3>
+<p>Enterprises tend to be very protective of their data. This often means you cannot copy your data to a SaaS solution that is hosted externally. Instead, you want to deploy your tools on infrastructure that <em>already</em> has access to the data. In many cases, K8s will be the best path to accomplish this, especially since many companies are <a href="https://www.cncf.io/reports/cncf-annual-survey-2021/">already running K8s</a>.</p>
+<p>Furthermore, you don’t want to deploy tools that inadvertently expose your data. There are many paved paths for using security protocols like <a href="https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html">IAM</a><a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> and <a href="https://en.wikipedia.org/wiki/Role-based_access_control">RBAC</a> with K8s. Combining this with VPN will allow you to secure data, web apps, and APIs from being exposed. Administering these security protocols and policies is rightfully out-of-scope for ML Engineers. Instead, it is helpful to understand the basics so you can effectively converse with your team.</p>
+</section>
 </section>
 <section id="nobody-is-coming-to-save-you" class="level2">
 <h2 class="anchored" data-anchor-id="nobody-is-coming-to-save-you">Nobody is coming to save you</h2>
@@ -228,7 +236,8 @@ K8s For Data Scientists Course
 <p><em>ML Eng: I need some minimum tools to experiment more quickly and develop a proof of concepts. Also, I need tools that might help me collaborate better with my team…</em></p>
 <p><em>… At this point, the Manager and the ML Eng are stuck debating the chicken and the egg problem. This impasse leads to career dissatisfaction and stagnation.</em></p>
 <hr>
-<p>By learning basic infrastructure skills, you can unblock yourself and your team in many cases! Note that K8s are not a panacea for all infrastructure problems, and you must operate within the constraints of your organization and existing software stack. There are always cases where K8s could be a poor solution to a problem. However, with its growing popularity, it is increasingly likely that learning this technology will help you.</p>
+<p>Earlier in my career, I frantically tried to hire or befriend infrastructure specialists like <a href="https://www.linkedin.com/in/inc007/"><strong>Michał Jastrzębski</strong></a> and <a href="https://www.linkedin.com/in/jeremy-lewi-600aaa8/"><strong>Jeremy Lewi</strong></a> to “save me”. However, I quickly found that this strategy was not sustainable. Instead, these friends showed me how I could fish for myself 95% of the time with basic knowledge.</p>
+<p>By learning basic infrastructure skills, you can unblock yourself and your team in many cases! Note that K8s are not a panacea for all infrastructure problems, and you must operate within the constraints of your organization and existing software stack.<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> There are always cases where K8s could be a poor solution to a problem. However, with its growing popularity, it is increasingly likely that learning this technology will help you.</p>
 </section>
 <section id="k8s-are-like-an-oss-app-store" class="level2">
 <h2 class="anchored" data-anchor-id="k8s-are-like-an-oss-app-store">K8s are like an OSS app store</h2>
@@ -238,7 +247,7 @@ K8s For Data Scientists Course
 <p></p><figcaption class="figure-caption">App store, abstract</figcaption><p></p>
 </figure>
 </div>
-<p>My favorite feature of K8s is they allow you to deploy software consistently, regardless of the type of software (web apps, workflow tools, etc.). Furthermore, K8s are cloud agnostic, so your skills become extremely transferrable across cloud providers and organizations. K8s also offers excellent tools like <a href="https://helm.sh/">Helm</a>, which makes deploying distributed applications on the cloud very approachable. Helm offers high-level abstractions that allow you to deploy complex applications with one command, with parameters that allow you to change important options. Better yet, the most popular OSS projects can be installed via Helm!<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
+<p>My favorite feature of K8s is they allow you to deploy software consistently, regardless of the type of software (web apps, workflow tools, etc.). Furthermore, K8s are cloud agnostic, so your skills become extremely transferrable across cloud providers and organizations. K8s also offers excellent tools like <a href="https://helm.sh/">Helm</a>, <a href="https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/">Kustomize</a> and more, which makes deploying distributed applications on the cloud very approachable. These tools offer high-level abstractions that allow you to deploy complex applications with one command, with parameters that allow you to change important options. Better yet, the most popular OSS projects can be installed via these tools!<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a></p>
 <p>As a reminder, installing your tools in the cloud is important – while you can install software on your laptop, <strong>the whole point of many data science tools is to enable better collaboration with your team</strong>. To properly evaluate these tools, you will want to install them in an environment that your whole team can observe and interact with.</p>
 </section>
 <section id="ml-research-is-crowded.-compete-on-swe-skills." class="level2">
@@ -250,7 +259,8 @@ K8s For Data Scientists Course
 </figure>
 </div>
 <p>One of the best ways to set yourself apart as a data scientist is through your skills. Traditional education often emphasizes learning the latest ML techniques. However, cutting-edge ML research is very competitive. It’s also an extremely crowded space.</p>
-<p>In my experience, the bottleneck many teams face is not a lack of knowledge of cutting-edge ML techniques, but software engineering skills and partners to help operationalize models. If you take some time to learn how to stand up tools and infrastructure, you will be invaluable to your team.</p>
+<p>In my experience, the bottleneck many teams face is not a lack of knowledge of cutting-edge ML techniques but software engineering skills and partners to help operationalize models. If you take some time to learn how to stand up tools and infrastructure, you will be invaluable to your team.</p>
+<p>More importantly, being able to deploy and integrate models into services and applications is critical to connecting ML to business problems. Learning K8s will help you do this.</p>
 </section>
 <section id="your-company-likely-already-runs-k8s" class="level2">
 <h2 class="anchored" data-anchor-id="your-company-likely-already-runs-k8s">Your company likely already runs K8s</h2>
@@ -260,7 +270,7 @@ K8s For Data Scientists Course
 <p></p><figcaption class="figure-caption">A scientist shaking hands with someone who runs infrastructure</figcaption><p></p>
 </figure>
 </div>
-<p>Just as Python is the lingua franca of data science, K8s is becoming the lingua franca of cloud infrastructure.<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> Basic proficiency with K8s will drastically increase your chances of garnering support for your desired tools in many organizations. Basic proficiency with K8s increases the likelihood that:</p>
+<p>Just as Python is the lingua franca of data science, K8s is becoming the lingua franca of cloud infrastructure.<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a> Basic proficiency with K8s will drastically increase your chances of garnering support for your desired tools in many organizations. Basic proficiency with K8s increases the likelihood that:</p>
 <ul>
 <li>Your DevOps counterparts will feel comfortable with the tools you want to deploy</li>
 <li>You will have a shared language in which to talk to your application administrators</li>
@@ -297,7 +307,7 @@ Note
 </figure>
 </div>
 <p>For simple apps that you want to stand up quickly or prototype, K8s is overkill. Instead, I’m advocating knowledge of K8s as useful when working within the environments found in many companies. For example, if you want to deploy production software, hosting your data product on a single VM is often insufficient. Many companies even have infrastructure that may block you from doing this with paved paths that only include Kubernetes.</p>
-<p>Even if you are not deploying any production software, K8s can be invaluable in allowing you to deploy the tools you need.</p>
+<p>Even if you are not deploying any production software, K8s can be invaluable in allowing you to deploy the tools you need. In many cases using K8s can make tasks significantly easier. Enterprises have necessarily invested resources in creating guardrails to control costs and security. Those guardrails are increasingly built around K8s patterns<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a>. Understanding these concepts makes it easier to operate within the confines of your company’s cloud stack.</p>
 </section>
 <section id="you-dont-need-to-be-an-expert" class="level2">
 <h2 class="anchored" data-anchor-id="you-dont-need-to-be-an-expert">You don’t need to be an expert</h2>
@@ -331,7 +341,6 @@ Note
 </div>
 </div>
 </div>
-<p>Hamel will lead the instruction of this course with the assistance of the following people:</p>
 <div class="quarto-layout-panel">
 <div class="quarto-layout-row quarto-layout-valign-top">
 <div class="quarto-layout-cell" style="flex-basis: 21.0%;justify-content: center;">
@@ -342,13 +351,14 @@ Note
 </div>
 </div>
 </div>
+<p>Hamel and Jeremy will lead the instruction of this course with the assistance of the following people:</p>
 <div class="quarto-layout-panel">
 <div class="quarto-layout-row quarto-layout-valign-top">
 <div class="quarto-layout-cell" style="flex-basis: 21.0%;justify-content: center;">
 <p><img src="course_img/michal.jpeg" class="profile-pic2 img-fluid"></p>
 </div>
 <div class="quarto-layout-cell" style="flex-basis: 79.0%;justify-content: center;">
-<p><a href="https://www.linkedin.com/in/inc007/"><strong>Michał Jastrzębski</strong></a> is a software and infrastructure engineer at <a href="https://www.linkedin.com/company/vantai/">VantAI</a>, where he enables large teams of scientists to perform computational biology on vast amounts of data. Michal is a former <a href="https://www.openstack.org/">OpenStack</a> Kolla project technical lead.</p>
+<p><a href="https://www.linkedin.com/in/inc007/"><strong>Michał Jastrzębski</strong></a> is a software and infrastructure engineer at <a href="https://www.linkedin.com/company/vantai/">VantAI</a>, where he enables several teams of scientists to perform computational biology on vast amounts of data. Michal is a former <a href="https://www.openstack.org/">OpenStack</a> Kolla project technical lead.</p>
 </div>
 </div>
 </div>
@@ -376,11 +386,14 @@ Note
 <div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
-<li id="fn1"><p><a href="https://vickiboykis.com/">Vicki</a> is a champion of data scientists on the ground. Her views resonate with people in the industry, especially those outside Silicon Valley, about the realities of being a data scientist. She is not someone who is impressed by flashy or new technologies and is someone who takes a pragmatic approach to get the job done. When she says you should learn K8s, you should pay attention!<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p><a href="https://vickiboykis.com/">Vicki</a> is not someone who is impressed by flashy or new technologies and is someone who takes a pragmatic approach to get the job done. When she says you should learn K8s, you should pay attention!<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>Each subsection of this article has a picture that has been generated by Stable diffusion with a prompt that very similar to the image caption.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>These systems are AWS - Sagemaker, Azure - AzureML and GCP - VertexAI.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4"><p>Helm charts are available for most popular open source tools like <a href="https://airflow.apache.org/docs/helm-chart/stable/index.html">Airflow</a>, <a href="https://docs.dask.org/en/stable/deploying-kubernetes-helm.html">Dask</a>, <a href="https://z2jh.jupyter.org/en/stable/jupyterhub/installation.html">JuptyerHub</a>, <a href="https://github.com/outerbounds/metaflow-tools#metaflow-services-on-kubernetes-k8s">Metaflow</a>, <a href="https://github.com/PrefectHQ/prefect-helm">Prefect</a>, <a href="https://github.com/elastic/helm-charts">ElasaticSearch</a> and more.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn5"><p>It’s likely that most places are still not using K8s, but the trend is strongly in that direction.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>These systems are AWS - <a href="https://aws.amazon.com/sagemaker/">Sagemaker</a>, Azure - <a href="https://azure.microsoft.com/en-us/products/machine-learning/#product-overview">AzureML</a> and GCP - <a href="https://cloud.google.com/vertex-ai-workbench">VertexAI</a>.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>IAM is useful for securely connecting cloud services, for example, to authorize your containers to talk to your internal S3 or other cloud storage.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>Some organizations have built solutions that avoid K8s. For example, <a href="https://www.bighatbio.com/">BigHat</a> uses a solution based on AWS SageMaker + Lambda and other hosted solutions. So it might be a mistake to try to move over to K8s in that example – you should try to leverage your company’s existing tech stack where possible!<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>Helm charts are available for most popular open source tools like <a href="https://airflow.apache.org/docs/helm-chart/stable/index.html">Airflow</a>, <a href="https://docs.dask.org/en/stable/deploying-kubernetes-helm.html">Dask</a>, <a href="https://z2jh.jupyter.org/en/stable/jupyterhub/installation.html">JuptyerHub</a>, <a href="https://github.com/outerbounds/metaflow-tools#metaflow-services-on-kubernetes-k8s">Metaflow</a>, <a href="https://github.com/PrefectHQ/prefect-helm">Prefect</a>, <a href="https://github.com/elastic/helm-charts">ElasaticSearch</a> and more.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>It’s likely that most places are still not using K8s, but the trend is strongly in that direction.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>Specifically, K8s concepts that are relevant are namespaces, labels and RBAC.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
