@@ -8,9 +8,9 @@
 
 <meta name="author" content="Hamel Husain">
 <meta name="dcterms.date" content="2022-12-28">
-<meta name="description" content="Learning K8s can give you an unreasonable advantage as a data scientist and unblock your team.">
+<meta name="description" content="Learning K8s can give you an unreasonable advantage as an MLE and unblock your team.">
 
-<title>Hamel’s Blog - Why Should Data Scientists Learn Kubernetes?</title>
+<title>Hamel’s Blog - Why Should ML Engineers Learn Kubernetes?</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -64,12 +64,12 @@ ul.task-list li input[type="checkbox"] {
 
 
 <link rel="stylesheet" href="../../../styles.css">
-<meta property="og:title" content="Hamel’s Blog - Why Should Data Scientists Learn Kubernetes?">
-<meta property="og:description" content="Learning K8s can give you an unreasonable advantage as a data scientist and unblock your team.">
+<meta property="og:title" content="Hamel’s Blog - Why Should ML Engineers Learn Kubernetes?">
+<meta property="og:description" content="Learning K8s can give you an unreasonable advantage as an MLE and unblock your team.">
 <meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208368976-37ea8413-7102-4e17-97f1-0832c7a071c8.png">
 <meta property="og:site-name" content="Hamel's Blog">
-<meta name="twitter:title" content="Hamel’s Blog - Why Should Data Scientists Learn Kubernetes?">
-<meta name="twitter:description" content="Learning K8s can give you an unreasonable advantage as a data scientist and unblock your team.">
+<meta name="twitter:title" content="Hamel’s Blog - Why Should ML Engineers Learn Kubernetes?">
+<meta name="twitter:description" content="Learning K8s can give you an unreasonable advantage as an MLE and unblock your team.">
 <meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208368976-37ea8413-7102-4e17-97f1-0832c7a071c8.png">
 <meta name="twitter:creator" content="@HamelHusain">
 <meta name="twitter:card" content="summary_large_image">
@@ -119,9 +119,9 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#managed-services-are-not-always-an-option" id="toc-managed-services-are-not-always-an-option" class="nav-link active" data-scroll-target="#managed-services-are-not-always-an-option">Managed services are not always an option</a></li>
+  <li><a href="#hosted-solutions-are-not-always-an-option" id="toc-hosted-solutions-are-not-always-an-option" class="nav-link active" data-scroll-target="#hosted-solutions-are-not-always-an-option">Hosted solutions are not always an option</a></li>
   <li><a href="#nobody-is-coming-to-save-you" id="toc-nobody-is-coming-to-save-you" class="nav-link" data-scroll-target="#nobody-is-coming-to-save-you">Nobody is coming to save you</a></li>
-  <li><a href="#helm-charts-are-like-an-oss-app-store" id="toc-helm-charts-are-like-an-oss-app-store" class="nav-link" data-scroll-target="#helm-charts-are-like-an-oss-app-store">Helm Charts are like an OSS app store</a></li>
+  <li><a href="#k8s-are-like-an-oss-app-store" id="toc-k8s-are-like-an-oss-app-store" class="nav-link" data-scroll-target="#k8s-are-like-an-oss-app-store">K8s are like an OSS app store</a></li>
   <li><a href="#ml-research-is-crowded.-compete-on-swe-skills." id="toc-ml-research-is-crowded.-compete-on-swe-skills." class="nav-link" data-scroll-target="#ml-research-is-crowded.-compete-on-swe-skills.">ML research is crowded. Compete on SWE skills.</a></li>
   <li><a href="#your-company-likely-already-runs-k8s" id="toc-your-company-likely-already-runs-k8s" class="nav-link" data-scroll-target="#your-company-likely-already-runs-k8s">Your company likely already runs K8s</a></li>
   <li><a href="#but-isnt-it-overkill" id="toc-but-isnt-it-overkill" class="nav-link" data-scroll-target="#but-isnt-it-overkill">But isn’t it overkill?</a></li>
@@ -139,7 +139,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Why Should Data Scientists Learn Kubernetes?</h1>
+<h1 class="title">Why Should ML Engineers Learn Kubernetes?</h1>
   <div class="quarto-categories">
     <div class="quarto-category">K8s</div>
   </div>
@@ -147,7 +147,7 @@ ul.task-list li input[type="checkbox"] {
 
 <div>
   <div class="description">
-    Learning K8s can give you an unreasonable advantage as a data scientist and unblock your team.
+    Learning K8s can give you an unreasonable advantage as an MLE and unblock your team.
   </div>
 </div>
 
@@ -187,66 +187,59 @@ K8s For Data Scientists Course
 <p>If you came here looking for the course, feel free to jump ahead to: <a href="#course-k8s-for-data-scientists">K8s For Data Scientists</a>.</p>
 </div>
 </div>
-<p>For the uninitiated <a href="https://kubernetes.io/">Kubernetes</a>, also known as K8s, is “an open-source system for automating deployment, scaling, and management of containerized applications.”</p>
-<p>I agree with Chip Huyen that <a href="https://huyenchip.com/2021/09/13/data-science-infrastructure.html">Data Scientists <strong>shouldn’t need to</strong> learn K8s</a>. However, the cold truth is: <strong>Even though you shouldn’t have to, you should anyway!</strong> Even <a href="https://twitter.com/vboykis/status/1596610600511102976">Vicki Boykis</a> seems to agree<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>:</p>
+<p><a href="https://kubernetes.io/">Kubernetes</a>, known as K8s, is an open-source system for deploying and managing containerized applications in the cloud. An increasing amount of modern web applications are deployed on K8s. If you are an ML engineer, it is increasingly likely that either the infrastructure you use to train, monitor, or orchestrate your models is deployed on K8s, or downstream applications that consume your models are running on K8s. However, K8s is a complex system that can be intimidating to learn.</p>
+<p>I agree with Chip Huyen that, in theory, <a href="https://huyenchip.com/2021/09/13/data-science-infrastructure.html">Data Scientists <strong>shouldn’t need to</strong> learn K8s</a>. However, the truth is: <strong>Even though you shouldn’t have to, it’s really beneficial if you do!</strong> I’ve found that learning the basics of K8s allows me to deploy tools and debug simple issues related to production applications. This is a huge advantage, as it enables me to be more productive and collaborate in a way few others can. Furthermore, Kubernetes provides a standard way of deploying applications with powerful tools to ensure their resilience, making certain tasks significantly easier to accomplish than they would otherwise.</p>
+<p><a href="https://twitter.com/vboykis/status/1596610600511102976">Vicki Boykis</a> seems to agree that the investment in learning this technology is worthwhile<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>:</p>
 <p><img src="course_img/20221212131043.png" class="img-fluid"></p>
-<p>Below, I outline reasons why I think learning K8s is a good idea for data scientists<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
-<section id="managed-services-are-not-always-an-option" class="level2">
-<h2 class="anchored" data-anchor-id="managed-services-are-not-always-an-option">Managed services are not always an option</h2>
+<p>Below, I outline several reasons why learning K8s is a good idea for data scientists<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
+<section id="hosted-solutions-are-not-always-an-option" class="level2">
+<h2 class="anchored" data-anchor-id="hosted-solutions-are-not-always-an-option">Hosted solutions are not always an option</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="course_img/bellman_ds.jpeg" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">A robot concierge helping a data scientist</figcaption><p></p>
+<p><img src="course_img/bellman.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">A robot concierge helping a scientist</figcaption><p></p>
 </figure>
 </div>
-<p>Major clouds offer some data science infrastructure as managed services, but it usually doesn’t cover everything you need. There are many popular open-source infrastructure tools that data scientists consider to be staples or must-haves in their workflow. For example, many clouds offer only limited or no managed services for things like:</p>
+<p>The largest cloud providers offer their own respective flavors of ML infrastructure as hosted solutions<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>. However, there is often a gap between these offerings and the needs of machine learning teams. For example, I’ve seen the following tools deployed alongside or in place of hosted solutions:</p>
 <ul>
-<li><a href="https://airflow.apache.org/">Airflow</a></li>
+<li><a href="https://metaflow.org/">Metaflow</a></li>
+<li><a href="https://www.kubeflow.org/">Kubeflow</a></li>
+<li><a href="https://argoproj.github.io/argo/">Argo</a></li>
 <li><a href="https://jupyter.org/hub">JupyterHub</a></li>
-<li>ML workflow and experiment tracking systems. <a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></li>
 <li><a href="https://www.dask.org/">Dask</a></li>
 <li>etc.</li>
 </ul>
-<p>There is often a gap between cloud offerings and the needs of data science teams, which are often filled by open-source tools. When open source isn’t enough, third-party vendors are happy to install their software on your cloud. However, you often need basic infrastructure skills to enable either of these things. These skills often intersect with Kubernetes.</p>
+<p>When open source isn’t enough, third-party vendors are happy to install their software on your cloud. However, you often need basic infrastructure skills to enable either of these things. These skills often intersect with Kubernetes.</p>
 </section>
 <section id="nobody-is-coming-to-save-you" class="level2">
 <h2 class="anchored" data-anchor-id="nobody-is-coming-to-save-you">Nobody is coming to save you</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="course_img/20221212104110.png" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">A scientist dressed as a super hero</figcaption><p></p>
+<p><img src="course_img/superhero.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">A super hero</figcaption><p></p>
 </figure>
 </div>
-<p>A typical first experience as a data scientist or machine learning professional is that you don’t have the necessary tools to get started. This is incredibly frustrating, as making progress without the proper tools can be hard. This experience usually culminates in a conversation like this:</p>
+<p>A typical first experience as a machine learning professional is that you don’t have the necessary tools to get started. This is incredibly frustrating, as making progress without the proper tools can be hard. This experience usually culminates in a conversation like this:</p>
 <hr>
-<p><em>Data Scientist: I’m excited to join ACME company! You’ve hired me to optimize marketing spending with predictive models. The issue is that we don’t have the basic infrastructure or tools necessary for me to work efficiently.</em></p>
+<p><em>ML Eng: I’m excited to join ACME company! You’ve hired me to optimize marketing spending with predictive models. The issue is that we don’t have the basic infrastructure or tools necessary for me to work efficiently.</em></p>
 <p><em>Manager: I’m confused. Can’t you install the tools you need? Isn’t that what you are for? I was expecting that you would figure it out.</em></p>
-<p><em>Data Scientist: No, I don’t know how to set up and deploy infrastructure. We need a special infrastructure or DevOps person for that.</em></p>
+<p><em>ML Eng: No, I don’t know how to set up and deploy infrastructure. We need a special infrastructure or DevOps person for that.</em></p>
 <p><em>Manager: It will be hard to ask for more resources if we don’t know the expected return on investment. Can you do the ML project first, demonstrate some value, and then we can invest in infrastructure?</em></p>
-<p><em>Data Scientist: I need some minimum tools to allow me to more quickly experiment and develop proof of concepts. Also, I need tools that might help me collaborate better with my team…</em></p>
-<p><em>… At this point, the Manager and the Data Scientist are stuck debating the chicken and the egg problem. This impasse leads to career dissatisfaction and stagnation.</em></p>
+<p><em>ML Eng: I need some minimum tools to experiment more quickly and develop a proof of concepts. Also, I need tools that might help me collaborate better with my team…</em></p>
+<p><em>… At this point, the Manager and the ML Eng are stuck debating the chicken and the egg problem. This impasse leads to career dissatisfaction and stagnation.</em></p>
 <hr>
-<p>By learning basic infra skills, you can unblock yourself and your team in many cases!</p>
+<p>By learning basic infrastructure skills, you can unblock yourself and your team in many cases! Note that K8s are not a panacea for all infrastructure problems, and you must operate within the constraints of your organization and existing software stack. There are always cases where K8s could be a poor solution to a problem. However, with its growing popularity, it is increasingly likely that learning this technology will help you.</p>
 </section>
-<section id="helm-charts-are-like-an-oss-app-store" class="level2">
-<h2 class="anchored" data-anchor-id="helm-charts-are-like-an-oss-app-store">Helm Charts are like an OSS app store</h2>
+<section id="k8s-are-like-an-oss-app-store" class="level2">
+<h2 class="anchored" data-anchor-id="k8s-are-like-an-oss-app-store">K8s are like an OSS app store</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="course_img/20221212110053.png" class="img-fluid figure-img"></p>
+<p><img src="course_img/app_store.png" class="img-fluid figure-img"></p>
 <p></p><figcaption class="figure-caption">App store, abstract</figcaption><p></p>
 </figure>
 </div>
-<p>K8s are not as scary as you might think. K8s has wonderful tools like <a href="https://helm.sh/">Helm</a>, which makes deploying distributed applications on the cloud approachable. With Helm, the process of installing cloud software becomes consistent across a wide range of tools, with high-level abstractions that allow you to change important options. As a reminder, installing your tools in the cloud is important – while you can install software on your laptop, <strong>the whole point of many data science tools is to enable better collaboration with your team</strong>. To properly evaluate these tools, you will want to install them in an environment that your whole team can observe and interact with.</p>
-<p>You can install many data science tools with Helm:</p>
-<ul>
-<li>Airflow: https://airflow.apache.org/docs/helm-chart/stable/index.html</li>
-<li>Dask: https://docs.dask.org/en/stable/deploying-kubernetes-helm.html</li>
-<li>JuptyerHub: https://z2jh.jupyter.org/en/stable/jupyterhub/installation.html</li>
-<li>Metaflow: https://github.com/outerbounds/metaflow-tools#metaflow-services-on-kubernetes-k8s</li>
-<li>Prefect: https://github.com/PrefectHQ/prefect-helm</li>
-<li>ElasaticSearch: https://github.com/elastic/helm-charts</li>
-</ul>
-<p>You don’t need to become an expert in K8s to deploy and perform basic configuration of these tools. You might need deeper exercise to maintain them over a long period; however, you can get quite far with basic knowledge of K8s.</p>
+<p>My favorite feature of K8s is they allow you to deploy software consistently, regardless of the type of software (web apps, workflow tools, etc.). Furthermore, K8s are cloud agnostic, so your skills become extremely transferrable across cloud providers and organizations. K8s also offers excellent tools like <a href="https://helm.sh/">Helm</a>, which makes deploying distributed applications on the cloud very approachable. Helm offers high-level abstractions that allow you to deploy complex applications with one command, with parameters that allow you to change important options. Better yet, the most popular OSS projects can be installed via Helm!<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
+<p>As a reminder, installing your tools in the cloud is important – while you can install software on your laptop, <strong>the whole point of many data science tools is to enable better collaboration with your team</strong>. To properly evaluate these tools, you will want to install them in an environment that your whole team can observe and interact with.</p>
 </section>
 <section id="ml-research-is-crowded.-compete-on-swe-skills." class="level2">
 <h2 class="anchored" data-anchor-id="ml-research-is-crowded.-compete-on-swe-skills.">ML research is crowded. Compete on SWE skills.</h2>
@@ -256,18 +249,18 @@ K8s For Data Scientists Course
 <p></p><figcaption class="figure-caption">A crowded space of scientists frantically trying to do work</figcaption><p></p>
 </figure>
 </div>
-<p>One of the best ways to set yourself apart as a data scientist is through your skills. Traditional education often emphasizes learning the latest ML techniques. However, cutting-edge ML research is very competitive. It also moves incredibly fast! In the last six months, we have seen Stable Diffusion and ChatGPT, with more to come. It’s also an extremely crowded space.</p>
+<p>One of the best ways to set yourself apart as a data scientist is through your skills. Traditional education often emphasizes learning the latest ML techniques. However, cutting-edge ML research is very competitive. It’s also an extremely crowded space.</p>
 <p>In my experience, the bottleneck many teams face is not a lack of knowledge of cutting-edge ML techniques, but software engineering skills and partners to help operationalize models. If you take some time to learn how to stand up tools and infrastructure, you will be invaluable to your team.</p>
 </section>
 <section id="your-company-likely-already-runs-k8s" class="level2">
 <h2 class="anchored" data-anchor-id="your-company-likely-already-runs-k8s">Your company likely already runs K8s</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="course_img/shaking_hands.jpeg" class="img-fluid figure-img"></p>
+<p><img src="course_img/meeting.png" class="img-fluid figure-img"></p>
 <p></p><figcaption class="figure-caption">A scientist shaking hands with someone who runs infrastructure</figcaption><p></p>
 </figure>
 </div>
-<p>Just as python is the lingua franca of data science, K8s is the lingua franca of cloud infrastructure. Basic proficiency with K8s will drastically increase your chances of garnering support for your desired tools in many organizations. Basic proficiency with K8s you increase the likelihood that:</p>
+<p>Just as Python is the lingua franca of data science, K8s is becoming the lingua franca of cloud infrastructure.<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> Basic proficiency with K8s will drastically increase your chances of garnering support for your desired tools in many organizations. Basic proficiency with K8s increases the likelihood that:</p>
 <ul>
 <li>Your DevOps counterparts will feel comfortable with the tools you want to deploy</li>
 <li>You will have a shared language in which to talk to your application administrators</li>
@@ -287,8 +280,8 @@ Note
 <p>My friend <a href="https://twitter.com/_inc0_">Michał Jastrzębski</a>, who specializes in ML infrastructure, has shared the following colorful anecdotes with me:</p>
 <ul>
 <li>When I hear “Data Scientists shouldn’t learn K8s”, I hear “DevOps needs to learn Airflow”.</li>
-<li>Do you really want to try to force a team that is chronically understaffed to try to help you stand up basic tools?</li>
-<li>DevOps people don’t want anything to do with maintaining critical infra installed on a VM</li>
+<li>Do you really want to wait on a chronically understaffed team to help you stand up basic tools?</li>
+<li>DevOps people don’t want anything to do with maintaining critical infra installed on a single VM.</li>
 <li>Can data scientists meet DevOps halfway and learn a common API that we can both understand?</li>
 </ul>
 </div>
@@ -299,7 +292,7 @@ Note
 <h2 class="anchored" data-anchor-id="but-isnt-it-overkill">But isn’t it overkill?</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="course_img/orange_chainsaw.jpeg" class="img-fluid figure-img"></p>
+<p><img src="course_img/orange.png" class="img-fluid figure-img"></p>
 <p></p><figcaption class="figure-caption">Cutting oranges with a chainsaw</figcaption><p></p>
 </figure>
 </div>
@@ -310,22 +303,22 @@ Note
 <h2 class="anchored" data-anchor-id="you-dont-need-to-be-an-expert">You don’t need to be an expert</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="course_img/20221212115117.png" class="img-fluid figure-img"></p>
+<p><img src="course_img/student.png" class="img-fluid figure-img"></p>
 <p></p><figcaption class="figure-caption">A student sitting at a desk in a library</figcaption><p></p>
 </figure>
 </div>
-<p>K8s are complicated, but you don’t need to become an expert to unlock tons of value as a Data Scientist. I’m not suggesting that data scientists become K8s administrators. That is a very involved task and worthy of its own role. However, we can use managed cloud services and some basic knowledge to get far. That’s why we are teaching a course on this topic: <a href="#course-k8s-for-data-scientists">Kubernetes for Data Scientists</a>.</p>
+<p>K8s are complicated, but you don’t need to become an expert to unlock great value as a Data Scientist. I’m not suggesting that data scientists become K8s administrators. K8s Administration is a very involved task and worthy of its own role. However, we can use managed cloud services and some basic knowledge to get far. That’s why we are teaching a course on this topic: <a href="#course-k8s-for-data-scientists">Kubernetes for Data Scientists</a>.</p>
 </section>
 <section id="course-k8s-for-data-scientists" class="level2">
 <h2 class="anchored" data-anchor-id="course-k8s-for-data-scientists">Course: K8s for Data Scientists</h2>
 <p>How are you going to learn Kubernetes? My friends and I think it’s an important enough topic to teach you! We are developing a course that will teach you the following:</p>
 <ul>
 <li>How to spin up Kubernetes on the cloud</li>
-<li>How to install and configure popular data science tools like Airflow, Dask, JupyterHub, and Metaflow.</li>
+<li>How to install and configure popular Machine Learning tools like JupyterHub Dask, Argo, and Metaflow.</li>
 <li>Basic debugging</li>
 <li>Familiarity with high-level concepts</li>
 </ul>
-<p>We will teach you K8s from the perspective of what you need to know to be successful as a data scientist, so you can focus on getting value quickly. Our unique skills as data scientists-turned-infrastructure engineers will allow us to teach you the most important concepts and skills you need to know to be successful.</p>
+<p>We will teach you K8s from the perspective of what is most useful as a Machine Learning Engineer, so you can focus on getting value quickly. In addition, our unique skills as data scientists-turned-infrastructure engineers (or vice versa) will allow us to teach you the essential concepts and skills you need to know to be successful.</p>
 <section id="course-instructors" class="level3">
 <h3 class="anchored" data-anchor-id="course-instructors">Course Instructors</h3>
 <div class="quarto-layout-panel">
@@ -334,7 +327,7 @@ Note
 <p><img src="course_img//hamel.jpeg" class="profile-pic2 img-fluid"></p>
 </div>
 <div class="quarto-layout-cell" style="flex-basis: 79.0%;justify-content: center;">
-<p><strong><a href="https://hamel.dev">Hamel Husain</a></strong> is a data scientist and software engineer. He is currently a fastai core contributor and has been involved with several open-source data infrastructure projects such as Jupyter, Metaflow, and Kubeflow. Hamel has built data science tools and infrastructure at companies such as Airbnb, GitHub and DataRobot.</p>
+<p><strong><a href="https://hamel.dev">Hamel Husain</a></strong> is a machine learning and software engineer. He is currently a fastai core contributor and has been involved with several open-source data infrastructure projects such as Jupyter, Metaflow, and Kubeflow. Hamel has built data science tools and infrastructure at companies such as Airbnb, GitHub and DataRobot.</p>
 </div>
 </div>
 </div>
@@ -345,7 +338,7 @@ Note
 <p><img src="course_img/jeremy.jpeg" class="profile-pic2 img-fluid"></p>
 </div>
 <div class="quarto-layout-cell" style="flex-basis: 79.0%;justify-content: center;">
-<p><a href="https://www.linkedin.com/in/jeremy-lewi-600aaa8/"><strong>Jeremy Lewi</strong></a> is the co-founder and lead engineer of <a href="https://www.kubeflow.org/">Kubeflow</a>, a popular machine learning workflow system built on Kubernetes. Jeremy also worked on the YouTube recommendation system at Google where he honed his skills in systems for machine learning. Jeremy is currently incubating his own applied ML startup.</p>
+<p><a href="https://www.linkedin.com/in/jeremy-lewi-600aaa8/"><strong>Jeremy Lewi</strong></a> is the co-founder and lead engineer of <a href="https://www.kubeflow.org/">Kubeflow</a>, a popular machine learning workflow system built on Kubernetes. Jeremy also worked on the YouTube recommendation system at Google, where he honed his skills in systems for machine learning. Jeremy is currently incubating his own applied ML startup.</p>
 </div>
 </div>
 </div>
@@ -385,7 +378,9 @@ Note
 <ol>
 <li id="fn1"><p><a href="https://vickiboykis.com/">Vicki</a> is a champion of data scientists on the ground. Her views resonate with people in the industry, especially those outside Silicon Valley, about the realities of being a data scientist. She is not someone who is impressed by flashy or new technologies and is someone who takes a pragmatic approach to get the job done. When she says you should learn K8s, you should pay attention!<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>Each subsection of this article has a picture that has been generated by Stable diffusion with a prompt that very similar to the image caption.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>Major cloud providers do have managed workflow systems (AWS - Sagemaker, Azure - AzureML, GCP - VertexAI), but these may not fit your needs.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>These systems are AWS - Sagemaker, Azure - AzureML and GCP - VertexAI.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Helm charts are available for most popular open source tools like <a href="https://airflow.apache.org/docs/helm-chart/stable/index.html">Airflow</a>, <a href="https://docs.dask.org/en/stable/deploying-kubernetes-helm.html">Dask</a>, <a href="https://z2jh.jupyter.org/en/stable/jupyterhub/installation.html">JuptyerHub</a>, <a href="https://github.com/outerbounds/metaflow-tools#metaflow-services-on-kubernetes-k8s">Metaflow</a>, <a href="https://github.com/PrefectHQ/prefect-helm">Prefect</a>, <a href="https://github.com/elastic/helm-charts">ElasaticSearch</a> and more.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>It’s likely that most places are still not using K8s, but the trend is strongly in that direction.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
