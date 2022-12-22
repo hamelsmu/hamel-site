@@ -39,6 +39,12 @@ The largest cloud providers offer their own respective flavors of ML infrastruct
 
  When open source isn't enough, third-party vendors are happy to install their software on your cloud. However, you often need basic infrastructure skills to enable either of these things. These skills often intersect with Kubernetes.
 
+### Data Access, Privacy & Security
+
+Enterprises tend to be very protective of their data.  This often means you cannot copy your data to a SaaS solution that is hosted externally.  Instead, you want to deploy your tools on infrastructure that _already_ has access to the data.  In many cases, K8s will be the best path to accomplish this, especially since many companies are [already running K8s](https://www.cncf.io/reports/cncf-annual-survey-2021/).  
+ 
+Furthermore, you don't want to deploy tools that inadvertently expose your data.  There are many paved paths for using security protocols like [IAM](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)[^6] and [RBAC](https://en.wikipedia.org/wiki/Role-based_access_control) with K8s. Combining this with VPN will allow you to secure data, web apps, and APIs from being exposed.   Administering these security protocols and policies is rightfully out-of-scope for ML Engineers.  Instead, it is helpful to understand the basics so you can effectively converse with your team.
+
 ## Nobody is coming to save you
 
 ![A super hero](course_img/superhero.png)
@@ -61,13 +67,15 @@ _... At this point, the Manager and the ML Eng are stuck debating the chicken an
 
 ---
 
-By learning basic infrastructure skills, you can unblock yourself and your team in many cases!  Note that K8s are not a panacea for all infrastructure problems, and you must operate within the constraints of your organization and existing software stack.  There are always cases where K8s could be a poor solution to a problem.  However, with its growing popularity, it is increasingly likely that learning this technology will help you.
+Earlier in my career, I frantically tried to hire or befriend infrastructure specialists like [**Michał Jastrzębski**](https://www.linkedin.com/in/inc007/) and [**Jeremy Lewi**](https://www.linkedin.com/in/jeremy-lewi-600aaa8/) to "save me".  However, I quickly found that this strategy was not sustainable.  Instead, these friends showed me how I could fish for myself 95% of the time with basic knowledge.
+
+By learning basic infrastructure skills, you can unblock yourself and your team in many cases!  Note that K8s are not a panacea for all infrastructure problems, and you must operate within the constraints of your organization and existing software stack.[^7]  There are always cases where K8s could be a poor solution to a problem.  However, with its growing popularity, it is increasingly likely that learning this technology will help you.
 
 ## K8s are like an OSS app store
 
 ![App store, abstract](course_img/app_store.png)
 
-My favorite feature of K8s is they allow you to deploy software consistently, regardless of the type of software (web apps, workflow tools, etc.).  Furthermore, K8s are cloud agnostic, so your skills become extremely transferrable across cloud providers and organizations. K8s also offers excellent tools like [Helm](https://helm.sh/), which makes deploying distributed applications on the cloud very approachable.  Helm offers high-level abstractions that allow you to deploy complex applications with one command, with parameters that allow you to change important options. Better yet, the most popular OSS projects can be installed via Helm![^4]  
+My favorite feature of K8s is they allow you to deploy software consistently, regardless of the type of software (web apps, workflow tools, etc.).  Furthermore, K8s are cloud agnostic, so your skills become extremely transferrable across cloud providers and organizations. K8s also offers excellent tools like [Helm](https://helm.sh/), [Kustomize](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/) and more, which makes deploying distributed applications on the cloud very approachable.  These tools offer high-level abstractions that allow you to deploy complex applications with one command, with parameters that allow you to change important options. Better yet, the most popular OSS projects can be installed via these tools![^4]  
 
 As a reminder, installing your tools in the cloud is important -- while you can install software on your laptop, **the whole point of many data science tools is to enable better collaboration with your team**.  To properly evaluate these tools, you will want to install them in an environment that your whole team can observe and interact with.
 
@@ -78,8 +86,9 @@ As a reminder, installing your tools in the cloud is important -- while you can 
 
 One of the best ways to set yourself apart as a data scientist is through your skills.  Traditional education often emphasizes learning the latest ML techniques.  However, cutting-edge ML research is very competitive.  It's also an extremely crowded space.
 
-In my experience, the bottleneck many teams face is not a lack of knowledge of cutting-edge ML techniques, but software engineering skills and partners to help operationalize models.  If you take some time to learn how to stand up tools and infrastructure, you will be invaluable to your team.  
+In my experience, the bottleneck many teams face is not a lack of knowledge of cutting-edge ML techniques but software engineering skills and partners to help operationalize models.  If you take some time to learn how to stand up tools and infrastructure, you will be invaluable to your team.  
 
+More importantly, being able to deploy and integrate models into services and applications is critical to connecting ML to business problems.  Learning K8s will help you do this.
 
 ## Your company likely already runs K8s
 
@@ -112,7 +121,7 @@ _Even if your company doesn't run K8s, you can recruit generalists that can admi
 
 For simple apps that you want to stand up quickly or prototype, K8s is overkill. Instead, I'm advocating knowledge of K8s as useful when working within the environments found in many companies.  For example, if you want to deploy production software, hosting your data product on a single VM is often insufficient.  Many companies even have infrastructure that may block you from doing this with paved paths that only include Kubernetes.
 
-Even if you are not deploying any production software, K8s can be invaluable in allowing you to deploy the tools you need.
+Even if you are not deploying any production software, K8s can be invaluable in allowing you to deploy the tools you need.  In many cases using K8s can make tasks significantly easier.  Enterprises have necessarily invested resources in creating guardrails to control costs and security. Those guardrails are increasingly built around K8s patterns[^8]. Understanding these concepts makes it easier to operate within the confines of your company's cloud stack.
 
 ## You don't need to be an expert
 
@@ -139,13 +148,13 @@ We will teach you K8s from the perspective of what is most useful as a Machine L
 **[Hamel Husain](https://hamel.dev)** is a machine learning and software engineer.  He is currently a fastai core contributor and has been involved with several open-source data infrastructure projects such as Jupyter, Metaflow, and Kubeflow.  Hamel has built data science tools and infrastructure at companies such as Airbnb, GitHub and DataRobot.
 :::
 
-Hamel will lead the instruction of this course with the assistance of the following people:
-
 ::: {layout="[21,79]"}
 ![](course_img/jeremy.jpeg){.profile-pic2} 
 
 [**Jeremy Lewi**](https://www.linkedin.com/in/jeremy-lewi-600aaa8/) is the co-founder and lead engineer of [Kubeflow](https://www.kubeflow.org/), a popular machine learning workflow system built on Kubernetes.  Jeremy also worked on the YouTube recommendation system at Google, where he honed his skills in systems for machine learning.  Jeremy is currently incubating his own applied ML startup. 
 :::
+
+Hamel and Jeremy will lead the instruction of this course with the assistance of the following people:
 
 ::: {layout="[21,79]"}
 ![](course_img/michal.jpeg){.profile-pic2} 
@@ -165,12 +174,18 @@ We want to gauge interest so we know how to structure this course (format, timin
 
 <script async data-uid="4ccd85dfd8" src="https://hamel.ck.page/4ccd85dfd8/index.js"></script>
 
-[^1]: [Vicki](https://vickiboykis.com/) is a champion of data scientists on the ground.  Her views resonate with people in the industry, especially those outside Silicon Valley, about the realities of being a data scientist.  She is not someone who is impressed by flashy or new technologies and is someone who takes a pragmatic approach to get the job done.  When she says you should learn K8s, you should pay attention!
+[^1]: [Vicki](https://vickiboykis.com/) is not someone who is impressed by flashy or new technologies and is someone who takes a pragmatic approach to get the job done.  When she says you should learn K8s, you should pay attention!
 
 [^2]: Each subsection of this article has a picture that has been generated by Stable diffusion with a prompt that very similar to the image caption.
 
-[^3]: These systems are AWS - Sagemaker, Azure - AzureML and GCP - VertexAI.
+[^3]: These systems are AWS - [Sagemaker](https://aws.amazon.com/sagemaker/), Azure - [AzureML](https://azure.microsoft.com/en-us/products/machine-learning/#product-overview) and GCP - [VertexAI](https://cloud.google.com/vertex-ai-workbench).
 
 [^4]: Helm charts are available for most popular open source tools like [Airflow](https://airflow.apache.org/docs/helm-chart/stable/index.html), [Dask](https://docs.dask.org/en/stable/deploying-kubernetes-helm.html), [JuptyerHub](https://z2jh.jupyter.org/en/stable/jupyterhub/installation.html), [Metaflow](https://github.com/outerbounds/metaflow-tools#metaflow-services-on-kubernetes-k8s), [Prefect](https://github.com/PrefectHQ/prefect-helm), [ElasaticSearch]( https://github.com/elastic/helm-charts) and more.
 
 [^5]: It's likely that most places are still not using K8s, but the trend is strongly in that direction. 
+
+[^6]: IAM is useful for securely connecting cloud services, for example, to authorize your containers to talk to your internal S3 or other cloud storage.
+
+[^7]: Some organizations have built solutions that avoid K8s.  For example, [BigHat](https://www.bighatbio.com/) uses a solution based on AWS SageMaker + Lambda and other hosted solutions. So it might be a mistake to try to move over to K8s in that example -- you should try to leverage your company's existing tech stack where possible!
+
+[^8]: Specifically, K8s concepts that are relevant are namespaces, labels and RBAC.
