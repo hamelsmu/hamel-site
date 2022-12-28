@@ -1,0 +1,41 @@
+---
+title: Monitoring
+description: Monitoring with Prometheus
+order: 24
+---
+
+Prometheus discovers new apps you deploy on K8s and starts collecting metrics automatically.  Each component you want to monitor has an HTTP endpoint, and Prometheus logs whatever the endpoint returns.
+
+This is part of a Prometheus config that filters by a specific namespace:
+
+```yaml
+scrape_configs:                # This is the YAML inside the ConfigMap.
+ - job_name: 'test-pods'      # Used for test apps
+   kubernetes_sd_configs:     # Finds targets from the Kubernetes API
+   - role: pod                # Searches for Pods
+   relabel_configs:           # Applies these filtering rules
+   - source_labels:          
+       - __meta_kubernetes_namespace
+     action: keep             # Includes Pods only where the namespace
+     regex: kiamol-ch14-test  # is the test namespace for this chapter
+```
+
+As long as your apps are modeled to suit the rules, they’ll automatically be picked up as monitoring targets. Prometheus uses the rules to find Pods that match, and for each target, it collects metrics by making an HTTP GET request to the `/metrics` path.
+
+Your application exposes a `/metrics` endpoint like this:
+
+```yaml
+...
+      containers:
+        - name: timecheck
+          image: kiamol/ch07-timecheck
+          env:
+            - name: Metrics__Enabled
+              value: "true"
+          ports:
+            - containerPort: 8080
+              name: metrics
+```
+
+... Skipping this
+

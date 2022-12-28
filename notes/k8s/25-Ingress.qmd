@@ -1,0 +1,204 @@
+---
+title: Ingress
+description: Routing beyond services
+order: 25
+---
+
+## Load Balancers vs Ingress
+
+We have been using LoadBalancer services to expose our apps.  
+
+1. Load Balancers can accept any kind of traffic (TCP, UDP, etc).
+
+2. Cloud Kubernetes platforms like AKS and EKS are highly available multinode clusters. Deploying a Kubernetes LoadBalancer Service creates an actual load balancer in your cloud, which spans all the nodes in your cluster—the cloud load balancer sends incoming traffic to one of the nodes and then Kubernetes routes it to a Pod. You’ll get a different IP address for each LoadBalancer Service, and it will be a public address, accessible from the internet. Docker Desktop is a local development environment. It runs on a single machine and integrates with the network stack so LoadBalancer Services are available at the localhost address.  What this means is that a LoadBalancer will spin up additional resources on your cloud provider.  This doesn't have to be the case with Ingress.
+
+3. Cloud providers often charge based on “load balancing rules”, which roughly translates into how many load balancing external IP addresses are assigned. By using an ingress to combine several services into one, rather than each being exposed with it’s own IP, you can likely save money.
+
+## Ingress
+
+For HTTPS, Ingress is the preferred way to expose your apps. You can have multiple services exposed on one host, whereas you cannot do that with a LoadBalancer.  Ingress allows you to route requests based on the URL path.  Ingress allows you to make changes to your services without changing the address to the end user (ex: if you want different url paths to now go to different services).  
+
+
+### Ingress Controller
+
+An Ingress controller is responsible for fulfilling the Ingress, usually with a load balancer.
+
+The Ingress Resource doesn't do anything by itself; you need an ingress controller which does the work of routing requests.  The ingress controller is a reverse proxy like Nginx.  Reverse proxies intercept requests and route them to where they need to go.  These reverse proxies can also do other things like caching, load balancing, URL rewrites, and so on. There are lots of flavors of Ingress Resources (like Nginx, Traefik, etc).
+
+![](ingress.png)
+
+Whoever sets up the K8s cluster will likely use a bunch of boilerplate YAMLs to setup an Ingress controller.  Your DevOps team should deploy an Ingress controller for you.  You might reference the Ingress Controller from the Ingress Resource (in an annotation).  However, your DevOps team should provide you with a template for the Ingress Resource.  The important part is that you are comfortable enough to know what it is doing to modify an Ingress Resource template. You should not have to create an Ingress Resource from scratch.
+
+
+In this exercise, our Ingress controller is a load balancer that is also running Nginx.  Below is the Service and the Deployment parts of the Ingress Controller to give you an idea that the controller itself is a LoadBalancer.  The Deployment is a Deployment of the Nginx reverse proxy.  The Service is a LoadBalancer Service that exposes the Nginx reverse proxy.
+
+```{.yml file="ingress-nginx/nginx-ingress-controller.yaml"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-nginx-controller
+  namespace: kiamol-ingress-nginx
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+    - name: https
+      port: 443
+      targetPort: https
+  selector:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/component: controller
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingress-nginx-controller
+  namespace: kiamol-ingress-nginx
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ingress-nginx
+      app.kubernetes.io/instance: ingress-nginx
+      app.kubernetes.io/component: controller
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ingress-nginx
+        app.kubernetes.io/instance: ingress-nginx
+        app.kubernetes.io/component: controller
+    spec:
+      containers:
+        - name: controller
+          image: k8s.gcr.io/ingress-nginx/controller:v1.1.1@sha256:0bc88eb15f9e7f84e8e56c14fa5735aaa488b840983f87bd79b1054190e660de
+          args:
+            - /nginx-ingress-controller
+            - --publish-service=kiamol-ingress-nginx/ingress-nginx-controller
+            - --election-id=ingress-controller-leader
+            - --ingress-class=nginx
+            - --configmap=kiamol-ingress-nginx/ingress-nginx-controller
+          securityContext:
+            runAsUser: 101
+            allowPrivilegeEscalation: true
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
+      serviceAccountName: ingress-nginx
+---
+```
+
+### Ingress Resource
+
+This is an example of an Ingress Resource.  Note that the path is one type of common configuration, and controller-specific options are specified via annotations.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: timeserver-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: timeserver-internal
+            port:
+              number: 80
+      - path: /robohash
+        pathType: Prefix
+        backend:
+          service:
+            name: robohash-internal
+            port:
+              number: 80
+```
+
+Another example of an ingress:
+
+```{.yml file="hello-kiamol/ingress/localhost.yaml"}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hello-kiamol
+  annotations: # this was added b/c of this https://github.com/sixeyed/kiamol/issues/32
+    kubernetes.io/ingress.class: "nginx" 
+  labels:
+    kiamol: ch15
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: hello-kiamol
+            port:
+              number: 80
+
+```
+
+:::{.callout-note}
+
+
+## Ingress Annotations
+
+An ingress template should be provided to you by a DevOps engineer.  You should not need to create one from scratch.  This should vary from company to company.  The annotations are special parameters passed along to the controller since the Ingress Resource spec is very minimal in the options it can take and because Ingress controllers have different capabilities.  The annotations are controller-specific.
+:::
+
+You can also have several hosts in the same ingress:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: timeserver-ingress
+spec:
+  rules:
+  - host: timeserver.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: timeserver-internal
+            port:
+              number: 80
+  - host: robohash.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: robohash-internal
+            port:
+              number: 80
+```
+
+By using host-based routing, you can host several services all with the same external IP address. The ingress inspects the Host header in the HTTP request, and routes traffic accordingly. This contrast with Services of type LoadBalancer which each get their own IP address assigned and perform no packet inspection or routing.
+
+It is worth reading the docs on [Path types](https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types) and what happens when there are [multiple matches](https://kubernetes.io/docs/concepts/services-networking/ingress/#multiple-matches).
+
+### TLS Encryption
+
