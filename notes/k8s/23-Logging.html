@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Logging in K8s">
+<meta name="description" content="Logging with the EFK stack">
 
 <title>Hamel’s Blog - Logging</title>
 <style>
@@ -126,11 +126,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="Hamel’s Blog - Logging">
-<meta property="og:description" content="Logging in K8s">
+<meta property="og:description" content="Logging with the EFK stack">
 <meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta property="og:site-name" content="Hamel's Blog">
 <meta name="twitter:title" content="Hamel’s Blog - Logging">
-<meta name="twitter:description" content="Logging in K8s">
+<meta name="twitter:description" content="Logging with the EFK stack">
 <meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta name="twitter:creator" content="@HamelHusain">
 <meta name="twitter:card" content="summary_large_image">
@@ -355,6 +355,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/24-monitoring.html" class="sidebar-item-text sidebar-link">Monitoring</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/25-Ingress.html" class="sidebar-item-text sidebar-link">Ingress</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../notes/k8s/99-Random.html" class="sidebar-item-text sidebar-link">Random TILs</a>
   </div>
 </li>
@@ -545,7 +555,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
    
   <ul>
   <li><a href="#logs-on-nodes" id="toc-logs-on-nodes" class="nav-link active" data-scroll-target="#logs-on-nodes">Logs on Nodes</a></li>
-  <li><a href="#elk-stack" id="toc-elk-stack" class="nav-link" data-scroll-target="#elk-stack">ELK Stack</a>
+  <li><a href="#efk-stack" id="toc-efk-stack" class="nav-link" data-scroll-target="#efk-stack">EFK Stack</a>
   <ul class="collapse">
   <li><a href="#log-collector-fluentd" id="toc-log-collector-fluentd" class="nav-link" data-scroll-target="#log-collector-fluentd">Log Collector: Fluentd</a></li>
   </ul></li>
@@ -562,7 +572,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <div>
   <div class="description">
-    Logging in K8s
+    Logging with the EFK stack
   </div>
 </div>
 
@@ -620,8 +630,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>They are really like <code>jsonl</code> files where each line is its own record.</p>
 </section>
-<section id="elk-stack" class="level2">
-<h2 class="anchored" data-anchor-id="elk-stack">ELK Stack</h2>
+<section id="efk-stack" class="level2">
+<h2 class="anchored" data-anchor-id="efk-stack">EFK Stack</h2>
 <p>We will use the <code>EFK Stack</code>: Elasticsearch, Fluentd, Kibana. This is a common logging stack for K8s.</p>
 <section id="log-collector-fluentd" class="level3">
 <h3 class="anchored" data-anchor-id="log-collector-fluentd">Log Collector: Fluentd</h3>
@@ -730,6 +740,7 @@ Elasticsearch is a database, where each datum can have different fields, there i
    Host       elasticsearch                 # Elasticsearch server.
    Index      sys</code></pre>
 <p>We deploy Elasticsearch and Kibana and get the endpoint of Kibana.</p>
+<p>I skipped the rest of this b/c I’m hoping cloud services provide a good logging stack for me. Also, you will likely want to use <a href="https://docs.fluentd.org/parser">plugins</a> for FluentD.</p>
 
 
 </section>
