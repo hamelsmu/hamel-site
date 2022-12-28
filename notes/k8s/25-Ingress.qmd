@@ -23,14 +23,31 @@ For HTTPS, Ingress is the preferred way to expose your apps. You can have multip
 
 An Ingress controller is responsible for fulfilling the Ingress, usually with a load balancer.
 
-The Ingress Resource doesn't do anything by itself; you need an ingress controller which does the work of routing requests.  The ingress controller is a reverse proxy like Nginx.  Reverse proxies intercept requests and route them to where they need to go.  These reverse proxies can also do other things like caching, load balancing, URL rewrites, and so on. There are lots of flavors of Ingress Resources (like Nginx, Traefik, etc).
+The Ingress Resource doesn't do anything by itself; you need an ingress controller which does the work of routing requests.  The ingress controller is a reverse proxy like Nginx.  Reverse proxies intercept requests and route them to where they need to go.  These reverse proxies can also do other things like caching, load balancing, URL rewrites, and so on. There are lots of flavors of Ingress Resources (like Nginx, Traefik, etc).  
 
-![](ingress.png)
+:::{.callout-important}
+## Cloud providers give you an Ingress controller
 
-Whoever sets up the K8s cluster will likely use a bunch of boilerplate YAMLs to setup an Ingress controller.  Your DevOps team should deploy an Ingress controller for you.  You might reference the Ingress Controller from the Ingress Resource (in an annotation).  However, your DevOps team should provide you with a template for the Ingress Resource.  The important part is that you are comfortable enough to know what it is doing to modify an Ingress Resource template. You should not have to create an Ingress Resource from scratch.
+If you’re using a managed cluster with one of the major cloud providers, an ingress controller is already in place. In Google Kubernetes Engine, the ingress controller is GLBC (GCE L7 Load Balancer), in AWS the Ingress functionality is provided by the AWS Load Balancer Controller, while Azure provides AGIC (Application Gateway Ingress Controller).
+:::
+
+:::{.callout-note}
+
+## What is a reverse proxy?
+
+Reverse proxies intercept incoming web requests and can take different actions, such as rewriting the URL (changing the path), or routing different paths to different places.  They can also provide security by blocking or ignoring certain requests and caching results.  For these reasons, reverse proxies are a must-have for any production web application.
+
+Reverse proxies are different than proxy servers.  Proxy servers forward traffic from a requestor/client -- "outbound traffic".  Reverse proxies intercept client requests and forward them to the server -- "inbound traffic".  For example, proxy servers can hide the identity of the client.  Reverse proxies can hide the identity of the server.
+:::
+
+![](ingress2.png)
+
+![](ingress3.png)
+
+Whoever sets up the K8s cluster will likely use a bunch of boilerplate YAMLs to set up an Ingress controller.  Your DevOps team should deploy an Ingress controller for you.  You might reference the Ingress Controller from the Ingress Resource (in an annotation).  However, your DevOps team should provide you with a template for the Ingress Resource.  The important part is that you are comfortable enough to know what it is doing to modify an Ingress Resource template. You should not have to create an Ingress Resource from scratch.
 
 
-In this exercise, our Ingress controller is a load balancer that is also running Nginx.  Below is the Service and the Deployment parts of the Ingress Controller to give you an idea that the controller itself is a LoadBalancer.  The Deployment is a Deployment of the Nginx reverse proxy.  The Service is a LoadBalancer Service that exposes the Nginx reverse proxy.
+In this exercise, our Ingress controller is a load balancer that is also running Nginx.  Below is the Service and the Deployment parts of the Ingress Controller to give you an idea that the controller itself is a LoadBalancer.  The Deployment is a Deployment of the Nginx reverse proxy.  The Service is a LoadBalancer Service that exposes the Nginx reverse proxy. 
 
 ```{.yml file="ingress-nginx/nginx-ingress-controller.yaml"}
 ---
@@ -105,7 +122,7 @@ spec:
 
 ### Ingress Resource
 
-This is an example of an Ingress Resource.  Note that the path is one type of common configuration, and controller-specific options are specified via annotations.
+This is an example of an Ingress Resource.  Note that the path is one type of common configuration, and controller-specific options are specified via annotations.  
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -200,5 +217,127 @@ By using host-based routing, you can host several services all with the same ext
 
 It is worth reading the docs on [Path types](https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types) and what happens when there are [multiple matches](https://kubernetes.io/docs/concepts/services-networking/ingress/#multiple-matches).
 
-### TLS Encryption
+### Default Backend
 
+You can direct anything that doesn't match any of the rules to a generic 404 page by specifying a default backend:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kiada
+spec:
+  defaultBackend:
+    service:
+      name: fun404
+      port:
+        name: http
+  rules:
+  ...
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fun404
+  labels:
+    app: fun404
+spec:
+  containers:
+  - name: server
+    image: luksa/static-http-server
+    args:
+    - --listen-port=8080
+    - --response-code=404
+    - --text=This isn't the URL you're looking for.
+    ports:
+    - name: http
+      containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fun404
+  labels:
+    app: fun404
+spec:
+  selector:
+    app: fun404
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+```
+
+
+## Using an Ingress
+
+After you have deployed an ingress, you can see the address and port that it is listening on:
+
+```bash
+$ kubectl get ing
+```
+
+:::(.callout-note)
+
+The address may not be displayed immediately. This is very common when the cluster is running in the cloud. If the address isn’t displayed after several minutes, it means that no ingress controller has processed the Ingress object. Check if the controller is running. Since a cluster can run multiple ingress controllers, it’s possible that they’ll all ignore your Ingress object if you don’t specify which of them should process it. Check the documentation of your chosen ingress controller to find out if you need to add the kubernetes.io/ingress.class annotation or set the spec.ingressClassName
+
+:::
+
+## TLS / HTTPS Encryption
+
+TLS: Transport Layer Security, formerly known as SSL or Secure Sockets Layer.  blic key to communicate with the server securely and agree upon a symmetric encryption key that both parties can use to communicate.
+3. 
+
+### How Does HTTPS Work?
+
+HTTPS uses the HTTP protocol with TLS and SSL encryption added on top.  The initial handshake uses asymmetric encryption and then moves to symmetric encryption. This is how it works:
+
+1. A website references an SSL Certificate that contains a public key.  The SSL Certificate is provided by a trusted Certificate Authority (CA).  
+    - You can check the authenticity of the certificate by using a separate public key from the CA to decrypt the CA's signature (the CA has their own private key to encrypt its digital signature).  Your browser has a list of trusted CAs.  Your browser often gets these from other trusted sources like your operating system.
+      - [Chrome Root CA Policy, 2022-09-01](https://www.chromium.org/Home/chromium-security/root-ca-policy/) "When making HTTPS connections, Chrome refers to a list of root certificates from CAs that have demonstrated why continued trust in them is justified. This list is known as a “Root Store.” CA certificates included in the Chrome Root Store are selected on the basis of publicly available and verified information, such as that within the Common CA Database (CCADB), and ongoing reviews by the Chrome Root Program. CCADB is a datastore run by Mozilla and used by various operating systems, browser vendors, and CA owners to share and disclose information regarding the ownership, historical operation, and audit history of CAs and corresponding certificates and key material.  Historically, Chrome has integrated with the Root Store provided by the platform on which it is running. In Chrome 105, Chrome began a platform-by-platform transition from relying on the host operating system’s Root Store to its own on Windows, macOS, ChromeOS, Linux, and Android. This change makes Chrome more secure and promotes consistent user and developer experiences across platforms. Apple policies prevent the Chrome Root Store and corresponding Chrome Certificate Verifier from being used on Chrome for iOS."
+    - These CAs come from trustworthy sources like Cloudflare, Google, etc.
+    - Let's Encrypt, a popular CA checks that the certificate request comes from a person who actually controls the domain. They do this by sending the client a unique token and then Lets Encrypt makes a web or DNS request to retrieve a key derived from that token.
+2. After the initial verification and handshake, the client and server use a symmetric encryption key to communicate securely.  The client and server both have the same symmetric key.  This is the key that is used to encrypt and decrypt the data.
+
+
+See [this article](https://www.cloudflare.com/learning/ssl/what-is-https/) and also [this one](https://robertheaton.com/2014/03/27/how-does-https-actually-work/)
+
+
+### TLS Termination and HTTPS
+
+Some Ingress controllers like Trafefik have integrations with Let's Encrypt to automate the entire process of getting a certificate and renewing it.  They also handle TLS termination, which is decrypting the traffic and forwarding it on the appropriate place.  Ingress is a nice place to handle TLS because it allows you to have a standardized way of handling TLS for all your services.
+
+These ingress controllers allow you to specify a secret that contains the TLS certificate and private key, and they will handle the rest.  All you need to do is add a TLS section to your Ingress spec and state the name of the Secret to use:
+
+First you need to create a secret:
+
+```bash
+# create a Secret:
+$ openssl req -x509 -newkey rsa:4096 -keyout example.key -out example.crt \
+  -sha256 -days 7300 -nodes \
+  -subj '/CN=*.example.com' \
+  -addext 'subjectAltName = DNS:*.example.com' 
+ 
+$ kubectl create secret tls tls-example-com --cert=example.crt --key=example.key
+secret/tls-example-com created
+```
+
+Then reference the secret from the Ingress spec:
+
+```{.yml file="todo-list/update/ingress-traefik-https.yaml"}
+on: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kiada
+spec:
+  tls:
+  - secretName: tls-example-com
+    hosts:
+    - "*.example.com" # The hosts specified in tls.hosts must match the names used in the certificate in the secret.
+  rules:
+  ...
+```
+
+## Multiple Ingress Controllers
+
+We will not touch this, but this is possible by using an `IngressClass`.
