@@ -568,6 +568,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#tls-termination-and-https" id="toc-tls-termination-and-https" class="nav-link" data-scroll-target="#tls-termination-and-https">TLS Termination and HTTPS</a></li>
   </ul></li>
   <li><a href="#multiple-ingress-controllers" id="toc-multiple-ingress-controllers" class="nav-link" data-scroll-target="#multiple-ingress-controllers">Multiple Ingress Controllers</a></li>
+  <li><a href="#ingress-gateway" id="toc-ingress-gateway" class="nav-link" data-scroll-target="#ingress-gateway">Ingress Gateway</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel/edit/main/notes/k8s/25-Ingress.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
@@ -624,7 +625,7 @@ Docker Desktop
 <section id="ingress-controller" class="level3">
 <h3 class="anchored" data-anchor-id="ingress-controller">Ingress Controller</h3>
 <p>An Ingress controller is responsible for fulfilling the Ingress, usually with a load balancer.</p>
-<p>The Ingress Resource doesn’t do anything by itself; you need an ingress controller which does the work of routing requests. The ingress controller is a reverse proxy like Nginx. Reverse proxies intercept requests and route them to where they need to go. These reverse proxies can also do other things like caching, load balancing, URL rewrites, and so on. There are lots of flavors of Ingress Resources (like Nginx, Traefik, etc).</p>
+<p>The Ingress Resource doesn’t do anything by itself; you need an ingress controller which does the work of routing requests. The ingress controller often contains a reverse proxy like Nginx. When you set this up on cloud providers they may offer something a bitt different. Reverse proxies intercept requests and route them to where they need to go. These reverse proxies can also do other things like caching, load balancing, URL rewrites, and so on. There are lots of flavors of Ingress Resources (like Nginx, Traefik, etc).</p>
 <div class="callout-important callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -894,7 +895,7 @@ Ingress Annotations
 <h3 class="anchored" data-anchor-id="tls-termination-and-https">TLS Termination and HTTPS</h3>
 <p>Some Ingress controllers like Trafefik have integrations with Let’s Encrypt to automate the entire process of getting a certificate and renewing it. They also handle TLS termination, which is decrypting the traffic and forwarding it on the appropriate place. Ingress is a nice place to handle TLS because it allows you to have a standardized way of handling TLS for all your services.</p>
 <p>These ingress controllers allow you to specify a secret that contains the TLS certificate and private key, and they will handle the rest. All you need to do is add a TLS section to your Ingress spec and state the name of the Secret to use:</p>
-<p>First you need to create a secret:</p>
+<p>First you need to create a secret (ideally you would never create a certificate like this, but this is just for demo purposes)</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a Secret:</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> openssl req <span class="at">-x509</span> <span class="at">-newkey</span> rsa:4096 <span class="at">-keyout</span> example.key <span class="at">-out</span> example.crt <span class="dt">\</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-sha256</span> <span class="at">-days</span> 7300 <span class="at">-nodes</span> <span class="dt">\</span></span>
@@ -920,6 +921,10 @@ Ingress Annotations
 <section id="multiple-ingress-controllers" class="level2">
 <h2 class="anchored" data-anchor-id="multiple-ingress-controllers">Multiple Ingress Controllers</h2>
 <p>We will not touch this, but this is possible by using an <code>IngressClass</code>.</p>
+</section>
+<section id="ingress-gateway" class="level2">
+<h2 class="anchored" data-anchor-id="ingress-gateway">Ingress Gateway</h2>
+<p>K8s has a <a href="https://gateway-api.sigs.k8s.io/concepts/api-overview/">new API called gateway</a> that is supposed to address some of the limitations of the Ingress resource. I don’t know anything about it.</p>
 
 
 </section>
