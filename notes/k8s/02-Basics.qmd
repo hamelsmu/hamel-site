@@ -39,6 +39,75 @@ Execute a command in a container by doing `kubectl exec -it <pod name> -- sh`
 
 > You can’t switch a Service from one type to another in every version of Kubernetes, so you’ll need to delete the original ClusterIP Service for the API before you can deploy the ExternalName Service.
 
+You can 
+
+### DNS
+
+When you deploy a service, you can reference it from within the namespace by its name.  For example, the following service:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: numbers-api
+spec:
+  ports:
+    - port: 80
+  selector:
+    app: numbers-api
+  type: ClusterIP # this isn't necessary, it's the default
+```
+
+Can be referenced with just `http://numbers-api`  -- that is how it's referenced in [the application](https://github.com/sixeyed/kiamol/blob/master/ch03/docker-images/numbers/numbers-web/Dockerfile#L13).  
+
+If the pod trying to reach that service is in a different namespace, you have to use the fully qualified name `<service-name>.<namespace>`, which would be `http://numbers-api.default` in this case. 
+
+#### Testing DNS
+
+The best way to test internal DNS problems is to use `nslookup` in a pod.  You can deploy a pod specifically for network testing from the [official k8s docs](https://kubernetes.io/docs/tasks/administer-cluster/dns-debugging-resolution/):
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dnsutils
+  namespace: default
+spec:
+  containers:
+  - name: dnsutils
+    image: registry.k8s.io/e2e-test-images/jessie-dnsutils:1.3
+    command:
+      - sleep
+      - "infinity"
+    imagePullPolicy: IfNotPresent
+  restartPolicy: Always
+```
+
+You can also reference the yaml like this `kubectl apply -f https://k8s.io/examples/admin/dns/dnsutils.yaml`
+
+Let's say I've deployed a service called `numbers-api` in the `default` namespace:
+
+```bash
+$ kl get svc
+NAME          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+numbers-api   ClusterIP   10.98.154.232    <none>        80/TCP           13m
+```
+
+You can now test it with `nslookup`:
+
+```bash
+# use nslookup <service-name> if the pod dnsutils ins int he same namespace as the service
+kubectl exec -i -t dnsutils -- nslookup numbers-api
+
+# or if your pod is in a different namespace than the service use <service-name>.<namespace>
+kubectl exec -i -t dnsutils -- nslookup numbers-api.default
+```
+
+
+If you are experiencing further issues, follow [these debugging instructions](https://kubernetes.io/docs/tasks/administer-cluster/dns-debugging-resolution/)
+
+
+
 #### Labels 
 
 If you have overlapping labels for a particular deployment, the service will route to all deployments that match that label.  If you want to control for this, add additional unique labels.  Just having one label like "myapp" can be dangerous for this reason.

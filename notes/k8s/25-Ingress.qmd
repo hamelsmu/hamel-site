@@ -29,7 +29,7 @@ For HTTPS, Ingress is the preferred way to expose your apps. You can have multip
 
 An Ingress controller is responsible for fulfilling the Ingress, usually with a load balancer.
 
-The Ingress Resource doesn't do anything by itself; you need an ingress controller which does the work of routing requests.  The ingress controller is a reverse proxy like Nginx.  Reverse proxies intercept requests and route them to where they need to go.  These reverse proxies can also do other things like caching, load balancing, URL rewrites, and so on. There are lots of flavors of Ingress Resources (like Nginx, Traefik, etc).  
+The Ingress Resource doesn't do anything by itself; you need an ingress controller which does the work of routing requests.  The ingress controller often contains a reverse proxy like Nginx.  When you set this up on cloud providers they may offer something a bitt different. Reverse proxies intercept requests and route them to where they need to go.  These reverse proxies can also do other things like caching, load balancing, URL rewrites, and so on. There are lots of flavors of Ingress Resources (like Nginx, Traefik, etc).  
 
 :::{.callout-important}
 ## Cloud providers give you an Ingress controller
@@ -314,7 +314,7 @@ Some Ingress controllers like Trafefik have integrations with Let's Encrypt to a
 
 These ingress controllers allow you to specify a secret that contains the TLS certificate and private key, and they will handle the rest.  All you need to do is add a TLS section to your Ingress spec and state the name of the Secret to use:
 
-First you need to create a secret:
+First you need to create a secret (ideally you would never create a certificate like this, but this is just for demo purposes)
 
 ```bash
 # create a Secret:
@@ -346,3 +346,7 @@ spec:
 ## Multiple Ingress Controllers
 
 We will not touch this, but this is possible by using an `IngressClass`.
+
+## Ingress Gateway
+
+K8s has a [new API called gateway](https://gateway-api.sigs.k8s.io/concepts/api-overview/) that is supposed to address some of the limitations of the Ingress resource.  I don't know anything about it.
