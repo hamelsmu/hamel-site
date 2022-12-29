@@ -598,12 +598,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <section id="load-balancers-vs-ingress" class="level2">
 <h2 class="anchored" data-anchor-id="load-balancers-vs-ingress">Load Balancers vs Ingress</h2>
-<p>We have been using LoadBalancer services to expose our apps.</p>
+<p>Load balancers are an easy way to expose apps, however Ingress is yet a different way that is more suited to HTTP requests. Here are some key differences:</p>
 <ol type="1">
 <li><p>Load Balancers can accept any kind of traffic (TCP, UDP, etc).</p></li>
-<li><p>Cloud Kubernetes platforms like AKS and EKS are highly available multinode clusters. Deploying a Kubernetes LoadBalancer Service creates an actual load balancer in your cloud, which spans all the nodes in your cluster—the cloud load balancer sends incoming traffic to one of the nodes and then Kubernetes routes it to a Pod. You’ll get a different IP address for each LoadBalancer Service, and it will be a public address, accessible from the internet. Docker Desktop is a local development environment. It runs on a single machine and integrates with the network stack so LoadBalancer Services are available at the localhost address. What this means is that a LoadBalancer will spin up additional resources on your cloud provider. This doesn’t have to be the case with Ingress.</p></li>
+<li><p>Cloud Kubernetes platforms like AKS and EKS are highly available multinode clusters. Deploying a Kubernetes LoadBalancer Service creates an actual load balancer in your cloud, which spans all the nodes in your cluster—the cloud load balancer sends incoming traffic to one of the nodes and then Kubernetes routes it to a Pod. You’ll get a different IP address for each LoadBalancer Service, and it will be a public address, accessible from the internet. What this means is that a LoadBalancer will spin up additional resources on your cloud provider. This doesn’t have to be the case with Ingress.</p></li>
 <li><p>Cloud providers often charge based on “load balancing rules”, which roughly translates into how many load balancing external IP addresses are assigned. By using an ingress to combine several services into one, rather than each being exposed with it’s own IP, you can likely save money.</p></li>
 </ol>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Docker Desktop
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Docker Desktop’s local Kubernetes runs on a single machine and integrates with the network stack so LoadBalancer Services are available at the localhost address.</p>
+</div>
+</div>
 </section>
 <section id="ingress" class="level2">
 <h2 class="anchored" data-anchor-id="ingress">Ingress</h2>
@@ -641,8 +654,8 @@ What is a reverse proxy?
 </div>
 <p><img src="ingress2.png" class="img-fluid"></p>
 <p><img src="ingress3.png" class="img-fluid"></p>
-<p>Whoever sets up the K8s cluster will likely use a bunch of boilerplate YAMLs to set up an Ingress controller. Your DevOps team should deploy an Ingress controller for you. You might reference the Ingress Controller from the Ingress Resource (in an annotation). However, your DevOps team should provide you with a template for the Ingress Resource. The important part is that you are comfortable enough to know what it is doing to modify an Ingress Resource template. You should not have to create an Ingress Resource from scratch.</p>
-<p>In this exercise, our Ingress controller is a load balancer that is also running Nginx. Below is the Service and the Deployment parts of the Ingress Controller to give you an idea that the controller itself is a LoadBalancer. The Deployment is a Deployment of the Nginx reverse proxy. The Service is a LoadBalancer Service that exposes the Nginx reverse proxy.</p>
+<p>If you do not go with your cloud provider’s hosted K8s solution with a provided ingress controller, an experienced devops person will setup the ingress for you. Your DevOps team should deploy an Ingress controller for you. Your DevOps team should provide you with a template for the Ingress Resource, which may reference the Ingress controller. The important part is that you are comfortable enough to know what it is doing to modify an Ingress Resource template. You should not have to create an Ingress Resource from scratch.</p>
+<p>In the below example, our Ingress controller is a load balancer that is also running Nginx. Below is the Service and the Deployment parts of the Ingress Controller to give you an idea that the controller itself is a LoadBalancer. The Deployment is a Deployment of the Nginx reverse proxy. The Service is a LoadBalancer Service that exposes the Nginx reverse proxy. You probably won’t and should not have to ever deal this.</p>
 <div class="sourceCode" id="cb1" data-file="ingress-nginx/nginx-ingress-controller.yaml"><pre class="sourceCode yml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> v1</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Service</span></span>
@@ -714,7 +727,7 @@ What is a reverse proxy?
 </section>
 <section id="ingress-resource" class="level3">
 <h3 class="anchored" data-anchor-id="ingress-resource">Ingress Resource</h3>
-<p>This is an example of an Ingress Resource. Note that the path is one type of common configuration, and controller-specific options are specified via annotations.</p>
+<p>This is an example of an Ingress Resource (the kind of file you may edit). Note that the path is one type of common configuration, and controller-specific options are specified via annotations (in the second example).</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> networking.k8s.io/v1</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Ingress</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
