@@ -6,13 +6,19 @@ order: 25
 
 ## Load Balancers vs Ingress
 
-We have been using LoadBalancer services to expose our apps.  
+Load balancers are an easy way to expose apps, however Ingress is yet a different way that is more suited to HTTP requests.  Here are some key differences: 
 
 1. Load Balancers can accept any kind of traffic (TCP, UDP, etc).
 
-2. Cloud Kubernetes platforms like AKS and EKS are highly available multinode clusters. Deploying a Kubernetes LoadBalancer Service creates an actual load balancer in your cloud, which spans all the nodes in your cluster—the cloud load balancer sends incoming traffic to one of the nodes and then Kubernetes routes it to a Pod. You’ll get a different IP address for each LoadBalancer Service, and it will be a public address, accessible from the internet. Docker Desktop is a local development environment. It runs on a single machine and integrates with the network stack so LoadBalancer Services are available at the localhost address.  What this means is that a LoadBalancer will spin up additional resources on your cloud provider.  This doesn't have to be the case with Ingress.
+2. Cloud Kubernetes platforms like AKS and EKS are highly available multinode clusters. Deploying a Kubernetes LoadBalancer Service creates an actual load balancer in your cloud, which spans all the nodes in your cluster—the cloud load balancer sends incoming traffic to one of the nodes and then Kubernetes routes it to a Pod. You’ll get a different IP address for each LoadBalancer Service, and it will be a public address, accessible from the internet.   What this means is that a LoadBalancer will spin up additional resources on your cloud provider.  This doesn't have to be the case with Ingress.
 
 3. Cloud providers often charge based on “load balancing rules”, which roughly translates into how many load balancing external IP addresses are assigned. By using an ingress to combine several services into one, rather than each being exposed with it’s own IP, you can likely save money.
+
+:::{.callout-note}
+## Docker Desktop
+
+Docker Desktop's local Kubernetes runs on a single machine and integrates with the network stack so LoadBalancer Services are available at the localhost address.
+:::
 
 ## Ingress
 
@@ -44,10 +50,10 @@ Reverse proxies are different than proxy servers.  Proxy servers forward traffic
 
 ![](ingress3.png)
 
-Whoever sets up the K8s cluster will likely use a bunch of boilerplate YAMLs to set up an Ingress controller.  Your DevOps team should deploy an Ingress controller for you.  You might reference the Ingress Controller from the Ingress Resource (in an annotation).  However, your DevOps team should provide you with a template for the Ingress Resource.  The important part is that you are comfortable enough to know what it is doing to modify an Ingress Resource template. You should not have to create an Ingress Resource from scratch.
+If you do not go with your cloud provider's hosted K8s solution with a provided ingress controller, an experienced devops person will setup the ingress for you.  Your DevOps team should deploy an Ingress controller for you.  Your DevOps team should provide you with a template for the Ingress Resource, which may reference the Ingress controller.  The important part is that you are comfortable enough to know what it is doing to modify an Ingress Resource template. You should not have to create an Ingress Resource from scratch.
 
 
-In this exercise, our Ingress controller is a load balancer that is also running Nginx.  Below is the Service and the Deployment parts of the Ingress Controller to give you an idea that the controller itself is a LoadBalancer.  The Deployment is a Deployment of the Nginx reverse proxy.  The Service is a LoadBalancer Service that exposes the Nginx reverse proxy. 
+In the below example, our Ingress controller is a load balancer that is also running Nginx.  Below is the Service and the Deployment parts of the Ingress Controller to give you an idea that the controller itself is a LoadBalancer.  The Deployment is a Deployment of the Nginx reverse proxy.  The Service is a LoadBalancer Service that exposes the Nginx reverse proxy. You probably won't and should not have to ever deal this.
 
 ```{.yml file="ingress-nginx/nginx-ingress-controller.yaml"}
 ---
@@ -122,7 +128,7 @@ spec:
 
 ### Ingress Resource
 
-This is an example of an Ingress Resource.  Note that the path is one type of common configuration, and controller-specific options are specified via annotations.  
+This is an example of an Ingress Resource (the kind of file you may edit).  Note that the path is one type of common configuration, and controller-specific options are specified via annotations (in the second example).  
 
 ```yaml
 apiVersion: networking.k8s.io/v1
