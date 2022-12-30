@@ -501,6 +501,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <a href="../../../notes/k8s/security/28-workloads.html" class="sidebar-item-text sidebar-link">Webhooks</a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/security/29-cluster-updates.html" class="sidebar-item-text sidebar-link">Updating a K8s Cluster</a>
+  </div>
+</li>
       </ul>
   </li>
       </ul>
@@ -607,8 +612,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">...</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">spec:                     # This is the Pod spec in the Deployment.</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"> securityContext:        # These controls apply to all Pod containers.</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">   runAsUser: 65534      # Runs as the “unknown” user</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">   runAsGroup: 3000      # Runs with a nonexistent group</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">   runAsNonRoot: true    # Runs as a non-root user</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">   runAsUser: 65534      # Runs as the “unknown” user</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Another thing that you usually want to do is make sure the Kubernetes API token is not mounted into the container, which is only necessary for apps that actually need to use the Kubernetes API (which is rare). You can prevent this token from being exposed like this:</p>
 <div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
