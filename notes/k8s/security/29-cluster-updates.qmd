@@ -1,0 +1,10 @@
+---
+title: Updating a K8s Cluster
+description: Tips for how to make your applications resilient to Kubernetes cluster updates
+order: 29
+---
+
+1. Make sure you use readiness checks
+2. Handle SIGTERM in your applications so they can gracefully shut down.  Use a `terminationGracePeriodSeconds` configuration to give your application time to shut down.
+3. When nodes are deleted/updated, this will cause the pods to be rescheduled.  The edge case here is when all replicas for an application or on a single node -- to avoid tihs you can use `Pod Disruption Budgets (PDBs)` to ensure that at least one replica is always available.  Alternatively, you can use `minAvailable` to ensure that at least one replica is always available (recommended).
+

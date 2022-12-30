@@ -1,6 +1,7 @@
 ---
 title: Securing Containers
 description: Use security contexts to restrict containers.
+order: 27
 ---
 
 Containers usually run as root, which is dangerous b/c if they can break out of the container, they can do anything on the host.  You can run containers as a different user, but some apps work only if they’re running as root.  There are ways to specify this via a security context like so, but it will require work to make sure things aren't broken, which they often will when you move away from root:
@@ -10,8 +11,8 @@ kind: Deployment
 ...
 spec:                     # This is the Pod spec in the Deployment.
  securityContext:        # These controls apply to all Pod containers.
+   runAsNonRoot: true    # Runs as a non-root user
    runAsUser: 65534      # Runs as the “unknown” user
-   runAsGroup: 3000      # Runs with a nonexistent group
 ```
 
 Another thing that you usually want to do is make sure the Kubernetes API token is not mounted into the container, which is only necessary for apps that actually need to use the Kubernetes API (which is rare).  You can prevent this token from being exposed like this:
