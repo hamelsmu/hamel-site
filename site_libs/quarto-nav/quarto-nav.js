@@ -149,6 +149,14 @@ window.document.addEventListener("DOMContentLoaded", function () {
     };
   }
 
+  window.addEventListener(
+    "hashchange",
+    function (e) {
+      window.scrollTo(0, window.pageYOffset - headerOffset());
+    },
+    false
+  );
+
   // Observe size changed for the header
   const headerEl = window.document.querySelector("header.fixed-top");
   if (headerEl && window.ResizeObserver) {
