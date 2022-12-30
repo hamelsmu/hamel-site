@@ -350,6 +350,41 @@
     "text": "Don’t Use CPU Limits?\nThis blog post is contraversial, Michal thinks it’s bad advice. I tend to agree with Michal."
   },
   {
+    "objectID": "notes/k8s/security/26-network-security.html",
+    "href": "notes/k8s/security/26-network-security.html",
+    "title": "Network Security",
+    "section": "",
+    "text": "Tip\n\n\n\n#Ignore\nYou can probably ignore this section"
+  },
+  {
+    "objectID": "notes/k8s/security/26-network-security.html#network-policies",
+    "href": "notes/k8s/security/26-network-security.html#network-policies",
+    "title": "Network Security",
+    "section": "Network Policies",
+    "text": "Network Policies\nK8s have a flat networking model, which means that all pods can communicate with each other. To prevent this, we can use network policies. Network policies are like firewall rules that allow or deny traffic to pods. Network policies are applied to pods using labels. This can be used to block incoming and outgoing traffic.\nOutgoing traffic is referred to as egress and incoming traffic is referred to as ingress, which should not be confused with the ingress resource.\nFor example, the below network policy will only allow traffic to pods labeled app: apod-api from pods labeled app: apod-web:\napiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n name: apod-api\nspec:\n podSelector:             # This is the Pod where the rule applies.\n   matchLabels:\n     app: apod-api       \n ingress:                 # Rules default to deny, so this rule\n - from:                  # denies all ingress except where the \n   - podSelector:         # source of the traffic is a Pod with \n       matchLabels:       # the apod-web label.\n         app: apod-web\n   ports:                 # This restriction is by port.\n   - port: api            # The port is named in the API Pod spec.\nHowever this doesn’t do anything! Just like you need an ingress controller, you need something in your cluster’s networking system to enforce this. This involves installing various plugins, which your DevOps team should be doing. Furthermore, different cloud platforms make this easier or harder."
+  },
+  {
+    "objectID": "notes/k8s/security/28-workloads.html",
+    "href": "notes/k8s/security/28-workloads.html",
+    "title": "Webhooks",
+    "section": "",
+    "text": "Tip\n\n\n\nML people should don’t need to worry about creating their own webhooks. It is just useful to know what they are, since some of the terms/concepts can show up in error messages.\nWebhooks provide a way for you to validate if a K8s cluster should run an object. Some of these are built in – like the ResourceQuota, which stops workloads from running if they exceed quotas. Webhooks that block workloads are called ValidatingAdmissionWebhook.\nThere is also the MutatingAdmissionWebhook which can modify objects before they are created. This is useful for things like injecting sidecars into pods or adding labels to objects. It’s hard to tell if a resource has been mutated as there is no indication when you run kubectl describe. This is one very undesirable feature of webhooks, as they are hard to debug and are not visible. There is something called an Open Policy Agent (OPA) that can be used to mitigate these issues. Example of confusion caused by a Mutating webhook:\nWebhooks can be expressed in arbitrary code like python or javascript. These can run inside or outside the cluster but must be served on HTTPS.\nYou have to document the rules of webhooks outside the cluster, as their rules are not discoverable by kubectl.\nWebhooks are used to enforce rules like:"
+  },
+  {
+    "objectID": "notes/k8s/security/28-workloads.html#webhook-errors",
+    "href": "notes/k8s/security/28-workloads.html#webhook-errors",
+    "title": "Webhooks",
+    "section": "Webhook Errors",
+    "text": "Webhook Errors\nThis is what webhook error messages might look like when you encounter them:"
+  },
+  {
+    "objectID": "notes/k8s/security/27-container-security.html",
+    "href": "notes/k8s/security/27-container-security.html",
+    "title": "Securing Containers",
+    "section": "",
+    "text": "Containers usually run as root, which is dangerous b/c if they can break out of the container, they can do anything on the host. You can run containers as a different user, but some apps work only if they’re running as root. There are ways to specify this via a security context like so, but it will require work to make sure things aren’t broken, which they often will when you move away from root:\nkind: Deployment\n...\nspec:                     # This is the Pod spec in the Deployment.\n securityContext:        # These controls apply to all Pod containers.\n   runAsUser: 65534      # Runs as the “unknown” user\n   runAsGroup: 3000      # Runs with a nonexistent group\nAnother thing that you usually want to do is make sure the Kubernetes API token is not mounted into the container, which is only necessary for apps that actually need to use the Kubernetes API (which is rare). You can prevent this token from being exposed like this:\n\n\n\n\n\n\nNote\n\n\n\nThe Kubernetes API token is located at /run/secrets/kubernetes.io/serviceaccount/token which you can see if you run\nkubectl exec -it <pod> -- cat /run/secrets/kubernetes.io/serviceaccount/token\n\n\nkind: Deployment\n...\nspec:    \n automountServiceAccountToken: false      # Removes the API token\nThere are many other settings you can specify. For example a readOnlyRootFilesystem setting will prevents people from downloading scripts or libraries. But these will require you to extensively test your apps to make sure this doesn’t break anything (and it often will)."
+  },
+  {
     "objectID": "notes/k8s/Open Questions.html",
     "href": "notes/k8s/Open Questions.html",
     "title": "Hamel's Blog",
