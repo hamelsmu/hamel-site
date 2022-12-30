@@ -1,0 +1,33 @@
+---
+title: Webhooks
+description: Blocking and modifying workloads
+---
+
+:::{.callout-tip}
+ML people should don't need to worry about creating their own webhooks.  It is just useful to know what they are, since some of the terms/concepts can show up in error messages. 
+:::
+
+Webhooks provide a way for you to validate if a K8s cluster should run an object.  Some of these are built in -- like the `ResourceQuota`, which stops workloads from running if they exceed quotas.  Webhooks that block workloads are called `ValidatingAdmissionWebhook`.
+
+There is also the `MutatingAdmissionWebhook` which can modify objects before they are created.  This is useful for things like injecting sidecars into pods or adding labels to objects.  It's hard to tell if a resource has been mutated as there is no indication when you run `kubectl describe`.  This is one very undesirable feature of webhooks, as they are hard to debug and are not visible.  There is something called an `Open Policy Agent (OPA)` that can be used to mitigate these issues.  Example of confusion caused by a Mutating webhook:
+
+![](mutating-webhook.png)
+
+Webhooks can be expressed in arbitrary code like python or javascript. These can run inside or outside the cluster but must be served on HTTPS. 
+
+You have to document the rules of webhooks outside the cluster, as their rules are not discoverable by kubectl. 
+
+Webhooks are used to enforce rules like:
+
+- All pods must have container probes defined
+- Pods can only run containers from a specific list of repositories
+- All containers must have CPU & Memory limits set
+- ...etc
+
+
+## Webhook Errors
+
+This is what webhook error messages might look like when you encounter them:
+
+![](webhook.png)
+

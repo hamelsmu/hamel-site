@@ -1,0 +1,39 @@
+---
+title: Network Security
+description: Network Security (you can ignore this section)
+---
+
+:::{.callout-tip}
+#Ignore
+
+You can probably ignore this section
+:::
+
+## Network Policies
+
+K8s have a flat networking model, which means that all pods can communicate with each other. To prevent this, we can use network policies.  Network policies are like firewall rules that allow or deny traffic to pods.  Network policies are applied to pods using labels.  This can be used to block incoming and outgoing traffic.
+
+Outgoing traffic is referred to as `egress` and incoming traffic is referred to as `ingress`, which should not be confused with the `ingress` resource.
+
+For example, the below network policy will only allow traffic to pods labeled `app: apod-api` from pods labeled `app: apod-web`:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+ name: apod-api
+spec:
+ podSelector:             # This is the Pod where the rule applies.
+   matchLabels:
+     app: apod-api       
+ ingress:                 # Rules default to deny, so this rule
+ - from:                  # denies all ingress except where the 
+   - podSelector:         # source of the traffic is a Pod with 
+       matchLabels:       # the apod-web label.
+         app: apod-web
+   ports:                 # This restriction is by port.
+   - port: api            # The port is named in the API Pod spec.
+```
+
+**However this doesn't do anything!** Just like you need an ingress controller, you need something in your cluster's networking system to enforce this.  This involves installing various plugins, which your DevOps team should be doing.  Furthermore, different cloud platforms make this easier or harder.
+
