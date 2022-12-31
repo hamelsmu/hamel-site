@@ -1,0 +1,356 @@
+---
+title: RBAC
+description: Rule Based Access Control
+order: 30
+---
+
+You don't want everyone to have admin priviliges on a K8s cluster.  For example `kl delete ns --all` or `kl delete deploy --all -A` (deletes all deployments in all namespaces).
+
+## Terminology:
+
+- `subject`: a user, system account or group.
+- `Role`: a defined set of permissions that you will apply to subject(s).
+- `RoleBinding`: config where you assign roles to subject(s).
+
+RBAC grants permissoins to perform actions on resources.  You set a permissions in a role, and apply the role to one or more subject.
+
+### Group, Versions, Kinds and Resources
+
+A resource is described by  the triple (group, version, kind) (GVK for short)
+
+[See this page](https://book.kubebuilder.io/cronjob-tutorial/gvks.html) 
+
+It is important to understand `groups`, `versions`, `kinds`, and `resources` for RBAC.
+
+1. **`Kinds`**: each (group, version) contains one or more api types called `Kinds`.  These are guaranteed to be compatible across versions
+2. **`Resource`**: A use of `Kind` in the API.  There is often a one-to-one mapping between `Kinds` and `Resources`.  For instance, the `pods` resource corresponds to the `Pod` Kind.  You can see the correspondence with the command `kl api-resources --sort-by name`.  
+    - However the same Kind may be returned by multiple resources.  For example, the `Pod` Kind is returned by the `pods` and `pods/log` resources Notice that resources are always lowercase, and by convention are the lowercase form of the Kind.
+3. **`apiGroup`**: A collection of related functionality.  Each group has one or more **`versions`**.  This allows us to change how an API works over time.  The api groups are [referenced here](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.26/#-strong-api-groups-strong-).
+    - To lookup the apiGroup for a resource, you can use the command `kl api-resources --sort-by name`, and ignoring the version name.  For example, the `pods` resource is part of the `core` apiGroup which is the empty string in the spec (see below).  You can also look at the reference docs, for example `PriorityClass` is part of the `scheduling.k8s.io` apiGroup, which is [indicated here](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#priorityclass-v1-scheduling-k8s-io).
+
+
+Example of how to lookup the apiGroup and resource name for `kind: PriorityClass`:
+
+```bash
+
+```bash
+$  kl api-resources --sort-by name
+
+NAME                              SHORTNAMES   APIVERSION                             NAMESPACED   KIND
+...
+priorityclasses                   pc           scheduling.k8s.io/v1                   false        PriorityClass
+```
+
+This tells us that the `PriorityClass` Kind is part of the `scheduling.k8s.io` apiGroup, and the resource name is `priorityclasses`.
+
+### Role vs ClusterRole
+
+Some resources are namespaces, some are cluster wide.  
+
+- `Role` and `RoleBinding` work on namepsaced objects.
+- `ClusterRole` and `ClusterRoleBinding` work on the whole cluster
+
+There are lots of built in `ClusterRole`s which you can see with:
+
+```bash
+kl get clusterrole
+```
+
+## Authentication
+
+You don't login to K8s cluster with a username.  K8s does not authenticate end users -- it relies on external identity providers.  Cloud platforms will provide this user identification and authentication layer for you.  For example, GKE can use Google accounts.
+
+## Defining Roles
+
+You can define your own `Role` and `ClusterRole` objects.  In addition to  `apiGroups` and`resources` which we discussed above, you will also need to know about `verbs`.
+
+You can see all the [api request verbs here](https://kubernetes.io/docs/reference/access-authn-authz/authorization/#review-your-request-attributes), which are: `get`, `list`, `create`, `update`, `patch`, `watch`, `delete`, and `deletecollection`.
+
+The `apiGroups` [referenced here](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.26/#-strong-api-groups-strong-) is helpful to see the correspondence between the `resource` and the `apiGroup`.  Below is an example `Role` and `ClusterRole` (which are not related):
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1 # this is the Group/Version used in the Binding
+kind: Role
+metadata:
+  namespace: default
+  name: pod-reader
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["pods"] #pods are part of the Core: 
+  verbs: ["get", "watch", "list"]
+```
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  # "namespace" omitted since ClusterRoles are not namespaced
+  name: secret-reader
+rules:
+- apiGroups: [""] # secrets are part of Core https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.26/#secret-v1-core
+  resources: ["secrets"] # The name of the resource for accessing Secret objects is "secrets"
+  verbs: ["get", "watch", "list"]
+```
+
+### RoleBinding
+
+Below is an example of a `RoleBinding` that grants the `pod-reader` role to the user `jane` in the namespace `default`.  As a reminder, a RoleBinding assigns subjects to a Role, and a Role defines permissions.  Thats why the below example doesn't define any permissions.  That is the associated Role's job.
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+# This role binding allows "jane" to read pods in the "default" namespace.
+# You need to already have a Role named "pod-reader" in that namespace.
+kind: RoleBinding
+metadata:
+  name: read-pods
+  namespace: default
+subjects:
+# You can specify more than one "subject"
+- kind: User
+  name: jane # "name" is case sensitive
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  # "roleRef" specifies the binding to a Role / ClusterRole
+  kind: Role #this must be Role or ClusterRole
+  name: pod-reader # this must match the name of the Role or ClusterRole you wish to bind to
+  apiGroup: rbac.authorization.k8s.io
+```
+A RoleBinding can also reference a ClusterRole to grant the permissions defined in that ClusterRole to resources inside the RoleBinding's namespace. This kind of reference lets you define a set of common roles across your cluster, then reuse them within multiple namespaces which we saw above with [RoleBinding to a ClusterRole](#rolebindings-w-existing-clusterroles).
+
+
+
+#### RoleBindings w/ existing ClusterRoles
+
+An easy path is to use an existing built in `ClusterRole` and assign it to a subject.  For example, we can assign the `view` role to a specific user:
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+ name: reader-view
+ namespace: default                    # The scope of the binding
+subjects:
+- kind: User
+  name: reader@kiamol.net               # The subject is the new user
+  apiGroup: rbac.authorization.k8s.io   # The version of the K8s API used to specify the subject
+roleRef:
+ kind: ClusterRole
+ name: view                      # Gives them the view role from the built-in ClusterRole
+ apiGroup: rbac.authorization.k8s.io   # The version of the K8s API used to specify the roleRef
+```
+
+By RoleBinding to an existing ClusterRole, you dont have to bother with creating a Role!  Its a nice shortcut when you can get away with it.
+
+Several important notes:
+
+- We have to assign the `RoleBinding` to a namespace, because `RoleBinding` is scoped to a namespace, even though we are referencing an existing `ClusterRole`.  Yes, you can create a `RoleBinding` to a `ClusterRole` you aren't limited to only a `Role`!  
+- The `apiGroup` is the version of the K8s api you are using to specify that object.  For practical purposes, just accept the value `rbac.authorization.k8s.io ` as boilerplate.  Also if you leave this out, defaults values will probably be just fine.  
+  - From the docs: _APIGroup holds the API group of the referenced subject. Defaults to "" for ServiceAccount subjects. Defaults to "rbac.authorization.k8s.io" for User and Group subjects._
+
+:::{.callout-important}
+# You must have a RoleBinding
+
+Roles are additive or grant-only (you can't deny permissions).  This means hat everything starts with no permissions and you must add them.  What this also means that if you create a Role (in this case the `reader-view`) but no RoleBinding then your subject will have no permissions to do anything!
+:::
+
+Another example of a RoleBinding to a ClusterRole:
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+# This role binding allows "dave" to read secrets in the "development" namespace.
+# You need to already have a ClusterRole named "secret-reader".
+kind: RoleBinding
+metadata:
+  name: read-secrets
+  #
+  # The namespace of the RoleBinding determines where the permissions are granted.
+  # This only grants permissions within the "development" namespace.
+  namespace: development
+subjects:
+- kind: User
+  name: dave # Name is case sensitive
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: secret-reader
+  apiGroup: rbac.authorization.k8s.io
+```
+
+### ClusterRoleBinding
+
+To grant permissions across a whole cluster, you can use a ClusterRoleBinding. The following ClusterRoleBinding allows any user in the group "manager" to read secrets in any namespace.
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+# This cluster role binding allows anyone in the "manager" group to read secrets in any namespace.
+kind: ClusterRoleBinding
+metadata:
+  name: read-secrets-global
+subjects:
+- kind: Group
+  name: manager # Name is case sensitive
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: secret-reader
+  apiGroup: rbac.authorization.k8s.io
+```
+
+:::{.callout-important}
+After you create a binding, you cannot change the Role or ClusterRole that it refers to. If you try to change a binding's roleRef, you get a validation error. If you do want to change the roleRef for a binding, you need to remove the binding object and create a replacement.
+:::
+
+### A More complex example
+
+Below is an example of a custom `Role` with a `RoleBinding`:
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+ name: system-pod-reader
+ namespace: kube-system        # Scoped to the system namespace
+rules:
+- apiGroups: [""]               # The API group of the object spec
+ resources: ["pods"]           # Pods are in the core group, which
+ verbs: ["get", "list"]        # is identified with an empty string.
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+ name: kube-explorer-system
+ namespace: kube-system         # Needs to match the role
+subjects:
+- kind: ServiceAccount
+  name: kube-explorer            # The subject can be in a
+  namespace: default             # different namespace.
+roleRef:
+ apiGroup: rbac.authorization.k8s.io
+ kind: Role
+ name: system-pod-reader
+```
+
+## Referring To Resources
+
+There is something called a _subresource_, for examplethere are `pods` and also the subresource `pods/log`, which allows you to get the logs for a pod.  You should try to lookup the subresource at the time you are trying to accomplish something and not try to memorize every subresource.  this is how you might specify a subresource:
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default
+  name: pod-and-pod-logs-reader
+rules:
+- apiGroups: [""]
+  resources: ["pods", "pods/log"] # this is applying the rules to both the resource AND the subresource
+  verbs: ["get", "list"]
+```
+
+You can also use glob patterns like `*` to match all resources, verbs, etc:
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default
+  name: example.com-superuser  # DO NOT USE THIS ROLE, IT IS JUST AN EXAMPLE
+rules:
+- apiGroups: ["example.com"]
+  resources: ["*"]
+  verbs: ["*"]
+```
+
+## Referring to Subjects
+
+`Subjects` can be `groups`, `users`, or `ServiceAccounts`. ServiceAccounts have names prefixed with `system:serviceaccount:`, and belong to groups that have names prefixed with `system:serviceaccounts:`.
+
+Here is how you would refer to a `User`, `Group` and `ServiceAccount`:
+
+```yaml
+# For a user named alice@example.com:
+subjects:
+- kind: User
+  name: "alice@example.com"
+  apiGroup: rbac.authorization.k8s.io
+
+# For a group named frontend-admins:
+- kind: Group
+  name: "frontend-admins"
+  apiGroup: rbac.authorization.k8s.io
+
+# For the default service account in the "kube-system" namespace:
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: kube-system
+
+# For all service accounts in the "qa" namespace:
+subjects:
+- kind: Group
+  name: system:serviceaccounts:qa
+  apiGroup: rbac.authorization.k8s.io
+
+# For all service accounts in any namespace:
+subjects:
+- kind: Group
+  name: system:serviceaccounts
+  apiGroup: rbac.authorization.k8s.io
+```
+
+
+## Service Accounts
+
+Every namespace has a default service account created automatically.  Service accounts are for securing apps that use the Kubernetes API like Prometheus, which needs to get a list of pods.  Any Pods that do not specify a service account are automatically assigned to the default service account, which has no permissions.  However, you usually don't want to mess with the default service account, because that is the "default" for all pods in the namespace!  Instead, you should create a dedicated service account per app. 
+
+You can see service accounts like this:
+
+```bash
+#create a namespace, which also creates a new service account
+$ kl create ns foobar
+
+# see the service accounts in the namespace. one of the service accounts will be named "default"
+$ kl get serviceaccounts -n foobar                                                                                                              
+NAME      SECRETS   AGE
+default   0         10m
+```
+
+---
+
+### Creating Your Own Service Accounts
+
+```yaml
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: build-robot
+EOF
+```
+
+Remember that unless otherwise specified, every Pod runs as the `default` service account in its namespace.  This means by default, Pods cannot access the Kubernetes API.  You can change this by specifying a service account in the Pod spec that has the correct permissions.
+
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: build-robot
+automountServiceAccountToken: false
+...
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  serviceAccountName: build-robot
+  automountServiceAccountToken: false
+...
+```
+
+Setting `automountServiceAccountToken` to `false` will prevent the service account token from being mounted into the Pod. Otherwise, this is mounted at `/var/run/secrets/kubernetes.io/serviceaccount/token`.  This setting in the Pod spec takes precedence over the setting in the ServiceAccount.
+
+
+:::{.callout-note}
+You have to update or create a role binding to assign this `build-robot` service account to a particular role for it to be usable.
+:::
+
