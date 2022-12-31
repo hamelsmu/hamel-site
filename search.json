@@ -672,6 +672,13 @@
     "text": "Hierachy is Deployments ->  ReplicaSets -> Pods -> Containers\nYou probably never need to fiddle with ReplicSets directly and will mostly operate at the Deployment abstraction level that’s mentioned in [[2a. Basics]].\nThe reason the ReplicaSet abstraction is used is that the Deployment turns the replicas count to 0 when you update the metadata of podspec in a Deployment, as a way of gracefully winding down old pods in favor of new pods.\nThis is why sometimes you might see a ReplicaSet with a desired pod count of zero.\nThe way replicas are controled via deployments are through the spec.replicas field:\n%cat  pi/proxy/nginx.yaml\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: pi-proxy\n  labels:\n    kiamol: ch06\nspec:\n  replicas: 2  # Two replicas for nginx\n  selector:\n    matchLabels:\n      app: pi-proxy\n  template:\n    metadata:\n      labels:\n        app: pi-proxy\n    spec:\n      containers:\n        - image: nginx:1.17-alpine\n          name: nginx\n          ports:\n            - containerPort: 80\n              name: http\n          volumeMounts:\n            - name: config\n              mountPath: \"/etc/nginx/\"\n              readOnly: true\n            - name: cache-volume\n              mountPath: /data/nginx/cache\n      volumes:\n        - name: config\n          configMap:\n            name: pi-proxy-configmap\n        - name: cache-volume\n          emptyDir: {}"
   },
   {
+    "objectID": "notes/k8s/26-cluster.html",
+    "href": "notes/k8s/26-cluster.html",
+    "title": "Cluster Components",
+    "section": "",
+    "text": "You don’t have to implement these, but these come up when you are reading docs so it can be useful to have some background:\n\ncontrol plane: The thing that receives your kubectl requests and then takes action.\nAPI server: A REST API on HTTPS which kubectl connects to, and also what Pods can use internally (with service accounts).\n\nscheduler: Watches for new pod requests and selects a node to run it on.\ncontroller manager: runs internal components, for example the kube-controller-manager observes node availablity.\netcd is the Kubernetes data store. It is a distributed key-value database, which is replicated across many instances.\nkubelet: background agent that runs on the server (not in a pod/container), receives requests to create Pods and sends heartbeats to the API server.\nkube-proxy: routes traffic b/w pods or Pods to the outside world. This runs as a DaemonSet on every node.\ncontainer runtime: This is typically Docker, but it can be other things like CRI-O or containerd. It is the thing that runs the containers."
+  },
+  {
     "objectID": "notes/k8s/18-Developer.html",
     "href": "notes/k8s/18-Developer.html",
     "title": "Developer tips",
@@ -789,6 +796,20 @@
     "title": "Probes",
     "section": "Forcing a container to exit",
     "text": "Forcing a container to exit\nYou can force a container to exit with the following command. This might be useful for testing:\nkl exec -it {pod name} -- killall5\nThis will cause the pod to restart the container, not replace it."
+  },
+  {
+    "objectID": "notes/k8s/27-workload-placement.html",
+    "href": "notes/k8s/27-workload-placement.html",
+    "title": "Workload Placement",
+    "section": "",
+    "text": "Workload placement happens in two stages (1) filtering - which excludes any unsuitable nodes then (2) scoring - which ranks the remaining nodes to find the best fit."
+  },
+  {
+    "objectID": "notes/k8s/27-workload-placement.html#taint",
+    "href": "notes/k8s/27-workload-placement.html#taint",
+    "title": "Workload Placement",
+    "section": "Taint",
+    "text": "Taint\nTaints are a special kind of label with a key-value pair, but it tells the scheduler that a particular node is different. For example, the master taint is applied to control plane nodes by default (so your applications will not get scheduled on this important node).\nYou can use taint to record relevant attributes about nodes, like the type of hardware. When you add a taint, workloads will not be scheduled on that node unless you add a matching toleration to the workload.\nFor example, if you add this taint to all nodes, nothing will be scheduled! Note that tainting doesn’t impact existing workloads, only future ones.\nkubectl taint nodes --all kiamol-disk=hdd:NoSchedule\nThis is how you would add the toleration to a workload:\nspec:                           # The Pod spec in a Deployment\n containers:\n   - name: sleep\n     image: kiamol/ch03-sleep      \n tolerations:                  # Lists taints this Pod is happy with\n     - key: \"kiamol-disk\"      # The key, value, and effect all need \n       operator: \"Equal\"       # to match the taint on the node.\n       value: \"hdd\"\n       effect: \"NoSchedule\"\nTaints are only for negative associations - you can’t use them to say “this node is good for this workload”. For that, you need to use nodeSelector or nodeAffinity. You would not use a taint so say a workload should run on a GPU node, for example.\nThis is an example of using NodeSelector:\nspec:\n containers:\n   - name: sleep\n     image: kiamol/ch03-sleep      \n tolerations:                            # The Pod tolerates nodes \n   - key: \"kiamol-disk\"                  # with the hdd taint.\n     operator: \"Equal\"\n     value: \"hdd\"\n     effect: \"NoSchedule\"\n nodeSelector:                           # The Pod will run only on nodes\n   kubernetes.io/arch: zxSpectrum        # that match this CPU type.\nThe arch example are automatically set by Kubernetes on each node. For example, on my laptop if I do kl get nodes -o yaml it will have the key,value pair archictecture: arm64 under nodeInfo."
   },
   {
     "objectID": "notes/k8s/helm/16-Creating Your Own Helm Charts.html",
