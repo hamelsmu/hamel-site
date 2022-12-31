@@ -1,0 +1,16 @@
+---
+title: Cluster Components
+description: A list of terms used in the context of a K8s cluster.
+---
+
+You don't have to implement these, but these come up when you are reading docs so it can be useful to have some background:
+
+1. **`control plane`**: The thing that receives your `kubectl` requests and then takes action.
+2. **`API server`**: A REST API on HTTPS which `kubectl` connects to, and also what Pods can use internally (with service accounts).  
+3. **`scheduler`**: Watches for new pod requests and selects a node to run it on.
+4. **`controller manager`**: runs internal components, for example the `kube-controller-manager` observes node availablity.
+5. `etcd` is the Kubernetes data store.  It is a distributed key-value database, which is replicated across many instances.
+6. `kubelet`: background agent that runs on the server (not in a pod/container), receives requests to create Pods and sends heartbeats to the API server.
+7. `kube-proxy`: routes traffic b/w pods or Pods to the outside world.  This runs as a DaemonSet on every node.
+8. `container runtime`: This is typically Docker, but it can be other things like CRI-O or containerd.  It is the thing that runs the containers.
+
