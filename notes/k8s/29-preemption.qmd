@@ -1,0 +1,38 @@
+---
+title: Preemption
+description: Protecting resources with preemption and priorities
+---
+
+Sometimes when a node is working too hard, K8s will preempt (evict) pods to allow the node to recover. K8s will also taint the node, so new pods will run there and remove the taint when the pressure eases.
+
+You want to make sure your least important workloads are evicted during premption. That's why you need to set the priority class for your pods. The higher the priority, the less likely it is to be evicted.
+
+```yaml
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: high-priority
+value: 1000000
+globalDefault: false # should the value of this priority class be used for pods without a priorityClassName?
+description: "This priority class should be used for XYZ service pods only."
+```
+
+Setting `globalDefault` to `true` or `false` is important.  Usually should be `false`.
+
+How to set priority class for a pod:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+    env: test
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    imagePullPolicy: IfNotPresent
+  priorityClassName: high-priority
+```
+

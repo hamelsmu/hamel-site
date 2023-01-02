@@ -1,9 +1,14 @@
 ---
 title: Workload Placement
-description: How K8s decides where to run your pods
+description: How to control which nodes run your workloads
 ---
 
 Workload placement happens in two stages (1) `filtering` - which excludes any unsuitable nodes then (2) `scoring` - which ranks the remaining nodes to find the best fit.
+
+
+## Adding Labels To Nodes
+
+This article assumes you are familiar with adding labels to nodes.  [See this article](https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/) for more.
 
 
 ## Taint
@@ -12,7 +17,7 @@ Taints are a special kind of label with a key-value pair, but it tells the sched
 
 You can use `taint` to record relevant attributes about nodes, like the type of hardware.  When you add a taint, workloads will not be scheduled on that node unless you add a matching `toleration` to the workload.
 
-For example, if you add this taint to all nodes, nothing will be scheduled!  Note that tainting doesn't impact existing workloads, only future ones.
+For example, nothing will be scheduled if you add this taint to all nodes!  Note that tainting doesn't impact existing workloads, only future ones.
 
 ```bash
 kubectl taint nodes --all kiamol-disk=hdd:NoSchedule
@@ -31,9 +36,26 @@ spec:                           # The Pod spec in a Deployment
        value: "hdd"
        effect: "NoSchedule"
 ```
+The `effect` can be these three types:
+1. `NoSchedule` - The Pod will not be scheduled on the node.
+2. `PreferNoSchedule` - The scheduler will try to avoid scheduling the Pod on the node.
+3. `NoExecute` - The Pod will not be scheduled on the node and any existing Pods on the node will be evicted. This taint is retroactive, meaning that it will effect existing Pods as well as new ones (this is different to the other two).
 
-Taints are only for negative associations - you can't use them to say "this node is good for this workload".  For that, you need to use `nodeSelector` or `nodeAffinity`.  **You would not use a taint so say a workload should run on a GPU node, for example.**
+See [this article](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) for more info.
 
+You can add a taint label to a node like this:
+
+```bash
+% kubectl taint nodes node1 key1=value1:NoSchedule
+
+#remove the taint like This
+% kubectl taint nodes node1 key1=value1:NoSchedule-
+```
+
+
+Taints are only for negative associations - you can't use them to say, "this node is good for this workload".  For that, you need to use `nodeSelector` or `nodeAffinity`.  **You would not use a taint so say a workload should run on a GPU node, for example.**
+
+## Node Selector
 
 This is an example of using `NodeSelector`:
 
@@ -51,6 +73,230 @@ spec:
    kubernetes.io/arch: zxSpectrum        # that match this CPU type.
 ```
 
-The `arch` example are automatically set by Kubernetes on each node.  For example, on my laptop if I do `kl get nodes -o yaml` it will have the key,value pair  `archictecture: arm64` under `nodeInfo`.
+The `arch` example are automatically set by Kubernetes on each node.  For example, on my laptop if I do `kl get nodes -o yaml` it will have the key,value pair  `architecture: arm64` under `nodeInfo`.
+
+
+Node selectors ensure that apps run only on nodes with specific label values, but you usually want some more flexibility than a straight equality match. A finer level of control comes with affinity and antiaffinity.
+
+Here is another example of using `nodeSelector`:
+
+First, label your nodes:
+
+```bash
+# see list of nodes w/names
+% kubectl get nodes --show-labels
+
+# apply a label to a node
+% kubectl label nodes <your-node-name> disktype=ssd
+```
+
+Then, add the `nodeSelector` to your config:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+    env: test
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    imagePullPolicy: IfNotPresent
+  nodeSelector:
+    disktype: ssd
+```
+
+
+## Affinity
+
+Unlike taint this is a positive association between a pod and a node.  Affinity uses a node selector but with a match expression rather than equality. There is two kinds:
+
+- `requiredDuringSchedulingIgnoredDuringExecution`: The scheduler can't schedule the Pod unless the rule is met. This functions like nodeSelector, but with a more expressive syntax.
+- `preferredDuringSchedulingIgnoredDuringExecution`: The scheduler will try to meet the rule.  If a matching node is not available, the Pod will still be scheduled.
+
+
+You can constrain a Pod using labels on other Pods running on the node (or other topological domain), instead of just node labels, which allows you to define rules for which Pods can be co-located on a node.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: with-node-affinity
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: topology.kubernetes.io/zone
+            operator: In
+            values:
+            - antarctica-east1
+            - antarctica-west1
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+          - key: another-node-label-key
+            operator: In
+            values:
+            - another-node-label-value
+  containers:
+  - name: with-node-affinity
+    image: registry.k8s.io/pause:2.0
+```
+
+In this example, the following rules apply:
+
+- The node must have a label with the key `topology.kubernetes.io/zone` and the value of that label must be either `antarctica-east1` or `antarctica-west1`.
+- The node preferably has a label with the key `another-node-label-key` and the value `another-node-label-value`.
+
+The operator used above is `In,` but it can also be `In`, `NotIn`, `Exists`, `DoesNotExist`, `Gt` and `Lt`.
+
+The `NotIn` and `DoesNotExist` allow you to define **`antiaffinity`** rules.  For example, you could say "don't schedule this pod on a node that already has a pod with this label".  You could also use taints for this as well.
+
+### Affinity Weight
+
+For `preferredDuringSchedulingIgnoredDuringExecution` scheduling, you can set a weight b/w 1-100.  The scheduler adds all the weights of all the preferred rules and adds that to the score when making a scheduling decision.
+
+Example of two different weights:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: with-affinity-anti-affinity
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/os
+            operator: In
+            values:
+            - linux     # The Node MUST have the label `kubernetes.io/os=linux`
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+          - key: label-1
+            operator: In
+            values:
+            - key-1
+      - weight: 50
+        preference:
+          matchExpressions:
+          - key: label-2
+            operator: In
+            values:
+            - key-2
+  containers:
+  - name: with-node-affinity
+    image: registry.k8s.io/pause:2.0
+```
+
+## Inter-pod affinity and anti-affinity
+
+So you can either have pods run together on same node or make sure they run on seperate nodes
+
+See [these docs](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) if you need this.  Maybe you want GPU workloads to run separately, for example.
+
+The affinity or anti-affinity can be scoped to a node, a zone, a region, etc. To set the scope you set the `topologyKey` to the appropriate label.  For example, if you want to run pods on the same zone, you would set `topologyKey` to `topology.kubernetes.io/zone`.
+
+This prevents multiple replicas with the label `app=store` on the same node:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-cache
+spec:
+  selector:
+    matchLabels:
+      app: store
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: store
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - store
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: redis-server
+        image: redis:3.2-alpine
+```
+
+_From [the docs](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#more-practical-use-cases)_
+
+
+## Topology
+
+Topology refers to physical layout of your cluster.  The `hostname` label is always present and is unique per node.  Cloud providers add `region` and `zone` labels.  A `topology` key sets the level where the affinity applies.  For example, `hostname` would force all pods onto the same node, `zone` would force all pods onto the same zone, etc. `Antiaffinity` works the same, where you can keep nodes from being scheduled on the same node, zone, etc.
+
+```yaml
+affinity:                           # Affinity rules for Pods use
+ podAffinity:                      # the same spec as node affinity.
+   requiredDuringSchedulingIgnoredDuringExecution:
+     - labelSelector:
+         matchExpressions:         # This looks for the app and
+           - key: app              # component labels to match.
+             operator: In
+             values:
+               - numbers
+           - key: component
+             operator: In
+             values:
+               - api
+       topologyKey: "kubernetes.io/hostname" 
+```
+
+This is another example, where the `AntiAffinity` rule says "don't schedule this pod on a node within the same zone as one or more pods with the label `security=S2":
+
+```yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: with-pod-affinity
+spec:
+  affinity:
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: security
+            operator: In
+            values:
+            - S1
+        topologyKey: topology.kubernetes.io/zone
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: security
+              operator: In
+              values:
+              - S2
+          topologyKey: topology.kubernetes.io/zone
+  containers:
+  - name: with-pod-affinity
+    image: registry.k8s.io/pause:2.0
+```
+_from [the docs](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)_
+
+Read [this article](https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/) for more info.
 
 

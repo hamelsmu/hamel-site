@@ -1,0 +1,151 @@
+---
+title: Auto Scaling
+description: Automatic horizontal scaling
+order: 28
+---
+
+K8s can autoscale by automatically adding or removing pods.  There is also `cluster scaling` which adds and removes nodes, but your cloud platform can do that.
+
+K8s needs to have a way to measure the load on the pods, this can vary on cloud platforms so check the appropriate documentation.  Generally, K8s comes with a `metric-server` component that can measure basic things like CPU and memory usage, which you can see with the `kubectl top` command.  The `metrics.k8s.io` API is usually provided by an add-on named Metrics Server, which needs to be launched separately. For more information about resource metrics, see [Metrics Server](https://kubernetes.io/docs/tasks/debug/debug-cluster/resource-metrics-pipeline/#metrics-server).
+
+Do the [HorizontalPodAutoscaler Walkthrough](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/).
+
+:::{.callout-note}
+`kubectl top` doesn't work on Docker Desktop, it says "Metric API is not available"
+:::
+
+This is a basic example of an autoscaler:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-apache
+spec:
+  selector:
+    matchLabels:
+      run: php-apache
+  template:
+    metadata:
+      labels:
+        run: php-apache
+    spec:
+      containers:
+      - name: php-apache
+        image: registry.k8s.io/hpa-example
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 500m
+          requests:
+            cpu: 200m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-apache
+  labels:
+    run: php-apache
+spec:
+  ports:
+  - port: 80
+  selector:
+    run: php-apache
+---
+# can also use the CLI:
+# kubectl autoscale deployment php-apache --cpu-percent=50 --min=1 --max=10
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: php-apache
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: php-apache
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50
+```
+
+Another example:
+
+```yaml
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: php-apache
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: php-apache
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 50
+```
+
+CPU utilization is a `resource metric`.  Another resource metric is `memory`. 
+
+You can see the autoscaler with 
+
+```bash
+kubectl get hpa
+```
+
+See [these docs](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/).
+
+### Other kinds of metrics
+
+In addition to `type: Resource` there is also `type: Pods` and `type: Object`.  
+
+The first of these alternative metric types is `pod metrics`. These metrics describe Pods, and are averaged together across Pods and compared with a target value to determine the replica count. They work much like resource metrics, except that they only support a target type of `AverageValue`.
+
+```yaml
+type: Pods
+pods:
+  metric:
+    name: packets-per-second
+  target:
+    type: AverageValue
+    averageValue: 1k
+```
+
+The second alternative metric type is `object metrics`. These metrics describe a different object in the same namespace, instead of describing Pods. The metrics are not necessarily fetched from the object; they only describe it. Object metrics support target types of both Value and `AverageValue`. With Value, the target is compared directly to the returned metric from the API. With AverageValue, the value returned from the custom metrics API is divided by the number of Pods before being compared to the target.
+
+```yaml
+type: Object
+object:
+  metric:
+    name: requests-per-second
+  describedObject:
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    name: main-route
+  target:
+    type: Value
+    value: 2k
+```
+
+### Using metrics instead of percentages
+
+You can also specify resource metrics in terms of direct values, instead of as percentages of the requested value, by using a `target.type` of `AverageValue` instead of Utilization and setting the corresponding `target.averageValue` field instead of the `target.averageUtilization`.
+
+### Calculation of Utilization
+
+> If a target utilization value is set, the controller calculates the utilization value as a percentage of the equivalent resource request on the containers in each Pod. If a target raw value is set, the raw metric values are used directly. The controller then takes the mean of the utilization or the raw value (depending on the type of target specified) across all targeted Pods, and produces a ratio used to scale the number of desired replicas.
+
+
+
+## Cluster Autoscaling
+
+ Cluster autoscaling monitors the scheduler. If there are not enough compute resources to run pending Pods, it adds a new node in the cluster. Cloud providers typically provide cluster autoscaling.
+
+

@@ -1,0 +1,62 @@
+---
+title: Requesting resources
+description: How to request resources for your workloads
+order: 22
+---
+
+Example of container resource requests:
+
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend
+spec:
+  containers:
+  - name: app
+    image: images.my-company.example/app:v4
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+  - name: log-aggregator
+    image: images.my-company.example/log-aggregator:v6
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+```
+
+Also see [Resource limits](22-Resource-Limits.qmd), and [these docs](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/.)
+
+## GPUs
+
+GPUs are only supposed to be specified in the limits section, which means:
+
+- You can specify GPU limits without specifying `requests`, because Kubernetes will use the limit as the request value by default.
+- You can specify GPU in both `limits` and `requests` but these two values must be equal.
+- You cannot specify GPU `requests` without specifying `limits`.
+
+Here's an example manifest for a Pod that requests a GPU:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: example-vector-add
+spec:
+  restartPolicy: OnFailure
+  containers:
+    - name: example-vector-add
+      image: "registry.example/example-vector-add:v42"
+      resources:
+        limits:
+          gpu-vendor.example/example-gpu: 1 # requesting 1 GPU
+```
