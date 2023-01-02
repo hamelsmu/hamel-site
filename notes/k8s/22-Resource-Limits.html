@@ -345,6 +345,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/22a-Resource-Requests.html" class="sidebar-item-text sidebar-link">Requesting resources</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../notes/k8s/22-Resource-Limits.html" class="sidebar-item-text sidebar-link active">Resource Limits</a>
   </div>
 </li>
@@ -365,6 +370,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/28-auto-scaling.html" class="sidebar-item-text sidebar-link">Auto Scaling</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../notes/k8s/99-Random.html" class="sidebar-item-text sidebar-link">Random TILs</a>
   </div>
 </li>
@@ -381,6 +391,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../notes/k8s/Open Questions.html" class="sidebar-item-text sidebar-link">Open Questions</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/29-preemption.html" class="sidebar-item-text sidebar-link">Preemption</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -610,6 +625,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#resource-constraint-failures" id="toc-resource-constraint-failures" class="nav-link" data-scroll-target="#resource-constraint-failures">Resource Constraint Failures</a></li>
   <li><a href="#checking-available-resources" id="toc-checking-available-resources" class="nav-link" data-scroll-target="#checking-available-resources">Checking Available Resources</a></li>
   <li><a href="#dont-use-cpu-limits" id="toc-dont-use-cpu-limits" class="nav-link" data-scroll-target="#dont-use-cpu-limits">Don’t Use CPU Limits?</a></li>
+  <li><a href="#requests-vs.-limits" id="toc-requests-vs.-limits" class="nav-link" data-scroll-target="#requests-vs.-limits">Requests vs.&nbsp;Limits</a>
+  <ul class="collapse">
+  <li><a href="#no-cpu-limit" id="toc-no-cpu-limit" class="nav-link" data-scroll-target="#no-cpu-limit">No CPU limit</a></li>
+  <li><a href="#limits-create-requests-by-default" id="toc-limits-create-requests-by-default" class="nav-link" data-scroll-target="#limits-create-requests-by-default">Limits create requests by default</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel/edit/master/notes/k8s/22-Resource-Limits.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
@@ -640,7 +660,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <section id="indicating-limits" class="level2">
 <h2 class="anchored" data-anchor-id="indicating-limits">Indicating Limits</h2>
-<p>By default, Pods have no resource limits, which means they can use as much CPU and memory as the node has available. In order to prevent one Pod from monopolizing all available resources, you should set resource limits for Pods. You should set both a memory limit and a CPU limit. If a Pod is using more than its resource limit, it is restarted (new container). If it continues to fail, will go into a <code>CrashLoopBackoff</code> just like with liveness probes.</p>
+<p>By default, Pods have no resource limits, which means they can use as much CPU and memory as the node has available. To prevent one Pod from monopolizing all available resources, you should set resource limits for Pods. You should set both a memory limit and a CPU limit. If a Pod uses more than its resource limit, it is restarted (new container). If it continues to fail, it goes into a <code>CrashLoopBackoff</code> just like with liveness probes.</p>
 <p>You can specify resource limits in the <code>spec.containers[].resources.limits</code> section of a Pod configuration. The following example sets a memory limit of 50 MiB for a container:</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -650,7 +670,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">containers</span><span class="kw">:</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> kiamol/ch12-memory-allocator</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">resources</span><span class="kw">:</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">limits</span><span class="kw">:</span><span class="co">             # Resource limits constrain the compute power</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">limits</span><span class="kw">:</span><span class="co">             # Resource limits constrain compute power</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">         </span><span class="fu">memory</span><span class="kw">:</span><span class="at"> 50Mi</span><span class="co">      # for the container; this limits RAM to 50 MB.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>When you create this Pod, the container is automatically assigned a memory limit of 256 MiB. It will restart when it hits that limit</p>
@@ -717,18 +737,18 @@ Important
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">limits</span><span class="kw">:</span></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">cpu</span><span class="kw">:</span><span class="at"> 250m</span><span class="co">    # 250 millicores limits the container to 0.25 cores.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>include <strong>both</strong> CPU and memory limits in your Pod specs.</p>
+<p>Include <strong>both</strong> CPU and memory limits in your Pod specs.</p>
 </section>
 <section id="resource-constraint-failures" class="level2">
 <h2 class="anchored" data-anchor-id="resource-constraint-failures">Resource Constraint Failures</h2>
-<p>What if you have a namespace quota of 500m but you have two replicas with a limit of 300m each? It will only deploy one pod. YOu can see it like this:</p>
+<p>What if you have a namespace quota of 500m, but you have two replicas with a limit of 300m each? It will only deploy one pod. YOu can see it like this:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># after deploying your app with two repolicas</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">%</span> kubectl get deploy <span class="at">-n</span> kiamol-ch12-cpu                                                   </span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">NAME</span>     READY   UP-TO-DATE   AVAILABLE   AGE</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">pi-web</span>   1/2     1            1           44s</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Debug what happened, will tell you it ran out of quota</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Debug what happened (It will tell you it ran out of quota)</span></span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="ex">%</span> kubectl describe replicaset <span class="at">-n</span> kiamol-ch12-cpu</span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Get resource quota</span></span>
@@ -756,9 +776,24 @@ Important
 </section>
 <section id="dont-use-cpu-limits" class="level2">
 <h2 class="anchored" data-anchor-id="dont-use-cpu-limits">Don’t Use CPU Limits?</h2>
-<p><a href="https://home.robusta.dev/blog/stop-using-cpu-limits">This blog post</a> is contraversial, Michal thinks it’s bad advice. I tend to agree with Michal.</p>
+<p><a href="https://home.robusta.dev/blog/stop-using-cpu-limits">This blog post</a> is controversial, Michal thinks it’s bad advice. I tend to agree with Michal.</p>
+</section>
+<section id="requests-vs.-limits" class="level2">
+<h2 class="anchored" data-anchor-id="requests-vs.-limits">Requests vs.&nbsp;Limits</h2>
+<section id="no-cpu-limit" class="level3">
+<h3 class="anchored" data-anchor-id="no-cpu-limit">No CPU limit</h3>
+<p>If you do not specify a CPU limit for a Container, then one of these situations applies:</p>
+<ul>
+<li><p>The Container has no upper bound on the CPU resources it can use. The Container could use all of the CPU resources available on the Node where it is running.</p></li>
+<li><p>The Container is running in a namespace that has a default CPU limit, and the Container is automatically assigned the default limit. Cluster administrators can use a LimitRange to specify a default value for the CPU limit.</p></li>
+</ul>
+</section>
+<section id="limits-create-requests-by-default" class="level3">
+<h3 class="anchored" data-anchor-id="limits-create-requests-by-default">Limits create requests by default</h3>
+<p>If you specify a CPU limit for a Container but do not specify a CPU request, <strong>Kubernetes automatically assigns a CPU request that matches the limit.</strong> Similarly, if a Container specifies its own memory limit but does not specify a memory request, Kubernetes automatically assigns a memory request that matches the limit.</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

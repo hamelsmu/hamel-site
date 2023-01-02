@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="How K8s decides where to run your pods">
+<meta name="description" content="How to control which nodes run your workloads">
 
 <title>Hamel’s Blog - Workload Placement</title>
 <style>
@@ -126,11 +126,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="Hamel’s Blog - Workload Placement">
-<meta property="og:description" content="How K8s decides where to run your pods">
+<meta property="og:description" content="How to control which nodes run your workloads">
 <meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta property="og:site-name" content="Hamel's Blog">
 <meta name="twitter:title" content="Hamel’s Blog - Workload Placement">
-<meta name="twitter:description" content="How K8s decides where to run your pods">
+<meta name="twitter:description" content="How to control which nodes run your workloads">
 <meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta name="twitter:creator" content="@HamelHusain">
 <meta name="twitter:card" content="summary_large_image">
@@ -345,6 +345,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/22a-Resource-Requests.html" class="sidebar-item-text sidebar-link">Requesting resources</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../notes/k8s/22-Resource-Limits.html" class="sidebar-item-text sidebar-link">Resource Limits</a>
   </div>
 </li>
@@ -365,6 +370,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/28-auto-scaling.html" class="sidebar-item-text sidebar-link">Auto Scaling</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../notes/k8s/99-Random.html" class="sidebar-item-text sidebar-link">Random TILs</a>
   </div>
 </li>
@@ -381,6 +391,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../notes/k8s/Open Questions.html" class="sidebar-item-text sidebar-link">Open Questions</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/29-preemption.html" class="sidebar-item-text sidebar-link">Preemption</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -604,7 +619,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#taint" id="toc-taint" class="nav-link active" data-scroll-target="#taint">Taint</a></li>
+  <li><a href="#adding-labels-to-nodes" id="toc-adding-labels-to-nodes" class="nav-link active" data-scroll-target="#adding-labels-to-nodes">Adding Labels To Nodes</a></li>
+  <li><a href="#taint" id="toc-taint" class="nav-link" data-scroll-target="#taint">Taint</a></li>
+  <li><a href="#node-selector" id="toc-node-selector" class="nav-link" data-scroll-target="#node-selector">Node Selector</a></li>
+  <li><a href="#affinity" id="toc-affinity" class="nav-link" data-scroll-target="#affinity">Affinity</a>
+  <ul class="collapse">
+  <li><a href="#affinity-weight" id="toc-affinity-weight" class="nav-link" data-scroll-target="#affinity-weight">Affinity Weight</a></li>
+  </ul></li>
+  <li><a href="#inter-pod-affinity-and-anti-affinity" id="toc-inter-pod-affinity-and-anti-affinity" class="nav-link" data-scroll-target="#inter-pod-affinity-and-anti-affinity">Inter-pod affinity and anti-affinity</a></li>
+  <li><a href="#topology" id="toc-topology" class="nav-link" data-scroll-target="#topology">Topology</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel/edit/master/notes/k8s/27-workload-placement.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
@@ -618,7 +641,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <div>
   <div class="description">
-    How K8s decides where to run your pods
+    How to control which nodes run your workloads
   </div>
 </div>
 
@@ -634,11 +657,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </header>
 
 <p>Workload placement happens in two stages (1) <code>filtering</code> - which excludes any unsuitable nodes then (2) <code>scoring</code> - which ranks the remaining nodes to find the best fit.</p>
+<section id="adding-labels-to-nodes" class="level2">
+<h2 class="anchored" data-anchor-id="adding-labels-to-nodes">Adding Labels To Nodes</h2>
+<p>This article assumes you are familiar with adding labels to nodes. <a href="https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/">See this article</a> for more.</p>
+</section>
 <section id="taint" class="level2">
 <h2 class="anchored" data-anchor-id="taint">Taint</h2>
 <p>Taints are a special kind of label with a key-value pair, but it tells the scheduler that a particular node is different. For example, the <code>master</code> taint is applied to control plane nodes by default (so your applications will not get scheduled on this important node).</p>
 <p>You can use <code>taint</code> to record relevant attributes about nodes, like the type of hardware. When you add a taint, workloads will not be scheduled on that node unless you add a matching <code>toleration</code> to the workload.</p>
-<p>For example, if you add this taint to all nodes, nothing will be scheduled! Note that tainting doesn’t impact existing workloads, only future ones.</p>
+<p>For example, nothing will be scheduled if you add this taint to all nodes! Note that tainting doesn’t impact existing workloads, only future ones.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> taint nodes <span class="at">--all</span> kiamol-disk=hdd:NoSchedule</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>This is how you would add the <code>toleration</code> to a workload:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span><span class="co">                           # The Pod spec in a Deployment</span></span>
@@ -650,20 +677,216 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">operator</span><span class="kw">:</span><span class="at"> </span><span class="st">"Equal"</span><span class="co">       # to match the taint on the node.</span></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">value</span><span class="kw">:</span><span class="at"> </span><span class="st">"hdd"</span></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">effect</span><span class="kw">:</span><span class="at"> </span><span class="st">"NoSchedule"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Taints are only for negative associations - you can’t use them to say “this node is good for this workload”. For that, you need to use <code>nodeSelector</code> or <code>nodeAffinity</code>. <strong>You would not use a taint so say a workload should run on a GPU node, for example.</strong></p>
+<p>The <code>effect</code> can be these three types: 1. <code>NoSchedule</code> - The Pod will not be scheduled on the node. 2. <code>PreferNoSchedule</code> - The scheduler will try to avoid scheduling the Pod on the node. 3. <code>NoExecute</code> - The Pod will not be scheduled on the node and any existing Pods on the node will be evicted. This taint is retroactive, meaning that it will effect existing Pods as well as new ones (this is different to the other two).</p>
+<p>See <a href="https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/">this article</a> for more info.</p>
+<p>You can add a taint label to a node like this:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">%</span> kubectl taint nodes node1 key1=value1:NoSchedule</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#remove the taint like This</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">%</span> kubectl taint nodes node1 key1=value1:NoSchedule-</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Taints are only for negative associations - you can’t use them to say, “this node is good for this workload”. For that, you need to use <code>nodeSelector</code> or <code>nodeAffinity</code>. <strong>You would not use a taint so say a workload should run on a GPU node, for example.</strong></p>
+</section>
+<section id="node-selector" class="level2">
+<h2 class="anchored" data-anchor-id="node-selector">Node Selector</h2>
 <p>This is an example of using <code>NodeSelector</code>:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">containers</span><span class="kw">:</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> sleep</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">image</span><span class="kw">:</span><span class="at"> kiamol/ch03-sleep      </span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">tolerations</span><span class="kw">:</span><span class="co">                            # The Pod tolerates nodes </span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="kw">-</span><span class="at"> </span><span class="fu">key</span><span class="kw">:</span><span class="at"> </span><span class="st">"kiamol-disk"</span><span class="co">                  # with the hdd taint.</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">operator</span><span class="kw">:</span><span class="at"> </span><span class="st">"Equal"</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">value</span><span class="kw">:</span><span class="at"> </span><span class="st">"hdd"</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">effect</span><span class="kw">:</span><span class="at"> </span><span class="st">"NoSchedule"</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">nodeSelector</span><span class="kw">:</span><span class="co">                           # The Pod will run only on nodes</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="fu">kubernetes.io/arch</span><span class="kw">:</span><span class="at"> zxSpectrum</span><span class="co">        # that match this CPU type.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>The <code>arch</code> example are automatically set by Kubernetes on each node. For example, on my laptop if I do <code>kl get nodes -o yaml</code> it will have the key,value pair <code>archictecture: arm64</code> under <code>nodeInfo</code>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">containers</span><span class="kw">:</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> sleep</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">image</span><span class="kw">:</span><span class="at"> kiamol/ch03-sleep      </span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">tolerations</span><span class="kw">:</span><span class="co">                            # The Pod tolerates nodes </span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="kw">-</span><span class="at"> </span><span class="fu">key</span><span class="kw">:</span><span class="at"> </span><span class="st">"kiamol-disk"</span><span class="co">                  # with the hdd taint.</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">operator</span><span class="kw">:</span><span class="at"> </span><span class="st">"Equal"</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">value</span><span class="kw">:</span><span class="at"> </span><span class="st">"hdd"</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">effect</span><span class="kw">:</span><span class="at"> </span><span class="st">"NoSchedule"</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">nodeSelector</span><span class="kw">:</span><span class="co">                           # The Pod will run only on nodes</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="fu">kubernetes.io/arch</span><span class="kw">:</span><span class="at"> zxSpectrum</span><span class="co">        # that match this CPU type.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The <code>arch</code> example are automatically set by Kubernetes on each node. For example, on my laptop if I do <code>kl get nodes -o yaml</code> it will have the key,value pair <code>architecture: arm64</code> under <code>nodeInfo</code>.</p>
+<p>Node selectors ensure that apps run only on nodes with specific label values, but you usually want some more flexibility than a straight equality match. A finer level of control comes with affinity and antiaffinity.</p>
+<p>Here is another example of using <code>nodeSelector</code>:</p>
+<p>First, label your nodes:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># see list of nodes w/names</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">%</span> kubectl get nodes <span class="at">--show-labels</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># apply a label to a node</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">%</span> kubectl label nodes <span class="op">&lt;</span>your-node-name<span class="op">&gt;</span> disktype=ssd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Then, add the <code>nodeSelector</code> to your config:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> v1</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Pod</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> nginx</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">labels</span><span class="kw">:</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">env</span><span class="kw">:</span><span class="at"> test</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">containers</span><span class="kw">:</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> nginx</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> nginx</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">imagePullPolicy</span><span class="kw">:</span><span class="at"> IfNotPresent</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">nodeSelector</span><span class="kw">:</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">disktype</span><span class="kw">:</span><span class="at"> ssd</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="affinity" class="level2">
+<h2 class="anchored" data-anchor-id="affinity">Affinity</h2>
+<p>Unlike taint this is a positive association between a pod and a node. Affinity uses a node selector but with a match expression rather than equality. There is two kinds:</p>
+<ul>
+<li><code>requiredDuringSchedulingIgnoredDuringExecution</code>: The scheduler can’t schedule the Pod unless the rule is met. This functions like nodeSelector, but with a more expressive syntax.</li>
+<li><code>preferredDuringSchedulingIgnoredDuringExecution</code>: The scheduler will try to meet the rule. If a matching node is not available, the Pod will still be scheduled.</li>
+</ul>
+<p>You can constrain a Pod using labels on other Pods running on the node (or other topological domain), instead of just node labels, which allows you to define rules for which Pods can be co-located on a node.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> v1</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Pod</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> with-node-affinity</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">affinity</span><span class="kw">:</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">nodeAffinity</span><span class="kw">:</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">requiredDuringSchedulingIgnoredDuringExecution</span><span class="kw">:</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">nodeSelectorTerms</span><span class="kw">:</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">matchExpressions</span><span class="kw">:</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> </span><span class="fu">key</span><span class="kw">:</span><span class="at"> topology.kubernetes.io/zone</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">operator</span><span class="kw">:</span><span class="at"> In</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">values</span><span class="kw">:</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="kw">-</span><span class="at"> antarctica-east1</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="kw">-</span><span class="at"> antarctica-west1</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">preferredDuringSchedulingIgnoredDuringExecution</span><span class="kw">:</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">weight</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">preference</span><span class="kw">:</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">matchExpressions</span><span class="kw">:</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> </span><span class="fu">key</span><span class="kw">:</span><span class="at"> another-node-label-key</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">operator</span><span class="kw">:</span><span class="at"> In</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">values</span><span class="kw">:</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="kw">-</span><span class="at"> another-node-label-value</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">containers</span><span class="kw">:</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> with-node-affinity</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> registry.k8s.io/pause:2.0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>In this example, the following rules apply:</p>
+<ul>
+<li>The node must have a label with the key <code>topology.kubernetes.io/zone</code> and the value of that label must be either <code>antarctica-east1</code> or <code>antarctica-west1</code>.</li>
+<li>The node preferably has a label with the key <code>another-node-label-key</code> and the value <code>another-node-label-value</code>.</li>
+</ul>
+<p>The operator used above is <code>In,</code> but it can also be <code>In</code>, <code>NotIn</code>, <code>Exists</code>, <code>DoesNotExist</code>, <code>Gt</code> and <code>Lt</code>.</p>
+<p>The <code>NotIn</code> and <code>DoesNotExist</code> allow you to define <strong><code>antiaffinity</code></strong> rules. For example, you could say “don’t schedule this pod on a node that already has a pod with this label”. You could also use taints for this as well.</p>
+<section id="affinity-weight" class="level3">
+<h3 class="anchored" data-anchor-id="affinity-weight">Affinity Weight</h3>
+<p>For <code>preferredDuringSchedulingIgnoredDuringExecution</code> scheduling, you can set a weight b/w 1-100. The scheduler adds all the weights of all the preferred rules and adds that to the score when making a scheduling decision.</p>
+<p>Example of two different weights:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> v1</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Pod</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> with-affinity-anti-affinity</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">affinity</span><span class="kw">:</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">nodeAffinity</span><span class="kw">:</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">requiredDuringSchedulingIgnoredDuringExecution</span><span class="kw">:</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">nodeSelectorTerms</span><span class="kw">:</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">matchExpressions</span><span class="kw">:</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> </span><span class="fu">key</span><span class="kw">:</span><span class="at"> kubernetes.io/os</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">operator</span><span class="kw">:</span><span class="at"> In</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">values</span><span class="kw">:</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="kw">-</span><span class="at"> linux</span><span class="co">     # The Node MUST have the label `kubernetes.io/os=linux`</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">preferredDuringSchedulingIgnoredDuringExecution</span><span class="kw">:</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">weight</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">preference</span><span class="kw">:</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">matchExpressions</span><span class="kw">:</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> </span><span class="fu">key</span><span class="kw">:</span><span class="at"> label-1</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">operator</span><span class="kw">:</span><span class="at"> In</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">values</span><span class="kw">:</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="kw">-</span><span class="at"> key-1</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">weight</span><span class="kw">:</span><span class="at"> </span><span class="dv">50</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">preference</span><span class="kw">:</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">matchExpressions</span><span class="kw">:</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> </span><span class="fu">key</span><span class="kw">:</span><span class="at"> label-2</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">operator</span><span class="kw">:</span><span class="at"> In</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">values</span><span class="kw">:</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="kw">-</span><span class="at"> key-2</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">containers</span><span class="kw">:</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> with-node-affinity</span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> registry.k8s.io/pause:2.0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="inter-pod-affinity-and-anti-affinity" class="level2">
+<h2 class="anchored" data-anchor-id="inter-pod-affinity-and-anti-affinity">Inter-pod affinity and anti-affinity</h2>
+<p>So you can either have pods run together on same node or make sure they run on seperate nodes</p>
+<p>See <a href="https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/">these docs</a> if you need this. Maybe you want GPU workloads to run separately, for example.</p>
+<p>The affinity or anti-affinity can be scoped to a node, a zone, a region, etc. To set the scope you set the <code>topologyKey</code> to the appropriate label. For example, if you want to run pods on the same zone, you would set <code>topologyKey</code> to <code>topology.kubernetes.io/zone</code>.</p>
+<p>This prevents multiple replicas with the label <code>app=store</code> on the same node:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> apps/v1</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Deployment</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> redis-cache</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">matchLabels</span><span class="kw">:</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">app</span><span class="kw">:</span><span class="at"> store</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">replicas</span><span class="kw">:</span><span class="at"> </span><span class="dv">3</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">template</span><span class="kw">:</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">labels</span><span class="kw">:</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">app</span><span class="kw">:</span><span class="at"> store</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">affinity</span><span class="kw">:</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">podAntiAffinity</span><span class="kw">:</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">requiredDuringSchedulingIgnoredDuringExecution</span><span class="kw">:</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> </span><span class="fu">labelSelector</span><span class="kw">:</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="at">              </span><span class="fu">matchExpressions</span><span class="kw">:</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="at">              </span><span class="kw">-</span><span class="at"> </span><span class="fu">key</span><span class="kw">:</span><span class="at"> app</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="at">                </span><span class="fu">operator</span><span class="kw">:</span><span class="at"> In</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="at">                </span><span class="fu">values</span><span class="kw">:</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="at">                </span><span class="kw">-</span><span class="at"> store</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">topologyKey</span><span class="kw">:</span><span class="at"> </span><span class="st">"kubernetes.io/hostname"</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">containers</span><span class="kw">:</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> redis-server</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">image</span><span class="kw">:</span><span class="at"> redis:3.2-alpine</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>From <a href="https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#more-practical-use-cases">the docs</a></em></p>
+</section>
+<section id="topology" class="level2">
+<h2 class="anchored" data-anchor-id="topology">Topology</h2>
+<p>Topology refers to physical layout of your cluster. The <code>hostname</code> label is always present and is unique per node. Cloud providers add <code>region</code> and <code>zone</code> labels. A <code>topology</code> key sets the level where the affinity applies. For example, <code>hostname</code> would force all pods onto the same node, <code>zone</code> would force all pods onto the same zone, etc. <code>Antiaffinity</code> works the same, where you can keep nodes from being scheduled on the same node, zone, etc.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">affinity</span><span class="kw">:</span><span class="co">                           # Affinity rules for Pods use</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">podAffinity</span><span class="kw">:</span><span class="co">                      # the same spec as node affinity.</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="fu">requiredDuringSchedulingIgnoredDuringExecution</span><span class="kw">:</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="kw">-</span><span class="at"> </span><span class="fu">labelSelector</span><span class="kw">:</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="at">         </span><span class="fu">matchExpressions</span><span class="kw">:</span><span class="co">         # This looks for the app and</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="kw">-</span><span class="at"> </span><span class="fu">key</span><span class="kw">:</span><span class="at"> app</span><span class="co">              # component labels to match.</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="at">             </span><span class="fu">operator</span><span class="kw">:</span><span class="at"> In</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="at">             </span><span class="fu">values</span><span class="kw">:</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="at">               </span><span class="kw">-</span><span class="at"> numbers</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="at">           </span><span class="kw">-</span><span class="at"> </span><span class="fu">key</span><span class="kw">:</span><span class="at"> component</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="at">             </span><span class="fu">operator</span><span class="kw">:</span><span class="at"> In</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="at">             </span><span class="fu">values</span><span class="kw">:</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="at">               </span><span class="kw">-</span><span class="at"> api</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">topologyKey</span><span class="kw">:</span><span class="at"> </span><span class="st">"kubernetes.io/hostname"</span><span class="at"> </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This is another example, where the <code>AntiAffinity</code> rule says “don’t schedule this pod on a node within the same zone as one or more pods with the label `security=S2”:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode yml code-with-copy"><code class="sourceCode yaml"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> v1</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Pod</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> with-pod-affinity</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">affinity</span><span class="kw">:</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">podAffinity</span><span class="kw">:</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">requiredDuringSchedulingIgnoredDuringExecution</span><span class="kw">:</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">labelSelector</span><span class="kw">:</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">matchExpressions</span><span class="kw">:</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> </span><span class="fu">key</span><span class="kw">:</span><span class="at"> security</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">operator</span><span class="kw">:</span><span class="at"> In</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">values</span><span class="kw">:</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="kw">-</span><span class="at"> S1</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">topologyKey</span><span class="kw">:</span><span class="at"> topology.kubernetes.io/zone</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">podAntiAffinity</span><span class="kw">:</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">preferredDuringSchedulingIgnoredDuringExecution</span><span class="kw">:</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">weight</span><span class="kw">:</span><span class="at"> </span><span class="dv">100</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">podAffinityTerm</span><span class="kw">:</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">labelSelector</span><span class="kw">:</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">matchExpressions</span><span class="kw">:</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="kw">-</span><span class="at"> </span><span class="fu">key</span><span class="kw">:</span><span class="at"> security</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a><span class="at">              </span><span class="fu">operator</span><span class="kw">:</span><span class="at"> In</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a><span class="at">              </span><span class="fu">values</span><span class="kw">:</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a><span class="at">              </span><span class="kw">-</span><span class="at"> S2</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">topologyKey</span><span class="kw">:</span><span class="at"> topology.kubernetes.io/zone</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">containers</span><span class="kw">:</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> with-pod-affinity</span></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> registry.k8s.io/pause:2.0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>from <a href="https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/">the docs</a></em></p>
+<p>Read <a href="https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/">this article</a> for more info.</p>
 
 
 </section>
