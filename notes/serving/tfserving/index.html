@@ -643,19 +643,19 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="why-use-tfserving">Why use TFServing?</h2>
 <ul>
 <li>Offers a gRPC endpoint that can offer better compression of payloads relative to REST. This helps with larger payloads like images, where tensors are larger.</li>
-<li>GPU <a href="https://www.tensorflow.org/tfx/serving/serving_config#batching_configuration">batching support</a>: which can batch requests together and send them to the GPU in a single call. This can help with latency and throughput. This isn’t free though and requires tuning to get right.</li>
+<li>GPU <a href="https://www.tensorflow.org/tfx/serving/serving_config#batching_configuration">batching support</a>: which can batch requests together and send them to the GPU in a single call. This can help with latency and throughput. This isn’t free and requires tuning to get right.</li>
 <li><a href="https://www.tensorflow.org/tfx/serving/serving_config#serving_a_specific_version_of_a_model">Model versioning</a>: Allows you to deploy multiple versions of a model and route traffic to them. This is useful for A/B testing and canary deployments. In addition to model version numbers, you can <a href="https://www.tensorflow.org/tfx/serving/serving_config#batching_configuration">assign these versions to labels</a>, like “canary” and “stable” which can be accessible at an endpoint like <code>/v1/models/&lt;model name&gt;/labels/&lt;version label&gt;</code></li>
-<li>You can change what TF-Serving returns beyond just the output of the last layer of the model; for example, you can return the output of several intermediate layers for debugging. See <a href="https://keras.io/examples/keras_recipes/tf_serving/#custom-signature">these docs</a> on constructing custom Signatures. This is fairly advanced and I’m not sure how to do this yet, or even if I would want to do this.</li>
+<li>You can change what TF-Serving returns beyond just the output of the last layer of the model; for example, you can return the output of several intermediate layers for debugging. See <a href="https://keras.io/examples/keras_recipes/tf_serving/#custom-signature">these docs</a> on constructing custom Signatures. Cristian Garcia <a href="https://blog.tensorflow.org/2021/03/a-tour-of-savedmodel-signatures.html">shared this blog post</a> seems like a promising introduction to this topic.</li>
 </ul>
 </section>
 <section id="impressions" class="level2">
 <h2 class="anchored" data-anchor-id="impressions">Impressions</h2>
 <ul>
-<li>TF Serving Documentation is really confusing. <a href="https://www.tensorflow.org/tfx/serving/serving_basic">The beginning article</a> on how to serve models uses a 200-line python file just to make a request!</li>
+<li>TF Serving documentation can be confusing in places. <a href="https://www.tensorflow.org/tfx/serving/serving_basic">This article</a> on how to serve models uses a 200-line python to make a request that is pretty distracting. Other documents are really good, like <a href="https://www.tensorflow.org/tfx/serving/serving_kubernetes">using TF Serving with Kubernetes</a>.</li>
 <li>You must specify <code>dtype</code> in your model layers as <code>dtype</code> will be used in API validation for <code>gRPC</code> requests, and layer names are used for making requests.</li>
 <li>The <a href="https://keras.io/examples/keras_recipes/tf_serving/">Keras docs</a> are a much more gentle introduction to TF Serving.</li>
-<li>The <code>SavedModel</code> object is a serialization format needed for TF Serving. I haven’t come across it before. I’m not quite sure what other use cases there might be for this format just yet.</li>
-<li>I could not get the <em>exact same</em> logits from my predictions with the api vs.&nbsp;using the model in a notebook. Very close, but not exactly the same. REST and gRPC appear to be exactly the same, though.</li>
+<li><a href="https://www.tensorflow.org/guide/saved_model">The <code>SavedModel</code> format</a> is a serialization format needed for TF Serving. It’s used for many things in the TF ecosystem, like TFLite, TF.js, and TF Hub. I really like the fact that it is used across many products.</li>
+<li>I could not get the <em>exact same</em> logits from my predictions with the api vs.&nbsp;using the model in a notebook. Very close but not exactly the same. REST and gRPC appear to be exactly the same, though. So I’m probably overlooking something.</li>
 <li>It can be hard to debug the server when an error is thrown as I get a stack trace from another language.</li>
 </ul>
 </section>
