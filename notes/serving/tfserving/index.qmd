@@ -1,0 +1,23 @@
+---
+title: TF Serving
+description: TensorFlow Serving
+metadata-files: ["../../_listing_meta.yml"]
+---
+
+## Why use TFServing?
+
+- Offers a gRPC endpoint that can offer better compression of payloads relative to REST.  This helps with larger payloads like images, where tensors are larger. 
+- GPU [batching support](https://www.tensorflow.org/tfx/serving/serving_config#batching_configuration): which can batch requests together and send them to the GPU in a single call.  This can help with latency and throughput.  This isn't free though and requires tuning to get right.
+-  [Model versioning](https://www.tensorflow.org/tfx/serving/serving_config#serving_a_specific_version_of_a_model):  Allows you to deploy multiple versions of a model and route traffic to them.  This is useful for A/B testing and canary deployments.  In addition to model version numbers, you can [assign these versions to labels](https://www.tensorflow.org/tfx/serving/serving_config#batching_configuration), like "canary" and "stable" which can be accessible at an endpoint like `/v1/models/<model name>/labels/<version label>`
+- You can change what TF-Serving returns beyond just the output of the last layer of the model; for example, you can return the output of several intermediate layers for debugging.  See [these docs](https://keras.io/examples/keras_recipes/tf_serving/#custom-signature) on constructing custom Signatures.  This is fairly advanced and I'm not sure how to do this yet, or even if I would want to do this.
+
+## Impressions
+
+- TF Serving Documentation is really confusing.  [The beginning article](https://www.tensorflow.org/tfx/serving/serving_basic) on how to serve models uses a 200-line python file just to make a request! 
+- You must specify `dtype` in your model layers as `dtype` will be used in API validation for `gRPC` requests, and layer names are used for making requests. 
+- The [Keras docs](https://keras.io/examples/keras_recipes/tf_serving/) are a much more gentle introduction to TF Serving. 
+- It's not entirely clear why the `SavedModel` object is needed, and it creates additional cognitive overhead when trying to serialize models. 
+- I could not get the _exact same_ logits from my predictions with the api vs. using the model in a notebook.  Very close, but not exactly the same.  REST and grpc appear to be exactly the same though.
+- It can be hard to debug the server when an error is thrown as I get a stack trace from another language.
+
+## Notes
