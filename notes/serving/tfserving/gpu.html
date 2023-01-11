@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="TensorFlow Serving">
+<meta name="description" content="Dynamic batching and using a GPU">
 
-<title>Hamel’s Blog - TF Serving</title>
+<title>Hamel’s Blog - GPUs &amp; Batching</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,6 +21,69 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1.6em;
   vertical-align: middle;
 }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
@@ -31,8 +94,6 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../../">
 <link href="../../../favicon.ico" rel="icon">
-<script src="../../../site_libs/quarto-listing/list.min.js"></script>
-<script src="../../../site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="../../../site_libs/quarto-html/quarto.js"></script>
 <script src="../../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -61,46 +122,16 @@ ul.task-list li input[type="checkbox"] {
     "search-submit-button-title": "Submit"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-title','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-title-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="../../../styles.css">
-<meta property="og:title" content="Hamel’s Blog - TF Serving">
-<meta property="og:description" content="TensorFlow Serving">
-<meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359222-2b7e938e-27c4-4556-aacb-f5a81ce77b2d.png">
+<meta property="og:title" content="Hamel’s Blog - GPUs &amp; Batching">
+<meta property="og:description" content="Dynamic batching and using a GPU">
+<meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta property="og:site-name" content="Hamel's Blog">
-<meta name="twitter:title" content="Hamel’s Blog - TF Serving">
-<meta name="twitter:description" content="TensorFlow Serving">
-<meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359222-2b7e938e-27c4-4556-aacb-f5a81ce77b2d.png">
+<meta name="twitter:title" content="Hamel’s Blog - GPUs &amp; Batching">
+<meta name="twitter:description" content="Dynamic batching and using a GPU">
+<meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta name="twitter:creator" content="@HamelHusain">
 <meta name="twitter:card" content="summary_large_image">
 </head>
@@ -141,7 +172,7 @@ ul.task-list li input[type="checkbox"] {
     </nav>
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">TF Serving</h1>
+      <h1 class="quarto-secondary-nav-title">GPUs &amp; Batching</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -549,7 +580,7 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../../notes/serving/tfserving/index.html" class="sidebar-item-text sidebar-link active">TF Serving</a>
+            <a href="../../../notes/serving/tfserving/index.html" class="sidebar-item-text sidebar-link">TF Serving</a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" aria-expanded="true">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -562,7 +593,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../notes/serving/tfserving/gpu.html" class="sidebar-item-text sidebar-link">GPUs &amp; Batching</a>
+  <a href="../../../notes/serving/tfserving/gpu.html" class="sidebar-item-text sidebar-link active">GPUs &amp; Batching</a>
   </div>
 </li>
       </ul>
@@ -613,23 +644,36 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#why-use-tfserving" id="toc-why-use-tfserving" class="nav-link active" data-scroll-target="#why-use-tfserving">Why use TFServing?</a></li>
-  <li><a href="#impressions" id="toc-impressions" class="nav-link" data-scroll-target="#impressions">Impressions</a></li>
-  <li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes">Notes</a></li>
+  <li><a href="#batching" id="toc-batching" class="nav-link active" data-scroll-target="#batching">Batching</a></li>
+  <li><a href="#test-it-out" id="toc-test-it-out" class="nav-link" data-scroll-target="#test-it-out">Test it out</a>
+  <ul class="collapse">
+  <li><a href="#cpu-version" id="toc-cpu-version" class="nav-link" data-scroll-target="#cpu-version">CPU Version</a></li>
+  <li><a href="#gpu-version" id="toc-gpu-version" class="nav-link" data-scroll-target="#gpu-version">GPU Version</a></li>
+  <li><a href="#pre-requisites" id="toc-pre-requisites" class="nav-link" data-scroll-target="#pre-requisites">Pre-requisites</a></li>
+  <li><a href="#docker-command" id="toc-docker-command" class="nav-link" data-scroll-target="#docker-command">Docker Command</a></li>
+  </ul></li>
+  <li><a href="#benchmark" id="toc-benchmark" class="nav-link" data-scroll-target="#benchmark">Benchmark</a>
+  <ul class="collapse">
+  <li><a href="#prepare-the-data" id="toc-prepare-the-data" class="nav-link" data-scroll-target="#prepare-the-data">Prepare the data</a></li>
+  <li><a href="#prepare-the-prediction-code" id="toc-prepare-the-prediction-code" class="nav-link" data-scroll-target="#prepare-the-prediction-code">Prepare the prediction code</a></li>
+  <li><a href="#test-the-cpu-server" id="toc-test-the-cpu-server" class="nav-link" data-scroll-target="#test-the-cpu-server">Test the CPU Server</a></li>
+  <li><a href="#test-the-gpu-server-with-batching" id="toc-test-the-gpu-server-with-batching" class="nav-link" data-scroll-target="#test-the-gpu-server-with-batching">Test the GPU Server with batching</a></li>
+  <li><a href="#test-the-gpu-server-without-batching" id="toc-test-the-gpu-server-without-batching" class="nav-link" data-scroll-target="#test-the-gpu-server-without-batching">Test the GPU server without batching</a></li>
+  </ul></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel/edit/master/notes/serving/tfserving/index.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.dev/hamelsmu/hamel/blob/master/notes/serving/tfserving/gpu.ipynb" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">TF Serving</h1>
+<h1 class="title d-none d-lg-block">GPUs &amp; Batching</h1>
 </div>
 
 <div>
   <div class="description">
-    TensorFlow Serving
+    Dynamic batching and using a GPU
   </div>
 </div>
 
@@ -644,71 +688,256 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="why-use-tfserving" class="level2">
-<h2 class="anchored" data-anchor-id="why-use-tfserving">Why use TFServing?</h2>
-<ul>
-<li>Offers a gRPC endpoint that can offer better compression of payloads relative to REST. This helps with larger payloads like images, where tensors are larger.</li>
-<li>GPU <a href="https://www.tensorflow.org/tfx/serving/serving_config#batching_configuration">batching support</a>: which can batch requests together and send them to the GPU in a single call. This can help with latency and throughput. This isn’t free though and requires tuning to get right.</li>
-<li><a href="https://www.tensorflow.org/tfx/serving/serving_config#serving_a_specific_version_of_a_model">Model versioning</a>: Allows you to deploy multiple versions of a model and route traffic to them. This is useful for A/B testing and canary deployments. In addition to model version numbers, you can <a href="https://www.tensorflow.org/tfx/serving/serving_config#batching_configuration">assign these versions to labels</a>, like “canary” and “stable” which can be accessible at an endpoint like <code>/v1/models/&lt;model name&gt;/labels/&lt;version label&gt;</code></li>
-<li>You can change what TF-Serving returns beyond just the output of the last layer of the model; for example, you can return the output of several intermediate layers for debugging. See <a href="https://keras.io/examples/keras_recipes/tf_serving/#custom-signature">these docs</a> on constructing custom Signatures. This is fairly advanced and I’m not sure how to do this yet, or even if I would want to do this.</li>
-</ul>
-</section>
-<section id="impressions" class="level2">
-<h2 class="anchored" data-anchor-id="impressions">Impressions</h2>
-<ul>
-<li>I <a href="../../../notes/serving/tfserving/gpu.html">did not have luck</a> getting dynamic batching to work well. Apparently, it can take a lot of patience and be hard to tune. <a href="https://github.com/tensorflow/serving/blob/master/tensorflow_serving/batching/README.md#batch-scheduling-parameters-and-tuning">Here is a guide</a>. More observability around this would be nice to help users tune dynamic batching, as this is one of the key reasons to use TF Serving.</li>
-<li>TF Serving documentation can be confusing in places. <a href="https://www.tensorflow.org/tfx/serving/serving_basic">This article</a> on how to serve models uses a 200-line python to make a request that is pretty distracting. Other documents are really good, like <a href="https://www.tensorflow.org/tfx/serving/serving_kubernetes">using TF Serving with Kubernetes</a>.</li>
-<li>You must specify <code>dtype</code> in your model layers as <code>dtype</code> will be used in API validation for <code>gRPC</code> requests. Additionally, layer names are used for making requests so name those thoughtfully as well.</li>
-<li>The <a href="https://keras.io/examples/keras_recipes/tf_serving/">Keras docs</a> are a much more gentle introduction to TF Serving.</li>
-<li><a href="https://www.tensorflow.org/guide/saved_model">The <code>SavedModel</code> format</a> is a serialization format needed for TF Serving. It’s used for many things in the TF ecosystem, like TFLite, TF.js, and TF Hub. I really like the fact that it is used across many products.</li>
-<li>I could not get the <em>exact same</em> logits from my predictions with the api vs.&nbsp;using the model in a notebook. Very close, but not exactly the same. REST and grpc appear to be exactly the same though.</li>
-<li>It can be hard to debug the server when an error is thrown as I get a stack trace from another language.</li>
-</ul>
-</section>
-<section id="notes" class="level2">
-<h2 class="anchored" data-anchor-id="notes">Notes</h2>
-
-
-
-</section>
-
-<div class="quarto-listing quarto-listing-container-table" id="listing-listing">
-
-<table class="quarto-listing-table table">
-<thead>
-<tr>
-<th>
-Title
-</th>
-<th>
-Description
-</th>
-</tr>
-</thead>
-<tbody class="list">
-<tr data-index="0" data-listing-file-modified-sort="1673478791520" data-listing-reading-time-sort="2.83" data-listing-title-sort="Basics" data-listing-filename-sort="tf-serving-basics.ipynb">
-<td class="listing-title">
-<a href="../../../notes/serving/tfserving/tf-serving-basics.html" class="title">Basics</a>
-</td>
-<td class="listing-description">
-A minimal end-to-end example of TF Serving
-</td>
-</tr>
-<tr data-index="1" data-listing-file-modified-sort="1673478814440" data-listing-reading-time-sort="3.385" data-listing-title-sort="GPUs &amp; Batching" data-listing-filename-sort="gpu.ipynb">
-<td class="listing-title">
-<a href="../../../notes/serving/tfserving/gpu.html" class="title">GPUs &amp; Batching</a>
-</td>
-<td class="listing-description">
-Dynamic batching and using a GPU
-</td>
-</tr>
-</tbody>
-
-</table>
-<div class="listing-no-matching d-none">
-No matching items
+<section id="batching" class="level2">
+<h2 class="anchored" data-anchor-id="batching">Batching</h2>
+<div class="callout callout-style-default callout-warning callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
-</div></main> <!-- /main -->
+<div class="callout-caption-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I was not able to simulate a situation where dynamic batching is better than not batching. Apparently it can take time and lots of experiments to get right. Follow <a href="https://github.com/tensorflow/serving/blob/master/tensorflow_serving/batching/README.md#batch-scheduling-parameters-and-tuning">this guide</a> for more information. This is a topic I may revisit in the future.</p>
+</div>
+</div>
+<p>According to the docs:</p>
+<blockquote class="blockquote">
+<p>Model Server has the ability to batch requests in a variety of settings in order to realize better throughput. The scheduling for this batching is done globally for all models and model versions on the server to ensure the best possible utilization of the underlying resources no matter how many models or model versions are currently being served by the server. You can enable this by using the <code>--enable_batching</code> flag and control it with the <code>--batching_parameters_file</code>.</p>
+</blockquote>
+<p>This is an example batching parameters file:</p>
+<div class="cell" data-execution_count="117">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>writefile batch<span class="op">-</span>config.cfg</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>max_batch_size { value: <span class="dv">10000</span> }</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>batch_timeout_micros { value: <span class="dv">1000</span> }</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>max_enqueued_batches { value: <span class="dv">18</span> }</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>num_batch_threads { value: <span class="dv">16</span> }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Overwriting batch-config.cfg</code></pre>
+</div>
+</div>
+<p>Guidance for these config files is <a href="https://github.com/tensorflow/serving/blob/master/tensorflow_serving/batching/README.md">here</a> there is no “right answer”. For GPUs, the guidance is this:</p>
+<p>GPU: One Approach</p>
+<p>If your model uses a GPU device for part or all of your its inference work, consider the following approach:</p>
+<ol type="1">
+<li><p>Set <code>num_batch_threads</code> to the number of CPU cores.</p></li>
+<li><p>Temporarily set <code>batch_timeout_micros</code> to a really high value while you tune <code>max_batch_size</code> to achieve the desired balance between throughput and average latency. Consider values in the hundreds or thousands.</p></li>
+<li><p>For online serving, tune <code>batch_timeout_micros</code> to rein in tail latency. The idea is that batches normally get filled to max_batch_size, but occasionally when there is a lapse in incoming requests, to avoid introducing a latency spike it makes sense to process whatever’s in the queue even if it represents an underfull batch. The best value for <code>batch_timeout_micros</code> is typically a few milliseconds, and depends on your context and goals. Zero is a value to consider; it works well for some workloads. (For bulk processing jobs, choose a large value, perhaps a few seconds, to ensure good throughput but not wait too long for the final (and likely underfull) batch.)</p></li>
+</ol>
+</section>
+<section id="test-it-out" class="level2">
+<h2 class="anchored" data-anchor-id="test-it-out">Test it out</h2>
+<p>The model we are going to serve is generated <a href="../../../notes/serving/tfserving/tf-serving-basics.html">in this note</a></p>
+<p>I’m going to start two TF Serving instances, one thats regular CPU and one that does batching on GPU. I’m running both commands from the <code>/home/hamel/tf-serving/</code> directory.</p>
+<section id="cpu-version" class="level3">
+<h3 class="anchored" data-anchor-id="cpu-version">CPU Version</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="dt">\</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>--mount type=bind,source=/home/hamel/hamel/notes/serving/tfserving/model/,target=/models/model <span class="dt">\</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>--net=host <span class="at">-t</span> tensorflow/serving</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="callout callout-style-default callout-note callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>--net=host</code> binds all ports to the host, which is convenient for testing</p>
+</div>
+</div>
+<p>Test the CPU version:</p>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> curl http:<span class="op">//</span>localhost:<span class="dv">8501</span><span class="op">/</span>v1<span class="op">/</span>models<span class="op">/</span>model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{
+ "model_version_status": [
+  {
+   "version": "1",
+   "state": "AVAILABLE",
+   "status": {
+    "error_code": "OK",
+    "error_message": ""
+   }
+  }
+ ]
+}</code></pre>
+</div>
+</div>
+</section>
+<section id="gpu-version" class="level3">
+<h3 class="anchored" data-anchor-id="gpu-version">GPU Version</h3>
+<p>You can pass additional arguments like <code>--enable_batching</code> in <a href="https://www.tensorflow.org/tfx/serving/docker#passing_additional_arguments">the same way</a>:</p>
+<p>Use the <code>latest-gpu</code> tag to enable GPUs as well as the <code>--port</code> and <code>--rest_api_port</code> so that it doesn’t conflict with the other tf serving instance I have running:</p>
+</section>
+<section id="pre-requisites" class="level3">
+<h3 class="anchored" data-anchor-id="pre-requisites">Pre-requisites</h3>
+<p>You must <a href="https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html">install nvidia-docker</a> first</p>
+</section>
+<section id="docker-command" class="level3">
+<h3 class="anchored" data-anchor-id="docker-command">Docker Command</h3>
+<p>Note that we need the <code>--gpus all</code> flag to enable GPUs with nvidia-Docker:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--gpus</span> all <span class="dt">\</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>--mount type=bind,source=/home/hamel/hamel/notes/serving/tfserving,target=/models <span class="dt">\</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>--net=host <span class="at">-t</span> tensorflow/serving:latest-gpu <span class="at">--enable_batching</span> <span class="dt">\</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>--batching_parameters_file=/models/batch-config.cfg <span class="at">--port</span><span class="op">=</span>8505 <span class="at">--rest_api_port</span><span class="op">=</span>8506</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="callout callout-style-default callout-note callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Understanding the volume mount
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>On the host, the config file is located at <code>/home/hamel/hamel/notes/serving/tfserving/batch-config.cfg</code> and the model is located at <code>/home/hamel/hamel/notes/serving/tfserving/model/</code></p>
+<p>The <a href="https://github.com/tensorflow/serving/blob/master/tensorflow_serving/tools/docker/Dockerfile.gpu">Docker file</a> will try to import the model like this:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode dockerfile code-with-copy"><code class="sourceCode dockerfile"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set where models should be stored in the container</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ENV</span> MODEL_BASE_PATH=/models</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="fu">mkdir</span> <span class="at">-p</span> <span class="va">${MODEL_BASE_PATH}</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co"># The only required piece is the model name in order to differentiate endpoints</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="kw">ENV</span> MODEL_NAME=model</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a script that runs the model server so we can use environment variables</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co"># while also passing in arguments from the docker command line</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="bu">echo</span> <span class="st">'#!/bin/bash \n\n\</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="st">tensorflow_model_server --port=8500 --rest_api_port=8501 \</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="st">--model_name=${MODEL_NAME} --model_base_path=${MODEL_BASE_PATH}/${MODEL_NAME} \</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="st">"$@"'</span> <span class="op">&gt;</span> /usr/bin/tf_serving_entrypoint.sh <span class="dt">\</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="kw">&amp;&amp;</span> <span class="fu">chmod</span> +x /usr/bin/tf_serving_entrypoint.sh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>By default it will try to get models from <code>${MODEL_BASE_PATH}/${MODEL_NAME}</code> which is <code>/models/model</code>. So when we mount <code>/home/hamel/hamel/notes/serving/tfserving</code> from the host to <code>/models</code> in the container.</p>
+<p>In the container:</p>
+<ul>
+<li>The model files will be available at <code>models/model</code> as expected</li>
+<li>The config file will be available at <code>models/batch-config.cfg</code></li>
+</ul>
+</div>
+</div>
+<p>Test the TF-Serving GPU api:</p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> curl http:<span class="op">//</span>localhost:<span class="dv">8506</span><span class="op">/</span>v1<span class="op">/</span>models<span class="op">/</span>model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{
+ "model_version_status": [
+  {
+   "version": "1",
+   "state": "AVAILABLE",
+   "status": {
+    "error_code": "OK",
+    "error_message": ""
+   }
+  }
+ ]
+}</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="benchmark" class="level2">
+<h2 class="anchored" data-anchor-id="benchmark">Benchmark</h2>
+<p>“All benchmarks are wrong, some are useful”</p>
+<section id="prepare-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="prepare-the-data">Prepare the data</h3>
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tensorflow <span class="im">import</span> keras</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>vocab_size <span class="op">=</span> <span class="dv">20000</span>  <span class="co"># Only consider the top 20k words</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>maxlen <span class="op">=</span> <span class="dv">200</span>  <span class="co"># Only consider the first 200 words of each movie review</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>_, (x_val, _) <span class="op">=</span> keras.datasets.imdb.load_data(num_words<span class="op">=</span>vocab_size)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>x_val <span class="op">=</span> keras.preprocessing.sequence.pad_sequences(x_val, maxlen<span class="op">=</span>maxlen)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="prepare-the-prediction-code" class="level3">
+<h3 class="anchored" data-anchor-id="prepare-the-prediction-code">Prepare the prediction code</h3>
+<div class="cell" data-execution_count="106">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json, requests</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict_rest(data, port):</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    json_data <span class="op">=</span> json.dumps(</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"signature_name"</span>: <span class="st">"serving_default"</span>, <span class="st">"instances"</span>: data.tolist()}</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    url <span class="op">=</span> <span class="ss">f"http://localhost:</span><span class="sc">{</span>port<span class="sc">}</span><span class="ss">/v1/models/model:predict"</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    json_response <span class="op">=</span> requests.post(url, data<span class="op">=</span>json_data)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> json.loads(json_response.text)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    rest_outputs <span class="op">=</span> np.array(response[<span class="st">"predictions"</span>])</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> rest_outputs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="107">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>sample_data <span class="op">=</span> x_val[:<span class="dv">2</span>, :]</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>rest_outputs <span class="op">=</span> predict_rest(sample_data, <span class="st">'8501'</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>rest_outputs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="107">
+<pre><code>array([[0.89650154, 0.1034985 ],
+       [0.00330466, 0.9966954 ]])</code></pre>
+</div>
+</div>
+</section>
+<section id="test-the-cpu-server" class="level3">
+<h3 class="anchored" data-anchor-id="test-the-cpu-server">Test the CPU Server</h3>
+<p>The CPU server is running on port <code>8501</code>, we are going to send 5 examples to score 10,000 times in parallel with threads and measure the total time:</p>
+<div class="cell" data-execution_count="108">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastcore.parallel <span class="im">import</span> parallel</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> functools <span class="im">import</span> partial</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="136">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>cpu_pred <span class="op">=</span> partial(predict_rest, port <span class="op">=</span> <span class="st">'8501'</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>parallel_pred <span class="op">=</span> partial(parallel, threadpool<span class="op">=</span><span class="va">True</span>, n_workers<span class="op">=</span><span class="dv">500</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>sample_data <span class="op">=</span> x_val[:<span class="dv">5</span>, :]</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> [sample_data] <span class="op">*</span> <span class="dv">10000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="137">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> parallel_pred(cpu_pred, data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 27.6 s, sys: 4.8 s, total: 32.4 s
+Wall time: 26 s</code></pre>
+</div>
+</div>
+</section>
+<section id="test-the-gpu-server-with-batching" class="level3">
+<h3 class="anchored" data-anchor-id="test-the-gpu-server-with-batching">Test the GPU Server with batching</h3>
+<p>The GPU server is running on port <code>8506</code> (we already started it above). For this</p>
+<div class="cell" data-execution_count="140">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>gpu_pred <span class="op">=</span> partial(predict_rest, port <span class="op">=</span> <span class="st">'8506'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="141">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> parallel_pred(gpu_pred, data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 25.5 s, sys: 3.18 s, total: 28.7 s
+Wall time: 25.4 s</code></pre>
+</div>
+</div>
+</section>
+<section id="test-the-gpu-server-without-batching" class="level3">
+<h3 class="anchored" data-anchor-id="test-the-gpu-server-without-batching">Test the GPU server without batching</h3>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--gpus</span> all <span class="at">--mount</span> type=bind,source=/home/hamel/hamel/notes/serving/tfserving,target=/models <span class="at">--net</span><span class="op">=</span>host <span class="at">-t</span> tensorflow/serving:latest-gpu <span class="at">--port</span><span class="op">=</span>8507 <span class="at">--rest_api_port</span><span class="op">=</span>8508</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="138">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>gpu_pred_no_batch <span class="op">=</span> partial(predict_rest, port <span class="op">=</span> <span class="st">'8508'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="139">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> parallel_pred(gpu_pred_no_batch, data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 22.9 s, sys: 3.45 s, total: 26.4 s
+Wall time: 21.9 s</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
