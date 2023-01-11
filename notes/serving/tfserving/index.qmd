@@ -13,10 +13,11 @@ metadata-files: ["../../_listing_meta.yml"]
 
 ## Impressions
 
-- TF Serving Documentation is really confusing.  [The beginning article](https://www.tensorflow.org/tfx/serving/serving_basic) on how to serve models uses a 200-line python file just to make a request! 
-- You must specify `dtype` in your model layers as `dtype` will be used in API validation for `gRPC` requests, and layer names are used for making requests. 
+- I [did not have luck](./gpu.ipynb) getting dynamic batching to work well.  Apparently, it can take a lot of patience and be hard to tune. [Here is a guide](https://github.com/tensorflow/serving/blob/master/tensorflow_serving/batching/README.md#batch-scheduling-parameters-and-tuning).  More observability around this would be nice to help users tune dynamic batching, as this is one of the key reasons to use TF Serving.
+- TF Serving documentation can be confusing in places.  [This article](https://www.tensorflow.org/tfx/serving/serving_basic) on how to serve models uses a 200-line python to make a request that is pretty distracting.  Other documents are really good, like [using TF Serving with Kubernetes](https://www.tensorflow.org/tfx/serving/serving_kubernetes).
+- You must specify `dtype` in your model layers as `dtype` will be used in API validation for `gRPC` requests.  Additionally, layer names are used for making requests so name those thoughtfully as well. 
 - The [Keras docs](https://keras.io/examples/keras_recipes/tf_serving/) are a much more gentle introduction to TF Serving. 
-- It's not entirely clear why the `SavedModel` object is needed, and it creates additional cognitive overhead when trying to serialize models. 
+- [The `SavedModel` format](https://www.tensorflow.org/guide/saved_model) is a serialization format needed for TF Serving. It's used for many things in the TF ecosystem, like TFLite, TF.js, and TF Hub.  I really like the fact that it is used across many products.
 - I could not get the _exact same_ logits from my predictions with the api vs. using the model in a notebook.  Very close, but not exactly the same.  REST and grpc appear to be exactly the same though.
 - It can be hard to debug the server when an error is thrown as I get a stack trace from another language.
 
