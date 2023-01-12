@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.97">
+<meta name="generator" content="quarto-1.3.78">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -689,22 +689,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> octokit <span class="op">=</span> <span class="kw">new</span> <span class="fu">Octokit</span>({</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">auth</span><span class="op">:</span> <span class="st">"&lt;YOUR_PERSONAL_ACCESS_TOKEN&gt;"</span><span class="op">,</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">//Take an action (create a comment) triggered by an issue comment</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Get information about the pr</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  octokit<span class="op">.</span><span class="at">pulls</span><span class="op">.</span><span class="fu">get</span>({</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">owner</span><span class="op">:</span> <span class="st">'hamelsmu'</span><span class="op">,</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">repo</span><span class="op">:</span> <span class="st">'test_html'</span><span class="op">,</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">pull_number</span><span class="op">:</span> <span class="dv">1</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  })<span class="op">.</span><span class="fu">then</span>( (pr) <span class="kw">=&gt;</span> {</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="co">// use the branch name from the pr to make a pr comment</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">var</span> BRANCH_NAME <span class="op">=</span> pr<span class="op">.</span><span class="at">data</span><span class="op">.</span><span class="at">head</span><span class="op">.</span><span class="at">ref</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    octokit<span class="op">.</span><span class="at">issues</span><span class="op">.</span><span class="fu">createComment</span>({</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="dt">issue_number</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="dt">owner</span><span class="op">:</span> <span class="st">'hamelsmu'</span><span class="op">,</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        <span class="dt">repo</span><span class="op">:</span> <span class="st">'test_html'</span><span class="op">,</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        <span class="dt">body</span><span class="op">:</span> <span class="vs">`[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/hamelsmu/test_html/</span><span class="sc">${</span>BRANCH_NAME<span class="sc">}</span><span class="vs">) :point_left: Launch a binder notebook on this branch`</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>      })</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  })</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">//Take an action (create a comment) triggered by an issue comment</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Get information about the pr</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  octokit<span class="op">.</span><span class="at">pulls</span><span class="op">.</span><span class="fu">get</span>({</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">owner</span><span class="op">:</span> <span class="st">'hamelsmu'</span><span class="op">,</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">repo</span><span class="op">:</span> <span class="st">'test_html'</span><span class="op">,</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">pull_number</span><span class="op">:</span> <span class="dv">1</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  })<span class="op">.</span><span class="fu">then</span>( (pr) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">// use the branch name from the pr to make a pr comment</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">var</span> BRANCH_NAME <span class="op">=</span> pr<span class="op">.</span><span class="at">data</span><span class="op">.</span><span class="at">head</span><span class="op">.</span><span class="at">ref</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    octokit<span class="op">.</span><span class="at">issues</span><span class="op">.</span><span class="fu">createComment</span>({</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        <span class="dt">issue_number</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        <span class="dt">owner</span><span class="op">:</span> <span class="st">'hamelsmu'</span><span class="op">,</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        <span class="dt">repo</span><span class="op">:</span> <span class="st">'test_html'</span><span class="op">,</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        <span class="dt">body</span><span class="op">:</span> <span class="vs">`[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/hamelsmu/test_html/</span><span class="sc">${</span>BRANCH_NAME<span class="sc">}</span><span class="vs">) :point_left: Launch a binder notebook on this branch`</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>      })</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  })</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="example-2-issue-comment" class="level2">
 <h2 class="anchored" data-anchor-id="example-2-issue-comment">Example 2: Issue Comment</h2>
@@ -714,14 +716,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> octokit <span class="op">=</span> <span class="kw">new</span> <span class="fu">Octokit</span>({</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">auth</span><span class="op">:</span> <span class="st">"&lt;YOUR_PERSONAL_ACCESS_TOKEN&gt;"</span><span class="op">,</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Create an issue commment</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">var</span> BRANCH_NAME <span class="op">=</span> <span class="st">'hamelsmu-patch-1'</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  octokit<span class="op">.</span><span class="at">issues</span><span class="op">.</span><span class="fu">createComment</span>({</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">issue_number</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">owner</span><span class="op">:</span> <span class="st">'hamelsmu'</span><span class="op">,</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">repo</span><span class="op">:</span> <span class="st">'test_html'</span><span class="op">,</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">body</span><span class="op">:</span> <span class="vs">`[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/hamelsmu/test_html/</span><span class="sc">${</span>BRANCH_NAME<span class="sc">}</span><span class="vs">) :point_left: Launch a binder notebook on this branch`</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    })</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Create an issue commment</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">var</span> BRANCH_NAME <span class="op">=</span> <span class="st">'hamelsmu-patch-1'</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  octokit<span class="op">.</span><span class="at">issues</span><span class="op">.</span><span class="fu">createComment</span>({</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">issue_number</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">owner</span><span class="op">:</span> <span class="st">'hamelsmu'</span><span class="op">,</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">repo</span><span class="op">:</span> <span class="st">'test_html'</span><span class="op">,</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">body</span><span class="op">:</span> <span class="vs">`[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/hamelsmu/test_html/</span><span class="sc">${</span>BRANCH_NAME<span class="sc">}</span><span class="vs">) :point_left: Launch a binder notebook on this branch`</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    })</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 <section id="mybinder.org" class="level1">

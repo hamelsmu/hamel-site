@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.97">
+<meta name="generator" content="quarto-1.3.78">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -797,8 +797,6 @@ Note
 </section>
 <section id="gpu-version" class="level3">
 <h3 class="anchored" data-anchor-id="gpu-version">GPU Version</h3>
-<p>You can pass additional arguments like <code>--enable_batching</code> in <a href="https://www.tensorflow.org/tfx/serving/docker#passing_additional_arguments">the same way</a>:</p>
-<p>Use the <code>latest-gpu</code> tag to enable GPUs as well as the <code>--port</code> and <code>--rest_api_port</code> so that it doesn’t conflict with the other tf serving instance I have running:</p>
 </section>
 <section id="pre-requisites" class="level3">
 <h3 class="anchored" data-anchor-id="pre-requisites">Pre-requisites</h3>
@@ -806,7 +804,8 @@ Note
 </section>
 <section id="docker-command" class="level3">
 <h3 class="anchored" data-anchor-id="docker-command">Docker Command</h3>
-<p>Note that we need the <code>--gpus all</code> flag to enable GPUs with nvidia-Docker:</p>
+<p>You can pass additional arguments like <code>--enable_batching</code> to the <code>docker run ...</code> command just like you would if you were <a href="https://www.tensorflow.org/tfx/serving/docker#passing_additional_arguments">running tfserving locally</a>.</p>
+<p>Note that we need the <code>--gpus all</code> flag to enable GPUs with nvidia-Docker. Furthermore, use the <code>latest-gpu</code> tag to enable GPUs as well as the <code>--port</code> and <code>--rest_api_port</code> so that it doesn’t conflict with the other tf serving instance I have running:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--gpus</span> all <span class="dt">\</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>--mount type=bind,source=/home/hamel/hamel/notes/serving/tfserving,target=/models <span class="dt">\</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>--net=host <span class="at">-t</span> tensorflow/serving:latest-gpu <span class="at">--enable_batching</span> <span class="dt">\</span></span>
