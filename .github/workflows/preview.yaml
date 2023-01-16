@@ -1,0 +1,41 @@
+on: issue_comment 
+name: Preview on Netlify
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  preview:
+    if: (github.event.issue.pull_request != null) && contains(github.event.comment.body, '/preview')
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: install quarto
+      run: |
+        wget -q $(curl https://latest.fast.ai/pre/quarto-dev/quarto-cli/linux-amd64.deb)
+        sudo dpkg -i quarto*.deb
+    - run: quarto render
+    - name: Publish
+      id: publish
+      uses: netlify/actions/cli@master
+      with:
+        args: deploy --dir=_site
+      env:
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    - name: Make a comment with the GitHub API
+      uses: actions/github-script@v6
+      if: steps.publish.outcome == 'success' 
+      with:
+        script: |
+           var msg = `You can preview your site here: ${process.env.URL}`
+           github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: msg
+            })
+      env:
+        URL: "${{ steps.get-magic-value.outputs.MAGIC_VAL }}"
