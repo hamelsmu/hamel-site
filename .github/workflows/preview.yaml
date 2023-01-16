@@ -12,12 +12,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
+    
     - name: install quarto
       run: |
         wget -q $(curl https://latest.fast.ai/pre/quarto-dev/quarto-cli/linux-amd64.deb)
         sudo dpkg -i quarto*.deb
+    
     - run: quarto render
-    - name: Publish
+    
+    # See https://github.com/netlify/actions/tree/master/cli
+    - name: Publish preview with Netlify
       id: publish
       uses: netlify/actions/cli@master
       with:
@@ -25,6 +29,7 @@ jobs:
       env:
         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        
     - name: Make a comment with the GitHub API
       uses: actions/github-script@v6
       if: steps.publish.outcome == 'success' 
@@ -38,4 +43,4 @@ jobs:
               body: msg
             })
       env:
-        URL: "${{ steps.get-magic-value.outputs.MAGIC_VAL }}"
+        URL: "${{ steps.publish.outputs.NETLIFY_URL }}"
