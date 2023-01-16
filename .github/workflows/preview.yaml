@@ -13,11 +13,13 @@ jobs:
     steps:
     - uses: actions/checkout@master
     
-    - name: install quarto
-      run: |
-        wget -q $(curl https://latest.fast.ai/pre/quarto-dev/quarto-cli/linux-amd64.deb)
-        sudo dpkg -i quarto*.deb
-        pip install nbformat # you don't need this line, this is unique to hamel
+    - name: Setup Quarto
+      uses: quarto-dev/quarto-actions/setup@v2
+      with:
+        version: 'pre-release'
+        
+    - name: install other dependencies
+      run: pip install nbformat # you don't need this line, this is unique to hamel
     
     - run: quarto render
     
@@ -26,7 +28,7 @@ jobs:
       id: publish
       uses: netlify/actions/cli@master
       with:
-        args: deploy --dir=_site
+        args: deploy --dir=_site # Quarto renders everything to a _site/ folder
       env:
         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
