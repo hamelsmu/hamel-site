@@ -1,0 +1,32 @@
+---
+title: TorchServe
+description: Notes on TorchServe
+listing:
+    id: notes-listings
+metadata-files: ["../../_listing_meta.yml"]
+order: 1
+---
+
+## Notes
+
+::: {#notes-listings}
+:::
+
+## Why Use Torch Serve
+
+- Automatic batching of requests (optional).
+- Model versioning.
+- Out of the box Logging and metrics.
+
+
+## Impressions
+
+- In comparison to TF Serving, it is harder to get started, but _much easier_ to customize things once you learn the API.  The initial learning curve to TorchServe is much steeper than TF Serving, because you have to study the [BaseHandler](https://github.com/pytorch/serve/blob/master/ts/torch_handler/base_handler.py) class (read the source code) to understand how things work. It is not clear how the various artifacts you save with the `torch-model-archiver` work together unless you study `BaseHandler`.  For example:
+    - the help docs of `torch-model-archiver` state that `--model-file` is mandatory for eager mode models, which is not entirely true because you can load the model in the handler instead of implementing an interface that torch serve knows how to load (e.g. a class with a `load_state_dict` method like [this example](https://github.com/pytorch/serve/blob/master/examples/image_classifier/densenet_161/model.py).  Furthermore, this model file can only contain one class definition extended from `torch.nn.modules` which is an odd constraint.  When you search the internet for using torch-serve, many people are ignoring the prescribed interface and are loading models inside a custom handler instead.  Here is an example of doing this with [fastai](https://github.com/artefactory/deploy-fastai-torchserve-aiplatform/blob/main/torch_serve/text/handler.py) and [HuggingFace](https://github.com/cceyda/lit-NER/blob/master/lit_ner/serve.py).  **I believe it is a better idea to use a [custom handler](https://pytorch.org/serve/custom_service.html) because it is more transparent and easier to understand.**  The default handlers in the getting started guides are a bit too magical and I think they cause confusion for newcomers.  I would argue that the [default handlers](https://pytorch.org/serve/default_handlers.html) should only be used after you understand `BaseHandler` and write a few custom handlers. 
+    - If you want to use torchscript, your file extension _must_ be `.pt` (not `.pth`).  This is not documented anywhere, and is an example of something you can only learn from the [`BaseHandler`](https://github.com/pytorch/serve/blob/master/ts/torch_handler/base_handler.py) source code (that particular file extension is hardcoded!).
+- pre and post processing in TorchServe is significantly easier to understand compared to TFServe. [Custom handlers](https://pytorch.org/serve/custom_service.html) allow you to do what you want in pure python, whereas with TFServing you have to [modify the model's signature](https://cloud.google.com/blog/topics/developers-practitioners/add-preprocessing-functions-tensorflow-models-and-deploy-vertex-ai) which involves pushing the pre/post processing into the model's graph and other confusing steps that use DSLs. This is not surprising, as this is why people like PyTorch in general.
+- I like how you can make REST API requests to [manage models](https://pytorch.org/serve/management_api.html). In contrast, TF Serving requires you to update config files (which it periodically checks for updates).
+- I like model versioning in TF Serving a bit more, as it allows you to alias your endpoints - for example "staging" or "production". It doesn't appear you can alias your model endpoints in TorchServe without a reverse proxy. 
+
+
+
