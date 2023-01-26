@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.124">
+<meta name="generator" content="quarto-1.3.97">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -616,6 +616,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <a href="../../notes/serving/torchserve/basic-torchserve.html" class="sidebar-item-text sidebar-link">Basics</a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/serving/torchserve/hf.html" class="sidebar-item-text sidebar-link">Serving Your Own Model</a>
+  </div>
+</li>
       </ul>
   </li>
       </ul>
@@ -704,63 +709,62 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2 class="anchored" data-anchor-id="abbreviations">Abbreviations</h2>
 <p>You can get a list of the short abbrevations for resources like this:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kl api-resources <span class="at">--sort-by</span> name</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">NAME</span>                              SHORTNAMES   APIVERSION                             NAMESPACED   KIND</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">apiservices</span>                                    apiregistration.k8s.io/v1              false        APIService</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">bindings</span>                                       v1                                     true         Binding</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">certificatesigningrequests</span>        csr          certificates.k8s.io/v1                 false        CertificateSigningRequest</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">clusterrolebindings</span>                            rbac.authorization.k8s.io/v1           false        ClusterRoleBinding</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">clusterroles</span>                                   rbac.authorization.k8s.io/v1           false        ClusterRole</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ex">componentstatuses</span>                 cs           v1                                     false        ComponentStatus</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ex">configmaps</span>                        cm           v1                                     true         ConfigMap</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ex">controllerrevisions</span>                            apps/v1                                true         ControllerRevision</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ex">cronjobs</span>                          cj           batch/v1                               true         CronJob</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="ex">csidrivers</span>                                     storage.k8s.io/v1                      false        CSIDriver</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="ex">csinodes</span>                                       storage.k8s.io/v1                      false        CSINode</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="ex">csistoragecapacities</span>                           storage.k8s.io/v1                      true         CSIStorageCapacity</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="ex">customresourcedefinitions</span>         crd,crds     apiextensions.k8s.io/v1                false        CustomResourceDefinition</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="ex">daemonsets</span>                        ds           apps/v1                                true         DaemonSet</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="ex">deployments</span>                       deploy       apps/v1                                true         Deployment</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="ex">endpoints</span>                         ep           v1                                     true         Endpoints</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="ex">endpointslices</span>                                 discovery.k8s.io/v1                    true         EndpointSlice</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="ex">events</span>                            ev           v1                                     true         Event</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="ex">events</span>                            ev           events.k8s.io/v1                       true         Event</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="ex">flowschemas</span>                                    flowcontrol.apiserver.k8s.io/v1beta2   false        FlowSchema</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="ex">horizontalpodautoscalers</span>          hpa          autoscaling/v2                         true         HorizontalPodAutoscaler</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="ex">ingressclasses</span>                                 networking.k8s.io/v1                   false        IngressClass</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="ex">ingresses</span>                         ing          networking.k8s.io/v1                   true         Ingress</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="bu">jobs</span>                                           batch/v1                               true         Job</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="ex">leases</span>                                         coordination.k8s.io/v1                 true         Lease</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="ex">limitranges</span>                       limits       v1                                     true         LimitRange</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="ex">localsubjectaccessreviews</span>                      authorization.k8s.io/v1                true         LocalSubjectAccessReview</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="ex">mutatingwebhookconfigurations</span>                  admissionregistration.k8s.io/v1        false        MutatingWebhookConfiguration</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="ex">namespaces</span>                        ns           v1                                     false        Namespace</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="ex">networkpolicies</span>                   netpol       networking.k8s.io/v1                   true         NetworkPolicy</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="ex">nodes</span>                             no           v1                                     false        Node</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="ex">persistentvolumeclaims</span>            pvc          v1                                     true         PersistentVolumeClaim</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="ex">persistentvolumes</span>                 pv           v1                                     false        PersistentVolume</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="ex">poddisruptionbudgets</span>              pdb          policy/v1                              true         PodDisruptionBudget</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="ex">pods</span>                              po           v1                                     true         Pod</span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="ex">podtemplates</span>                                   v1                                     true         PodTemplate</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="ex">priorityclasses</span>                   pc           scheduling.k8s.io/v1                   false        PriorityClass</span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="ex">prioritylevelconfigurations</span>                    flowcontrol.apiserver.k8s.io/v1beta2   false        PriorityLevelConfiguration</span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="ex">replicasets</span>                       rs           apps/v1                                true         ReplicaSet</span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="ex">replicationcontrollers</span>            rc           v1                                     true         ReplicationController</span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="ex">resourcequotas</span>                    quota        v1                                     true         ResourceQuota</span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="ex">rolebindings</span>                                   rbac.authorization.k8s.io/v1           true         RoleBinding</span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="ex">roles</span>                                          rbac.authorization.k8s.io/v1           true         Role</span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="ex">runtimeclasses</span>                                 node.k8s.io/v1                         false        RuntimeClass</span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="ex">secrets</span>                                        v1                                     true         Secret</span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="ex">selfsubjectaccessreviews</span>                       authorization.k8s.io/v1                false        SelfSubjectAccessReview</span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="ex">selfsubjectrulesreviews</span>                        authorization.k8s.io/v1                false        SelfSubjectRulesReview</span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="ex">serviceaccounts</span>                   sa           v1                                     true         ServiceAccount</span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="ex">services</span>                          svc          v1                                     true         Service</span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="ex">statefulsets</span>                      sts          apps/v1                                true         StatefulSet</span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="ex">storageclasses</span>                    sc           storage.k8s.io/v1                      false        StorageClass</span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="ex">subjectaccessreviews</span>                           authorization.k8s.io/v1                false        SubjectAccessReview</span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="ex">tokenreviews</span>                                   authentication.k8s.io/v1               false        TokenReview</span>
-<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="ex">validatingwebhookconfigurations</span>                admissionregistration.k8s.io/v1        false        ValidatingWebhookConfiguration</span>
-<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="ex">volumeattachments</span>                              storage.k8s.io/v1                      false        VolumeAttachment</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">NAME</span>                              SHORTNAMES   APIVERSION                             NAMESPACED   KIND</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">apiservices</span>                                    apiregistration.k8s.io/v1              false        APIService</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">bindings</span>                                       v1                                     true         Binding</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">certificatesigningrequests</span>        csr          certificates.k8s.io/v1                 false        CertificateSigningRequest</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">clusterrolebindings</span>                            rbac.authorization.k8s.io/v1           false        ClusterRoleBinding</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">clusterroles</span>                                   rbac.authorization.k8s.io/v1           false        ClusterRole</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">componentstatuses</span>                 cs           v1                                     false        ComponentStatus</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ex">configmaps</span>                        cm           v1                                     true         ConfigMap</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ex">controllerrevisions</span>                            apps/v1                                true         ControllerRevision</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ex">cronjobs</span>                          cj           batch/v1                               true         CronJob</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ex">csidrivers</span>                                     storage.k8s.io/v1                      false        CSIDriver</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="ex">csinodes</span>                                       storage.k8s.io/v1                      false        CSINode</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="ex">csistoragecapacities</span>                           storage.k8s.io/v1                      true         CSIStorageCapacity</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="ex">customresourcedefinitions</span>         crd,crds     apiextensions.k8s.io/v1                false        CustomResourceDefinition</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="ex">daemonsets</span>                        ds           apps/v1                                true         DaemonSet</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="ex">deployments</span>                       deploy       apps/v1                                true         Deployment</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="ex">endpoints</span>                         ep           v1                                     true         Endpoints</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="ex">endpointslices</span>                                 discovery.k8s.io/v1                    true         EndpointSlice</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="ex">events</span>                            ev           v1                                     true         Event</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="ex">events</span>                            ev           events.k8s.io/v1                       true         Event</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="ex">flowschemas</span>                                    flowcontrol.apiserver.k8s.io/v1beta2   false        FlowSchema</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="ex">horizontalpodautoscalers</span>          hpa          autoscaling/v2                         true         HorizontalPodAutoscaler</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="ex">ingressclasses</span>                                 networking.k8s.io/v1                   false        IngressClass</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="ex">ingresses</span>                         ing          networking.k8s.io/v1                   true         Ingress</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="bu">jobs</span>                                           batch/v1                               true         Job</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="ex">leases</span>                                         coordination.k8s.io/v1                 true         Lease</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="ex">limitranges</span>                       limits       v1                                     true         LimitRange</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="ex">localsubjectaccessreviews</span>                      authorization.k8s.io/v1                true         LocalSubjectAccessReview</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="ex">mutatingwebhookconfigurations</span>                  admissionregistration.k8s.io/v1        false        MutatingWebhookConfiguration</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="ex">namespaces</span>                        ns           v1                                     false        Namespace</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="ex">networkpolicies</span>                   netpol       networking.k8s.io/v1                   true         NetworkPolicy</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="ex">nodes</span>                             no           v1                                     false        Node</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="ex">persistentvolumeclaims</span>            pvc          v1                                     true         PersistentVolumeClaim</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="ex">persistentvolumes</span>                 pv           v1                                     false        PersistentVolume</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="ex">poddisruptionbudgets</span>              pdb          policy/v1                              true         PodDisruptionBudget</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="ex">pods</span>                              po           v1                                     true         Pod</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="ex">podtemplates</span>                                   v1                                     true         PodTemplate</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="ex">priorityclasses</span>                   pc           scheduling.k8s.io/v1                   false        PriorityClass</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="ex">prioritylevelconfigurations</span>                    flowcontrol.apiserver.k8s.io/v1beta2   false        PriorityLevelConfiguration</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="ex">replicasets</span>                       rs           apps/v1                                true         ReplicaSet</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="ex">replicationcontrollers</span>            rc           v1                                     true         ReplicationController</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="ex">resourcequotas</span>                    quota        v1                                     true         ResourceQuota</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="ex">rolebindings</span>                                   rbac.authorization.k8s.io/v1           true         RoleBinding</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="ex">roles</span>                                          rbac.authorization.k8s.io/v1           true         Role</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="ex">runtimeclasses</span>                                 node.k8s.io/v1                         false        RuntimeClass</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="ex">secrets</span>                                        v1                                     true         Secret</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="ex">selfsubjectaccessreviews</span>                       authorization.k8s.io/v1                false        SelfSubjectAccessReview</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="ex">selfsubjectrulesreviews</span>                        authorization.k8s.io/v1                false        SelfSubjectRulesReview</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="ex">serviceaccounts</span>                   sa           v1                                     true         ServiceAccount</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="ex">services</span>                          svc          v1                                     true         Service</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="ex">statefulsets</span>                      sts          apps/v1                                true         StatefulSet</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="ex">storageclasses</span>                    sc           storage.k8s.io/v1                      false        StorageClass</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="ex">subjectaccessreviews</span>                           authorization.k8s.io/v1                false        SubjectAccessReview</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="ex">tokenreviews</span>                                   authentication.k8s.io/v1               false        TokenReview</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="ex">validatingwebhookconfigurations</span>                admissionregistration.k8s.io/v1        false        ValidatingWebhookConfiguration</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="ex">volumeattachments</span>                              storage.k8s.io/v1                      false        VolumeAttachment</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="dbs-on-k8s" class="level2">
 <h2 class="anchored" data-anchor-id="dbs-on-k8s">DBs on K8s</h2>
@@ -877,92 +881,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return note.innerHTML;
     });
   }
-      let selectedAnnoteEl;
-      const selectorForAnnotation = ( cell, annotation) => {
-        let cellAttr = 'data-code-cell="' + cell + '"';
-        let lineAttr = 'data-code-annotation="' +  annotation + '"';
-        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-        return selector;
-      }
-      const selectCodeLines = (annoteEl) => {
-        const doc = window.document;
-        const targetCell = annoteEl.getAttribute("data-target-cell");
-        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-        const lineIds = lines.map((line) => {
-          return targetCell + "-" + line;
-        })
-        let top = null;
-        let height = null;
-        let parent = null;
-        if (lineIds.length > 0) {
-            //compute the position of the single el (top and bottom and make a div)
-            const el = window.document.getElementById(lineIds[0]);
-            top = el.offsetTop;
-            height = el.offsetHeight;
-            parent = el.parentElement.parentElement;
-          if (lineIds.length > 1) {
-            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-            height = bottom - top;
-          }
-          if (top !== null && height !== null && parent !== null) {
-            // cook up a div (if necessary) and position it 
-            let div = window.document.getElementById("code-annotation-line-highlight");
-            if (div === null) {
-              div = window.document.createElement("div");
-              div.setAttribute("id", "code-annotation-line-highlight");
-              div.style.position = 'absolute';
-              parent.appendChild(div);
-            }
-            div.style.top = top - 2 + "px";
-            div.style.height = height + 4 + "px";
-            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-            if (gutterDiv === null) {
-              gutterDiv = window.document.createElement("div");
-              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-              gutterDiv.style.position = 'absolute';
-              const codeCell = window.document.getElementById(targetCell);
-              const gutter = codeCell.querySelector('.code-annotation-gutter');
-              gutter.appendChild(gutterDiv);
-            }
-            gutterDiv.style.top = top - 2 + "px";
-            gutterDiv.style.height = height + 4 + "px";
-          }
-          selectedAnnoteEl = annoteEl;
-        }
-      };
-      const unselectCodeLines = () => {
-        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-        elementsIds.forEach((elId) => {
-          const div = window.document.getElementById(elId);
-          if (div) {
-            div.remove();
-          }
-        });
-        selectedAnnoteEl = undefined;
-      };
-      // Attach click handler to the DT
-      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-      for (const annoteDlNode of annoteDls) {
-        annoteDlNode.addEventListener('click', (event) => {
-          const clickedEl = event.target;
-          if (clickedEl !== selectedAnnoteEl) {
-            unselectCodeLines();
-            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-            if (activeEl) {
-              activeEl.classList.remove('code-annotation-active');
-            }
-            selectCodeLines(clickedEl);
-            clickedEl.classList.add('code-annotation-active');
-          } else {
-            // Unselect the line
-            unselectCodeLines();
-            clickedEl.classList.remove('code-annotation-active');
-          }
-        });
-      }
   const findCites = (el) => {
     const parentEl = el.parentElement;
     if (parentEl) {
