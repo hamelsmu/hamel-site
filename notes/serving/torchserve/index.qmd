@@ -7,7 +7,7 @@ metadata-files: ["../../_listing_meta.yml"]
 order: 1
 ---
 
-## Notes
+## Experiments With Torch Serve
 
 ::: {#notes-listings}
 :::
@@ -21,7 +21,7 @@ order: 1
 
 ## Impressions
 
-- Torch Serve is an absolute PITA to debug, because its part java and part python.  You can't really use a debugger, and when things fail you might not have the greatest logs.  I am not sure its worth it just for auto-batching, and would rather use FastAPI.  I can't believe I'm saying this but my experience was much smoother with TF Serving despite its hiccups. You have to end up creating custom handlers in many practical scenarios (like using HF models), and at the end of the day you are writing so much code you might as well use FastAPI with K8s.
+- Torch Serve is an absolute PITA to debug, because its part java and part python (ex: you can't use an interactive debugger).  If you do not need auto-batching, I would rather use FastAPI and scale it with Kubernetes.  You have to end up creating custom handlers in many practical scenarios (like using HF models), and at the end of the day you are writing a bunch of code to glue everything together.
 - In comparison to TF Serving, it is harder to get started, but _much easier_ to customize things once you learn the API.  The initial learning curve to TorchServe is much steeper than TF Serving, because you have to study the [BaseHandler](https://github.com/pytorch/serve/blob/master/ts/torch_handler/base_handler.py) class (read the source code) to understand how things work. It is not clear how the various artifacts you save with the `torch-model-archiver` work together unless you study `BaseHandler`.  For example:
     - the help docs of `torch-model-archiver` state that `--model-file` is mandatory for eager mode models, which is not entirely true because you can load the model in the handler instead of implementing an interface that torch serve knows how to load (e.g. a class with a `load_state_dict` method like [this example](https://github.com/pytorch/serve/blob/master/examples/image_classifier/densenet_161/model.py).  Furthermore, this model file can only contain one class definition extended from `torch.nn.modules` which is an odd constraint.  When you search the internet for using torch-serve, many people are ignoring the prescribed interface and are loading models inside a custom handler instead.  Here is an example of doing this with [fastai](https://github.com/artefactory/deploy-fastai-torchserve-aiplatform/blob/main/torch_serve/text/handler.py) and [HuggingFace](https://github.com/cceyda/lit-NER/blob/master/lit_ner/serve.py).  **I believe it is a better idea to use a [custom handler](https://pytorch.org/serve/custom_service.html) because it is more transparent and easier to understand.**  The default handlers in the getting started guides are a bit too magical and I think they cause confusion for newcomers.  I would argue that the [default handlers](https://pytorch.org/serve/default_handlers.html) should only be used after you understand `BaseHandler` and write a few custom handlers. 
     - If you want to use torchscript, your file extension _must_ be `.pt` (not `.pth`).  This is not documented anywhere, and is an example of something you can only learn from the [`BaseHandler`](https://github.com/pytorch/serve/blob/master/ts/torch_handler/base_handler.py) source code (that particular file extension is hardcoded!).
