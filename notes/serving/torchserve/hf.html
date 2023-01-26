@@ -802,7 +802,7 @@ Setting `pad_token_id` to `eos_token_id`:50256 for open-end generation.</code></
 <li><strong><code>preprocess</code></strong>: by default this will convert data to a Torch tensor. For the examples we are working with we don’t want this, because we are using <code>pipeline</code>.</li>
 <li><strong><code>self.initialize</code></strong> is where you load and instantiate the model, the name of the property that has the model is not important as long as you use it consistently across the other methods.</li>
 <li><strong><code>self.inference</code></strong>: The output of <code>self.preprocess</code> is passed to <code>self.inference</code>, which then returns predictions. Somewhere along the line before <code>self.inference</code> is called, <code>self.initialize</code> is called. It seems important to set the <code>self.initialized</code> property to <code>True</code> in <code>self.initialize</code> (see examples)</li>
-<li><strong><code>self.postprocess</code></strong>: The output of <code>self.inference</code> is passed to <code>self.postprocess</code>. By default, this calls the <code>.tolist()</code> method on whatever object is returned from <code>self.inference</code>. In our case, we just need to make sure that we return a numpy array.</li>
+<li><strong><code>self.postprocess</code></strong>: The output of <code>self.inference</code> is passed to <code>self.postprocess</code>. By default, this calls the <code>.tolist()</code> method on whatever object is returned from <code>self.inference</code>.</li>
 </ul>
 <p>There is also a <code>context</code> and <code>manifest</code> properties which contain values that you might supply through a config or as CLI commands (like the model’s directory). It’s not clear what is contained in these variables, and the only way is to use logging statements to find out. Another way to try to get clues is to look at the <a href="https://github.com/pytorch/serve/tree/master/examples">examples</a>.</p>
 <div class="callout callout-style-default callout-warning callout-captioned">
@@ -882,7 +882,6 @@ Use environment variables instead of <code>context</code>
 </section>
 <section id="diffusion-handler" class="level2">
 <h2 class="anchored" data-anchor-id="diffusion-handler">Diffusion Handler</h2>
-<p>We don’t need to override <code>postprocess</code> because it does exactly what we want, it calls <code>.tolist()</code>.</p>
 <div class="cell" data-execution_count="62">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>writefile diffusion_handler.py</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">#diffusion_handler.py</span></span>
