@@ -1,10 +1,117 @@
 ---
 title: ML Serving
-description: ML Serving Frameworks & Approaches
+description: ML Serving Is About Optimization & Portability
 metadata-files: ["../_listing_meta.yml"]
 listing:
+  id: infserve
   contents:
    - "**index.qmd"
    - "**index.ipynb"
    - "/*.qmd"
 ---
+
+## Types of Optimization
+
+| Category | Notes/Examples | 
+|---------------------------------|:---------------------------------------------------------------------------------|
+| Hardware Upgrades               | CPUs vs GPUs                                                                     | 
+| Inference Servers               | Batching requests, replica/worker management                                     |
+| Model Optimization              | Quantization, pruning, distillation, flash attention                             |
+| Compilers                       | Kernel fusion, hardware-specific optimization, portability (hardware & runtimes) |
+
+This table is inspired by [this talk](https://www.youtube.com/watch?v=ppWKVg-VxmQ) where [Mark Saurofim](https://twitter.com/marksaroufim) outlines categories of optimization relevant to model serving.
+
+When considering model serving, the discussion tends to be focused on inference servers.  However, one underrated topic is the importance ML compilers play.
+
+## Inference Servers
+
+Below are the inference servers I would pay attention to.  Nvidia Triton seems to be the most popular/robust according to ~20+ professionals I've spoken with.
+
+1. Torch Serve
+2. TFServe
+3. KServe
+4. Nvidia Triton
+
+Here are detailed notes with code examples on inference servers I've explored. I explore two inference servers: [TFServing](tfserving/) and [TorchServe](torchserve/), as well as a general-purpose REST API server for model serving with [fastapi](fastapi/).  
+
+::: {#infserve}
+:::
+
+## Compiler Terminology
+
+It's easy to get lost in the terminology of compilers.  Here are some terms that are important to understand:
+
+- **Kernel Fusion**: this is the process of combining multiple operations into a single operation.  For example, a convolution followed by a ReLU can be combined into a single operation. 
+- **Intermediate Representation (IR)**: The IR is a representation of a model that's independent of a framework like Pytorch.  These IRs are often JSON, YAML, or a string that encodes model structure, weights, and so on.  These IRs are eventually translated into programs that can be executed and are often optimized toward specific hardware.
+- **Graph Lowering**: This is the process of translating one IR to another.  For example, a model in represented in the ONNX IR can be lowered to a model in [TensorRT IR](https://developer.nvidia.com/tensorrt).  The reason for doing this is to translate one IR to one that allows a specific compiler to perform domain/hardware-specific optimizations.  Different compilers can optimize different types of things and offer different goals.  For example, ONNX's primary goal is to be a portable IR, while TensorRT's primary goal is to optimize for inference.  The reason it's called Graph lowering is that models can often be represented as graphs, and you "lower" the graph representation consecutively towards something that can be made into machine code.  Compilers can process IRs in different phases such that the IR is simplified/optimized that a back-end will use to generate machine code.
+- **Front-End**: This refers to part of the [Compiler Stack](https://en.wikipedia.org/wiki/Compiler) that translates a programming language into an IR.
+- **Back-End**: This refers to part of the [Compiler Stack](https://en.wikipedia.org/wiki/Compiler) that translates an IR into machine code.  You can compose different front-ends with different back-ends through "middle-ends" that translate IRs from one to another (also known as "lowering" or "graph lowering").
+- **Graph Breaks**: When you represent a model as a graph via an intermediate representation (IR) there are pieces of code that might not fit into a graph form, like if/else statements.  When this happens you will have a graph break, where you will have to split your program into several graphs.  Only the parts that can be represented as a graph can usually be optimized by the compiler.  Depending on the framework you are using, either your or the framework will have to stitch all the graphs together in a way that represents the original program.  Graph breaks usually incur a performance penalty, so it's important to minimize them.
+
+## Common Sources of Confusion
+
+### The Compiler Stack
+
+It can often be ambiguous when someone refers to a compiler if they are referring to a front-end that generates the IR, the back-end that generates/executes the code, or the entire compiler stack as a whole.  For example, ONNX has both an intermediate representation IR and a runtime.  The IR is a specification (a string) that allows you to represent a model in a way that's independent of a framework.  The [ONNX Runtime](https://onnxruntime.ai/) is a backend that allows you to execute models represented by the ONNX IR on a variety of hardware and from various languages (Python, C++, Java, JS, etc.).  
+
+The term "compiler" is often overloaded.  Understanding the context in which the term is used can be helpful for understanding documentation.  For example, [Torch Dynamo](https://pytorch.org/tutorials/intermediate/dynamo_tutorial.html) is a front-end (often referred to as a "graph acquisition tool") that produces an IR.  The user can then lower this IR to a back-end to another compiler stack like C++ (for CPUs) or [OpenAI Triton](https://openai.com/blog/triton/) (for GPUs) that eventually gets executed.
+
+### Nvidia vs OpenAI Triton
+
+[Triton by Nvidia](https://developer.nvidia.com/nvidia-triton-inference-server) is an inference server. [Triton by OpenAI](https://github.com/openai/triton) is a high-level CUDA programming language and compiler stack.  The two are not related. 
+
+### Training: TorchDyamo + JIT + Triton
+
+Compilers are often thought of as optimizations for inference.  However, there are compilers that help with training too.  The most notable these days is [TorchDynamo + JIT Compiler](https://pytorch.org/docs/master/dynamo/).  TorchDynamo is a front-end that allows you to capture a PyTorch model as an IR[^1].  Since this front-end is maintained by the Pytorch team, it is the most compatible of any of the IRs for Pytorch Models.  The JIT compiler supplants the CPython interpreter that normally "eagerly" runs your PyTorch code for faster execution[^2].  It works by dynamically modifying Python bytecode right before it is executed. All you have to do is to call one line of code: `torch.compile(...)` to get the benefits.  Andrej Karpathy is using this in his NanoGPT tutorials:
+
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">This is so underrated! Ridiculous speedup by calling `torch.compile(...)` <br><br>Code: <a href="https://t.co/9mMGGyEcfz">https://t.co/9mMGGyEcfz</a><br><br>Related blog posts:<br>1. <a href="https://t.co/JOLZ8BQdet">https://t.co/JOLZ8BQdet</a><br>2. <a href="https://t.co/ci8KAzLW1p">https://t.co/ci8KAzLW1p</a> (this blog by <a href="https://twitter.com/marksaroufim?ref_src=twsrc%5Etfw">@marksaroufim</a> is a real gem, BTW) <a href="https://t.co/E0oRVC4Ow8">https://t.co/E0oRVC4Ow8</a></p>&mdash; Hamel Husain (@HamelHusain) <a href="https://twitter.com/HamelHusain/status/1622822879170818050?ref_src=twsrc%5Etfw">February 7, 2023</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+The JIT Compiler can theoretically leverage different backends for execution, but at this time, the paved path is to use the [TorchInductor](https://dev-discuss.pytorch.org/t/torchinductor-a-pytorch-native-compiler-with-define-by-run-ir-and-symbolic-shapes/747) which lowers the IR to the [OpenAI Triton](https://github.com/openai/triton) backend.  So the entire "compiler stack" looks like this:
+
+1. TorchDynamo acquires a PyTorch model as an IR, this IR maybe be multiple graphs if the model is dynamic or has control flows
+2. The JIT Compiler lowers the IR to TorchInductor
+3. TorchInductor lowers the IR to OpenAI Triton
+4. OpenAI Triton compiles the IR and executes it (perhaps by first passing it to some other back-end like CUDA)
+
+That is a lot of steps!  While the end-user doesn't need to necessarily be aware of all these steps, the documentation on [Torch Dynamo](https://pytorch.org/docs/master/dynamo/) can be really confusing unless you are aware of these different things.
+
+
+## Notes on Specific Compiler Stacks
+
+### TensorRT
+
+This is a compiler/exeuction environment.  Unlike the JIT (just-in-time), it is an AOT (ahead-of-time) compiler.  It is compatible with PyTorch via [torch-TensorRT](https://github.com/pytorch/TensorRT).  From [the docs](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html):  TensorRT’s primary means of importing a trained model from a framework is through the ONNX interchange format; so you need to convert your model to ONNX before getting to TensorRT (this happens automatically when you use torch-TensorRT).
+
+### ONNX
+
+ONNX is mainly focused on portability.  ONNX provides its own set of ops that are cross-platform and can be run on an ONNX Runtime.  The [ONNX runtime](https://onnxruntime.ai/) provides clients in many languages, like Python, C, C++, Java, JS, etc., allowing you to load a model for either inferencing or training.  There are hardware-specific clients that are optimized for OS (i.e., Linux, Windows, Mac, etc.), Hardware acceleration (CUDA, CoreML) and so forth.  You can select a client from here: https://onnxruntime.ai/.  
+
+You can construct your computation graphs with ONNX’s built-in ops; However, this is an impractical way to build a model.  In practice, you want to use your favorite ML framework like PyTorch or Tensorflow and use a converter to convert that model to ONNX like [torch.onnx](https://pytorch.org/docs/master/onnx.html#avoiding-pitfalls)
+
+#### Pytorch Considerations
+
+However, there is no free lunch. For PyTorch, there is a long list of [limitations](https://pytorch.org/docs/master/onnx.html#limitations) and [gotchas](https://pytorch.org/docs/master/onnx.html#avoiding-pitfalls) where things can go wrong.  You must be careful when exporting a model and should test the exported ONNX model against the native model for consistency.  The exported model looks like a JSON file that describes the graph along with weights.
+
+`torch.onnx` relies on [TorchScript](https://pytorch.org/tutorials/beginner/Intro_to_TorchScript_tutorial.html) to export the model into an IR.  You have to either use `Tracing` or `Scripting` depending upon the control flow in your model.
+
+- **Tracing:** If there is no control flow (if statements, loops, etc.) then use Tracing.  Tracing works by recording the model during execution.  If you have dynamic elements in your graph then they will be recorded as constants.  
+- **Scripting**: If there is control flow, you want to use Scripting instead.
+- **Mixed**: if there are modules in your code that do not have control flow and others that do, you can compile these modules separately with either Tracing or Scripting and then combine them into a single model.
+
+Read the [TorchScript Tutorial](https://pytorch.org/tutorials/beginner/Intro_to_TorchScript_tutorial.html#mixing-scripting-and-tracing) and [Tracing vs. Scripting](https://pytorch.org/docs/master/onnx.html#tracing-vs-scripting) to learn more.
+
+
+#### Use Torch-TensorRT instead of ONNX
+
+I talked to a trusted source on the Pytorch team and they said that TorchScript is not actively maintained and that I should look at [pytorch - TensorRT](https://pytorch.org/TensorRT/) instead.
+
+
+### OpenAI Triton
+
+From [this talk](https://www.youtube.com/watch?v=ppWKVg-VxmQ):
+
+![](2023-02-09-15-41-02.png)
+
+---
+[^1]: The IR is called FX, and Inductor (another compiler) translates FX graphs to be executed in one of two environments: OpenAI Triton for GPU and C++/OpenMP for CPU.  The docs call inductor a backend, but it is really a middle-layer that lowers the IR to another compiler stack.
+[^2]: Pytorch uses the python interpreter because PyTorch is natively "eager mode" and allows for dynamism and python control flows (which is why people love it because its very hackable or debuggable).

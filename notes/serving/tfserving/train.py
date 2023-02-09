@@ -52,3 +52,10 @@ def get_model(maxlen, vocab_size, embed_dim, num_heads, ff_dim):
     outputs = layers.Dense(2, activation="softmax")(x)
     model = keras.Model(inputs=inputs, outputs=outputs)
     return model
+
+
+def foo():
+    # Hamel: this is the only part that is specific to the training of the model
+    maxlen = 200
+
+
