@@ -44,10 +44,10 @@ It's easy to get lost in the terminology of compilers.  Here are some terms that
 
 - **Kernel Fusion**: this is the process of combining multiple operations into a single operation.  For example, a convolution followed by a ReLU can be combined into a single operation. 
 - **Intermediate Representation (IR)**: The IR is a representation of a model that's independent of a framework like Pytorch.  These IRs are often JSON, YAML, or a string that encodes model structure, weights, and so on.  These IRs are eventually translated into programs that can be executed and are often optimized toward specific hardware.
-- **Graph Lowering**: This is the process of translating one IR to another.  For example, a model in represented in the ONNX IR can be lowered to a model in [TensorRT IR](https://developer.nvidia.com/tensorrt).  The reason for doing this is to translate one IR to one that allows a specific compiler to perform domain/hardware-specific optimizations.  Different compilers can optimize different types of things and offer different goals.  For example, ONNX's primary goal is to be a portable IR, while TensorRT's primary goal is to optimize for inference.  The reason it's called Graph lowering is that models can often be represented as graphs, and you "lower" the graph representation consecutively towards something that can be made into machine code.  Compilers can process IRs in different phases such that the IR is simplified/optimized that a back-end will use to generate machine code.
+- **Graph Lowering**: This is the process of translating one IR to another.  For example, a model represented in the ONNX IR can be lowered to a model in [TensorRT IR](https://developer.nvidia.com/tensorrt).  The reason for doing this is to translate one IR to one that allows a specific compiler to perform domain/hardware-specific optimizations.  Different compilers can optimize different types of things and offer different goals.  For example, ONNX's primary goal is to be a portable IR, while TensorRT's primary goal is to optimize for inference.  The reason it's called Graph lowering is that a model be represented as a graph, and you "lower" the graph representation consecutively towards something that can be made into machine code.  Compilers can process IRs in different phases such that the IR is simplified/optimized, that a back-end will use to generate machine code.
 - **Front-End**: This refers to part of the [Compiler Stack](https://en.wikipedia.org/wiki/Compiler) that translates a programming language into an IR.
 - **Back-End**: This refers to part of the [Compiler Stack](https://en.wikipedia.org/wiki/Compiler) that translates an IR into machine code.  You can compose different front-ends with different back-ends through "middle-ends" that translate IRs from one to another (also known as "lowering" or "graph lowering").
-- **Graph Breaks**: When you represent a model as a graph via an intermediate representation (IR) there are pieces of code that might not fit into a graph form, like if/else statements.  When this happens you will have a graph break, where you will have to split your program into several graphs.  Only the parts that can be represented as a graph can usually be optimized by the compiler.  Depending on the framework you are using, either your or the framework will have to stitch all the graphs together in a way that represents the original program.  Graph breaks usually incur a performance penalty, so it's important to minimize them.
+- **Graph Breaks**: When you represent a model as a graph via an intermediate representation (IR) there are pieces of code that might not fit into a graph form, like if/else statements.  When this happens, you will have a graph break, where you will have to split your program into several graphs.  Only the parts that can be represented as a graph can usually be optimized by the compiler.  Depending on the framework you are using, either your or the framework will have to stitch all the graphs together in a way that represents the original program.  Graph breaks usually incur a performance penalty, so it's important to minimize them.
 
 ## Common Sources of Confusion
 
@@ -81,7 +81,7 @@ That is a lot of steps!  While the end-user doesn't necessarily need to be aware
 
 ### TensorRT
 
-This is a compiler/execution environment.  Unlike the JIT (just-in-time), it is an AOT (ahead-of-time) compiler.  It is compatible with PyTorch via [torch-TensorRT](https://github.com/pytorch/TensorRT).  From [the docs](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html):  TensorRT’s primary means of importing a trained model from a framework is through the ONNX interchange format; so you need to convert your model to ONNX before getting to TensorRT (this happens automatically when you use torch-TensorRT).
+This is a compiler/execution environment.  Unlike the JIT (just-in-time), it is an AOT (ahead-of-time) compiler.  It is compatible with PyTorch via [torch-TensorRT](https://github.com/pytorch/TensorRT).  From [the docs](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html):  TensorRT’s primary means of importing a trained model from a framework is through the ONNX interchange format, so you need to convert your model to ONNX before getting to TensorRT (this happens automatically when you use torch-TensorRT).
 
 ### ONNX
 
@@ -95,7 +95,7 @@ However, there is no free lunch. For PyTorch, there is a long list of [limitatio
 
 `torch.onnx` relies on [TorchScript](https://pytorch.org/tutorials/beginner/Intro_to_TorchScript_tutorial.html) to export the model into an IR.  You have to either use `Tracing` or `Scripting` depending upon the control flow in your model.
 
-- **Tracing:** If there is no control flow (if statements, loops, etc.) then use Tracing.  Tracing works by recording the model during execution.  If you have dynamic elements in your graph then they will be recorded as constants.  
+- **Tracing:** If there is no control flow (if statements, loops, etc.) then use Tracing.  Tracing works by recording the model during execution.  If you have dynamic elements in your graph, then they will be recorded as constants.  
 - **Scripting**: If there is control flow, you want to use Scripting instead.
 - **Mixed**: if there are modules in your code that do not have control flow and others that do, you can compile these modules separately with either Tracing or Scripting and then combine them into a single model.
 
@@ -104,7 +104,7 @@ Read the [TorchScript Tutorial](https://pytorch.org/tutorials/beginner/Intro_to_
 
 #### Use Torch-TensorRT instead of ONNX
 
-I talked to a trusted source on the Pytorch team and they said that TorchScript is not actively maintained and that I should look at [pytorch - TensorRT](https://pytorch.org/TensorRT/) instead.
+I talked to a trusted source on the Pytorch team, and they said that TorchScript is not actively maintained and that I should look at [pytorch - TensorRT](https://pytorch.org/TensorRT/) instead.
 
 ### OpenAI Triton
 
@@ -122,4 +122,4 @@ If you want to learn more about compilers, I recommend following these people:
 
 ---
 [^1]: The IR is called FX, and Inductor (another compiler) translates FX graphs to be executed in one of two environments: OpenAI Triton for GPU and C++/OpenMP for CPU.  The docs call inductor a backend, but it is really a middle-layer that lowers the IR to another compiler stack.
-[^2]: Pytorch uses the python interpreter because PyTorch is natively "eager mode" and allows for dynamism and python control flows (which is why people love it because its very hackable or debuggable).
+[^2]: Pytorch uses the python interpreter because PyTorch is natively "eager mode" and allows for dynamism and python control flows (which is why people love it because it's very hackable or debuggable).
