@@ -20,7 +20,7 @@ listing:
 | Model Optimization              | Quantization, pruning, distillation, flash attention                             |
 | Compilers                       | Kernel fusion, hardware-specific optimization, portability (hardware & runtimes) |
 
-This table is inspired by [this talk](https://www.youtube.com/watch?v=ppWKVg-VxmQ) where [Mark Saurofim](https://twitter.com/marksaroufim) outlines categories of optimization relevant to model serving.
+This table is inspired by [this talk](https://www.youtube.com/watch?v=ZOWjOxC80qw) where [Mark Saurofim](https://twitter.com/marksaroufim) outlines categories of optimization relevant to model serving.
 
 When considering model serving, the discussion tends to be focused on inference servers.  However, one underrated topic is the importance ML compilers play (which is discussed in later sections).
 
@@ -63,25 +63,25 @@ The term "compiler" is often overloaded.  Understanding the context in which the
 
 ### Training: TorchDyamo + JIT + Triton
 
-Compilers are often thought of as optimizations for inference.  However, there are compilers that help with training too.  The most notable these days is [TorchDynamo + JIT Compiler](https://pytorch.org/docs/master/dynamo/).  TorchDynamo is a front-end that allows you to capture a PyTorch model as an IR[^1].  Since this front-end is maintained by the Pytorch team, it is the most compatible of any of the IRs for Pytorch Models.  The JIT compiler supplants the CPython interpreter that normally "eagerly" runs your PyTorch code for faster execution[^2].  It works by dynamically modifying Python bytecode right before it is executed. All you have to do is to call one line of code: `torch.compile(...)` to get the benefits.  Andrej Karpathy is using this in his NanoGPT tutorials:
+Compilers are often thought of as optimizations for inference.  However, there are compilers that help with training too.  The most notable these days is [TorchDynamo + JIT Compiler](https://pytorch.org/docs/master/dynamo/).  TorchDynamo is a front-end that allows you to capture a PyTorch model as an IR[^1].  Since this front-end is maintained by the Pytorch team, it is going to have the greatest support for Pytorch models.  The best thing about the TorchDynamo+JIT stack is that it seamlessly handles graph breaks for you (stitches various subgraphs together for you, etc).  The JIT compiler supplants the CPython interpreter that normally "eagerly" runs your PyTorch code for faster execution[^2].  It works by dynamically modifying Python bytecode right before it is executed. All you have to do is to call one line of code: `torch.compile(...)` to see the benefits.  Andrej Karpathy is using this in his NanoGPT tutorials:
 
 <blockquote class="twitter-tweet"><p lang="en" dir="ltr">This is so underrated! Ridiculous speedup by calling `torch.compile(...)` <br><br>Code: <a href="https://t.co/9mMGGyEcfz">https://t.co/9mMGGyEcfz</a><br><br>Related blog posts:<br>1. <a href="https://t.co/JOLZ8BQdet">https://t.co/JOLZ8BQdet</a><br>2. <a href="https://t.co/ci8KAzLW1p">https://t.co/ci8KAzLW1p</a> (this blog by <a href="https://twitter.com/marksaroufim?ref_src=twsrc%5Etfw">@marksaroufim</a> is a real gem, BTW) <a href="https://t.co/E0oRVC4Ow8">https://t.co/E0oRVC4Ow8</a></p>&mdash; Hamel Husain (@HamelHusain) <a href="https://twitter.com/HamelHusain/status/1622822879170818050?ref_src=twsrc%5Etfw">February 7, 2023</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 The JIT Compiler can theoretically leverage different backends for execution, but at this time, the paved path is to use the [TorchInductor](https://dev-discuss.pytorch.org/t/torchinductor-a-pytorch-native-compiler-with-define-by-run-ir-and-symbolic-shapes/747) which lowers the IR to the [OpenAI Triton](https://github.com/openai/triton) backend.  So the entire "compiler stack" looks like this:
 
-1. TorchDynamo acquires a PyTorch model as an IR, this IR maybe be multiple graphs if the model is dynamic or has control flows
-2. The JIT Compiler lowers the IR to TorchInductor
-3. TorchInductor lowers the IR to OpenAI Triton
+1. TorchDynamo acquires a PyTorch model as an IR (FX graphs, multiple graphs if there are graph breaks)
+2. The JIT Compiler lowers the FX Graph (through other intermediate compiler stacks) to TorchInductor
+3. TorchInductor lowers the IR to OpenAI-Triton for GPU or C++ for CPU
 4. OpenAI Triton compiles the IR and executes it (perhaps by first passing it to some other back-end like CUDA)
 
-That is a lot of steps!  While the end-user doesn't need to necessarily be aware of all these steps, the documentation on [Torch Dynamo](https://pytorch.org/docs/master/dynamo/) can be really confusing unless you are aware of these different things.
+That is a lot of steps!  While the end-user doesn't necessarily need to be aware of all these steps, the documentation on [Torch Dynamo](https://pytorch.org/docs/master/dynamo/) can be really confusing unless you are aware of these different things.
 
 
 ## Notes on Specific Compiler Stacks
 
 ### TensorRT
 
-This is a compiler/exeuction environment.  Unlike the JIT (just-in-time), it is an AOT (ahead-of-time) compiler.  It is compatible with PyTorch via [torch-TensorRT](https://github.com/pytorch/TensorRT).  From [the docs](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html):  TensorRT’s primary means of importing a trained model from a framework is through the ONNX interchange format; so you need to convert your model to ONNX before getting to TensorRT (this happens automatically when you use torch-TensorRT).
+This is a compiler/execution environment.  Unlike the JIT (just-in-time), it is an AOT (ahead-of-time) compiler.  It is compatible with PyTorch via [torch-TensorRT](https://github.com/pytorch/TensorRT).  From [the docs](https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html):  TensorRT’s primary means of importing a trained model from a framework is through the ONNX interchange format; so you need to convert your model to ONNX before getting to TensorRT (this happens automatically when you use torch-TensorRT).
 
 ### ONNX
 
@@ -106,12 +106,19 @@ Read the [TorchScript Tutorial](https://pytorch.org/tutorials/beginner/Intro_to_
 
 I talked to a trusted source on the Pytorch team and they said that TorchScript is not actively maintained and that I should look at [pytorch - TensorRT](https://pytorch.org/TensorRT/) instead.
 
-
 ### OpenAI Triton
 
 From [this talk](https://www.youtube.com/watch?v=ppWKVg-VxmQ):
 
 ![](2023-02-09-15-41-02.png)
+
+
+## People to follow
+
+If you want to learn more about compilers, I recommend following these people:
+
+1. [Horace He](https://twitter.com/cHHillee)
+2. [Mark Saroufim](https://twitter.com/marksaroufim)
 
 ---
 [^1]: The IR is called FX, and Inductor (another compiler) translates FX graphs to be executed in one of two environments: OpenAI Triton for GPU and C++/OpenMP for CPU.  The docs call inductor a backend, but it is really a middle-layer that lowers the IR to another compiler stack.
