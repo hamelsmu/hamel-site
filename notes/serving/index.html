@@ -653,6 +653,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#onnx" id="toc-onnx" class="nav-link" data-scroll-target="#onnx">ONNX</a></li>
   <li><a href="#openai-triton" id="toc-openai-triton" class="nav-link" data-scroll-target="#openai-triton">OpenAI Triton</a></li>
   </ul></li>
+  <li><a href="#people-to-follow" id="toc-people-to-follow" class="nav-link" data-scroll-target="#people-to-follow">People to follow</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel/edit/master/notes/serving/index.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
@@ -713,7 +714,7 @@ ul.task-list li input[type="checkbox"] {
 </tr>
 </tbody>
 </table>
-<p>This table is inspired by <a href="https://www.youtube.com/watch?v=ppWKVg-VxmQ">this talk</a> where <a href="https://twitter.com/marksaroufim">Mark Saurofim</a> outlines categories of optimization relevant to model serving.</p>
+<p>This table is inspired by <a href="https://www.youtube.com/watch?v=ZOWjOxC80qw">this talk</a> where <a href="https://twitter.com/marksaroufim">Mark Saurofim</a> outlines categories of optimization relevant to model serving.</p>
 <p>When considering model serving, the discussion tends to be focused on inference servers. However, one underrated topic is the importance ML compilers play (which is discussed in later sections).</p>
 </section>
 <section id="inference-servers" class="level2">
@@ -778,10 +779,10 @@ No matching items
 <ul>
 <li><strong>Kernel Fusion</strong>: this is the process of combining multiple operations into a single operation. For example, a convolution followed by a ReLU can be combined into a single operation.</li>
 <li><strong>Intermediate Representation (IR)</strong>: The IR is a representation of a model that’s independent of a framework like Pytorch. These IRs are often JSON, YAML, or a string that encodes model structure, weights, and so on. These IRs are eventually translated into programs that can be executed and are often optimized toward specific hardware.</li>
-<li><strong>Graph Lowering</strong>: This is the process of translating one IR to another. For example, a model in represented in the ONNX IR can be lowered to a model in <a href="https://developer.nvidia.com/tensorrt">TensorRT IR</a>. The reason for doing this is to translate one IR to one that allows a specific compiler to perform domain/hardware-specific optimizations. Different compilers can optimize different types of things and offer different goals. For example, ONNX’s primary goal is to be a portable IR, while TensorRT’s primary goal is to optimize for inference. The reason it’s called Graph lowering is that models can often be represented as graphs, and you “lower” the graph representation consecutively towards something that can be made into machine code. Compilers can process IRs in different phases such that the IR is simplified/optimized that a back-end will use to generate machine code.</li>
+<li><strong>Graph Lowering</strong>: This is the process of translating one IR to another. For example, a model represented in the ONNX IR can be lowered to a model in <a href="https://developer.nvidia.com/tensorrt">TensorRT IR</a>. The reason for doing this is to translate one IR to one that allows a specific compiler to perform domain/hardware-specific optimizations. Different compilers can optimize different types of things and offer different goals. For example, ONNX’s primary goal is to be a portable IR, while TensorRT’s primary goal is to optimize for inference. The reason it’s called Graph lowering is that a model be represented as a graph, and you “lower” the graph representation consecutively towards something that can be made into machine code. Compilers can process IRs in different phases such that the IR is simplified/optimized, that a back-end will use to generate machine code.</li>
 <li><strong>Front-End</strong>: This refers to part of the <a href="https://en.wikipedia.org/wiki/Compiler">Compiler Stack</a> that translates a programming language into an IR.</li>
 <li><strong>Back-End</strong>: This refers to part of the <a href="https://en.wikipedia.org/wiki/Compiler">Compiler Stack</a> that translates an IR into machine code. You can compose different front-ends with different back-ends through “middle-ends” that translate IRs from one to another (also known as “lowering” or “graph lowering”).</li>
-<li><strong>Graph Breaks</strong>: When you represent a model as a graph via an intermediate representation (IR) there are pieces of code that might not fit into a graph form, like if/else statements. When this happens you will have a graph break, where you will have to split your program into several graphs. Only the parts that can be represented as a graph can usually be optimized by the compiler. Depending on the framework you are using, either your or the framework will have to stitch all the graphs together in a way that represents the original program. Graph breaks usually incur a performance penalty, so it’s important to minimize them.</li>
+<li><strong>Graph Breaks</strong>: When you represent a model as a graph via an intermediate representation (IR) there are pieces of code that might not fit into a graph form, like if/else statements. When this happens, you will have a graph break, where you will have to split your program into several graphs. Only the parts that can be represented as a graph can usually be optimized by the compiler. Depending on the framework you are using, either your or the framework will have to stitch all the graphs together in a way that represents the original program. Graph breaks usually incur a performance penalty, so it’s important to minimize them.</li>
 </ul>
 </section>
 <section id="common-sources-of-confusion" class="level2">
@@ -797,7 +798,7 @@ No matching items
 </section>
 <section id="training-torchdyamo-jit-triton" class="level3">
 <h3 class="anchored" data-anchor-id="training-torchdyamo-jit-triton">Training: TorchDyamo + JIT + Triton</h3>
-<p>Compilers are often thought of as optimizations for inference. However, there are compilers that help with training too. The most notable these days is <a href="https://pytorch.org/docs/master/dynamo/">TorchDynamo + JIT Compiler</a>. TorchDynamo is a front-end that allows you to capture a PyTorch model as an IR<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. Since this front-end is maintained by the Pytorch team, it is the most compatible of any of the IRs for Pytorch Models. The JIT compiler supplants the CPython interpreter that normally “eagerly” runs your PyTorch code for faster execution<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. It works by dynamically modifying Python bytecode right before it is executed. All you have to do is to call one line of code: <code>torch.compile(...)</code> to get the benefits. Andrej Karpathy is using this in his NanoGPT tutorials:</p>
+<p>Compilers are often thought of as optimizations for inference. However, there are compilers that help with training too. The most notable these days is <a href="https://pytorch.org/docs/master/dynamo/">TorchDynamo + JIT Compiler</a>. TorchDynamo is a front-end that allows you to capture a PyTorch model as an IR<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. Since this front-end is maintained by the Pytorch team, it is going to have the greatest support for Pytorch models. The best thing about the TorchDynamo+JIT stack is that it seamlessly handles graph breaks for you (stitches various subgraphs together for you, etc). The JIT compiler supplants the CPython interpreter that normally “eagerly” runs your PyTorch code for faster execution<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. It works by dynamically modifying Python bytecode right before it is executed. All you have to do is to call one line of code: <code>torch.compile(...)</code> to see the benefits. Andrej Karpathy is using this in his NanoGPT tutorials:</p>
 <blockquote class="twitter-tweet blockquote">
 <p lang="en" dir="ltr">
 This is so underrated! Ridiculous speedup by calling <code>torch.compile(...)</code> <br><br>Code: <a href="https://t.co/9mMGGyEcfz">https://t.co/9mMGGyEcfz</a><br><br>Related blog posts:<br>1. <a href="https://t.co/JOLZ8BQdet">https://t.co/JOLZ8BQdet</a><br>2. <a href="https://t.co/ci8KAzLW1p">https://t.co/ci8KAzLW1p</a> (this blog by <a href="https://twitter.com/marksaroufim?ref_src=twsrc%5Etfw"><span class="citation" data-cites="marksaroufim">@marksaroufim</span></a> is a real gem, BTW) <a href="https://t.co/E0oRVC4Ow8">https://t.co/E0oRVC4Ow8</a>
@@ -807,19 +808,19 @@ This is so underrated! Ridiculous speedup by calling <code>torch.compile(...)</c
 <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 <p>The JIT Compiler can theoretically leverage different backends for execution, but at this time, the paved path is to use the <a href="https://dev-discuss.pytorch.org/t/torchinductor-a-pytorch-native-compiler-with-define-by-run-ir-and-symbolic-shapes/747">TorchInductor</a> which lowers the IR to the <a href="https://github.com/openai/triton">OpenAI Triton</a> backend. So the entire “compiler stack” looks like this:</p>
 <ol type="1">
-<li>TorchDynamo acquires a PyTorch model as an IR, this IR maybe be multiple graphs if the model is dynamic or has control flows</li>
-<li>The JIT Compiler lowers the IR to TorchInductor</li>
-<li>TorchInductor lowers the IR to OpenAI Triton</li>
+<li>TorchDynamo acquires a PyTorch model as an IR (FX graphs, multiple graphs if there are graph breaks)</li>
+<li>The JIT Compiler lowers the FX Graph (through other intermediate compiler stacks) to TorchInductor</li>
+<li>TorchInductor lowers the IR to OpenAI-Triton for GPU or C++ for CPU</li>
 <li>OpenAI Triton compiles the IR and executes it (perhaps by first passing it to some other back-end like CUDA)</li>
 </ol>
-<p>That is a lot of steps! While the end-user doesn’t need to necessarily be aware of all these steps, the documentation on <a href="https://pytorch.org/docs/master/dynamo/">Torch Dynamo</a> can be really confusing unless you are aware of these different things.</p>
+<p>That is a lot of steps! While the end-user doesn’t necessarily need to be aware of all these steps, the documentation on <a href="https://pytorch.org/docs/master/dynamo/">Torch Dynamo</a> can be really confusing unless you are aware of these different things.</p>
 </section>
 </section>
 <section id="notes-on-specific-compiler-stacks" class="level2">
 <h2 class="anchored" data-anchor-id="notes-on-specific-compiler-stacks">Notes on Specific Compiler Stacks</h2>
 <section id="tensorrt" class="level3">
 <h3 class="anchored" data-anchor-id="tensorrt">TensorRT</h3>
-<p>This is a compiler/exeuction environment. Unlike the JIT (just-in-time), it is an AOT (ahead-of-time) compiler. It is compatible with PyTorch via <a href="https://github.com/pytorch/TensorRT">torch-TensorRT</a>. From <a href="https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html">the docs</a>: TensorRT’s primary means of importing a trained model from a framework is through the&nbsp;ONNX&nbsp;interchange format; so you need to convert your model to ONNX before getting to TensorRT (this happens automatically when you use torch-TensorRT).</p>
+<p>This is a compiler/execution environment. Unlike the JIT (just-in-time), it is an AOT (ahead-of-time) compiler. It is compatible with PyTorch via <a href="https://github.com/pytorch/TensorRT">torch-TensorRT</a>. From <a href="https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html">the docs</a>: TensorRT’s primary means of importing a trained model from a framework is through the&nbsp;ONNX&nbsp;interchange format, so you need to convert your model to ONNX before getting to TensorRT (this happens automatically when you use torch-TensorRT).</p>
 </section>
 <section id="onnx" class="level3">
 <h3 class="anchored" data-anchor-id="onnx">ONNX</h3>
@@ -830,7 +831,7 @@ This is so underrated! Ridiculous speedup by calling <code>torch.compile(...)</c
 <p>However, there is no free lunch. For PyTorch, there is a long list of <a href="https://pytorch.org/docs/master/onnx.html#limitations">limitations</a> and <a href="https://pytorch.org/docs/master/onnx.html#avoiding-pitfalls">gotchas</a> where things can go wrong. You must be careful when exporting a model and should test the exported ONNX model against the native model for consistency. The exported model looks like a JSON file that describes the graph along with weights.</p>
 <p><code>torch.onnx</code> relies on <a href="https://pytorch.org/tutorials/beginner/Intro_to_TorchScript_tutorial.html">TorchScript</a> to export the model into an IR. You have to either use <code>Tracing</code> or <code>Scripting</code> depending upon the control flow in your model.</p>
 <ul>
-<li><strong>Tracing:</strong> If there is no control flow (if statements, loops, etc.) then use Tracing. Tracing works by recording the model during execution. If you have dynamic elements in your graph then they will be recorded as constants.<br>
+<li><strong>Tracing:</strong> If there is no control flow (if statements, loops, etc.) then use Tracing. Tracing works by recording the model during execution. If you have dynamic elements in your graph, then they will be recorded as constants.<br>
 </li>
 <li><strong>Scripting</strong>: If there is control flow, you want to use Scripting instead.</li>
 <li><strong>Mixed</strong>: if there are modules in your code that do not have control flow and others that do, you can compile these modules separately with either Tracing or Scripting and then combine them into a single model.</li>
@@ -839,18 +840,26 @@ This is so underrated! Ridiculous speedup by calling <code>torch.compile(...)</c
 </section>
 <section id="use-torch-tensorrt-instead-of-onnx" class="level4">
 <h4 class="anchored" data-anchor-id="use-torch-tensorrt-instead-of-onnx">Use Torch-TensorRT instead of ONNX</h4>
-<p>I talked to a trusted source on the Pytorch team and they said that TorchScript is not actively maintained and that I should look at <a href="https://pytorch.org/TensorRT/">pytorch - TensorRT</a> instead.</p>
+<p>I talked to a trusted source on the Pytorch team, and they said that TorchScript is not actively maintained and that I should look at <a href="https://pytorch.org/TensorRT/">pytorch - TensorRT</a> instead.</p>
 </section>
 </section>
 <section id="openai-triton" class="level3">
 <h3 class="anchored" data-anchor-id="openai-triton">OpenAI Triton</h3>
 <p>From <a href="https://www.youtube.com/watch?v=ppWKVg-VxmQ">this talk</a>:</p>
 <p><img src="2023-02-09-15-41-02.png" class="img-fluid"></p>
+</section>
+</section>
+<section id="people-to-follow" class="level2">
+<h2 class="anchored" data-anchor-id="people-to-follow">People to follow</h2>
+<p>If you want to learn more about compilers, I recommend following these people:</p>
+<ol type="1">
+<li><a href="https://twitter.com/cHHillee">Horace He</a></li>
+<li><a href="https://twitter.com/marksaroufim">Mark Saroufim</a></li>
+</ol>
 <hr>
 
 
 
-</section>
 </section>
 
 
@@ -858,7 +867,7 @@ This is so underrated! Ridiculous speedup by calling <code>torch.compile(...)</c
 
 <ol>
 <li id="fn1"><p>The IR is called FX, and Inductor (another compiler) translates FX graphs to be executed in one of two environments: OpenAI Triton for GPU and C++/OpenMP for CPU. The docs call inductor a backend, but it is really a middle-layer that lowers the IR to another compiler stack.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>Pytorch uses the python interpreter because PyTorch is natively “eager mode” and allows for dynamism and python control flows (which is why people love it because its very hackable or debuggable).<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Pytorch uses the python interpreter because PyTorch is natively “eager mode” and allows for dynamism and python control flows (which is why people love it because it’s very hackable or debuggable).<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
