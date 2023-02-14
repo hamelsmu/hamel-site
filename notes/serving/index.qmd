@@ -38,7 +38,26 @@ Here are detailed notes with code examples on inference servers I've explored. I
 ::: {#infserve}
 :::
 
-## Compiler Terminology
+## ML Compilers
+
+:::{.callout-note}
+I discovered [a great article from Chip Huyen](https://huyenchip.com/2021/09/07/a-friendly-introduction-to-machine-learning-compilers-and-optimizers.html) after I wrote much of these notes, but then later filled my notes in with interesting bits I found in her article.
+:::
+
+### Why You Should Care About Compilers
+
+From [this blog post](https://huyenchip.com/2021/09/07/a-friendly-introduction-to-machine-learning-compilers-and-optimizers.html):
+
+1. Computing on edge devices can save you tons of money (and potentially complexity).
+2. Re-writing models to work on edge devices is costly b/c that requires specialists to execute -- good compilers can make this easy or obviate that transition by helping you translate your high-level framework code into hardware-specific code.
+3. Sometimes, cloud computing is not an option (you have to run on a device).
+4. Translating framework code to various backend hardware is a non-trivial problem
+5. New types of architectures can perform very poorly on hardware without the right compilers, even when those models are significantly smaller and simpler than established models.  One example is shared by Google [researchers who tried to implement capsule networks](https://dl.acm.org/doi/pdf/10.1145/3317550.3321441).
+
+![From Chip Huyen's [A Freindly Introduction to Machine Learning Compilers](https://huyenchip.com/2021/09/07/a-friendly-introduction-to-machine-learning-compilers-and-optimizers.html)](2023-02-13-17-10-43.png)
+
+
+### Terminology
 
 It's easy to get lost in the terminology of compilers.  Here are some terms that are important to understand:
 
@@ -106,12 +125,45 @@ Read the [TorchScript Tutorial](https://pytorch.org/tutorials/beginner/Intro_to_
 
 I talked to a trusted source on the Pytorch team, and they said that TorchScript is not actively maintained and that I should look at [pytorch - TensorRT](https://pytorch.org/TensorRT/) instead.
 
+
 ### OpenAI Triton
 
-From [this talk](https://www.youtube.com/watch?v=ppWKVg-VxmQ):
+Only for GPUs, rrom [this talk](https://www.youtube.com/watch?v=ppWKVg-VxmQ):
 
 ![](2023-02-09-15-41-02.png)
 
+
+### ApacheTVM
+
+[ApacheTVM](https://tvm.apache.org/) is a compiler that seems to have one of the widest ranges of hardware support. 
+
+
+### Adaptive Compilers (TVM)
+
+[autoTVM](https://tvm.apache.org/docs/reference/api/python/autotvm.html), part of [ApacheTVM](https://tvm.apache.org/) compiler framework are part of a class of compilers that are adaptive that run tests on hardware and automatically try to optimize it for the hardware by trying many different graph configurations.  From Chip's [intro to compilers](https://huyenchip.com/2021/09/07/a-friendly-introduction-to-machine-learning-compilers-and-optimizers.html):
+
+> autoTVM measures the actual time it takes to run each path it goes down, which gives it ground truth data to train a cost model to predict how long a future path will take. The pro of this approach is that because the model is trained using the data generated during runtime, it can adapt to any type of hardware it runs on. The con is that it takes more time for the cost model to start improving. 
+
+> One example is when Apple released their M1 chips in Nov 2020. M1 is an ARM-based system on a chip, and ARM architectures are more or less well-understood. However, M1 still has a lot of novel components of its ARM implementation and requires significant optimization to make various ML models run fast on it. A month after the release, [folks at OctoML showed that the optimization made by autoTVM is almost 30% faster than hand-designed optimization by Apple’s Core ML team](https://venturebeat.com/ai/octoml-optimizes-apache-tvm-for-apples-m1-beats-core-ml-4-by-29/). 
+
+Quote from a compiler expert:
+
+>  Pros of dynamic compilers is that we maximize performance across a broader set of models/ops. Downside of dynamic compilers is search time. AutoTVM generally takes hours, even more than a day to compile because it's trying every possible combination.
+
+ML can also be used to optimize the computation graph, or "ML is optimizing ML".  Below is an illustration from Chen, et.al; [TVM: An Automated End-to-End Optimizing Compiler for Deep Learning](https://arxiv.org/pdf/1802.04799.pdf), where they comment that:
+
+> Possible optimizations form a large space, so we use an ML-based cost model to find optimized operators.
+
+![](2023-02-13-17-17-37.png)
+
+
+Adaptive compilers are interesting because they do not depend on hand-coded rules like traditional compilers and seem more user-friendly and generalizable to new kinds of hardware.  Another adaptive compiler is cuDNN autotune, which you can enable with `torch.backends.cudnn.benchmark=True`, but apparently this only works with convolutions.  The drawback of adaptive compilers is that they can take a long time to "learn" or "search" for good optimizations.  However, you can amortize the cost of optimizing the model over many devices on that hardware, and can even take that checkpoint as a starting point for future tuning sessions.
+
+I find adaptive compilation more exciting and promising as a future direction in compilers.
+
+### WASM
+
+Targeting WASM would theoretically enable you to work on any device that can run a browser - and many devices/hardware can run browsers!  However, one drawback is that it's still slow.  See [this blog post](https://huyenchip.com/2021/09/07/a-friendly-introduction-to-machine-learning-compilers-and-optimizers.html) for a more detailed discussion.
 
 ## People to follow
 
