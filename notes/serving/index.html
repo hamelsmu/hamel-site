@@ -897,7 +897,6 @@ This is so underrated! Ridiculous speedup by calling <code>torch.compile(...)</c
 <blockquote class="blockquote">
 <p>Possible optimizations form a large space, so we use an ML-based cost model to find optimized operators.</p>
 </blockquote>
-<p><img src="2023-02-13-17-17-37.png" class="img-fluid"></p>
 <p>Adaptive compilers are interesting because they do not depend on hand-coded rules like traditional compilers and seem more user-friendly and generalizable to new kinds of hardware. Another adaptive compiler is cuDNN autotune, which you can enable with <code>torch.backends.cudnn.benchmark=True</code>, but apparently this only works with convolutions. The drawback of adaptive compilers is that they can take a long time to “learn” or “search” for good optimizations. However, you can amortize the cost of optimizing the model over many devices on that hardware, and can even take that checkpoint as a starting point for future tuning sessions.</p>
 <p>I find adaptive compilation more exciting and promising as a future direction in compilers.</p>
 </section>
@@ -917,7 +916,10 @@ This is so underrated! Ridiculous speedup by calling <code>torch.compile(...)</c
 </section>
 <section id="resources" class="level2">
 <h2 class="anchored" data-anchor-id="resources">Resources</h2>
-<p>I learned a lot by reading <a href="https://huyenchip.com/2021/09/07/a-friendly-introduction-to-machine-learning-compilers-and-optimizers.html">this great article from Chip Huyen</a>.</p>
+<ol type="1">
+<li>I learned a lot by reading <a href="https://huyenchip.com/2021/09/07/a-friendly-introduction-to-machine-learning-compilers-and-optimizers.html">this great article from Chip Huyen</a>.</li>
+<li><a href="https://dl.acm.org/doi/pdf/10.1145/3317550.3321441">This post-mortem</a> of trying to get capsule networks to work on modern hardware illuminates the importance of compilers.</li>
+</ol>
 <hr>
 
 
