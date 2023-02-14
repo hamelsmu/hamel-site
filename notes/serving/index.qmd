@@ -40,10 +40,6 @@ Here are detailed notes with code examples on inference servers I've explored. I
 
 ## ML Compilers
 
-:::{.callout-note}
-I discovered [a great article from Chip Huyen](https://huyenchip.com/2021/09/07/a-friendly-introduction-to-machine-learning-compilers-and-optimizers.html) after I wrote much of these notes, but then later filled my notes in with interesting bits I found in her article.
-:::
-
 ### Why You Should Care About Compilers
 
 From [this blog post](https://huyenchip.com/2021/09/07/a-friendly-introduction-to-machine-learning-compilers-and-optimizers.html):
@@ -51,8 +47,8 @@ From [this blog post](https://huyenchip.com/2021/09/07/a-friendly-introduction-t
 1. Computing on edge devices can save you tons of money (and potentially complexity).
 2. Re-writing models to work on edge devices is costly b/c that requires specialists to execute -- good compilers can make this easy or obviate that transition by helping you translate your high-level framework code into hardware-specific code.
 3. Sometimes, cloud computing is not an option (you have to run on a device).
-4. Translating framework code to various backend hardware is a non-trivial problem
-5. New types of architectures can perform very poorly on hardware without the right compilers, even when those models are significantly smaller and simpler than established models.  One example is shared by Google [researchers who tried to implement capsule networks](https://dl.acm.org/doi/pdf/10.1145/3317550.3321441).
+4. New types of architectures can perform very poorly on hardware without the right compilers, even when those models are significantly smaller and simpler than established models.  One example is shared by Google [researchers who tried to implement capsule networks](https://dl.acm.org/doi/pdf/10.1145/3317550.3321441).
+5. Translating framework code to various backend hardware is a non-trivial problem, as illustrated in the below graph (growing number of frameworks + hardware/devices):
 
 ![From Chip Huyen's [A Freindly Introduction to Machine Learning Compilers](https://huyenchip.com/2021/09/07/a-friendly-introduction-to-machine-learning-compilers-and-optimizers.html)](2023-02-13-17-10-43.png)
 
@@ -172,6 +168,10 @@ If you want to learn more about compilers, I recommend following these people:
 - [Chris Lattner](https://twitter.com/clattner_llvm): watch what he is building at [Modular](https://www.modular.com/)
 - [Horace He](https://twitter.com/cHHillee)
 - [Mark Saroufim](https://twitter.com/marksaroufim)
+
+## Resources
+
+I learned a lot by reading [this great article from Chip Huyen](https://huyenchip.com/2021/09/07/a-friendly-introduction-to-machine-learning-compilers-and-optimizers.html).
 
 ---
 [^1]: The IR is called FX, and Inductor (another compiler) translates FX graphs to be executed in one of two environments: OpenAI Triton for GPU and C++/OpenMP for CPU.  The docs call inductor a backend, but it is really a middle-layer that lowers the IR to another compiler stack.
