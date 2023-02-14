@@ -150,9 +150,6 @@ ML can also be used to optimize the computation graph, or "ML is optimizing ML".
 
 > Possible optimizations form a large space, so we use an ML-based cost model to find optimized operators.
 
-![](2023-02-13-17-17-37.png)
-
-
 Adaptive compilers are interesting because they do not depend on hand-coded rules like traditional compilers and seem more user-friendly and generalizable to new kinds of hardware.  Another adaptive compiler is cuDNN autotune, which you can enable with `torch.backends.cudnn.benchmark=True`, but apparently this only works with convolutions.  The drawback of adaptive compilers is that they can take a long time to "learn" or "search" for good optimizations.  However, you can amortize the cost of optimizing the model over many devices on that hardware, and can even take that checkpoint as a starting point for future tuning sessions.
 
 I find adaptive compilation more exciting and promising as a future direction in compilers.
@@ -171,7 +168,9 @@ If you want to learn more about compilers, I recommend following these people:
 
 ## Resources
 
-I learned a lot by reading [this great article from Chip Huyen](https://huyenchip.com/2021/09/07/a-friendly-introduction-to-machine-learning-compilers-and-optimizers.html).
+1. I learned a lot by reading [this great article from Chip Huyen](https://huyenchip.com/2021/09/07/a-friendly-introduction-to-machine-learning-compilers-and-optimizers.html).
+2. [This post-mortem](https://dl.acm.org/doi/pdf/10.1145/3317550.3321441) of trying to get capsule networks to work on modern hardware illuminates the importance of compilers.
+
 
 ---
 [^1]: The IR is called FX, and Inductor (another compiler) translates FX graphs to be executed in one of two environments: OpenAI Triton for GPU and C++/OpenMP for CPU.  The docs call inductor a backend, but it is really a middle-layer that lowers the IR to another compiler stack.
