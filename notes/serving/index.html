@@ -640,7 +640,11 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#types-of-optimization" id="toc-types-of-optimization" class="nav-link active" data-scroll-target="#types-of-optimization">Types of Optimization</a></li>
   <li><a href="#inference-servers" id="toc-inference-servers" class="nav-link" data-scroll-target="#inference-servers">Inference Servers</a></li>
-  <li><a href="#compiler-terminology" id="toc-compiler-terminology" class="nav-link" data-scroll-target="#compiler-terminology">Compiler Terminology</a></li>
+  <li><a href="#ml-compilers" id="toc-ml-compilers" class="nav-link" data-scroll-target="#ml-compilers">ML Compilers</a>
+  <ul class="collapse">
+  <li><a href="#why-you-should-care-about-compilers" id="toc-why-you-should-care-about-compilers" class="nav-link" data-scroll-target="#why-you-should-care-about-compilers">Why You Should Care About Compilers</a></li>
+  <li><a href="#terminology" id="toc-terminology" class="nav-link" data-scroll-target="#terminology">Terminology</a></li>
+  </ul></li>
   <li><a href="#common-sources-of-confusion" id="toc-common-sources-of-confusion" class="nav-link" data-scroll-target="#common-sources-of-confusion">Common Sources of Confusion</a>
   <ul class="collapse">
   <li><a href="#the-compiler-stack" id="toc-the-compiler-stack" class="nav-link" data-scroll-target="#the-compiler-stack">The Compiler Stack</a></li>
@@ -652,6 +656,9 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#tensorrt" id="toc-tensorrt" class="nav-link" data-scroll-target="#tensorrt">TensorRT</a></li>
   <li><a href="#onnx" id="toc-onnx" class="nav-link" data-scroll-target="#onnx">ONNX</a></li>
   <li><a href="#openai-triton" id="toc-openai-triton" class="nav-link" data-scroll-target="#openai-triton">OpenAI Triton</a></li>
+  <li><a href="#apachetvm" id="toc-apachetvm" class="nav-link" data-scroll-target="#apachetvm">ApacheTVM</a></li>
+  <li><a href="#adaptive-compilers-tvm" id="toc-adaptive-compilers-tvm" class="nav-link" data-scroll-target="#adaptive-compilers-tvm">Adaptive Compilers (TVM)</a></li>
+  <li><a href="#wasm" id="toc-wasm" class="nav-link" data-scroll-target="#wasm">WASM</a></li>
   </ul></li>
   <li><a href="#people-to-follow" id="toc-people-to-follow" class="nav-link" data-scroll-target="#people-to-follow">People to follow</a></li>
   </ul>
@@ -773,8 +780,40 @@ No matching items
 </div>
 </div>
 </section>
-<section id="compiler-terminology" class="level2">
-<h2 class="anchored" data-anchor-id="compiler-terminology">Compiler Terminology</h2>
+<section id="ml-compilers" class="level2">
+<h2 class="anchored" data-anchor-id="ml-compilers">ML Compilers</h2>
+<div class="callout callout-style-default callout-note callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I discovered <a href="https://huyenchip.com/2021/09/07/a-friendly-introduction-to-machine-learning-compilers-and-optimizers.html">a great article from Chip Huyen</a> after I wrote much of these notes, but then later filled my notes in with interesting bits I found in her article.</p>
+</div>
+</div>
+<section id="why-you-should-care-about-compilers" class="level3">
+<h3 class="anchored" data-anchor-id="why-you-should-care-about-compilers">Why You Should Care About Compilers</h3>
+<p>From <a href="https://huyenchip.com/2021/09/07/a-friendly-introduction-to-machine-learning-compilers-and-optimizers.html">this blog post</a>:</p>
+<ol type="1">
+<li>Computing on edge devices can save you tons of money (and potentially complexity).</li>
+<li>Re-writing models to work on edge devices is costly b/c that requires specialists to execute – good compilers can make this easy or obviate that transition by helping you translate your high-level framework code into hardware-specific code.</li>
+<li>Sometimes, cloud computing is not an option (you have to run on a device).</li>
+<li>Translating framework code to various backend hardware is a non-trivial problem</li>
+<li>New types of architectures can perform very poorly on hardware without the right compilers, even when those models are significantly smaller and simpler than established models. One example is shared by Google <a href="https://dl.acm.org/doi/pdf/10.1145/3317550.3321441">researchers who tried to implement capsule networks</a>.</li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="2023-02-13-17-10-43.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">From Chip Huyen’s <a href="https://huyenchip.com/2021/09/07/a-friendly-introduction-to-machine-learning-compilers-and-optimizers.html">A Freindly Introduction to Machine Learning Compilers</a></figcaption><p></p>
+</figure>
+</div>
+</section>
+<section id="terminology" class="level3">
+<h3 class="anchored" data-anchor-id="terminology">Terminology</h3>
 <p>It’s easy to get lost in the terminology of compilers. Here are some terms that are important to understand:</p>
 <ul>
 <li><strong>Kernel Fusion</strong>: this is the process of combining multiple operations into a single operation. For example, a convolution followed by a ReLU can be combined into a single operation.</li>
@@ -784,6 +823,7 @@ No matching items
 <li><strong>Back-End</strong>: This refers to part of the <a href="https://en.wikipedia.org/wiki/Compiler">Compiler Stack</a> that translates an IR into machine code. You can compose different front-ends with different back-ends through “middle-ends” that translate IRs from one to another (also known as “lowering” or “graph lowering”).</li>
 <li><strong>Graph Breaks</strong>: When you represent a model as a graph via an intermediate representation (IR) there are pieces of code that might not fit into a graph form, like if/else statements. When this happens, you will have a graph break, where you will have to split your program into several graphs. Only the parts that can be represented as a graph can usually be optimized by the compiler. Depending on the framework you are using, either your or the framework will have to stitch all the graphs together in a way that represents the original program. Graph breaks usually incur a performance penalty, so it’s important to minimize them.</li>
 </ul>
+</section>
 </section>
 <section id="common-sources-of-confusion" class="level2">
 <h2 class="anchored" data-anchor-id="common-sources-of-confusion">Common Sources of Confusion</h2>
@@ -845,8 +885,37 @@ This is so underrated! Ridiculous speedup by calling <code>torch.compile(...)</c
 </section>
 <section id="openai-triton" class="level3">
 <h3 class="anchored" data-anchor-id="openai-triton">OpenAI Triton</h3>
-<p>From <a href="https://www.youtube.com/watch?v=ppWKVg-VxmQ">this talk</a>:</p>
+<p>Only for GPUs, rrom <a href="https://www.youtube.com/watch?v=ppWKVg-VxmQ">this talk</a>:</p>
 <p><img src="2023-02-09-15-41-02.png" class="img-fluid"></p>
+</section>
+<section id="apachetvm" class="level3">
+<h3 class="anchored" data-anchor-id="apachetvm">ApacheTVM</h3>
+<p><a href="https://tvm.apache.org/">ApacheTVM</a> is a compiler that seems to have one of the widest ranges of hardware support.</p>
+</section>
+<section id="adaptive-compilers-tvm" class="level3">
+<h3 class="anchored" data-anchor-id="adaptive-compilers-tvm">Adaptive Compilers (TVM)</h3>
+<p><a href="https://tvm.apache.org/docs/reference/api/python/autotvm.html">autoTVM</a>, part of <a href="https://tvm.apache.org/">ApacheTVM</a> compiler framework are part of a class of compilers that are adaptive that run tests on hardware and automatically try to optimize it for the hardware by trying many different graph configurations. From Chip’s <a href="https://huyenchip.com/2021/09/07/a-friendly-introduction-to-machine-learning-compilers-and-optimizers.html">intro to compilers</a>:</p>
+<blockquote class="blockquote">
+<p>autoTVM measures the actual time it takes to run each path it goes down, which gives it ground truth data to train a cost model to predict how long a future path will take. The pro of this approach is that because the model is trained using the data generated during runtime, it can adapt to any type of hardware it runs on. The con is that it takes more time for the cost model to start improving.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>One example is when Apple released their M1 chips in Nov 2020. M1 is an ARM-based system on a chip, and ARM architectures are more or less well-understood. However, M1 still has a lot of novel components of its ARM implementation and requires significant optimization to make various ML models run fast on it. A month after the release, <a href="https://venturebeat.com/ai/octoml-optimizes-apache-tvm-for-apples-m1-beats-core-ml-4-by-29/">folks at OctoML showed that the optimization made by autoTVM is almost 30% faster than hand-designed optimization by Apple’s Core ML team</a>.</p>
+</blockquote>
+<p>Quote from a compiler expert:</p>
+<blockquote class="blockquote">
+<p>Pros of dynamic compilers is that we maximize performance across a broader set of models/ops. Downside of dynamic compilers is search time. AutoTVM generally takes hours, even more than a day to compile because it’s trying every possible combination.</p>
+</blockquote>
+<p>ML can also be used to optimize the computation graph, or “ML is optimizing ML”. Below is an illustration from Chen, et.al; <a href="https://arxiv.org/pdf/1802.04799.pdf">TVM: An Automated End-to-End Optimizing Compiler for Deep Learning</a>, where they comment that:</p>
+<blockquote class="blockquote">
+<p>Possible optimizations form a large space, so we use an ML-based cost model to find optimized operators.</p>
+</blockquote>
+<p><img src="2023-02-13-17-17-37.png" class="img-fluid"></p>
+<p>Adaptive compilers are interesting because they do not depend on hand-coded rules like traditional compilers and seem more user-friendly and generalizable to new kinds of hardware. Another adaptive compiler is cuDNN autotune, which you can enable with <code>torch.backends.cudnn.benchmark=True</code>, but apparently this only works with convolutions. The drawback of adaptive compilers is that they can take a long time to “learn” or “search” for good optimizations. However, you can amortize the cost of optimizing the model over many devices on that hardware, and can even take that checkpoint as a starting point for future tuning sessions.</p>
+<p>I find adaptive compilation more exciting and promising as a future direction in compilers.</p>
+</section>
+<section id="wasm" class="level3">
+<h3 class="anchored" data-anchor-id="wasm">WASM</h3>
+<p>Targeting WASM would theoretically enable you to work on any device that can run a browser - and many devices/hardware can run browsers! However, one drawback is that it’s still slow. See <a href="https://huyenchip.com/2021/09/07/a-friendly-introduction-to-machine-learning-compilers-and-optimizers.html">this blog post</a> for a more detailed discussion.</p>
 </section>
 </section>
 <section id="people-to-follow" class="level2">
