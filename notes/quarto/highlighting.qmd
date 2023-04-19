@@ -1,0 +1,131 @@
+---
+title: Syntax Highlighting
+description: How to customize the style and definitions for syntax highlighting, including adding new languages.
+---
+
+## Background
+
+Syntax highlighting in Quarto follows the way [pandoc handles syntax highlighting](https://pandoc.org/MANUAL#syntax-highlighting). There are two important concepts concerning syntax highlighting:
+
+## 1. Syntax Color Themes
+
+Syntax color themes allow you to customize the colors shown in syntax highlighting.  These are expressed with the [`highlight-style`](https://quarto.org/docs/output-formats/html-code.html#custom-highlighting) setting.  You can change the syntax color theme in either your front matter or site-wide in `_quarto.yml` like this:
+
+::: {.panel-tabset}
+
+### Front Matter
+
+```yaml
+---
+highlight-style: custom.theme
+---
+```
+
+If you have both light and dark themes, you will likely want to set those separately like this:
+
+```yaml
+---
+highlight-style:
+  light: custom-light.theme
+  dark: custom-dark.theme
+---
+```
+
+### _quarto.yml
+
+```{.yaml filename="_quarto.yml"}
+format:
+  html:
+    theme: 
+      light: assets/ek-theme-light.scss
+      dark: assets/ek-theme-dark.scss
+    highlight-style: 
+      light: assets/ek-light.theme
+      dark: assets/ek-dark.theme
+```
+
+:::
+
+These color themes are defined by `json` files with the schema [defined here](https://docs.kde.org/stable5/en/kate/katepart/color-themes.html).  However, it is recommended that you choose [one of the themes that quarto already provides](https://github.com/quarto-dev/quarto-cli/tree/main/src/resources/pandoc/highlight-styles) and edit that.  By default, Quarto uses the [`arrow-light`](https://github.com/quarto-dev/quarto-cli/blob/main/src/resources/pandoc/highlight-styles/arrow-light.theme) theme.  This means if you are happy with the way Quarto is highlighting syntax, you can just tweak this theme.  Personally, my favorite theme is [darcula](https://github.com/quarto-dev/quarto-cli/blob/main/src/resources/pandoc/highlight-styles/dracula.theme).  It is useful to look through these different themes to get a sense of the types of things you can change.
+
+## 2. Syntax Definitions
+
+Syntax definitions define the rules by which syntax is highlighted.  A rule is a string, character or regular expression against which to match the text being analyzed. This is helpful if you need to document a language that isn't supported by Quarto out of the box.  You can see the list of supported languages with this command:
+
+```bash
+quarto pandoc --list-highlight-languages
+```
+
+Syntax definitions are defined in `xml` files that follow [this schema](https://docs.kde.org/stable5/en/kate/katepart/highlight.html).  Examples of syntax definitions for various languages can [be found here](https://github.com/KDE/syntax-highlighting/tree/master/data/syntax). 
+  
+Quarto has additional [example syntax definitions here](https://github.com/quarto-dev/quarto-cli/tree/main/src/resources/pandoc/syntax-definitions) which are useful to look at.  Note how the name of the language and its file extensions are defined in the XML file.
+
+In order to supply an additional syntax definition or override an existing one, set the [`syntax-definitions`](https://quarto.org/docs/reference/formats/docx.html#code) in your `_quarto.yml` file like this:
+
+```{.yaml filename="_quarto.yml"}
+format:
+  html:
+    syntax-definitions: 
+    - new_language.xml
+```
+
+An example of defining a new language is illustrated below.
+
+### Example
+
+Suppose you have a new programming language called `Fomo` that is just like Python, _except_ you can define functions with `fomo` in addition to `def`.  For example, consider this Python code:
+
+```python
+def hello_world():
+    "An example"
+    pass
+```
+
+Unfortunately, If you try to use the Python code fence for `Fomo` it looks like this:
+
+```python
+fomo hello_world():
+    "An example"
+    pass
+```
+
+Since `Fomo` is almost identical to Python, you can start by copying the [python syntax definition](https://github.com/KDE/syntax-highlighting/blob/master/data/syntax/python.xml) into a file named `fomo.xml`  and edit the language `name`, `style` and `extension` fields like so:
+
+```{.diff filename="fomo.xml"}
+- <language name="Python" version="26" style="python" indenter="python" kateversion="5.0" section="Scripts" extensions="*.py;*.pyw;*.pyi;SConstruct;SConscript;*.FCMacro" ...
++ <language name="Fomo" version="26" style="fomo" indenter="python" kateversion="5.0" section="Scripts" extensions="*.fomo" ...
+```
+
+You also have to add `fomo` to the list of `defs` like this:
+
+```{.diff filename="fomo.xml"}
+		<list name="defs">
+			<item>class</item>
+			<item>def</item>
++           <item>fomo</item>
+			<item>del</item>
+			<item>global</item>
+			<item>lambda</item>
+			<item>nonlocal</item>
+		</list>
+```
+
+After that, you can add the `Fomo` syntax definition to your Quarto project with the [`syntax-definitions`](https://quarto.org/docs/reference/formats/docx.html#code) option like so:
+
+```{.yaml filename="_quarto.yml"}
+format:
+  html:
+    syntax-definitions: 
+    - fomo.xml
+```
+
+_In this case, `fomo.xml` is in the root of the Quarto project, but you can put it in a sub-folder as well_.
+
+
+After doing this, you can use the <code>```fomo</code> code fence, and your code will be highlighted correctly!
+
+```fomo
+fomo hello_world():
+    "An example"
+    pass
+```
