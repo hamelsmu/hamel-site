@@ -1,0 +1,104 @@
+---
+title: Transcribe & Diarize Videos
+description: Generate transcriptions of videos with speaker labels.
+---
+
+# Motivation
+
+I wanted to generate transcriptions of videos with speaker labels. Segmenting or labeling the speakers in audio like this is referred to as `Diarization` or `Diarisation` [(wikipedia)](https://en.wikipedia.org/wiki/Speaker_diarisation).  Unfortunately, [OpenAi's Whisper doesn't do diarization](https://github.com/openai/whisper/discussions/264).
+
+# Tools
+
+You need to install these tools per the instructions on their respective repos:
+
+1. [yt-dlp](https://github.com/yt-dlp/yt-dlp): this is like youtube-dl but without some bugs that I encountered that can be used to download the video.
+
+2. [WhisperX](https://github.com/m-bain/whisperX): performs the Diarization
+
+Additionally, I used a machine with an Nvidia 3090 GPU running Ubuntu 22.04.
+
+# Steps
+
+I'm going to transcribe [this video](https://youtu.be/g_6nQBsE4pU) as an example.
+
+## 1. Download the audio file with [yt-dlp](https://github.com/yt-dlp/yt-dlp).  
+
+    The `-o "audio.%(ext)s"` argument is used to name the output as `audo.mp3`.  The `%(ext)s` is a placeholder for the file extension.  The `--extract-audio` and `--audio-format mp3` arguments are used to extract the audio from the video and convert it to mp3 format.
+
+    ```bash
+    yt-dlp --extract-audio --audio-format mp3 \
+        -o "audio.%(ext)s" https://youtu.be/g_6nQBsE4pU
+    ```
+
+    The above command will generate `audio.mp3` in the current directory.
+
+## 2. Generate the transcript with diarization.  
+
+This is done with [WhisperX](https://github.com/m-bain/whisperX).  Make sure you carefully follow the instructions in the WhisperX repo corresponding to [Speaker Diarization](https://github.com/m-bain/whisperX#speaker-diarization): you have to click on three Hugging Face repos and accept their terms & conditions.
+
+The [video](https://youtu.be/g_6nQBsE4pU) I'm working with has 2 speakers, so that's why I'm setting `--min_speakers` and `--max_speakers` equal to 2.  The `--hf_token` argument is the Hugging Face token you get from following the instructions in the WhisperX repo.
+
+```bash
+whisperx audio.mp3 --model large-v2 --diarize \
+    --min_speakers 2 --max_speakers 2 --hf_token <your_hf_token>
+```
+
+This will produce files with the following extensions `audio.{srt, vtt, txt, tsv, json}` in the current directory.  You can limit the formats with ` --output_format` and write these files to a different directory with `--output_dir`.  The `.json` file contains the most detailed information about the diarization, with world-level predictions, whereas the `.vtt` and `.srt` files will contain a more human-readable transcript with speaker labels.  I suggest looking at these files to see which one suits your needs.
+
+If looking at the `.json` file, I recommend using `jq` with a command like this to see the first row of the `segments` array in that file:
+
+```bash
+jq '.segments[0]' audio.json
+```
+
+# Preview
+
+Here's a preview of the `.vtt` file:
+
+```
+WEBVTT
+
+00:00.248 --> 00:13.531
+[SPEAKER_01]: Hi, this is Jeremy Howard, and you're listening to Coffee Time Data Science, a podcast for data science enthusiasts, where I interview practitioners, researchers, and Kagglers about their journey, experience, and talk all things data science.
+
+00:13.531 --> 00:17.151
+[SPEAKER_01]: And before we begin, I apologize for the change to our schedule.
+
+00:17.151 --> 00:22.593
+[SPEAKER_01]: Of course, usually you would be seeing Chai Time Data Science on this channel with Sanyam Bhutani.
+
+00:22.593 --> 00:24.373
+[SPEAKER_01]: Unfortunately, he's not available today.
+
+00:24.373 --> 00:29.514
+[SPEAKER_01]: He had a prior appointment on another podcast, and he was not able to join Chai Time Data Science.
+
+00:29.974 --> 00:34.338
+[SPEAKER_01]: We hope you enjoy this special episode of Coffee Time Data Science.
+
+00:34.338 --> 00:45.148
+[SPEAKER_01]: And without further ado, I would like to invite our very special VIP guest, newly anointed Kaggle Grand Master, Sanyam Bhutani.
+
+00:45.148 --> 00:47.190
+[SPEAKER_01]: Sanyam, welcome to Coffee Time Data Science.
+
+00:48.372 --> 00:49.073
+[SPEAKER_00]: Thank you, Jeremy.
+
+00:49.073 --> 00:53.537
+[SPEAKER_00]: Usually, I'm very anti coffee, but I'll have to allow that.
+
+00:53.537 --> 00:55.678
+[SPEAKER_00]: I still can't believe you weren't kidding.
+
+00:55.678 --> 00:59.421
+[SPEAKER_00]: And I mentioned in our message also, like I, I think I don't deserve this.
+
+00:59.421 --> 01:00.042
+[SPEAKER_00]: But thank you.
+```
+
+
+# Other projects
+
+- [HuggingFace: Whisper Speaker Diarization](https://huggingface.co/spaces/vumichien/Whisper_speaker_diarization). This seems to work well and has a live demo you can play with.
