@@ -2408,6 +2408,27 @@
     "text": "Title\n\n\nDescription\n\n\n\n\n\n\nCourse\n\n\nNotebooks from the…\n\n\n\n\n\n\nNo matching items"
   },
   {
+    "objectID": "notes/web-scraping/transcribe-diarize.html",
+    "href": "notes/web-scraping/transcribe-diarize.html",
+    "title": "Transcribe & Diarize Videos",
+    "section": "",
+    "text": "I wanted to generate transcriptions of videos with speaker labels. Segmenting or labeling the speakers in audio like this is referred to as Diarization or Diarisation (wikipedia). Unfortunately, OpenAi’s Whisper doesn’t do diarization."
+  },
+  {
+    "objectID": "notes/web-scraping/transcribe-diarize.html#download-the-audio-file-with-yt-dlp.",
+    "href": "notes/web-scraping/transcribe-diarize.html#download-the-audio-file-with-yt-dlp.",
+    "title": "Transcribe & Diarize Videos",
+    "section": "1. Download the audio file with yt-dlp.",
+    "text": "1. Download the audio file with yt-dlp.\nThe `-o \"audio.%(ext)s\"` argument is used to name the output as `audo.mp3`.  The `%(ext)s` is a placeholder for the file extension.  The `--extract-audio` and `--audio-format mp3` arguments are used to extract the audio from the video and convert it to mp3 format.\n\n```bash\nyt-dlp --extract-audio --audio-format mp3 \\\n    -o \"audio.%(ext)s\" https://youtu.be/g_6nQBsE4pU\n```\n\nThe above command will generate `audio.mp3` in the current directory."
+  },
+  {
+    "objectID": "notes/web-scraping/transcribe-diarize.html#generate-the-transcript-with-diarization.",
+    "href": "notes/web-scraping/transcribe-diarize.html#generate-the-transcript-with-diarization.",
+    "title": "Transcribe & Diarize Videos",
+    "section": "2. Generate the transcript with diarization.",
+    "text": "2. Generate the transcript with diarization.\nThis is done with WhisperX. Make sure you carefully follow the instructions in the WhisperX repo corresponding to Speaker Diarization: you have to click on three Hugging Face repos and accept their terms & conditions.\nThe video I’m working with has 2 speakers, so that’s why I’m setting --min_speakers and --max_speakers equal to 2. The --hf_token argument is the Hugging Face token you get from following the instructions in the WhisperX repo.\nwhisperx audio.mp3 --model large-v2 --diarize \\\n    --min_speakers 2 --max_speakers 2 --hf_token &lt;your_hf_token&gt;\nThis will produce files with the following extensions audio.{srt, vtt, txt, tsv, json} in the current directory. You can limit the formats with --output_format and write these files to a different directory with --output_dir. The .json file contains the most detailed information about the diarization, with world-level predictions, whereas the .vtt and .srt files will contain a more human-readable transcript with speaker labels. I suggest looking at these files to see which one suits your needs.\nIf looking at the .json file, I recommend using jq with a command like this to see the first row of the segments array in that file:\njq '.segments[0]' audio.json"
+  },
+  {
     "objectID": "notes/web-scraping/browser-to-python.html",
     "href": "notes/web-scraping/browser-to-python.html",
     "title": "Browser requests to code",
@@ -2440,7 +2461,7 @@
     "href": "notes/web-scraping/index.html",
     "title": "Web Scraping",
     "section": "",
-    "text": "Title\n\n\nDescription\n\n\n\n\n\n\nBrowser requests to code\n\n\nAn amazing hack for turning web requests in your…\n\n\n\n\n\n\nNo matching items"
+    "text": "Title\n\n\nDescription\n\n\n\n\n\n\nBrowser requests to code\n\n\nAn amazing hack for turning web requests in your…\n\n\n\n\nTranscribe & Diarize Videos\n\n\nGenerate transcriptions of videos with speaker…\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "notes/video_editing.html",
