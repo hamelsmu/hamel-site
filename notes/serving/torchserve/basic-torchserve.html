@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.25">
+<meta name="generator" content="quarto-1.3.361">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -90,7 +90,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 
@@ -855,7 +856,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="cli" class="level3">
 <h3 class="anchored" data-anchor-id="cli">CLI</h3>
 <p>The CLI produces a <code>.mar</code> file. Below is <a href="https://github.com/pytorch/serve/blob/master/docs/getting_started.md#serve-a-model">an example</a> of archiving an eager mode model.</p>
-<div id="0d5e90e3-6b87-4759-b113-61e16eaacdb4" class="cell" data-execution_count="13">
+<div class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>torch<span class="op">-</span>model<span class="op">-</span>archiver <span class="op">--</span>model<span class="op">-</span>name densenet161 <span class="op">\</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>version <span class="fl">1.0</span> <span class="op">\</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>model<span class="op">-</span><span class="bu">file</span> .<span class="op">/</span>_serve<span class="op">/</span>examples<span class="op">/</span>image_classifier<span class="op">/</span>densenet_161<span class="op">/</span>model.py <span class="op">\</span></span>
@@ -876,7 +877,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Options for model archiver:</p>
-<div id="17f5e0ee-2b11-406b-bc5a-6d284f11368a" class="cell" data-execution_count="2">
+<div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> torch<span class="op">-</span>model<span class="op">-</span>archiver <span class="op">--</span><span class="bu">help</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>usage: torch-model-archiver [-h] --model-name MODEL_NAME
@@ -965,7 +966,7 @@ optional arguments:
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">--model-store</span> model_store <span class="dt">\</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">--models</span> densenet161.mar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>TorchServe uses default ports <code>8080</code> / <code>8081</code> / <code>8082</code> for REST based inference, management &amp; metrics APIs and <code>7070</code> / <code>7071</code> for gRPC APIs.</p>
-<div id="34fe7243-dd4f-4636-8571-3c7babb9899e" class="cell" data-execution_count="14">
+<div class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>torchserve <span class="op">--</span><span class="bu">help</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>usage: torchserve [-h] [-v | --start | --stop] [--ts-config TS_CONFIG]
@@ -1004,7 +1005,7 @@ optional arguments:
                         plugin jars to be included in torchserve class path</code></pre>
 </div>
 </div>
-<div id="ec2552af-5210-4319-98c8-f4b247530090" class="cell" data-execution_count="4">
+<div class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>curl <span class="op">-</span>O https:<span class="op">//</span>raw.githubusercontent.com<span class="op">/</span>pytorch<span class="op">/</span>serve<span class="op">/</span>master<span class="op">/</span>docs<span class="op">/</span>images<span class="op">/</span>kitten_small.jpg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -1012,7 +1013,7 @@ optional arguments:
 100  7341  100  7341    0     0   108k      0 --:--:-- --:--:-- --:--:--  108k</code></pre>
 </div>
 </div>
-<div id="d12e1315-6044-4aee-921c-56acf8bbf0c8" class="cell" data-execution_count="7">
+<div class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>curl http:<span class="op">//</span><span class="fl">127.0.0.1</span>:<span class="dv">8080</span><span class="op">/</span>predictions<span class="op">/</span>densenet161 <span class="op">-</span>T kitten_small.jpg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>{
@@ -1065,7 +1066,7 @@ Important
 <span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    torchserve <span class="dt">\</span></span>
 <span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">--model-store</span> /tmp/models <span class="dt">\</span></span>
 <span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">--models</span> densenet161.mar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div id="f6526c9b-fa2f-425a-9906-d0441455c762" class="cell" data-execution_count="9">
+<div class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>curl http:<span class="op">//</span><span class="fl">127.0.0.1</span>:<span class="dv">8080</span><span class="op">/</span>predictions<span class="op">/</span>densenet161 <span class="op">-</span>T kitten_small.jpg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>{
@@ -1198,30 +1199,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
       return note.innerHTML;
-    });
-  }
-  const xrefs = window.document.querySelectorAll('a.quarto-xref');
-  for (var i=0; i<xrefs.length; i++) {
-    const xref = xrefs[i];
-    tippyHover(xref, function() {
-      let href = xref.getAttribute('href');
-      try { href = new URL(href).hash; } catch {}
-      const id = href.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      if (id.startsWith('sec-')) {
-        // Special case sections, only their first couple elements
-        const container = document.createElement("div");
-        if (note.children.length > 2) {
-          for (let i = 0; i < 2; i++) {
-            container.appendChild(note.children[i].cloneNode(true));
-          }
-          return container.innerHTML
-        } else {
-          return note.innerHTML;
-        }
-      } else {
-        return note.innerHTML;
-      }
     });
   }
       let selectedAnnoteEl;
