@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Generate transcriptions of videos with speaker labels.">
+<meta name="description" content="Use langchain to get text from any data source.">
 
-<title>Hamel’s Blog - Transcribe &amp; Diarize Videos</title>
+<title>Hamel’s Blog - LangChain Data Loaders</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -94,15 +94,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Hamel’s Blog - Transcribe &amp; Diarize Videos">
-<meta property="og:description" content="Generate transcriptions of videos with speaker labels.">
+<meta property="og:title" content="Hamel’s Blog - LangChain Data Loaders">
+<meta property="og:description" content="Use langchain to get text from any data source.">
 <meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta property="og:site-name" content="Hamel's Blog">
-<meta name="twitter:title" content="Hamel’s Blog - Transcribe &amp; Diarize Videos">
-<meta name="twitter:description" content="Generate transcriptions of videos with speaker labels.">
+<meta name="twitter:title" content="Hamel’s Blog - LangChain Data Loaders">
+<meta name="twitter:description" content="Use langchain to get text from any data source.">
 <meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta name="twitter:creator" content="@HamelHusain">
 <meta name="twitter:card" content="summary_large_image">
@@ -149,7 +153,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../notes/web-scraping/index.html">Web Scraping</a></li><li class="breadcrumb-item"><a href="../../notes/web-scraping/transcribe-diarize.html">Transcribe &amp; Diarize Videos</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../notes/llm-fine-tune/index.html">Fine-tuning LLMs</a></li><li class="breadcrumb-item"><a href="../../notes/llm-fine-tune/02_langchain_connectors.html">LangChain Data Loaders</a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -645,11 +649,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../../notes/llm-fine-tune/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Fine-tuning LLMs</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../notes/llm-fine-tune/01_datasets.html" class="sidebar-item-text sidebar-link">
@@ -658,7 +662,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm-fine-tune/02_langchain_connectors.html" class="sidebar-item-text sidebar-link">
+  <a href="../../notes/llm-fine-tune/02_langchain_connectors.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">LangChain Data Loaders</span></a>
   </div>
 </li>
@@ -732,11 +736,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a href="../../notes/web-scraping/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Web Scraping</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../notes/web-scraping/browser-to-python.html" class="sidebar-item-text sidebar-link">
@@ -745,7 +749,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/web-scraping/transcribe-diarize.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../notes/web-scraping/transcribe-diarize.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Transcribe &amp; Diarize Videos</span></a>
   </div>
 </li>
@@ -825,29 +829,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#motivation" id="toc-motivation" class="nav-link active" data-scroll-target="#motivation">Motivation</a></li>
-  <li><a href="#tools" id="toc-tools" class="nav-link" data-scroll-target="#tools">Tools</a></li>
-  <li><a href="#steps" id="toc-steps" class="nav-link" data-scroll-target="#steps">Steps</a>
+  <li><a href="#sitemap-loader" id="toc-sitemap-loader" class="nav-link active" data-scroll-target="#sitemap-loader">Sitemap Loader</a></li>
+  <li><a href="#clean-the-data" id="toc-clean-the-data" class="nav-link" data-scroll-target="#clean-the-data">Clean the data</a></li>
+  <li><a href="#create-a-hf-dataset" id="toc-create-a-hf-dataset" class="nav-link" data-scroll-target="#create-a-hf-dataset">Create a HF Dataset</a>
   <ul class="collapse">
-  <li><a href="#download-the-audio-file-with-yt-dlp." id="toc-download-the-audio-file-with-yt-dlp." class="nav-link" data-scroll-target="#download-the-audio-file-with-yt-dlp.">1. Download the audio file with yt-dlp.</a></li>
-  <li><a href="#generate-the-transcript-with-diarization." id="toc-generate-the-transcript-with-diarization." class="nav-link" data-scroll-target="#generate-the-transcript-with-diarization.">2. Generate the transcript with diarization.</a></li>
+  <li><a href="#download-the-data" id="toc-download-the-data" class="nav-link" data-scroll-target="#download-the-data">Download the data</a></li>
   </ul></li>
-  <li><a href="#preview" id="toc-preview" class="nav-link" data-scroll-target="#preview">Preview</a></li>
-  <li><a href="#other-projects" id="toc-other-projects" class="nav-link" data-scroll-target="#other-projects">Other projects</a></li>
+  <li><a href="#github-issues" id="toc-github-issues" class="nav-link" data-scroll-target="#github-issues">GitHub Issues</a>
+  <ul class="collapse">
+  <li><a href="#upload-to-the-hub" id="toc-upload-to-the-hub" class="nav-link" data-scroll-target="#upload-to-the-hub">Upload to the Hub</a></li>
+  </ul></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel/edit/master/notes/web-scraping/transcribe-diarize.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.dev/hamelsmu/hamel/blob/master/notes/llm-fine-tune/02_langchain_connectors.ipynb" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Transcribe &amp; Diarize Videos</h1>
+<h1 class="title">LangChain Data Loaders</h1>
 </div>
 
 <div>
   <div class="description">
-    Generate transcriptions of videos with speaker labels.
+    Use langchain to get text from any data source.
   </div>
 </div>
 
@@ -862,94 +867,201 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<section id="motivation" class="level1">
-<h1>Motivation</h1>
-<p>I wanted to generate transcriptions of videos with speaker labels. Segmenting or labeling the speakers in audio like this is referred to as <code>Diarization</code> or <code>Diarisation</code> <a href="https://en.wikipedia.org/wiki/Speaker_diarisation">(wikipedia)</a>. Unfortunately, <a href="https://github.com/openai/whisper/discussions/264">OpenAi’s Whisper doesn’t do diarization</a>.</p>
-</section>
-<section id="tools" class="level1">
-<h1>Tools</h1>
-<p>You need to install these tools per the instructions on their respective repos:</p>
+<p><a href="https://python.langchain.com/docs/get_started/introduction.html">LangChain</a> is library that provides a kitchen sink of tools for LLMs, particularly integrating LLMs with other tools.</p>
+<p>One underrated feature of langchain are <a href="https://integrations.langchain.com/">DocumentLoaders</a>, which allow you to acquire text data from any source, which is super useful even if you aren’t using LLMs at all! It can also be useful to hijack these dataloaders to acquire data for fine tuning!</p>
+<p>For example, if you are trying to get data from a website as text here are some useful DocumentLoaders:</p>
 <ol type="1">
-<li><p><a href="https://github.com/yt-dlp/yt-dlp">yt-dlp</a>: like youtube-dl minus some bugs. Use this to download the video.</p></li>
-<li><p><a href="https://github.com/m-bain/whisperX">WhisperX</a>: performs the Diarization</p></li>
+<li><a href="https://python.langchain.com/docs/modules/data_connection/document_loaders/integrations/recursive_url_loader">RecursiveURLLoader</a></li>
+<li><a href="https://api.python.langchain.com/en/latest/document_loaders/langchain.document_loaders.url_selenium.SeleniumURLLoader.html">SeleniumLoader</a></li>
+<li><a href="https://python.langchain.com/docs/modules/data_connection/document_loaders/integrations/sitemap">SitemapLoader</a>: <strong>this is what we will use for this exercise</strong>.</li>
 </ol>
-<p>Additionally, I used a machine with an Nvidia 3090 GPU running Ubuntu 22.04.</p>
+<section id="sitemap-loader" class="level2">
+<h2 class="anchored" data-anchor-id="sitemap-loader">Sitemap Loader</h2>
+<p>There is currently a bug in langchain, so I had to install an old version right before <a href="https://github.com/hwchase17/langchain/pull/6107">this commit</a> which broke the <code>SitemapLoader</code>. I had to downgrade to <code>v0.0.202</code> via <code>pip install langchain==0.0.202</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> nest_asyncio</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>nest_asyncio.<span class="bu">apply</span>() <span class="co"># you don't need this line outside notebooks</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> langchain.document_loaders.sitemap <span class="im">import</span> SitemapLoader</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>sitemap_loader <span class="op">=</span> SitemapLoader(web_path<span class="op">=</span><span class="st">"https://quarto.org/sitemap.xml"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>docs <span class="op">=</span> sitemap_loader.load()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Fetching pages: 100%|####################################| 269/269 [00:12&lt;00:00, 21.80it/s]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>example <span class="op">=</span> docs[<span class="dv">0</span>]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>example.<span class="bu">dict</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{'page_content': '\n\n\n\n\nQuarto - About Quarto\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nOverview\n\n\n\nGet Started\n\n\n\nGuide\n\n\n\nExtensions\n\n\n\nReference\n\n\n\nGallery\n\n\n\nBlog\n\n\n\nHelp\n\n\n\n\n\nReport a Bug\n\n\n\n\nAsk a Question\n\n\n\n\nFAQ\n\n\n\n\n \n\n\n\n\n\n \n\n\n\n\n\n\n\n\nOn this page\n\nGoals\nProject\nContribute\n\nEdit this pageReport an issue\n\n\n\n\n\nAbout Quarto\nOpen source tools for scientific and technical publishing\n\n\n\n\n\nGoals\nThe overarching goal of Quarto is to make the process of creating and collaborating on scientific and technical documents dramatically better. We hope to do this in several dimensions:\n\nCreate a writing and publishing environment with great integrated tools for technical content. We want to make authoring with embedded code, equations, figures, complex diagrams, interactive widgets, citations, cross references, and the myriad other special requirements of scientific discourse straightforward and productive for everyone.\nHelp authors take full advantage of the web as a connected, interactive platform for communications, while still providing the ability to create excellent printed output from the same document source. Researchers shouldn’t need to choose between LaTeX, MS Word, and HTML but rather be able to author documents that target all of them at the same time.\nMake reproducible research and publications the norm rather than the exception. Reproducibility requires that the code and data required to create a manuscript are an integrated part of it. However, this isn’t often straightforward in practice—Quarto aims to make it easier to adopt a reproducible workflow than not.\n\nQuarto is open source software licensed under the GNU GPL v2. We believe that it’s better for everyone if the tools used for research and science are free and open. Reproducibility, widespread sharing of knowledge and techniques, and the leveling of the playing field by eliminating cost barriers are but a few of the shared benefits of free software in science.\n\n\nProject\nAt the core of Quarto is Pandoc, a powerful and flexible document processing tool. Quarto adds a number of facilities to Pandoc aimed at scientific and technical publishing, including:\n\nEmbedding code and output from Python, R, and JavaScript via integration with Jupyter, Knitr, and Observable.\nA variety of extensions to Pandoc markdown useful for technical writing including cross-references, sub-figures, layout panels, hoverable citations and footnotes, callouts, and more.\nA project system for rendering groups of documents at once, sharing options across documents, and producing aggregate output like websites and books.\n\nDevelopment of Quarto is sponsored by Posit, PBC, where we previously created a similar system (R Markdown) that shared the same goals, but was targeted principally at users of the R language. The same core team works on both Quarto and R Markdown:\n\nJ.J. Allaire (@jjallaire)\nChristophe Dervieux (@cderv)\nCarlos Scheidegger (@cscheid)\nCharles Teague (@dragonstyle)\nYihui Xie (@yihui)\n\nWith Quarto, we are hoping to bring these tools to a much wider audience.\nQuarto is a registered trademark of Posit. Please see our trademark policy for guidelines on usage of the Quarto trademark.\n\n\nContribute\nYou can contribute to Quarto in many ways:\n\nBy opening issues to provide feedback and share ideas.\nBy submitting Pull Request (PR) to fix opened issues\nBy submitting Pull Request (PR) to suggest new features (it is considered good practice to open an issue for discussion before working on a pull request for a new feature).\n\nPlease be mindful of our code of conduct as you interact with other community members.\n\nPull Requests\nPull requests are very welcome! Here’s how to contribute via PR:\n\nFork the repository, clone it locally, and make your changes in a new branch specific to the PR. For example:\n\n\nTerminal\n\n# clone your fork\n$ git clone https://github.com/&lt;username&gt;/quarto-cli\n\n# configure for your platform (./configure.sh or ./configure.cmd for windows)\n$ cd quarto-cli\n$ ./configure.sh\n\n# checkout a new branch\n$ git checkout -b feature/newthing\n\nFor significant changes (e.g more than small bug fixes), ensure that you have signed the individual or corporate contributor agreement as appropriate. You can send the signed copy to jj@rstudio.com.\nSubmit the pull request. It is ok to submit as draft in your are still working on it but would like some feedback from us. It always good to share in the open that you are working on it.\n\nWe’ll try to be as responsive as possible in reviewing and accepting pull requests.\n\n\n \n\n\n \n\n\n\nProudly supported by \n\n\n\n\n\nAbout\n\n\n\n\nFAQ\n\n\n\n\nLicense\n\n\n\n\nTrademark\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n',
+ 'metadata': {'source': 'https://quarto.org/about.html',
+  'loc': 'https://quarto.org/about.html',
+  'lastmod': '2023-07-05T19:35:15.135Z'}}</code></pre>
+</div>
+</div>
 </section>
-<section id="steps" class="level1">
-<h1>Steps</h1>
-<p>I’m going to transcribe <a href="https://youtu.be/g_6nQBsE4pU">this video</a> as an example.</p>
-<section id="download-the-audio-file-with-yt-dlp." class="level2">
-<h2 class="anchored" data-anchor-id="download-the-audio-file-with-yt-dlp.">1. Download the audio file with <a href="https://github.com/yt-dlp/yt-dlp">yt-dlp</a>.</h2>
-<p>The <code>-o "audio.%(ext)s"</code> argument is used to name the output as <code>audo.mp3</code>. The <code>%(ext)s</code> is a placeholder for the file extension. The <code>--extract-audio</code> and <code>--audio-format mp3</code> arguments are used to extract the audio from the video and convert it to mp3 format.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">yt-dlp</span> <span class="at">--extract-audio</span> <span class="at">--audio-format</span> mp3 <span class="dt">\</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">-o</span> <span class="st">"audio.%(ext)s"</span> https://youtu.be/g_6nQBsE4pU</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>The above command will generate <code>audio.mp3</code> in the current directory.</p>
+<section id="clean-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="clean-the-data">Clean the data</h2>
+<p>When we look at this page, we can see a bunch of unwanted text. The navbar and the sidenav are showing up, and we do not want this. We can update the parsing function to fix this:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bs4 <span class="im">import</span> BeautifulSoup</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> remove_nav_and_header_elements(content: BeautifulSoup) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    exclude <span class="op">=</span> content.find_all([<span class="st">"nav"</span>, <span class="st">"footer"</span>, <span class="st">"header"</span>, <span class="st">"head"</span>])</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> element <span class="kw">in</span> exclude:</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        element.decompose()</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">str</span>(content.get_text()).strip()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>sitemap_loader <span class="op">=</span> SitemapLoader(web_path<span class="op">=</span><span class="st">"https://quarto.org/sitemap.xml"</span>,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                              parsing_function<span class="op">=</span>remove_nav_and_header_elements)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>sitemap_loader.requests_per_second <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>docs <span class="op">=</span> sitemap_loader.load()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Fetching pages: 100%|####################################| 269/269 [00:05&lt;00:00, 52.00it/s]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>example <span class="op">=</span> docs[<span class="dv">0</span>]</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>example.<span class="bu">dict</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{'page_content': 'Goals\nThe overarching goal of Quarto is to make the process of creating and collaborating on scientific and technical documents dramatically better. We hope to do this in several dimensions:\n\nCreate a writing and publishing environment with great integrated tools for technical content. We want to make authoring with embedded code, equations, figures, complex diagrams, interactive widgets, citations, cross references, and the myriad other special requirements of scientific discourse straightforward and productive for everyone.\nHelp authors take full advantage of the web as a connected, interactive platform for communications, while still providing the ability to create excellent printed output from the same document source. Researchers shouldn’t need to choose between LaTeX, MS Word, and HTML but rather be able to author documents that target all of them at the same time.\nMake reproducible research and publications the norm rather than the exception. Reproducibility requires that the code and data required to create a manuscript are an integrated part of it. However, this isn’t often straightforward in practice—Quarto aims to make it easier to adopt a reproducible workflow than not.\n\nQuarto is open source software licensed under the GNU GPL v2. We believe that it’s better for everyone if the tools used for research and science are free and open. Reproducibility, widespread sharing of knowledge and techniques, and the leveling of the playing field by eliminating cost barriers are but a few of the shared benefits of free software in science.\n\n\nProject\nAt the core of Quarto is Pandoc, a powerful and flexible document processing tool. Quarto adds a number of facilities to Pandoc aimed at scientific and technical publishing, including:\n\nEmbedding code and output from Python, R, and JavaScript via integration with Jupyter, Knitr, and Observable.\nA variety of extensions to Pandoc markdown useful for technical writing including cross-references, sub-figures, layout panels, hoverable citations and footnotes, callouts, and more.\nA project system for rendering groups of documents at once, sharing options across documents, and producing aggregate output like websites and books.\n\nDevelopment of Quarto is sponsored by Posit, PBC, where we previously created a similar system (R Markdown) that shared the same goals, but was targeted principally at users of the R language. The same core team works on both Quarto and R Markdown:\n\nJ.J. Allaire (@jjallaire)\nChristophe Dervieux (@cderv)\nCarlos Scheidegger (@cscheid)\nCharles Teague (@dragonstyle)\nYihui Xie (@yihui)\n\nWith Quarto, we are hoping to bring these tools to a much wider audience.\nQuarto is a registered trademark of Posit. Please see our trademark policy for guidelines on usage of the Quarto trademark.\n\n\nContribute\nYou can contribute to Quarto in many ways:\n\nBy opening issues to provide feedback and share ideas.\nBy submitting Pull Request (PR) to fix opened issues\nBy submitting Pull Request (PR) to suggest new features (it is considered good practice to open an issue for discussion before working on a pull request for a new feature).\n\nPlease be mindful of our code of conduct as you interact with other community members.\n\nPull Requests\nPull requests are very welcome! Here’s how to contribute via PR:\n\nFork the repository, clone it locally, and make your changes in a new branch specific to the PR. For example:\n\n\nTerminal\n\n# clone your fork\n$ git clone https://github.com/&lt;username&gt;/quarto-cli\n\n# configure for your platform (./configure.sh or ./configure.cmd for windows)\n$ cd quarto-cli\n$ ./configure.sh\n\n# checkout a new branch\n$ git checkout -b feature/newthing\n\nFor significant changes (e.g more than small bug fixes), ensure that you have signed the individual or corporate contributor agreement as appropriate. You can send the signed copy to jj@rstudio.com.\nSubmit the pull request. It is ok to submit as draft in your are still working on it but would like some feedback from us. It always good to share in the open that you are working on it.\n\nWe’ll try to be as responsive as possible in reviewing and accepting pull requests.',
+ 'metadata': {'source': 'https://quarto.org/about.html',
+  'loc': 'https://quarto.org/about.html',
+  'lastmod': '2023-07-05T19:35:15.135Z'}}</code></pre>
+</div>
+</div>
 </section>
-<section id="generate-the-transcript-with-diarization." class="level2">
-<h2 class="anchored" data-anchor-id="generate-the-transcript-with-diarization.">2. Generate the transcript with diarization.</h2>
-<p>This is done with <a href="https://github.com/m-bain/whisperX">WhisperX</a>. Make sure you carefully follow the instructions in the WhisperX repo corresponding to <a href="https://github.com/m-bain/whisperX#speaker-diarization">Speaker Diarization</a>: you have to click on three Hugging Face repos and accept their terms &amp; conditions.</p>
-<p>The <a href="https://youtu.be/g_6nQBsE4pU">video</a> I’m working with has 2 speakers, so that’s why I’m setting <code>--min_speakers</code> and <code>--max_speakers</code> equal to 2. The <code>--hf_token</code> argument is the Hugging Face token you get from following the instructions in the WhisperX repo.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">whisperx</span> audio.mp3 <span class="at">--model</span> large-v2 <span class="at">--diarize</span> <span class="dt">\</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">--min_speakers</span> 2 <span class="at">--max_speakers</span> 2 <span class="at">--hf_token</span> <span class="op">&lt;</span>your_hf_token<span class="op">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>This will produce files with the following extensions <code>audio.{srt, vtt, txt, tsv, json}</code> in the current directory. You can limit the formats with <code>--output_format</code> and write these files to a different directory with <code>--output_dir</code>. The <code>.json</code> file contains the most detailed information about the diarization, with world-level predictions, whereas the <code>.vtt</code> and <code>.srt</code> files will contain a more human-readable transcript with speaker labels. I suggest looking at these files to see which one suits your needs.</p>
-<p>If looking at the <code>.json</code> file, I recommend using <code>jq</code> with a command like this to see the first row of the <code>segments</code> array in that file:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">jq</span> <span class="st">'.segments[0]'</span> audio.json</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="create-a-hf-dataset" class="level1">
+<h1>Create a HF Dataset</h1>
+<p>We can use the <code>from_list</code> method to load that sitemap data into a HF Dataset.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datasets <span class="im">import</span> Dataset </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>repo_name <span class="op">=</span> <span class="st">'hamel/quarto'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>quarto_data <span class="op">=</span> Dataset.from_list([d.<span class="bu">dict</span>() <span class="cf">for</span> d <span class="kw">in</span> docs])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>quarto_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>Dataset({
+    features: ['page_content', 'metadata'],
+    num_rows: 269
+})</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>quarto_data.push_to_hub(repo_name)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"c01f583666324bc4ac44858b690114f8","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Updating downloaded metadata with the new split.</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-display">
+<p>This data is available at <a href="hamel/quarto">https://huggingface.co/datasets/hamel/quarto</a></p>
+</div>
+</div>
+<section id="download-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="download-the-data">Download the data</h2>
+<p>You can download the data like this:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datasets <span class="im">import</span> load_dataset</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>remote_data <span class="op">=</span> load_dataset(repo_name)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"f2699b18422c4cdd9619f75092eed309","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using custom data configuration hamel--quarto-b88699e31e28f953</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Downloading and preparing dataset None/None (download: Unknown size, generated: 1.81 MiB, post-processed: Unknown size, total: 1.81 MiB) to /Users/hamel/.cache/huggingface/datasets/hamel___parquet/hamel--quarto-b88699e31e28f953/0.0.0/2a3b91fbd88a2c90d1dbbb32b460cf621d31bd5b05b934492fdef7d8d6f236ec...
+Dataset parquet downloaded and prepared to /Users/hamel/.cache/huggingface/datasets/hamel___parquet/hamel--quarto-b88699e31e28f953/0.0.0/2a3b91fbd88a2c90d1dbbb32b460cf621d31bd5b05b934492fdef7d8d6f236ec. Subsequent calls will reuse this data.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"d11d6da81154437c8cc286578601dd56","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"409134a881b54c2ca18f3e0148202c84","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"f7f52e4c2fa4420dbb95e6751268fbfc","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"b6bf8e4aaf01436da2d036e8c1079dff","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>remote_data[<span class="st">'train'</span>][<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{'page_content': 'Goals\nThe overarching goal of Quarto is to make the process of creating and collaborating on scientific and technical documents dramatically better. We hope to do this in several dimensions:\n\nCreate a writing and publishing environment with great integrated tools for technical content. We want to make authoring with embedded code, equations, figures, complex diagrams, interactive widgets, citations, cross references, and the myriad other special requirements of scientific discourse straightforward and productive for everyone.\nHelp authors take full advantage of the web as a connected, interactive platform for communications, while still providing the ability to create excellent printed output from the same document source. Researchers shouldn’t need to choose between LaTeX, MS Word, and HTML but rather be able to author documents that target all of them at the same time.\nMake reproducible research and publications the norm rather than the exception. Reproducibility requires that the code and data required to create a manuscript are an integrated part of it. However, this isn’t often straightforward in practice—Quarto aims to make it easier to adopt a reproducible workflow than not.\n\nQuarto is open source software licensed under the GNU GPL v2. We believe that it’s better for everyone if the tools used for research and science are free and open. Reproducibility, widespread sharing of knowledge and techniques, and the leveling of the playing field by eliminating cost barriers are but a few of the shared benefits of free software in science.\n\n\nProject\nAt the core of Quarto is Pandoc, a powerful and flexible document processing tool. Quarto adds a number of facilities to Pandoc aimed at scientific and technical publishing, including:\n\nEmbedding code and output from Python, R, and JavaScript via integration with Jupyter, Knitr, and Observable.\nA variety of extensions to Pandoc markdown useful for technical writing including cross-references, sub-figures, layout panels, hoverable citations and footnotes, callouts, and more.\nA project system for rendering groups of documents at once, sharing options across documents, and producing aggregate output like websites and books.\n\nDevelopment of Quarto is sponsored by Posit, PBC, where we previously created a similar system (R Markdown) that shared the same goals, but was targeted principally at users of the R language. The same core team works on both Quarto and R Markdown:\n\nJ.J. Allaire (@jjallaire)\nChristophe Dervieux (@cderv)\nCarlos Scheidegger (@cscheid)\nCharles Teague (@dragonstyle)\nYihui Xie (@yihui)\n\nWith Quarto, we are hoping to bring these tools to a much wider audience.\nQuarto is a registered trademark of Posit. Please see our trademark policy for guidelines on usage of the Quarto trademark.\n\n\nContribute\nYou can contribute to Quarto in many ways:\n\nBy opening issues to provide feedback and share ideas.\nBy submitting Pull Request (PR) to fix opened issues\nBy submitting Pull Request (PR) to suggest new features (it is considered good practice to open an issue for discussion before working on a pull request for a new feature).\n\nPlease be mindful of our code of conduct as you interact with other community members.\n\nPull Requests\nPull requests are very welcome! Here’s how to contribute via PR:\n\nFork the repository, clone it locally, and make your changes in a new branch specific to the PR. For example:\n\n\nTerminal\n\n# clone your fork\n$ git clone https://github.com/&lt;username&gt;/quarto-cli\n\n# configure for your platform (./configure.sh or ./configure.cmd for windows)\n$ cd quarto-cli\n$ ./configure.sh\n\n# checkout a new branch\n$ git checkout -b feature/newthing\n\nFor significant changes (e.g more than small bug fixes), ensure that you have signed the individual or corporate contributor agreement as appropriate. You can send the signed copy to jj@rstudio.com.\nSubmit the pull request. It is ok to submit as draft in your are still working on it but would like some feedback from us. It always good to share in the open that you are working on it.\n\nWe’ll try to be as responsive as possible in reviewing and accepting pull requests.',
+ 'metadata': {'lastmod': '2023-07-05T19:35:15.135Z',
+  'loc': 'https://quarto.org/about.html',
+  'source': 'https://quarto.org/about.html'}}</code></pre>
+</div>
+</div>
 </section>
 </section>
-<section id="preview" class="level1">
-<h1>Preview</h1>
-<p>Here’s a preview of the <code>.vtt</code> file:</p>
-<pre><code>&gt; head -n40  audio.vtt
+<section id="github-issues" class="level1">
+<h1>GitHub Issues</h1>
+<p>We can use the <a href="https://python.langchain.com/docs/modules/data_connection/document_loaders/integrations/github">GitHubIssuesLoader</a> to get all of the issues from a GitHub repo.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> langchain.document_loaders <span class="im">import</span> GitHubIssuesLoader</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This assumes you have set the <code>GITHUB_PERSONAL_ACCESS_TOKEN</code> as an environment variable</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>loader <span class="op">=</span> GitHubIssuesLoader(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    repo<span class="op">=</span><span class="st">"quarto-dev/quarto-cli"</span>,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    state<span class="op">=</span><span class="st">'all'</span>, <span class="co">#get both open and closed issues</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    include_prs<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>quarto_issues <span class="op">=</span> loader.load()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(quarto_issues)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>2841</code></pre>
+</div>
+</div>
+<p>Wow, that’s a lot of Issues! Let’s take a look at one:</p>
+<p>In the issue below, I can see that it doesn’t include comments. We would have to get those separately with further API calls, but this is a good start!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>quarto_issues[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>Document(page_content="### Bug description\n\nI am running Quarto to produce a report in which I mix python with R (using 95% R). When I started trying to use python, I believe that RStudio is not recognizing my python installation and packages:\r\n\r\n```\r\nError in py_call_impl(callable, call_args$unnamed, call_args$named) : \r\n  ModuleNotFoundError: No module named 'pandas'\r\n```\r\n\r\nAny ideas?\n\n### Steps to reproduce\n\n---\r\ntitle: 'Nota Técnica - Índice Socioeconômico dos Estudantes'\r\nauthor: ''\r\nformat: \r\n  html:\r\n    encoding: 'UTF-8'\r\n    theme: style.css\r\neditor: visual\r\nlang: pt\r\nexecute:\r\n  echo: false\r\n  warning: false\r\n---\r\n\r\n```{python}\r\n#| label: load-py-pckgs\r\nimport pandas as pd\r\nimport seaborn as sns\r\n```\n\n### Expected behavior\n\nI expected it to load python packages and modules with no problems.\n\n### Actual behavior\n\nError when loading any python package.\n\n### Your environment\n\nIDE: RStudio 2022.07.2 Build 576\r\nR version 4.1.0 (2021-05-18) (can't update because of internal packages built with this version)\r\nOS: Windows 11\n\n### Quarto check output\n\n`quarto check` gives me:\r\nC:\\Users\\joao.freire\\Documents&gt;quarto check\r\n\r\n[&gt;] Checking versions of quarto binary dependencies...\r\n      Pandoc version 3.1.1: OK\r\n      Dart Sass version 1.55.0: OK\r\n[&gt;] Checking versions of quarto dependencies......OK\r\n[&gt;] Checking Quarto installation......OK\r\n      Version: 1.3.433\r\n      Path: C:\\Users\\joao.freire\\AppData\\Local\\Programs\\Quarto\\bin\r\n      CodePage: 1252\r\n\r\n[&gt;] Checking basic markdown render....OK\r\n\r\n[&gt;] Checking Python 3 installation....OK\r\n      Version: 3.11.4\r\n      Path: C:/Program Files/Python311/python.exe\r\n      Jupyter: 5.3.1\r\n      Kernels: python3\r\n\r\n(/) Checking Jupyter engine render....0.00s - Debugger warning: It seems that frozen modules are being used, which may\r\n0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\r\n0.00s - to python to disable frozen modules.\r\n0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this\r\nvalidation.\r\n0.00s - Debugger warning: It seems that frozen modules are being used, which may\r\n0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\r\n0.00s - to python to disable frozen modules.\r\n0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this\r\nvalidation.\r\n[&gt;] Checking Jupyter engine render....OK\r\n\r\n[&gt;] Checking R installation...........OK\r\n      Version: 4.1.0\r\n      Path: C:/Users/joao.freire/Documents/R/R-4.1.0\r\n      LibPaths:\r\n        - C:/Users/joao.freire/Documents/R/R-4.1.0/library\r\n      knitr: 1.42\r\n      rmarkdown: 2.23\r\n\r\n[&gt;] Checking Knitr engine render......OK\r\n\r\n\r\nC:\\Users\\joao.freire\\Documents&gt;quarto check\r\n\r\n[&gt;] Checking versions of quarto binary dependencies...\r\n      Pandoc version 3.1.1: OK\r\n      Dart Sass version 1.55.0: OK\r\n[&gt;] Checking versions of quarto dependencies......OK\r\n[&gt;] Checking Quarto installation......OK\r\n      Version: 1.3.433\r\n      Path: C:\\Users\\joao.freire\\AppData\\Local\\Programs\\Quarto\\bin\r\n      CodePage: 1252\r\n\r\n[&gt;] Checking basic markdown render....OK\r\n\r\n[&gt;] Checking Python 3 installation....OK\r\n      Version: 3.11.4\r\n      Path: C:/Program Files/Python311/python.exe\r\n      Jupyter: 5.3.1\r\n      Kernels: python3\r\n\r\n```\r\n(\\) Checking Jupyter engine render....0.00s - Debugger warning: It seems that frozen modules are being used, which may\r\n0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\r\n0.00s - to python to disable frozen modules.\r\n0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this\r\nvalidation.\r\n0.00s - Debugger warning: It seems that frozen modules are being used, which may\r\n0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\r\n0.00s - to python to disable frozen modules.\r\n0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this\r\nvalidation.\r\n[&gt;] Checking Jupyter engine render....OK\r\n\r\n[&gt;] Checking R installation...........OK\r\n      Version: 4.1.0\r\n      Path: C:/Users/joao.freire/Documents/R/R-4.1.0\r\n      LibPaths:\r\n        - C:/Users/joao.freire/Documents/R/R-4.1.0/library\r\n      knitr: 1.42\r\n      rmarkdown: 2.23\r\n\r\n[&gt;] Checking Knitr engine render......OK\r\n```", metadata={'url': 'https://github.com/quarto-dev/quarto-cli/issues/6113', 'title': 'Quarto not recognizing python packages', 'creator': 'joaoaugustofrei', 'created_at': '2023-07-05T21:11:31Z', 'comments': 1, 'state': 'open', 'labels': ['bug'], 'assignee': None, 'milestone': None, 'locked': False, 'number': 6113, 'is_pull_request': False})</code></pre>
+</div>
+</div>
+<section id="upload-to-the-hub" class="level3">
+<h3 class="anchored" data-anchor-id="upload-to-the-hub">Upload to the Hub</h3>
+<p>We can upload these issues to the hub like so, this will be available at <a href="https://huggingface.co/datasets/hamel/quarto-issues">https://huggingface.co/datasets/hamel/quarto-issues</a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> Dataset.from_list([x.<span class="bu">dict</span>() <span class="cf">for</span> x <span class="kw">in</span> quarto_issues])</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>ds.push_to_hub(<span class="st">'hamel/quarto-issues'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
-WEBVTT
 
-00:00.248 --&gt; 00:13.531
-[SPEAKER_01]: Hi, this is Jeremy Howard, and you're listening to Coffee Time Data Science, a podcast for data science enthusiasts, where I interview practitioners, researchers, and Kagglers about their journey, experience, and talk all things data science.
-
-00:13.531 --&gt; 00:17.151
-[SPEAKER_01]: And before we begin, I apologize for the change to our schedule.
-
-00:17.151 --&gt; 00:22.593
-[SPEAKER_01]: Of course, usually you would be seeing Chai Time Data Science on this channel with Sanyam Bhutani.
-
-00:22.593 --&gt; 00:24.373
-[SPEAKER_01]: Unfortunately, he's not available today.
-
-00:24.373 --&gt; 00:29.514
-[SPEAKER_01]: He had a prior appointment on another podcast, and he was not able to join Chai Time Data Science.
-
-00:29.974 --&gt; 00:34.338
-[SPEAKER_01]: We hope you enjoy this special episode of Coffee Time Data Science.
-
-00:34.338 --&gt; 00:45.148
-[SPEAKER_01]: And without further ado, I would like to invite our very special VIP guest, newly anointed Kaggle Grand Master, Sanyam Bhutani.
-
-00:45.148 --&gt; 00:47.190
-[SPEAKER_01]: Sanyam, welcome to Coffee Time Data Science.
-
-00:48.372 --&gt; 00:49.073
-[SPEAKER_00]: Thank you, Jeremy.
-
-00:49.073 --&gt; 00:53.537
-[SPEAKER_00]: Usually, I'm very anti coffee, but I'll have to allow that.
-
-00:53.537 --&gt; 00:55.678
-[SPEAKER_00]: I still can't believe you weren't kidding.
-
-00:55.678 --&gt; 00:59.421
-[SPEAKER_00]: And I mentioned in our message also, like I, I think I don't deserve this.
-
-00:59.421 --&gt; 01:00.042
-[SPEAKER_00]: But thank you.</code></pre>
 </section>
-<section id="other-projects" class="level1">
-<h1>Other projects</h1>
-<ul>
-<li><a href="https://huggingface.co/spaces/vumichien/Whisper_speaker_diarization">HuggingFace: Whisper Speaker Diarization</a>. I tried this, and while it worked decently, the results were not as good as WhisperX out of the box.</li>
-<li><a href="https://github.com/pyannote/pyannote-audio">Pyannote-audio</a>. H/T Tansihq Abraham for pointing this out to me. WhisperX also uses it.</li>
-</ul>
-
-
 </section>
 
 </main> <!-- /main -->
