@@ -8,7 +8,7 @@
 
 <meta name="description" content="Use langchain to get text from any data source.">
 
-<title>Hamel’s Blog - LangChain Data Loaders</title>
+<title>Hamel’s Blog - LangChain DocumentLoaders</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -101,11 +101,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Hamel’s Blog - LangChain Data Loaders">
+<meta property="og:title" content="Hamel’s Blog - LangChain DocumentLoaders">
 <meta property="og:description" content="Use langchain to get text from any data source.">
 <meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta property="og:site-name" content="Hamel's Blog">
-<meta name="twitter:title" content="Hamel’s Blog - LangChain Data Loaders">
+<meta name="twitter:title" content="Hamel’s Blog - LangChain DocumentLoaders">
 <meta name="twitter:description" content="Use langchain to get text from any data source.">
 <meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta name="twitter:creator" content="@HamelHusain">
@@ -153,7 +153,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../notes/llm-fine-tune/index.html">Fine-tuning LLMs</a></li><li class="breadcrumb-item"><a href="../../notes/llm-fine-tune/02_langchain_connectors.html">LangChain Data Loaders</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../notes/llm-fine-tune/index.html">Fine-tuning LLMs</a></li><li class="breadcrumb-item"><a href="../../notes/llm-fine-tune/02_langchain_connectors.html">LangChain <code>DocumentLoaders</code></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -663,7 +663,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../notes/llm-fine-tune/02_langchain_connectors.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">LangChain Data Loaders</span></a>
+ <span class="menu-text">LangChain <code>DocumentLoaders</code></span></a>
   </div>
 </li>
       </ul>
@@ -847,7 +847,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">LangChain Data Loaders</h1>
+<h1 class="title">LangChain <code>DocumentLoaders</code></h1>
 </div>
 
 <div>
@@ -868,13 +868,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 <p><a href="https://python.langchain.com/docs/get_started/introduction.html">LangChain</a> is library that provides a kitchen sink of tools for LLMs, particularly integrating LLMs with other tools.</p>
-<p>One underrated feature of langchain are <a href="https://integrations.langchain.com/">DocumentLoaders</a>, which allow you to acquire text data from any source, which is super useful even if you aren’t using LLMs at all! It can also be useful to hijack these dataloaders to acquire data for fine tuning!</p>
+<p>One underrated feature of langchain are <a href="https://integrations.langchain.com/">DocumentLoaders</a>, which allow you to acquire text data from any source, which is super useful even if you aren’t using LLMs at all! (It can also be useful to hijack these dataloaders to acquire data for fine tuning!)</p>
 <p>For example, if you are trying to get data from a website as text here are some useful DocumentLoaders:</p>
 <ol type="1">
 <li><a href="https://python.langchain.com/docs/modules/data_connection/document_loaders/integrations/recursive_url_loader">RecursiveURLLoader</a></li>
 <li><a href="https://api.python.langchain.com/en/latest/document_loaders/langchain.document_loaders.url_selenium.SeleniumURLLoader.html">SeleniumLoader</a></li>
 <li><a href="https://python.langchain.com/docs/modules/data_connection/document_loaders/integrations/sitemap">SitemapLoader</a>: <strong>this is explored below</strong>.</li>
 </ol>
+<p>I think it is useful to combine LangChain <code>DocumentLoaders</code> with <a href="https://huggingface.co/docs/datasets/index">HF datasets</a>, because it allows you to save, version and do other fun things like perform <a href="https://huggingface.co/learn/nlp-course/chapter5/6?fw=tf">semantic search of your data</a> with FAISS.</p>
 <section id="sitemap-loader" class="level2">
 <h2 class="anchored" data-anchor-id="sitemap-loader">Sitemap Loader</h2>
 <p><a href="https://en.wikipedia.org/wiki/Site_map">Sitemaps</a> are a nice way to see a listing of all pages on a site. This is useful for acquiring all of the text from a large site that might contain many pages. Below, I use the <a href="https://python.langchain.com/docs/modules/data_connection/document_loaders/integrations/sitemap">SitemapLoader</a> to get all of the text from <a href="https://quarto.org">https://quarto.org</a>.</p>
@@ -991,7 +992,7 @@ Warning
 </div>
 <section id="download-the-data" class="level2">
 <h2 class="anchored" data-anchor-id="download-the-data">Download the data</h2>
-<p>You can download the data like this:</p>
+<p>You can download the data from the HuggingFace Hub like this:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datasets <span class="im">import</span> load_dataset</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>remote_data <span class="op">=</span> load_dataset(repo_name)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
