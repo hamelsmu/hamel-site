@@ -87,7 +87,7 @@ If we navigate to BigQuery, we will see this view:
 
 ![](notes_imgs/2023-07-15-11-51-41.png)
 
-If you want to create a table instead of a view, you have to edit the config block, which is special dbt code to the top of the SQL file:
+If you want to create a table instead of a view, you have to edit the config block, which is special dbt code at the top of the SQL file:
 
 
 ```sql
@@ -413,25 +413,25 @@ We can execute this test with `dbt test` or just test sources with the command: 
 
 ## Documentation
 
-You can add documentation to your models through same yaml file you use to define your tests in.  You can add a `description` field to the `stg_customers` model:
+You can add documentation to your models through same yaml file you use to define your tests in.  You can add a `description` in various places, as demonstrated below:
 
-```yaml
+```diff
 version: 2
 
 models:
   - name: stg_customers
-    description: one unique customer per row
++    description: one unique customer per row
     columns: 
       - name: customer_id
-        description: the primary key for stage customers
++        description: the primary key for stage customers
         tests:
           - unique
           - not_null
   - name: stg_orders
-    description: on order per customer
++    description: on order per customer
     columns:
       - name: order_id
-        description: the primary key for stg_orders
++        description: the primary key for stg_orders
         tests:
           - unique
           - not_null
