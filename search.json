@@ -1127,6 +1127,13 @@
     "text": "Solution\nYou can use conda to manage your CUDA versions! This allows you to isolate specific CUDA versions to specific environments rather than managing CUDA versions globally.\n\n\n\n\n\n\nNote\n\n\n\nI’m using mamba which has faster solvers than conda. Refer to the docs for installation instructions.\n\n\nLet’s say I want to downgrade to CUDA 11.7 in its own conda environment. First, I will create a new environment named cuda11-7 with the following command:\nmamba create -n cuda11-7 python=3.8\nmamba activate cuda11-7\nBefore I downgrade, we can check our CUDA version with the following command:\n&gt; nvcc --version\n\nnvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2022 NVIDIA Corporation\nBuilt on Wed_Sep_21_10:33:58_PDT_2022\nCuda compilation tools, release 11.8, V11.8.89\nBuild cuda_11.8.r11.8/compiler.31833905_0\nAs you can see, I have CUDA version 11.8 but I want to downgrade to 11.7. We can downgrade CUDA by using cuda-toolkit:\nmamba install -c \"nvidia/label/cuda-11.7.1\" cuda-toolkit\nThis will take several minutes to complete. Next, recheck your CUDA version:\n&gt; nvcc --version\n\nnvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2022 NVIDIA Corporation\nBuilt on Wed_Jun__8_16:49:14_PDT_2022\nCuda compilation tools, release 11.7, V11.7.99\nBuild cuda_11.7.r11.7/compiler.31442593_0\nNext, you need to install the correct version of PyTorch for your CUDA version. It is crucial to install the right version of PyTorch that matches your CUDA version exactly. For example, if you want to install PyTorch with CUDA 11.7, you can use the following command:\nmamba install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia\nYou can find PyTorch installation instructions on this page.\nViola! You have downgraded your CUDA version successfully. Note that this version of CUDA is isolated to this specific environment.\nTo make sure that everything is working correctly, make sure you can import torch and check the CUDA version from within Python:\n&gt; python -c \"import torch; print(torch.version.cuda)\"\n11.7"
   },
   {
+    "objectID": "notes/cuda.html#additional-resources",
+    "href": "notes/cuda.html#additional-resources",
+    "title": "CUDA Version Management",
+    "section": "Additional Resources",
+    "text": "Additional Resources\n\nWhy does nvcc --version sometimes report a different CUDA version than nvidia-smi? See this answer on Stack Overflow.\nTwitter discussion on this topic."
+  },
+  {
     "objectID": "notes/concurrency.html",
     "href": "notes/concurrency.html",
     "title": "Python Concurrency",
