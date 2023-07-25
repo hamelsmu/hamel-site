@@ -907,18 +907,19 @@ Note
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> install <span class="at">-c</span> <span class="st">"nvidia/label/cuda-11.7.1"</span> cuda-toolkit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>This will take several minutes to complete. Next, recheck your CUDA version:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> nvcc <span class="ex">--version</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">nvcc:</span> NVIDIA <span class="er">(</span><span class="ex">R</span><span class="kw">)</span> <span class="ex">Cuda</span> compiler driver</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Copyright</span> <span class="er">(</span><span class="ex">c</span><span class="kw">)</span> <span class="ex">2005-2022</span> NVIDIA Corporation</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Built</span> on Wed_Jun__8_16:49:14_PDT_2022</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Cuda</span> compilation tools, release 11.7, V11.7.99</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Build</span> cuda_11.7.r11.7/compiler.31442593_0</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">nvcc:</span> NVIDIA <span class="er">(</span><span class="ex">R</span><span class="kw">)</span> <span class="ex">Cuda</span> compiler driver</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Copyright</span> <span class="er">(</span><span class="ex">c</span><span class="kw">)</span> <span class="ex">2005-2022</span> NVIDIA Corporation</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Built</span> on Wed_Jun__8_16:49:14_PDT_2022</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Cuda</span> compilation tools, release 11.7, V11.7.99</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Build</span> cuda_11.7.r11.7/compiler.31442593_0</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Next, you need to install the correct version of PyTorch for your CUDA version. It is crucial to install the right version of PyTorch that matches your CUDA version exactly. For example, if you want to install PyTorch with CUDA 11.7, you can use the following command:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> install pytorch torchvision torchaudio pytorch-cuda=11.7 <span class="at">-c</span> pytorch <span class="at">-c</span> nvidia</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>You can find PyTorch installation instructions <a href="https://pytorch.org/get-started/locally/">on this page</a>.</p>
 <p>Viola! You have downgraded your CUDA version successfully. Note that this version of CUDA is isolated to this specific environment.</p>
 <p>To make sure that everything is working correctly, make sure you can import torch and check the CUDA version from within Python:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> python <span class="op">-</span>c <span class="st">"import torch; print(torch.version.cuda)"</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fl">11.7</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> python <span class="ex">-c</span> <span class="st">"import torch; print(torch.version.cuda)"</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">11.7</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 
 </section>
