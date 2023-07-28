@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="The best way to launch Jupyter on a remote server.">
+<meta name="description" content="Exploration of inference tools for open source large language models, particulary focused on latency.">
 
-<title>Hamel’s Blog - Launch Jupyter on a remote server</title>
+<title>Hamel’s Blog - Optimizing LLM latency</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -65,17 +99,26 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Hamel’s Blog - Launch Jupyter on a remote server">
-<meta property="og:description" content="The best way to launch Jupyter on a remote server.">
-<meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
+<meta property="og:title" content="Hamel’s Blog - Optimizing LLM latency">
+<meta property="og:description" content="Exploration of inference tools for open source large language models, particulary focused on latency.">
+<meta property="og:image" content="https://hamel.dev/notes/llm/bench_dark.png">
 <meta property="og:site_name" content="Hamel's Blog">
-<meta name="twitter:title" content="Hamel’s Blog - Launch Jupyter on a remote server">
-<meta name="twitter:description" content="The best way to launch Jupyter on a remote server.">
-<meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
+<meta property="og:image:height" content="493">
+<meta property="og:image:width" content="895">
+<meta name="twitter:title" content="Hamel’s Blog - Optimizing LLM latency">
+<meta name="twitter:description" content="Exploration of inference tools for open source large language models, particulary focused on latency.">
+<meta name="twitter:image" content="https://hamel.dev/notes/llm/bench_dark.png">
 <meta name="twitter:creator" content="@HamelHusain">
+<meta name="twitter:image-height" content="493">
+<meta name="twitter:image-width" content="895">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
@@ -120,7 +163,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../notes/jupyter/index.html">Jupyter</a></li><li class="breadcrumb-item"><a href="../../notes/jupyter/Best Way To Launch Jupyter On A Remote Server.html">Launch Jupyter on a remote server</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../notes/llm/03_inference.html">Optimizing LLM latency</a></li></ol></nav>
         <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -184,11 +227,11 @@ ul.task-list li input[type="checkbox"] {
       <div class="sidebar-item-container"> 
             <a href="../../notes/llm/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">LLMs</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../notes/llm/01_datasets.html" class="sidebar-item-text sidebar-link">
@@ -203,7 +246,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/03_inference.html" class="sidebar-item-text sidebar-link">
+  <a href="../../notes/llm/03_inference.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Optimizing LLM latency</span></a>
   </div>
 </li>
@@ -773,14 +816,14 @@ ul.task-list li input[type="checkbox"] {
       <div class="sidebar-item-container"> 
             <a href="../../notes/jupyter/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Jupyter</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/jupyter/Best Way To Launch Jupyter On A Remote Server.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../notes/jupyter/Best Way To Launch Jupyter On A Remote Server.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Launch Jupyter on a remote server</span></a>
   </div>
 </li>
@@ -810,19 +853,39 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#summary" id="toc-summary" class="nav-link active" data-scroll-target="#summary">Summary</a>
+  <ul class="collapse">
+  <li><a href="#rough-benchmarks" id="toc-rough-benchmarks" class="nav-link" data-scroll-target="#rough-benchmarks">Rough Benchmarks</a></li>
+  </ul></li>
+  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
+  <li><a href="#notes-on-tools" id="toc-notes-on-tools" class="nav-link" data-scroll-target="#notes-on-tools">Notes On Tools</a>
+  <ul class="collapse">
+  <li><a href="#text-generation-inference-tgi" id="toc-text-generation-inference-tgi" class="nav-link" data-scroll-target="#text-generation-inference-tgi">Text Generation Inference (TGI)</a>
+  <ul class="collapse">
+  <li><a href="#quantization" id="toc-quantization" class="nav-link" data-scroll-target="#quantization">Quantization</a></li>
+  </ul></li>
+  <li><a href="#text-generation-webui" id="toc-text-generation-webui" class="nav-link" data-scroll-target="#text-generation-webui">Text Generation WebUI</a></li>
+  <li><a href="#vllm" id="toc-vllm" class="nav-link" data-scroll-target="#vllm">vLLM</a></li>
+  <li><a href="#huggingface-inference-endpoint" id="toc-huggingface-inference-endpoint" class="nav-link" data-scroll-target="#huggingface-inference-endpoint">HuggingFace Inference Endpoint</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.dev/hamelsmu/hamel/blob/master/notes/llm/03_inference.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../notes/jupyter/index.html">Jupyter</a></li><li class="breadcrumb-item"><a href="../../notes/jupyter/Best Way To Launch Jupyter On A Remote Server.html">Launch Jupyter on a remote server</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../notes/llm/03_inference.html">Optimizing LLM latency</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Launch Jupyter on a remote server</h1>
+<h1 class="title">Optimizing LLM latency</h1>
 </div>
 
 <div>
   <div class="description">
-    The best way to launch Jupyter on a remote server.
+    Exploration of inference tools for open source large language models, particulary focused on latency.
   </div>
 </div>
 
@@ -837,11 +900,266 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<pre><code>jupyter lab --ip='*' --NotebookApp.token='' --NotebookApp.password='' --port 8081</code></pre>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>Below is a summary of my findings:</p>
+<ul>
+<li><strong><a href="https://vllm.readthedocs.io/en/latest/">vLLM</a> was the best tool that I tried, with significantly faster latency than everything else.</strong> The documentation was also great, and it was easy to use. It only supports specific versions of CUDA, which you can manage using <a href="../../notes/cuda.html">this approach</a>. I found that getting things to work to be a bit fiddly, but once I did it was quite fast.</li>
+<li><strong><a href="https://github.com/huggingface/text-generation-inference">Text Generation Inference</a> is an ok option (but nowhere near as fast as <code>vLLM</code>) if you want to deploy LLMs in a standard way</strong>. TGI has a bit more features than <code>vLLM</code> like telemetry baked in (<a href="https://opentelemetry.io/docs/concepts/signals/traces/">via OpenTelemetry</a>) and integration with the HF ecosystem like <a href="https://huggingface.co/inference-endpoints">inference endpoints</a>. Even though its nowhere near as fast as <code>vLLM</code>, I expect that these optimization techniques will be integrated into this server over time. However, one thing to note that as of 7/28/2023, the license for TGI was changed to be more <strong><a href="https://github.com/huggingface/text-generation-inference/commit/bde25e62b33b05113519e5dbf75abda06a03328e">restrictive that may interfere with certain commercial uses</a></strong>.</li>
+</ul>
+<section id="rough-benchmarks" class="level3">
+<h3 class="anchored" data-anchor-id="rough-benchmarks">Rough Benchmarks</h3>
+<p>This study focuses on various approaches to optimizing <strong>latency</strong>. Specifically, I want to know what kind tools are most effective at optimizing latency for open source LLMs. In order to focus on latency, I hold the following variables constant:</p>
+<ul>
+<li>batch size of <code>n = 1</code> for all prediction requests (holding throughput constant).<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a><br>
+</li>
+<li>All experiments were conducted on a <code>Nvidia A6000</code> GPU, unless otherwise noted.</li>
+<li>The model used is <a href="https://huggingface.co/meta-llama/Llama-2-7b-hf">meta-llama/Llama-2-7b-hf</a> on the HuggingFace Hub <a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</li>
+</ul>
+<p>In addition to batch size of <code>n = 1</code> and using a <code>A6000</code> GPU (unless noted otherwise), I also made sure I warmed up the model by sending an initial inference request before measuring latency.</p>
+<div id="7a61bcf2-8fb6-4f35-8eb5-68085efb2008" class="cell">
+<div class="cell-output cell-output-display">
+<div>
 
 
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">tok/sec</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">platform</th>
+<th data-quarto-table-cell-role="th">options</th>
+<th data-quarto-table-cell-role="th">gpu</th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">HF Hosted Inference Endpoint</td>
+<td data-quarto-table-cell-role="th">-</td>
+<td data-quarto-table-cell-role="th">A10G</td>
+<td>30.4</td>
+</tr>
+<tr class="even">
+<td rowspan="3" data-quarto-table-cell-role="th" data-valign="top">TGI</td>
+<td data-quarto-table-cell-role="th">-</td>
+<td data-quarto-table-cell-role="th">A6000</td>
+<td>21.1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">quantized w/ GPTQ</td>
+<td data-quarto-table-cell-role="th">A6000</td>
+<td>23.6</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">quantized w/ bitsandbytes</td>
+<td data-quarto-table-cell-role="th">A6000</td>
+<td>1.9</td>
+</tr>
+<tr class="odd">
+<td rowspan="2" data-quarto-table-cell-role="th" data-valign="top">text-generation-webui</td>
+<td data-quarto-table-cell-role="th">exllama</td>
+<td data-quarto-table-cell-role="th">A6000</td>
+<td>30.8</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">ggml</td>
+<td data-quarto-table-cell-role="th">A6000</td>
+<td>9.9</td>
+</tr>
+<tr class="odd">
+<td rowspan="2" data-quarto-table-cell-role="th" data-valign="top">vllm</td>
+<td rowspan="2" data-quarto-table-cell-role="th" data-valign="top">-</td>
+<td data-quarto-table-cell-role="th">A100 (on Modal Labs)</td>
+<td>40.9</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">A6000</td>
+<td>46.3</td>
+</tr>
+</tbody>
+</table>
 
-</main> <!-- /main -->
+</div>
+</div>
+</div>
+<p>In some cases I did not use an <code>A6000</code> b/c the platform didn’t have that particular GPU available. You can ignore these rows if you like, but I still think it is valuable information. I had access to a A6000, so I just used what I had.</p>
+<p>Furthermore, the goal was not to be super precise on these benchmarks but rather to get a general sense of how things work and how they might compare to each other out of the box.</p>
+</section>
+</section>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>One capability you need to be successful with open source LLMs is the ability to serve models efficiently. There are two categories of tools for model inference:</p>
+<ul>
+<li><p><strong>Inference servers:</strong> these help with providing a web server that can provide a REST/grpc or other interface to interact with your model as a service. These inference servers usually have parameters to help you make <a href="https://www.simonwenkel.com/notes/ai/practical/latency-vs-throughput-in-machine-learning-pipelines.html">trade-offs between throughput and latency</a>. Additionally, some inference servers come with additional features like telemetry, model versioning and more. You can learn more about this topic the <a href="../../notes/serving/index.html">serving section</a> of these notes. For LLMs, popular inference servers are the <a href="https://github.com/huggingface/text-generation-inference">Text Generation Inference (TGI)</a> and <a href="https://github.com/vllm-project/vllm">vLLM</a>.</p></li>
+<li><p><strong>Model Optimization</strong>: These modify your model to make them faster for inference. Examples include <a href="https://huggingface.co/docs/optimum/concept_guides/quantization">quantization</a>, <a href="https://vllm.ai/">Paged Attention</a>, <a href="https://github.com/turboderp/exllama">Exllama</a> and more.</p></li>
+</ul>
+<p>It is common to use both <strong>Inference servers</strong> and <strong>Model Optimization</strong> techniques in conjunction. Some inference servers like <a href="https://github.com/huggingface/text-generation-inference">TGI</a>and <a href="https://vllm.readthedocs.io/en/latest/">vLLM</a> even help you apply optimization techniques.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+</section>
+<section id="notes-on-tools" class="level1">
+<h1>Notes On Tools</h1>
+<p>An important goal I of this study beyond benchmarking was to try different platforms and take note my impressions and how to use them.</p>
+<section id="text-generation-inference-tgi" class="level2">
+<h2 class="anchored" data-anchor-id="text-generation-inference-tgi">Text Generation Inference (TGI)</h2>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+License Restrictions
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The license for TGI was <a href="https://github.com/huggingface/text-generation-inference/commit/bde25e62b33b05113519e5dbf75abda06a03328e">recently changed</a> away from Apache 2.0 to be more restrictive. Be careful when using TGI in commercial applications.</p>
+</div>
+</div>
+<p><a href="https://github.com/huggingface/text-generation-inference">Text generation inference</a> which is often referred to as “TGI” was easy to use without any optimization. You can run it like this:</p>
+<p>```{bash filename=“start_server.sh”} #!/bin/bash</p>
+<p>if [ -z “$HUGGING_FACE_HUB_TOKEN” ] then echo “HUGGING_FACE_HUB_TOKEN is not set. Please set it before running this script.” exit 1 fi</p>
+<p>model=“TheBloke/Llama-2-7B-GPTQ” volume=$PWD/data</p>
+<p>docker run –gpus all<br>
+-e HUGGING_FACE_HUB_TOKEN=$HUGGING_FACE_HUB_TOKEN<br>
+-e GPTQ_BITS=4 -e GPTQ_GROUPSIZE=128<br>
+–shm-size 5g -p 8081:80<br>
+-v <span class="math inline">\(volume:/data ghcr.io/huggingface/text-generation-inference \
+--max-best-of 1 "\)</span>@”</p>
+<pre><code>
+
+We can then run the server with this command:
+
+```bash
+bash start_server.sh --model-id "meta-llama/Llama-2-7b-hf"</code></pre>
+<section id="help" class="level4 {{.callout-note}}">
+<h4 class="anchored" data-anchor-id="help">Help</h4>
+<p>You can see all the options for the TGI container with the help flag like so:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run ghcr.io/huggingface/text-generation-inference <span class="at">--help</span> <span class="kw">|</span> <span class="fu">less</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="quantization" class="level3">
+<h3 class="anchored" data-anchor-id="quantization">Quantization</h3>
+<p>Quantization was very difficult to get working. There is a <code>—quantize</code> flag with accepts <code>bitsandbytes</code> and <code>gptq</code>. The <code>bitsandbytes</code> approach makes inference <strong>much</strong> slower, which <a href="https://github.com/huggingface/text-generation-inference/issues/309#issuecomment-1542124381">others have reported</a>.</p>
+<p>To make <code>gptq</code> work for llama v2 models requires a bunch of work, you have to <a href="https://github.com/huggingface/text-generation-inference/tree/main/server">install the text-generation-server</a> which can take a while and is very brittle to get right. I had to step through the <a href="https://github.com/huggingface/text-generation-inference/blob/main/server/Makefile">Makefile</a> carefully. After that you have to download the weights with:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">text-generation-server</span> download-weights meta-llama/Llama-2-7b-hf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You can run the following command to perform the quantization (the last argument is the destination directory where the weights are stored).</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">text-generation-server</span> quantize <span class="st">"meta-llama/Llama-2-7b-hf"</span> data/quantized/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>However, this step is not needed for the most popular models, as someone will likely already have quantized and uploaded them to the Hub.</strong></p>
+<section id="pre-quantized-models" class="level4">
+<h4 class="anchored" data-anchor-id="pre-quantized-models">Pre-Quantized Models</h4>
+<p>Alternatively, you can use a pre-quantized model that has been uploaded to the Hub. <a href="https://huggingface.co/TheBloke/Llama-2-7B-GPTQ">TheBloke/Llama-2-7B-GPTQ</a> is a good example of one. To get this to work, you have to be careful to set the <code>GPTQ_BITS</code> and <code>GPTQ_GROUPSIZE</code> environment variables to match the config. For example <a href="https://huggingface.co/TheBloke/Llama-2-7B-GPTQ/blob/main/quantize_config.json#L2-L3">This config</a> necessitates setting <code>GPTQ_BITS=4</code> and <code>GPTQ_GROUPSIZE=128</code> These are already set in <code>start_server.sh</code> shown above. <a href="https://github.com/huggingface/text-generation-inference/pull/671">This PR</a> will eventually fix that.</p>
+<p>To use the <a href="https://huggingface.co/TheBloke/Llama-2-7B-GPTQ">TheBloke/Llama-2-7B-GPTQ</a> with TGI, I can use the same bash script with the following arguments:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> start_server.sh <span class="at">--model-id</span> TheBloke/Llama-2-7B-GPTQ <span class="at">--quantize</span> gptq</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+</section>
+<section id="text-generation-webui" class="level2">
+<h2 class="anchored" data-anchor-id="text-generation-webui">Text Generation WebUI</h2>
+<p><a href="https://twitter.com/tmm1/status/1683255057201135616?s=20">Aman</a> let me know about <a href="https://github.com/oobabooga/text-generation-webui">text-generation-web-ui</a>, and also <a href="https://github.com/paul-gauthier/aider/issues/110#issuecomment-1644318545">these instructions</a> for quickly experimenting with <a href="https://github.com/turboderp/exllama">ExLlama</a> and <a href="https://github.com/ggerganov/ggml">ggml</a>.</p>
+<p>From the root of the <a href="https://github.com/oobabooga/text-generation-webui">text-generation-web-ui</a> repo, you can run the following commands to start an inference server optimized with <code>ExLlama</code> or <code>ggml</code>, respectively:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> download-model.py TheBloke/Llama-2-7B-GPTQ</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> server.py <span class="at">--listen</span> <span class="at">--extensions</span> openai <span class="at">--loader</span> exllama_hf <span class="at">--model</span> TheBloke_Llama-2-7B-GPTQ</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> download-model.py TheBloke/Llama-2-7B-GGML</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> server.py <span class="at">--listen</span> <span class="at">--extensions</span> openai <span class="at">--loader</span> llamacpp <span class="at">--model</span> TheBloke_Llama-2-7B-GGML</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>After the server was started, I used <a href="https://github.com/hamelsmu/llama-inference/blob/master/exllama/bench.py">this code</a> to conduct the benchmark.</p>
+<p>Overall, I didn’t like this particular piece of software much. It’s bit bloated because its trying to do too many things at once (An inference server, Web UIs, and other optimizations). That being said, the documentation is good and it is easy to use.</p>
+<p>I don’t think there is any particular reason to use this unless you want an end-to-end solution that also comes with a web user-interface (which many people want!).</p>
+</section>
+<section id="vllm" class="level2">
+<h2 class="anchored" data-anchor-id="vllm">vLLM</h2>
+<p><a href="https://github.com/vllm-project/vllm.git">vLLM</a> only works with CUDA 11.8, which I configured using <a href="https://hamel.dev/notes/cuda.html">this approach</a>. After configuring CUDA and installing the right version of PyTorch, you need to install the bleeding edge from git:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-U</span> git+https://github.com/vllm-project/vllm.git</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>A good recipe to use for vLLM can be find on <a href="https://modal.com/docs/guide/ex/vllm_inference">these Modal docs</a>. Surprisingly, I had much lower latency when running on a local <code>A6000</code> vs.&nbsp;a hosted <code>V100</code> on Modal Labs. It’s possible that I did something wrong here. Either way, <strong><code>vLLM</code> offered the lowest latency compared to everything else by a significant margin.</strong> If I really wanted to optimize for latency today, I would reach for <code>vLLM</code>.</p>
+<p><code>vLLM</code> <a href="https://vllm.readthedocs.io/en/latest/serving/distributed_serving.html">offers a server</a>, but I benchmarked the model locally using their tools instead. The code for the benchmarking can be <a href="https://github.com/hamelsmu/llama-inference/blob/master/vllm/bench.py">found here</a>:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tqdm <span class="im">import</span> tqdm</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> vllm <span class="im">import</span> SamplingParams, LLM</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#from https://modal.com/docs/guide/ex/vllm_inference</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>questions <span class="op">=</span> [</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Coding questions</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Implement a Python function to compute the Fibonacci numbers."</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Write a Rust function that performs binary exponentiation."</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"What are the differences between Javascript and Python?"</span>,</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Literature</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Write a story in the style of James Joyce about a trip to the Australian outback in 2083, to see robots in the beautiful desert."</span>,</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Who does Harry turn into a balloon?"</span>,</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Write a tale about a time-traveling historian who's determined to witness the most significant events in human history."</span>,</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Math</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"What is the product of 9 and 8?"</span>,</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"If a train travels 120 kilometers in 2 hours, what is its average speed?"</span>,</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Think through this step by step. If the sequence a_n is defined by a_1 = 3, a_2 = 5, and a_n = a_(n-1) + a_(n-2) for n &gt; 2, find a_6."</span>,</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>MODEL_DIR <span class="op">=</span> <span class="st">"/home/ubuntu/hamel-drive/vllm-models"</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> download_model_to_folder():</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> huggingface_hub <span class="im">import</span> snapshot_download</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> os</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>    snapshot_download(</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>        <span class="st">"meta-llama/Llama-2-7b-hf"</span>,</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>        local_dir<span class="op">=</span>MODEL_DIR,</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>        token<span class="op">=</span>os.environ[<span class="st">"HUGGING_FACE_HUB_TOKEN"</span>],</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> LLM(MODEL_DIR)</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> generate(question, llm, note<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> {<span class="st">'question'</span>: question, <span class="st">'note'</span>: note}</span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>    sampling_params <span class="op">=</span> SamplingParams(</span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>        temperature<span class="op">=</span><span class="fl">1.0</span>,</span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>        top_p<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>        max_tokens<span class="op">=</span><span class="dv">200</span>,</span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>    start <span class="op">=</span> time.perf_counter()</span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> llm.generate(question, sampling_params)</span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>    request_time <span class="op">=</span> time.perf_counter() <span class="op">-</span> start</span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> output <span class="kw">in</span> result:</span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>        response[<span class="st">'tok_count'</span>] <span class="op">=</span> <span class="bu">len</span>(output.outputs[<span class="dv">0</span>].token_ids)</span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>        response[<span class="st">'time'</span>] <span class="op">=</span> request_time</span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>        response[<span class="st">'answer'</span>] <span class="op">=</span> output.outputs[<span class="dv">0</span>].text</span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> response</span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">'__main__'</span>:</span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>    llm <span class="op">=</span> download_model_to_folder()</span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a>    counter <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>    responses <span class="op">=</span> []</span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> q <span class="kw">in</span> tqdm(questions):</span>
+<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a>        response <span class="op">=</span> generate(question<span class="op">=</span>q, llm<span class="op">=</span>llm, note<span class="op">=</span><span class="st">'vLLM'</span>)</span>
+<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> counter <span class="op">&gt;=</span> <span class="dv">2</span>:</span>
+<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a>            responses.append(response)</span>
+<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a>        counter <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame(responses)</span>
+<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a>    df.to_csv(<span class="st">'bench-vllm.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="huggingface-inference-endpoint" class="level2">
+<h2 class="anchored" data-anchor-id="huggingface-inference-endpoint">HuggingFace Inference Endpoint</h2>
+<p>I deployed an <a href="https://ui.endpoints.huggingface.co/">inference endpoint</a> on HuggingFace for <a href="https://huggingface.co/meta-llama/Llama-2-7b-hf">meta-llama/Llama-2-7b-hf</a>, on a <code>Nvidia A10G</code> GPU. I didn’t try to turn on any optimizations like quantization and wanted to see what the default performance would be like.</p>
+<p>The documentation for these interfaces can be found <a href="https://huggingface.github.io/text-generation-inference/#/">here</a>. There is also <a href="https://huggingface.co/docs/huggingface_hub/package_reference/inference_client#huggingface_hub.InferenceClient.text_generation">a python client</a>.</p>
+<p>Their documentation says they are using TGI under the hood. However, my latency was significantly faster on their hosted inference platform than using TGI locally. This could be due to the fact that I used a <code>A10G</code> with them but only a <code>A6000</code> locally. It’s worth looking into why this discrepancy exists further.</p>
+<p>The code for this benchmark can be found <a href="https://github.com/hamelsmu/llama-inference/blob/master/hf-endpoint/bench.py">here</a>.</p>
+
+
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><aside id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>It is common to explore the inference vs throughput frontier when conducting inference benchmarks. I did not do this, since I was most interested in latency. <a href="https://github.com/mosaicml/llm-foundry/tree/main/scripts/inference/benchmarking#different-hw-setups-for-mpt-7b">Here is an example</a> of how to conduct inference benchmarks that consider both throughput and latency.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>For <a href="https://huggingface.co/meta-llama">Llama v2 models</a>, you must be careful to use the models ending in <code>-hf</code> as those are the ones that are compatible with the transformers library.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p><a href="https://www.modular.com/engine">The Modular Inference Engine</a> is another example of an inference server that also applies optimization techniques. At the time of this writing, this is proprietary technology, but its worth keeping an eye on this in the future.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</aside></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -1171,7 +1489,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </a>
   </li>  
 </ul>
-    <div class="toc-actions"><ul><li><a href="https://github.com/hamelsmu/hamel/edit/master/notes/jupyter/Best Way To Launch Jupyter On A Remote Server.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
+    </div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
