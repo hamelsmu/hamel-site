@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.224">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2023-08-06">
+<meta name="description" content="An exploration of ways to optimize on latency.">
+
+<title>Hamel’s Blog - Optimizing latency</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../../../styles.css">
+<meta property="og:title" content="Hamel’s Blog - Optimizing latency">
+<meta property="og:description" content="An exploration of ways to optimize on latency.">
+<meta property="og:image" content="https://hamel.dev/notes/llm/inference/bench_dark5.png">
+<meta property="og:site_name" content="Hamel's Blog">
+<meta name="twitter:title" content="Hamel’s Blog - Optimizing latency">
+<meta name="twitter:description" content="An exploration of ways to optimize on latency.">
+<meta name="twitter:image" content="https://hamel.dev/notes/llm/inference/bench_dark5.png">
+<meta name="twitter:creator" content="@HamelHusain">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand navbar-dark ">
+      <div class="navbar-container container-fluid">
+          <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../index.html" rel="" target="">
+ <span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../oss/opensource.html" rel="" target="">
+ <span class="menu-text">Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../talks.html" rel="" target="">
+ <span class="menu-text">Talks</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../notes/index.html" rel="" target="">
+ <span class="menu-text">Notes</span></a>
+  </li>  
+</ul>
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../../index.xml" rel="" target=""><i class="bi bi-rss" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+          <div class="quarto-navbar-tools">
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/inference/index.html">Inference</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/inference/03_inference.html">Optimizing latency</a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/concurrency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Python Concurrency</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/cuda.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CUDA Version Management</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/how-to-learn/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">How to learn</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/pandoc/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">pandoc filters</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/docker/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Docker</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/dbt/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">dbt</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/programming-languages/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">programming languages</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/video_editing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Video Editing</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/llm/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LLMs</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/llm/inference/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inference</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/inference/03_inference.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Optimizing latency</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/01_datasets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Dataset Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/02_langchain_connectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LangChain <code>DocumentLoaders</code></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/serving/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ML Serving</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/serving/tfserving/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TF Serving</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/serving/tfserving/tf-serving-basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/serving/tfserving/gpu.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GPUs &amp; Batching</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/serving/torchserve/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TorchServe</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/serving/torchserve/basic-torchserve.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/serving/torchserve/hf.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Serving Your Own Model</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/serving/fastapi/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FastAPI</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/k8s/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">K8s</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/02-Basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/03-Secrets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Secrets</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/k8s/storage/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Storage</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/storage/04-Basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Storage Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/storage/05-Dynamic Provisioning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Dynamic Provisioning</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/k8s/scaling/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scaling</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/scaling/06-ReplicaSets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ReplicaSets</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/scaling/07- Scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scaling</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/12-StatefulSet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">StatefulSet</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/13-JobsCron.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Jobs &amp; CronJobs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/14-RolloutsRollbacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Rollouts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/k8s/multi_container_pods/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multi-Container Pods</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/multi_container_pods/08-Multi-Container-Pods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multi-Container Pods</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/multi_container_pods/09-Ambassador Sidecars.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Ambassador Sidecars</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/multi_container_pods/10-Downsides of MC Pods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Restart Conditions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/multi_container_pods/11-Sharing Processes in MC Pods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sharing Processes in MC Pods</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/k8s/helm/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Helm</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/helm/15-Helm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Helm Intro</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/helm/16-Creating Your Own Helm Charts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Creating Helm Charts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/helm/17-Helm Upgrade &amp; Rollbacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Helm Upgrades &amp; Rollbacks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/helm/21-Testing-With-Helm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Testing With Helm</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/18-Developer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Developer tips</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/19-Pod-Lifecycle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pod restart vs.&nbsp;replacement</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/20-Health-Check.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Probes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/22-Resource-Limits.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Resource Limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/22a-Resource-Requests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Requesting resources</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/23-Logging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Logging</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/24-monitoring.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Monitoring</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/25-Ingress.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Ingress</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/26-cluster.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Cluster Components</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/k8s/security/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Security</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/security/26-network-security.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Network Security</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/security/27-container-security.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Securing Containers</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/security/28-workloads.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Webhooks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/security/29-cluster-updates.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Updating a K8s Cluster</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/security/30-rbac.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">RBAC</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/27-workload-placement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Workload Placement</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/28-auto-scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Auto Scaling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/29-preemption.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preemption</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/99-Random.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Random TILs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/Open Questions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Open Questions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/fastai/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">fastai</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/fastai/01_fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fundamentals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/fastai/02_cv.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Image Classification</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/fastai/03_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/fastai/batch_predicitions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Batch Predictions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/linux/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Linux</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/linux/bash_scripting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Cheatsheet</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/linux/cookbook.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Cookbook</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/linux/misc_utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Misc Utilities</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/linux/osx.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">OSX Shell Tips</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/linux/permprocdata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Processes, Permissions and Moving Data</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/actions/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GitHub Actions</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/actions/ocotkit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ocotokit.js</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/actions/resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Resources</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/prompt-eng/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prompt engineering</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/prompt-eng/course/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/01_guidelines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Guidelines for Prompting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/02_iterative.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Iterative Prompt Development</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/03_summarizing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Summarizing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/04_inferring.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inferring</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/05_transforming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Transforming</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/06_expanding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Expanding</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/07_chatbot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">The Chat Format</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/web-scraping/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Web Scraping</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/web-scraping/browser-to-python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Browser requests to code</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/web-scraping/transcribe-diarize.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Transcribe &amp; Diarize Videos</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/quarto/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quarto</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/quarto/highlighting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Syntax Highlighting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/quarto/listings-from-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Listings from data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/quarto/merging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Merge listings</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/jupyter/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Jupyter</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-19" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/jupyter/Best Way To Launch Jupyter On A Remote Server.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Launch Jupyter on a remote server</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/jupyter/Fix Jupyter CUDA cache.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fix Jupyter CUDA cache</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/jupyter/remote_browser.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Remote Browser For Jupyter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/jupyter/shortcuts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">My Jupyter Shortcuts</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#summary" id="toc-summary" class="nav-link active" data-scroll-target="#summary">Summary</a>
+  <ul class="collapse">
+  <li><a href="#rough-benchmarks" id="toc-rough-benchmarks" class="nav-link" data-scroll-target="#rough-benchmarks">Rough Benchmarks</a></li>
+  </ul></li>
+  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
+  <li><a href="#notes-on-tools" id="toc-notes-on-tools" class="nav-link" data-scroll-target="#notes-on-tools">Notes On Tools</a>
+  <ul class="collapse">
+  <li><a href="#ctranslate2" id="toc-ctranslate2" class="nav-link" data-scroll-target="#ctranslate2">CTranslate2</a></li>
+  <li><a href="#text-generation-inference-tgi" id="toc-text-generation-inference-tgi" class="nav-link" data-scroll-target="#text-generation-inference-tgi">Text Generation Inference (TGI)</a>
+  <ul class="collapse">
+  <li><a href="#quantization" id="toc-quantization" class="nav-link" data-scroll-target="#quantization">Quantization</a></li>
+  <li><a href="#comparison-without-tgi-server" id="toc-comparison-without-tgi-server" class="nav-link" data-scroll-target="#comparison-without-tgi-server">Comparison Without TGI Server</a></li>
+  </ul></li>
+  <li><a href="#text-generation-webui" id="toc-text-generation-webui" class="nav-link" data-scroll-target="#text-generation-webui">Text Generation WebUI</a></li>
+  <li><a href="#vllm" id="toc-vllm" class="nav-link" data-scroll-target="#vllm">vLLM</a></li>
+  <li><a href="#huggingface-inference-endpoint" id="toc-huggingface-inference-endpoint" class="nav-link" data-scroll-target="#huggingface-inference-endpoint">HuggingFace Inference Endpoint</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.dev/hamelsmu/hamel/blob/master/notes/llm/inference/03_inference.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/inference/index.html">Inference</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/inference/03_inference.html">Optimizing latency</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Optimizing latency</h1>
+</div>
+
+<div>
+  <div class="description">
+    An exploration of ways to optimize on latency.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 6, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>Below is a summary of my findings:</p>
+<ul>
+<li>🏁 <strong><a href="https://github.com/oobabooga/text-generation-webui">exllama via text-generation-webui</a> is the fastest</strong>, but I don’t really like the software because installation is brittle and its trying to do too many things at once (front-end, back end etc). You can also try <a href="https://github.com/turboderp/exllama">exllama</a> alone without the webserver (but I didn’t have time to try this yet). <em>This wasn’t the fastest up until recently when I updated the newest version and re-ran the benchmarks.</em></li>
+<li>❤️ <strong><a href="https://github.com/OpenNMT/CTranslate2">CTranslate2</a> is my favorite tool, which is among the fastest but is also the easiest to use</strong>. The documentation is the best out of all of the solutions I tried. Furthermore, I think that the ergonomics are excellent for the models that they support. Unlike vLLM, CTranslate doesn’t seem to support distributed inference just yet.</li>
+<li>🛠️ <strong><a href="https://vllm.readthedocs.io/en/latest/">vLLM</a> is really fast, but CTranslate can be much faster.</strong> On other hand, <strong>vLLM supports distributed inference</strong>, which is something you will need for larger models. <strong>vLLM might be the sweet spot for serving very large models.</strong></li>
+<li>😐 <strong><a href="https://github.com/huggingface/text-generation-inference">Text Generation Inference</a> is an ok option (but nowhere near as fast as <code>vLLM</code>) if you want to deploy HuggingFace LLMs in a standard way</strong>. TGI has some nice features like telemetry baked in (<a href="https://opentelemetry.io/docs/concepts/signals/traces/">via OpenTelemetry</a>) and integration with the HF ecosystem like <a href="https://huggingface.co/inference-endpoints">inference endpoints</a>. One thing to note that as of 7/28/2023, the license for TGI was changed to be more <strong><a href="https://github.com/huggingface/text-generation-inference/commit/bde25e62b33b05113519e5dbf75abda06a03328e">restrictive that may interfere with certain commercial uses</a></strong>. I am personally not a fan of the license.</li>
+</ul>
+<section id="rough-benchmarks" class="level3">
+<h3 class="anchored" data-anchor-id="rough-benchmarks">Rough Benchmarks</h3>
+<p>This study focuses on various approaches to optimizing <strong>latency</strong>. Specifically, I want to know which tools are the most effective at optimizing latency for open source LLMs. In order to focus on latency, I hold the following variables constant:</p>
+<ul>
+<li>batch size of <code>n = 1</code> for all prediction requests (holding throughput constant).<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a><br>
+</li>
+<li>All experiments were conducted on a <code>Nvidia A6000</code> GPU, unless otherwise noted.</li>
+<li>Max output tokens were always set to <code>200</code>.</li>
+<li>All numbers are calculated as an average over a fixed set of 9 prompts.</li>
+<li>The model used is <a href="https://huggingface.co/meta-llama/Llama-2-7b-hf">meta-llama/Llama-2-7b-hf</a> on the HuggingFace Hub <a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</li>
+</ul>
+<p>In addition to batch size of <code>n = 1</code> and using a <code>A6000</code> GPU (unless noted otherwise), I also made sure I warmed up the model by sending an initial inference request before measuring latency.</p>
+<center>
+Llama-v2-7b benchmark: <i>batch size = 1, max output tokens = 200</i>
+</center>
+<div id="7a61bcf2-8fb6-4f35-8eb5-68085efb2008" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">avg tok/sec</th>
+<th data-quarto-table-cell-role="th">avg time (seconds)</th>
+<th data-quarto-table-cell-role="th">avg output token count</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">platform</th>
+<th data-quarto-table-cell-role="th">options</th>
+<th data-quarto-table-cell-role="th">gpu</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td rowspan="2" data-quarto-table-cell-role="th" data-valign="top">CTranslate2</td>
+<td data-quarto-table-cell-role="th">float16 quantization</td>
+<td data-quarto-table-cell-role="th">A6000</td>
+<td>44.8</td>
+<td>4.5</td>
+<td>200.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">int8 quantization</td>
+<td data-quarto-table-cell-role="th">A6000</td>
+<td>62.6</td>
+<td>3.2</td>
+<td>200.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">HF Hosted Inference Endpoint</td>
+<td data-quarto-table-cell-role="th">-</td>
+<td data-quarto-table-cell-role="th">A10G</td>
+<td>30.4</td>
+<td>6.6</td>
+<td>202.0</td>
+</tr>
+<tr class="even">
+<td rowspan="2" data-quarto-table-cell-role="th" data-valign="top">HuggingFace Transformers (no server)</td>
+<td data-quarto-table-cell-role="th">-</td>
+<td data-quarto-table-cell-role="th">A6000</td>
+<td>24.6</td>
+<td>7.5</td>
+<td>181.4</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">nf4 4bit quantization bitsandbytes</td>
+<td data-quarto-table-cell-role="th">A6000</td>
+<td>24.3</td>
+<td>7.6</td>
+<td>181.4</td>
+</tr>
+<tr class="even">
+<td rowspan="3" data-quarto-table-cell-role="th" data-valign="top">TGI</td>
+<td data-quarto-table-cell-role="th">-</td>
+<td data-quarto-table-cell-role="th">A6000</td>
+<td>21.1</td>
+<td>9.5</td>
+<td>200.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">quantized w/ GPTQ</td>
+<td data-quarto-table-cell-role="th">A6000</td>
+<td>23.6</td>
+<td>8.8</td>
+<td>200.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">quantized w/ bitsandbytes</td>
+<td data-quarto-table-cell-role="th">A6000</td>
+<td>1.9</td>
+<td>103.0</td>
+<td>200.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">text-generation-webui</td>
+<td data-quarto-table-cell-role="th">exllama</td>
+<td data-quarto-table-cell-role="th">A6000</td>
+<td>77.0</td>
+<td>1.7</td>
+<td>134.0</td>
+</tr>
+<tr class="even">
+<td rowspan="2" data-quarto-table-cell-role="th" data-valign="top">vllm</td>
+<td rowspan="2" data-quarto-table-cell-role="th" data-valign="top">-</td>
+<td data-quarto-table-cell-role="th">A100 (on Modal Labs)</td>
+<td>41.5</td>
+<td>3.4</td>
+<td>143.1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">A6000</td>
+<td>46.4</td>
+<td>3.8</td>
+<td>178.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>In some cases I did not use an <code>A6000</code> b/c the platform didn’t have that particular GPU available. You can ignore these rows if you like, but I still think it is valuable information. I had access to a A6000, so I just used what I had.</p>
+<p>I noticed that the output of the LLM was quite different (less tokens) when using <a href="https://github.com/vllm-project/vllm.git">vLLM</a>. I am not sure if I did something wrong here, or it changes the behavior of the LLM.</p>
+<p>Furthermore, the goal was not to be super precise on these benchmarks but rather to get a general sense of how things work and how they might compare to each other out of the box. Some of the tools above are inference servers which perform logging, tracing etc. in addition to optimizing models which effect latency. The idea is to see where there are significant differences between tools. I discussed this more <a href="#comparison-without-tgi-server">here</a>.</p>
+</section>
+</section>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>One capability you need to be successful with open source LLMs is the ability to serve models efficiently. There are two categories of tools for model inference:</p>
+<ul>
+<li><p><strong>Inference servers:</strong> these help with providing a web server that can provide a REST/grpc or other interface to interact with your model as a service. These inference servers usually have parameters to help you make <a href="https://www.simonwenkel.com/notes/ai/practical/latency-vs-throughput-in-machine-learning-pipelines.html">trade-offs between throughput and latency</a>. Additionally, some inference servers come with additional features like telemetry, model versioning and more. You can learn more about this topic the <a href="../../../notes/serving/index.html">serving section</a> of these notes. For LLMs, popular inference servers are the <a href="https://github.com/huggingface/text-generation-inference">Text Generation Inference (TGI)</a> and <a href="https://github.com/vllm-project/vllm">vLLM</a>.</p></li>
+<li><p><strong>Model Optimization</strong>: These modify your model to make them faster for inference. Examples include <a href="https://huggingface.co/docs/optimum/concept_guides/quantization">quantization</a>, <a href="https://vllm.ai/">Paged Attention</a>, <a href="https://github.com/turboderp/exllama">Exllama</a> and more.</p></li>
+</ul>
+<p>It is common to use both <strong>Inference servers</strong> and <strong>Model Optimization</strong> techniques in conjunction. Some inference servers like <a href="https://github.com/huggingface/text-generation-inference">TGI</a>and <a href="https://vllm.readthedocs.io/en/latest/">vLLM</a> even help you apply optimization techniques.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+</section>
+<section id="notes-on-tools" class="level1">
+<h1>Notes On Tools</h1>
+<p>Other than benchmarking, an important goal of this study was to understand how to use different platforms &amp; tools.</p>
+<section id="ctranslate2" class="level2">
+<h2 class="anchored" data-anchor-id="ctranslate2">CTranslate2</h2>
+<p><a href="https://github.com/OpenNMT/CTranslate2">CTranslate2</a> is an optimization tool that can make models ridiculously fast. h/t to <a href="https://twitter.com/abacaj/status/1685107222097903617?s=20">Anton</a>. The documentation for CTranslate2 contains <a href="https://opennmt.net/CTranslate2/guides/transformers.html#llama-2">specific instructions for llama models</a>.</p>
+<p>To optimize <code>llama v2</code>, we first need to quantize the model. This can be done like so:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ct2-transformers-converter</span> <span class="at">--model</span> meta-llama/Llama-2-7b-hf <span class="at">--quantization</span> int8 <span class="at">--output_dir</span> llama-2-7b-ct2 <span class="at">--force</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>meta-llama/Llama-2-7b-hf</code> refers to the <a href="https://huggingface.co/meta-llama/Llama-2-7b-hf">HuggingFace repo for this model</a>. The benchmarking code is as follows (can also be found <a href="https://github.com/hamelsmu/llama-inference/blob/master/ctranslate/bench.py">here</a>):</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> ctranslate2</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> transformers</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>sys.path.append(<span class="st">'../common/'</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> questions <span class="im">import</span> questions</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>generator <span class="op">=</span> ctranslate2.Generator(<span class="st">"llama-2-7b-ct2"</span>, device<span class="op">=</span><span class="st">"cuda"</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>tokenizer <span class="op">=</span> transformers.AutoTokenizer.from_pretrained(<span class="st">"meta-llama/Llama-2-7b-hf"</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict(prompt:<span class="bu">str</span>):</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Generate text give a prompt"</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    start <span class="op">=</span> time.perf_counter()</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    tokens <span class="op">=</span> tokenizer.convert_ids_to_tokens(tokenizer.encode(prompt))</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> generator.generate_batch([tokens], sampling_topk<span class="op">=</span><span class="dv">1</span>, max_length<span class="op">=</span><span class="dv">200</span>, include_prompt_in_result<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    tokens <span class="op">=</span> results[<span class="dv">0</span>].sequences_ids[<span class="dv">0</span>]</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    output <span class="op">=</span> tokenizer.decode(tokens)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    request_time <span class="op">=</span> time.perf_counter() <span class="op">-</span> start</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">'tok_count'</span>: <span class="bu">len</span>(tokens),</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>            <span class="st">'time'</span>: request_time,</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>            <span class="st">'question'</span>: prompt,</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>            <span class="st">'answer'</span>: output,</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>            <span class="st">'note'</span>: <span class="st">'CTranslate2 int8 quantization'</span>}</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">'__main__'</span>:</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    counter <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    responses <span class="op">=</span> []</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> q <span class="kw">in</span> questions:</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> counter <span class="op">&gt;=</span> <span class="dv">2</span>: responses.append(predict(q))</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>        counter <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame(responses)</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    df.to_csv(<span class="st">'bench-ctranslate-int8.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="text-generation-inference-tgi" class="level2">
+<h2 class="anchored" data-anchor-id="text-generation-inference-tgi">Text Generation Inference (TGI)</h2>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+License Restrictions
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The license for TGI was <a href="https://github.com/huggingface/text-generation-inference/commit/bde25e62b33b05113519e5dbf75abda06a03328e">recently changed</a> away from Apache 2.0 to be more restrictive. Be careful when using TGI in commercial applications.</p>
+</div>
+</div>
+<p><a href="https://github.com/huggingface/text-generation-inference">Text generation inference</a> which is often referred to as “TGI” was easy to use without any optimization. You can run it like this:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>“start_server.sh”</strong></pre>
+</div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-z</span> <span class="st">"</span><span class="va">$HUGGING_FACE_HUB_TOKEN</span><span class="st">"</span> <span class="bu">]</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="cf">then</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"HUGGING_FACE_HUB_TOKEN is not set. Please set it before running this script."</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="bu">exit</span> 1</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="va">model</span><span class="op">=</span><span class="st">"TheBloke/Llama-2-7B-GPTQ"</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="va">volume</span><span class="op">=</span><span class="va">$PWD</span>/data</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--gpus</span> all <span class="dt">\</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a> <span class="at">-e</span> HUGGING_FACE_HUB_TOKEN=<span class="va">$HUGGING_FACE_HUB_TOKEN</span> <span class="dt">\</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a> <span class="at">-e</span> GPTQ_BITS=4 <span class="at">-e</span> GPTQ_GROUPSIZE=128 <span class="dt">\</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a> <span class="at">--shm-size</span> 5g <span class="at">-p</span> 8081:80 <span class="dt">\</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a> <span class="at">-v</span> <span class="va">$volume</span>:/data ghcr.io/huggingface/text-generation-inference <span class="dt">\</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a> <span class="at">--max-best-of</span> 1 <span class="st">"</span><span class="va">$@</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can then run the server with this command:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> start_server.sh <span class="at">--model-id</span> <span class="st">"meta-llama/Llama-2-7b-hf"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Help
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You can see all the options for the TGI container with the help flag like so:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run ghcr.io/huggingface/text-generation-inference <span class="at">--help</span> <span class="kw">|</span> <span class="fu">less</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<section id="quantization" class="level3">
+<h3 class="anchored" data-anchor-id="quantization">Quantization</h3>
+<p>Quantization was very difficult to get working. There is a <code>—quantize</code> flag with accepts <code>bitsandbytes</code> and <code>gptq</code>. The <code>bitsandbytes</code> approach makes inference <strong>much</strong> slower, which <a href="https://github.com/huggingface/text-generation-inference/issues/309#issuecomment-1542124381">others have reported</a>.</p>
+<p>To make <code>gptq</code> work for llama v2 models requires a bunch of work, you have to <a href="https://github.com/huggingface/text-generation-inference/tree/main/server">install the text-generation-server</a> which can take a while and is very brittle to get right. I had to step through the <a href="https://github.com/huggingface/text-generation-inference/blob/main/server/Makefile">Makefile</a> carefully. After that you have to download the weights with:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">text-generation-server</span> download-weights meta-llama/Llama-2-7b-hf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You can run the following command to perform the quantization (the last argument is the destination directory where the weights are stored).</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">text-generation-server</span> quantize <span class="st">"meta-llama/Llama-2-7b-hf"</span> data/quantized/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>However, this step is not needed for the most popular models, as someone will likely already have quantized and uploaded them to the Hub.</strong></p>
+<section id="pre-quantized-models" class="level4">
+<h4 class="anchored" data-anchor-id="pre-quantized-models">Pre-Quantized Models</h4>
+<p>Alternatively, you can use a pre-quantized model that has been uploaded to the Hub. <a href="https://huggingface.co/TheBloke/Llama-2-7B-GPTQ">TheBloke/Llama-2-7B-GPTQ</a> is a good example of one. To get this to work, you have to be careful to set the <code>GPTQ_BITS</code> and <code>GPTQ_GROUPSIZE</code> environment variables to match the config. For example <a href="https://huggingface.co/TheBloke/Llama-2-7B-GPTQ/blob/main/quantize_config.json#L2-L3">This config</a> necessitates setting <code>GPTQ_BITS=4</code> and <code>GPTQ_GROUPSIZE=128</code> These are already set in <code>start_server.sh</code> shown above. <a href="https://github.com/huggingface/text-generation-inference/pull/671">This PR</a> will eventually fix that.</p>
+<p>To use the <a href="https://huggingface.co/TheBloke/Llama-2-7B-GPTQ">TheBloke/Llama-2-7B-GPTQ</a> with TGI, I can use the same bash script with the following arguments:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> start_server.sh <span class="at">--model-id</span> TheBloke/Llama-2-7B-GPTQ <span class="at">--quantize</span> gptq</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="comparison-without-tgi-server" class="level3">
+<h3 class="anchored" data-anchor-id="comparison-without-tgi-server">Comparison Without TGI Server</h3>
+<p>When I first drafted this study I got the following response on twitter:</p>
+<blockquote class="twitter-tweet blockquote">
+<p lang="en" dir="ltr">
+Based on your code (<a href="https://t.co/hSYaPTsEaK">https://t.co/hSYaPTsEaK</a>) it seems like you measure the full HTTP request, which is like comparing trees to an apple.
+</p>
+— Philipp Schmid (<span class="citation" data-cites="_philschmid">@_philschmid</span>) <a href="https://twitter.com/_philschmid/status/1685187971400470528?ref_src=twsrc%5Etfw">July 29, 2023</a>
+</blockquote>
+<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<p>Phillip certainly has a point! I am indeed testing both! I’m looking for big differences in tools here, and since some inference servers have optimization tools, and some optimization tools do not have an inference server I cannot do a true apples to apples comparison. However, I think its still useful to try different things as advertised to see what is possible, and also take note of really significant gaps in latency between tools.</p>
+<p>Therefore, I ran the following tests to perform the similar optimizations as TGI, but without the server to see what happened:</p>
+<section id="huggingface-transformers" class="level4">
+<h4 class="anchored" data-anchor-id="huggingface-transformers">HuggingFace Transformers</h4>
+<p>I was able to get slightly better performance without the TGI server as predicted by Phillip, <strong>but it did not account for the the massive gap between some tools</strong> (which is exactly the kind of thing I was looking for).</p>
+<p>To benchmark quantization with bitsandbytes, I <a href="https://huggingface.co/blog/4bit-transformers-bitsandbytes">followed this blog post</a> and wrote <a href="https://github.com/hamelsmu/llama-inference/blob/master/hf/bench.py">this benchmarking code</a>. I quantized the model by loading it like this:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>model_id <span class="op">=</span> <span class="st">"meta-llama/Llama-2-7b-hf"</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>tokenizer <span class="op">=</span> AutoTokenizer.from_pretrained(model_id)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>nf4_config <span class="op">=</span> BitsAndBytesConfig(</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>   load_in_4bit<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>   bnb_4bit_quant_type<span class="op">=</span><span class="st">"nf4"</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>   bnb_4bit_compute_dtype<span class="op">=</span>torch.bfloat16</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>model_nf4 <span class="op">=</span> AutoModelForCausalLM.from_pretrained(model_id, quantization_config<span class="op">=</span>nf4_config)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Unlike TGI, I was able to get bitsandbytes to work properly here, but just like TGI it didn’t speed anything up for me with respect to inference latency. As reflected in the benchmark table, I got nearly the same results with transformers <a href="https://github.com/hamelsmu/llama-inference/blob/master/hf/bench.py">without any optimizations</a>.</p>
+</section>
+<section id="gptq" class="level4">
+<h4 class="anchored" data-anchor-id="gptq">GPTQ</h4>
+<p>I also quantized the model using <a href="https://github.com/PanQiWei/AutoGPTQ">AutoGPTQ</a> without an inference server to compare against TGI. The code for that is <a href="https://github.com/hamelsmu/llama-inference/blob/master/hf/bench-gptq.py">here</a>.</p>
+<p>The results were so bad ~ 5 tok/sec that I decided not to put this in the table, because it seemed quite off to me.</p>
+</section>
+</section>
+</section>
+<section id="text-generation-webui" class="level2">
+<h2 class="anchored" data-anchor-id="text-generation-webui">Text Generation WebUI</h2>
+<p><a href="https://twitter.com/tmm1/status/1683255057201135616?s=20">Aman</a> let me know about <a href="https://github.com/oobabooga/text-generation-webui">text-generation-web-ui</a>, and also <a href="https://github.com/paul-gauthier/aider/issues/110#issuecomment-1644318545">these instructions</a> for quickly experimenting with <a href="https://github.com/turboderp/exllama">ExLlama</a> and <a href="https://github.com/ggerganov/ggml">ggml</a>. I wasn’t able to get the <code>ggml</code> variant to work properly, unfortunately. If you are really serious about using exllama, I recommend trying to use it without the text generation UI and look at the <a href="https://github.com/turboderp/exllama/tree/master">exllama</a> repo, specifically at <a href="https://github.com/turboderp/exllama/blob/master/test_benchmark_inference.py">test_benchmark_inference.py</a>. (I didn’t have time for this, but if I was going to use exllama for anything serious I would go this route).</p>
+<p>From the root of the <a href="https://github.com/oobabooga/text-generation-webui">text-generation-web-ui</a> repo, you can run the following commands to start an inference server optimized with <code>ExLlama</code>:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> download-model.py TheBloke/Llama-2-7B-GPTQ</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> server.py <span class="at">--listen</span> <span class="at">--extensions</span> openai <span class="at">--loader</span> exllama_hf <span class="at">--model</span> TheBloke_Llama-2-7B-GPTQ</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>After the server was started, I used <a href="https://github.com/hamelsmu/llama-inference/blob/master/exllama/bench.py">this code</a> to conduct the benchmark.</p>
+<p>Overall, I didn’t like this particular piece of software much. It’s bit bloated because its trying to do too many things at once (An inference server, Web UIs, and other optimizations). That being said, the documentation is good and it is easy to use.</p>
+<p>I don’t think there is any particular reason to use this unless you want an end-to-end solution that also comes with a web user-interface (which many people want!).</p>
+</section>
+<section id="vllm" class="level2">
+<h2 class="anchored" data-anchor-id="vllm">vLLM</h2>
+<p><a href="https://github.com/vllm-project/vllm.git">vLLM</a> only works with CUDA 11.8, which I configured using <a href="https://hamel.dev/notes/cuda.html">this approach</a>. After configuring CUDA and installing the right version of PyTorch, you need to install the bleeding edge from git:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-U</span> git+https://github.com/vllm-project/vllm.git</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>A good recipe to use for vLLM can be find on <a href="https://modal.com/docs/guide/ex/vllm_inference">these Modal docs</a>. Surprisingly, I had much lower latency when running on a local <code>A6000</code> vs.&nbsp;a hosted <code>V100</code> on Modal Labs. It’s possible that I did something wrong here. Either way, <strong><code>vLLM</code> offered the lowest latency compared to everything else by a significant margin.</strong> If I really wanted to optimize for latency today, I would reach for <code>vLLM</code>.</p>
+<p><code>vLLM</code> <a href="https://vllm.readthedocs.io/en/latest/serving/distributed_serving.html">offers a server</a>, but I benchmarked the model locally using their tools instead. The code for the benchmarking can be <a href="https://github.com/hamelsmu/llama-inference/blob/master/vllm/bench.py">found here</a>:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> vllm <span class="im">import</span> SamplingParams, LLM</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#from https://modal.com/docs/guide/ex/vllm_inference</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>questions <span class="op">=</span> [</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Coding questions</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Implement a Python function to compute the Fibonacci numbers."</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Write a Rust function that performs binary exponentiation."</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"What are the differences between Javascript and Python?"</span>,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Literature</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Write a story in the style of James Joyce about a trip to the Australian outback in 2083, to see robots in the beautiful desert."</span>,</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Who does Harry turn into a balloon?"</span>,</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Write a tale about a time-traveling historian who's determined to witness the most significant events in human history."</span>,</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Math</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"What is the product of 9 and 8?"</span>,</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"If a train travels 120 kilometers in 2 hours, what is its average speed?"</span>,</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Think through this step by step. If the sequence a_n is defined by a_1 = 3, a_2 = 5, and a_n = a_(n-1) + a_(n-2) for n &gt; 2, find a_6."</span>,</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>MODEL_DIR <span class="op">=</span> <span class="st">"/home/ubuntu/hamel-drive/vllm-models"</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> download_model_to_folder():</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> huggingface_hub <span class="im">import</span> snapshot_download</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> os</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>    snapshot_download(</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>        <span class="st">"meta-llama/Llama-2-7b-hf"</span>,</span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>        local_dir<span class="op">=</span>MODEL_DIR,</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>        token<span class="op">=</span>os.environ[<span class="st">"HUGGING_FACE_HUB_TOKEN"</span>],</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> LLM(MODEL_DIR)</span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> generate(question, llm, note<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> {<span class="st">'question'</span>: question, <span class="st">'note'</span>: note}</span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>    sampling_params <span class="op">=</span> SamplingParams(</span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>        temperature<span class="op">=</span><span class="fl">1.0</span>,</span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>        top_p<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>        max_tokens<span class="op">=</span><span class="dv">200</span>,</span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>    start <span class="op">=</span> time.perf_counter()</span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> llm.generate(question, sampling_params)</span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>    request_time <span class="op">=</span> time.perf_counter() <span class="op">-</span> start</span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> output <span class="kw">in</span> result:</span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>        response[<span class="st">'tok_count'</span>] <span class="op">=</span> <span class="bu">len</span>(output.outputs[<span class="dv">0</span>].token_ids)</span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>        response[<span class="st">'time'</span>] <span class="op">=</span> request_time</span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>        response[<span class="st">'answer'</span>] <span class="op">=</span> output.outputs[<span class="dv">0</span>].text</span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> response</span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">'__main__'</span>:</span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a>    llm <span class="op">=</span> download_model_to_folder()</span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>    counter <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a>    responses <span class="op">=</span> []</span>
+<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> q <span class="kw">in</span> questions:</span>
+<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a>        response <span class="op">=</span> generate(question<span class="op">=</span>q, llm<span class="op">=</span>llm, note<span class="op">=</span><span class="st">'vLLM'</span>)</span>
+<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> counter <span class="op">&gt;=</span> <span class="dv">2</span>:</span>
+<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>            responses.append(response)</span>
+<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>        counter <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame(responses)</span>
+<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a>    df.to_csv(<span class="st">'bench-vllm.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="huggingface-inference-endpoint" class="level2">
+<h2 class="anchored" data-anchor-id="huggingface-inference-endpoint">HuggingFace Inference Endpoint</h2>
+<p>I deployed an <a href="https://ui.endpoints.huggingface.co/">inference endpoint</a> on HuggingFace for <a href="https://huggingface.co/meta-llama/Llama-2-7b-hf">meta-llama/Llama-2-7b-hf</a>, on a <code>Nvidia A10G</code> GPU. I didn’t try to turn on any optimizations like quantization and wanted to see what the default performance would be like.</p>
+<p>The documentation for these interfaces can be found <a href="https://huggingface.github.io/text-generation-inference/#/">here</a>. There is also <a href="https://huggingface.co/docs/huggingface_hub/package_reference/inference_client#huggingface_hub.InferenceClient.text_generation">a python client</a>.</p>
+<p>Their documentation says they are using TGI under the hood. However, my latency was significantly faster on their hosted inference platform than using TGI locally. This could be due to the fact that I used a <code>A10G</code> with them but only a <code>A6000</code> locally. It’s worth looking into why this discrepancy exists further.</p>
+<p>The code for this benchmark can be found <a href="https://github.com/hamelsmu/llama-inference/blob/master/hf-endpoint/bench.py">here</a>.</p>
+
+
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><aside id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>It is common to explore the inference vs throughput frontier when conducting inference benchmarks. I did not do this, since I was most interested in latency. <a href="https://github.com/mosaicml/llm-foundry/tree/main/scripts/inference/benchmarking#different-hw-setups-for-mpt-7b">Here is an example</a> of how to conduct inference benchmarks that consider both throughput and latency.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>For <a href="https://huggingface.co/meta-llama">Llama v2 models</a>, you must be careful to use the models ending in <code>-hf</code> as those are the ones that are compatible with the transformers library.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p><a href="https://www.modular.com/engine">The Modular Inference Engine</a> is another example of an inference server that also applies optimization techniques. At the time of this writing, this is proprietary technology, but its worth keeping an eye on this in the future.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</aside></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    if (id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        for (let i = 0; i < 2; i++) {
+          container.appendChild(note.children[i].cloneNode(true));
+        }
+        return container.innerHTML
+      } else {
+        return note.innerHTML;
+      }
+    } else {
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      try { hash = new URL(url).hash; } catch {}
+      const id = hash.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note !== null) {
+        try {
+          const html = processXRef(id, note);
+          instance.setContent(html);
+        } finally {
+          instance.enable();
+          instance.show();
+        }
+      } else {
+        // See if we can fetch this
+        fetch(url.split('#')[0])
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.getElementById(id);
+          if (note !== null) {
+            const html = processXRef(id, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/hamelhusain/">
+      <i class="bi bi-linkedin" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/HamelHusain">
+      <i class="bi bi-twitter" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/hamelsmu">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="../../../index.xml">
+      <i class="bi bi-rss" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
