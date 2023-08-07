@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.224">
+<meta name="generator" content="quarto-1.4.298">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -235,6 +235,12 @@ ul.task-list li input[type="checkbox"] {
   <div class="sidebar-item-container"> 
   <a href="../../notes/llm/inference/03_inference.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Optimizing latency</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/llm/inference/big_inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">vLLM &amp; serving large models</span></a>
   </div>
 </li>
       </ul>
@@ -879,6 +885,7 @@ ul.task-list li input[type="checkbox"] {
   </div>
   
 
+
 </header>
 
 
@@ -898,7 +905,7 @@ Description
 </tr>
 </thead>
 <tbody class="list">
-<tr data-index="0" data-listing-file-modified-sort="1691336534555" data-listing-reading-time-sort="1" data-listing-title-sort="Inference" data-listing-filename-sort="index.qmd">
+<tr data-index="0" data-listing-file-modified-sort="1691336534555" data-listing-reading-time-sort="1" data-listing-word-count-sort="1" data-listing-title-sort="Inference" data-listing-filename-sort="index.qmd">
 <td>
 <a href="../../notes/llm/inference/index.html" class="title listing-title">Inference</a>
 </td>
@@ -906,7 +913,7 @@ Description
 <span class="listing-description">Notes on inference for LLMs</span>
 </td>
 </tr>
-<tr data-index="1" data-listing-file-modified-sort="1688602575760" data-listing-reading-time-sort="4" data-listing-title-sort="Dataset Basics" data-listing-filename-sort="01_datasets.ipynb">
+<tr data-index="1" data-listing-file-modified-sort="1688602575760" data-listing-reading-time-sort="4" data-listing-word-count-sort="679" data-listing-title-sort="Dataset Basics" data-listing-filename-sort="01_datasets.ipynb">
 <td>
 <a href="../../notes/llm/01_datasets.html" class="title listing-title">Dataset Basics</a>
 </td>
@@ -914,7 +921,7 @@ Description
 <span class="listing-description">Intro to HuggingFace datasets</span>
 </td>
 </tr>
-<tr data-index="2" data-listing-file-modified-sort="1688793908561" data-listing-reading-time-sort="2" data-listing-title-sort="LangChain `DocumentLoaders`" data-listing-filename-sort="02_langchain_connectors.ipynb">
+<tr data-index="2" data-listing-file-modified-sort="1688793908561" data-listing-reading-time-sort="2" data-listing-word-count-sort="398" data-listing-title-sort="LangChain `DocumentLoaders`" data-listing-filename-sort="02_langchain_connectors.ipynb">
 <td>
 <a href="../../notes/llm/02_langchain_connectors.html" class="title listing-title">LangChain <code>DocumentLoaders</code></a>
 </td>
@@ -922,12 +929,20 @@ Description
 <span class="listing-description">Use langchain to get text from any data source.</span>
 </td>
 </tr>
-<tr data-index="3" data-listing-date-sort="1691337689000" data-listing-file-modified-sort="1691337689975" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="14" data-listing-title-sort="Optimizing latency" data-listing-filename-sort="03_inference.ipynb">
+<tr data-index="3" data-listing-date-sort="1691337689000" data-listing-file-modified-sort="1691337689975" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="14" data-listing-word-count-sort="2695" data-listing-title-sort="Optimizing latency" data-listing-filename-sort="03_inference.ipynb">
 <td>
 <a href="../../notes/llm/inference/03_inference.html" class="title listing-title">Optimizing latency</a>
 </td>
 <td>
 <span class="listing-description">An exploration of ways to optimize on latency.</span>
+</td>
+</tr>
+<tr data-index="4" data-listing-date-sort="1691430457000" data-listing-file-modified-sort="1691430457580" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="972" data-listing-title-sort="vLLM &amp; serving large models" data-listing-filename-sort="big_inference.qmd">
+<td>
+<a href="../../notes/llm/inference/big_inference.html" class="title listing-title">vLLM &amp; serving large models</a>
+</td>
+<td>
+<span class="listing-description">Using tensor parallelism w/ vLLM &amp; Modal to run…</span>
 </td>
 </tr>
 </tbody>
@@ -1054,6 +1069,16 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
   const xrefs = window.document.querySelectorAll('a.quarto-xref');
   const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
     if (id.startsWith('sec-')) {
       // Special case sections, only their first couple elements
       const container = document.createElement("div");
@@ -1066,6 +1091,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return note.innerHTML;
       }
     } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
       return note.innerHTML;
     }
   }
@@ -1075,33 +1105,39 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       instance.disable();
       let url = xref.getAttribute('href');
       let hash = undefined; 
-      try { hash = new URL(url).hash; } catch {}
-      const id = hash.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      if (note !== null) {
-        try {
-          const html = processXRef(id, note);
-          instance.setContent(html);
-        } finally {
-          instance.enable();
-          instance.show();
-        }
+      if (url.startsWith('#')) {
+        hash = url;
       } else {
-        // See if we can fetch this
-        fetch(url.split('#')[0])
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(html, "text/html");
-          const note = htmlDoc.getElementById(id);
-          if (note !== null) {
-            const html = processXRef(id, note);
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
             instance.setContent(html);
-          } 
-        }).finally(() => {
-          instance.enable();
-          instance.show();
-        });
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
       }
     }, function(instance) {
     });

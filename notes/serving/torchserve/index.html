@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.224">
+<meta name="generator" content="quarto-1.4.298">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -235,6 +235,12 @@ ul.task-list li input[type="checkbox"] {
   <div class="sidebar-item-container"> 
   <a href="../../../notes/llm/inference/03_inference.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Optimizing latency</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/inference/big_inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">vLLM &amp; serving large models</span></a>
   </div>
 </li>
       </ul>
@@ -887,6 +893,7 @@ ul.task-list li input[type="checkbox"] {
   </div>
   
 
+
 </header>
 
 <section id="experiments-with-torch-serve" class="level2">
@@ -904,7 +911,7 @@ Description
 </tr>
 </thead>
 <tbody class="list">
-<tr data-index="0" data-listing-file-modified-sort="1674453727295" data-listing-reading-time-sort="2" data-listing-title-sort="Basics" data-listing-filename-sort="basic-torchserve.ipynb">
+<tr data-index="0" data-listing-file-modified-sort="1674453727295" data-listing-reading-time-sort="2" data-listing-word-count-sort="368" data-listing-title-sort="Basics" data-listing-filename-sort="basic-torchserve.ipynb">
 <td>
 <a href="../../../notes/serving/torchserve/basic-torchserve.html" class="title listing-title">Basics</a>
 </td>
@@ -912,7 +919,7 @@ Description
 <span class="listing-description">Torch Serve basics</span>
 </td>
 </tr>
-<tr data-index="1" data-listing-file-modified-sort="1676337838269" data-listing-reading-time-sort="4" data-listing-title-sort="Serving Your Own Model" data-listing-filename-sort="hf.ipynb">
+<tr data-index="1" data-listing-file-modified-sort="1676337838269" data-listing-reading-time-sort="4" data-listing-word-count-sort="656" data-listing-title-sort="Serving Your Own Model" data-listing-filename-sort="hf.ipynb">
 <td>
 <a href="../../../notes/serving/torchserve/hf.html" class="title listing-title">Serving Your Own Model</a>
 </td>
@@ -1072,6 +1079,16 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
   const xrefs = window.document.querySelectorAll('a.quarto-xref');
   const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
     if (id.startsWith('sec-')) {
       // Special case sections, only their first couple elements
       const container = document.createElement("div");
@@ -1084,6 +1101,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return note.innerHTML;
       }
     } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
       return note.innerHTML;
     }
   }
@@ -1093,33 +1115,39 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       instance.disable();
       let url = xref.getAttribute('href');
       let hash = undefined; 
-      try { hash = new URL(url).hash; } catch {}
-      const id = hash.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      if (note !== null) {
-        try {
-          const html = processXRef(id, note);
-          instance.setContent(html);
-        } finally {
-          instance.enable();
-          instance.show();
-        }
+      if (url.startsWith('#')) {
+        hash = url;
       } else {
-        // See if we can fetch this
-        fetch(url.split('#')[0])
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(html, "text/html");
-          const note = htmlDoc.getElementById(id);
-          if (note !== null) {
-            const html = processXRef(id, note);
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
             instance.setContent(html);
-          } 
-        }).finally(() => {
-          instance.enable();
-          instance.show();
-        });
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
       }
     }, function(instance) {
     });

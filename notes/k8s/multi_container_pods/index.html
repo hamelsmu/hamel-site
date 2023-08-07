@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.224">
+<meta name="generator" content="quarto-1.4.298">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -235,6 +235,12 @@ ul.task-list li input[type="checkbox"] {
   <div class="sidebar-item-container"> 
   <a href="../../../notes/llm/inference/03_inference.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Optimizing latency</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/inference/big_inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">vLLM &amp; serving large models</span></a>
   </div>
 </li>
       </ul>
@@ -879,6 +885,7 @@ ul.task-list li input[type="checkbox"] {
   </div>
   
 
+
 </header>
 
 
@@ -898,7 +905,7 @@ Description
 </tr>
 </thead>
 <tbody class="list">
-<tr data-index="0" data-listing-file-modified-sort="1673329742587" data-listing-reading-time-sort="10" data-listing-title-sort="Multi-Container Pods" data-listing-filename-sort="08-Multi-Container-Pods.qmd">
+<tr data-index="0" data-listing-file-modified-sort="1673329742587" data-listing-reading-time-sort="10" data-listing-word-count-sort="1995" data-listing-title-sort="Multi-Container Pods" data-listing-filename-sort="08-Multi-Container-Pods.qmd">
 <td>
 <a href="../../../notes/k8s/multi_container_pods/08-Multi-Container-Pods.html" class="title listing-title">Multi-Container Pods</a>
 </td>
@@ -906,7 +913,7 @@ Description
 <span class="listing-description">Pods can run more than one container. Pods in a…</span>
 </td>
 </tr>
-<tr data-index="1" data-listing-file-modified-sort="1673329742587" data-listing-reading-time-sort="3" data-listing-title-sort="Ambassador Sidecars" data-listing-filename-sort="09-Ambassador Sidecars.qmd">
+<tr data-index="1" data-listing-file-modified-sort="1673329742587" data-listing-reading-time-sort="3" data-listing-word-count-sort="460" data-listing-title-sort="Ambassador Sidecars" data-listing-filename-sort="09-Ambassador Sidecars.qmd">
 <td>
 <a href="../../../notes/k8s/multi_container_pods/09-Ambassador Sidecars.html" class="title listing-title">Ambassador Sidecars</a>
 </td>
@@ -914,7 +921,7 @@ Description
 <span class="listing-description">[[Ambassador]]</span>
 </td>
 </tr>
-<tr data-index="2" data-listing-file-modified-sort="1673329742587" data-listing-reading-time-sort="1" data-listing-title-sort="Restart Conditions" data-listing-filename-sort="10-Downsides of MC Pods.qmd">
+<tr data-index="2" data-listing-file-modified-sort="1673329742587" data-listing-reading-time-sort="1" data-listing-word-count-sort="140" data-listing-title-sort="Restart Conditions" data-listing-filename-sort="10-Downsides of MC Pods.qmd">
 <td>
 <a href="../../../notes/k8s/multi_container_pods/10-Downsides of MC Pods.html" class="title listing-title">Restart Conditions</a>
 </td>
@@ -922,7 +929,7 @@ Description
 <span class="listing-description">MC = multi container</span>
 </td>
 </tr>
-<tr data-index="3" data-listing-file-modified-sort="1673329742587" data-listing-reading-time-sort="1" data-listing-title-sort="Sharing Processes in MC Pods" data-listing-filename-sort="11-Sharing Processes in MC Pods.qmd">
+<tr data-index="3" data-listing-file-modified-sort="1673329742587" data-listing-reading-time-sort="1" data-listing-word-count-sort="73" data-listing-title-sort="Sharing Processes in MC Pods" data-listing-filename-sort="11-Sharing Processes in MC Pods.qmd">
 <td>
 <a href="../../../notes/k8s/multi_container_pods/11-Sharing Processes in MC Pods.html" class="title listing-title">Sharing Processes in MC Pods</a>
 </td>
@@ -1054,6 +1061,16 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
   const xrefs = window.document.querySelectorAll('a.quarto-xref');
   const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
     if (id.startsWith('sec-')) {
       // Special case sections, only their first couple elements
       const container = document.createElement("div");
@@ -1066,6 +1083,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return note.innerHTML;
       }
     } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
       return note.innerHTML;
     }
   }
@@ -1075,33 +1097,39 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       instance.disable();
       let url = xref.getAttribute('href');
       let hash = undefined; 
-      try { hash = new URL(url).hash; } catch {}
-      const id = hash.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      if (note !== null) {
-        try {
-          const html = processXRef(id, note);
-          instance.setContent(html);
-        } finally {
-          instance.enable();
-          instance.show();
-        }
+      if (url.startsWith('#')) {
+        hash = url;
       } else {
-        // See if we can fetch this
-        fetch(url.split('#')[0])
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(html, "text/html");
-          const note = htmlDoc.getElementById(id);
-          if (note !== null) {
-            const html = processXRef(id, note);
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
             instance.setContent(html);
-          } 
-        }).finally(() => {
-          instance.enable();
-          instance.show();
-        });
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
       }
     }, function(instance) {
     });

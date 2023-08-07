@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.224">
+<meta name="generator" content="quarto-1.4.298">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -235,6 +235,12 @@ ul.task-list li input[type="checkbox"] {
   <div class="sidebar-item-container"> 
   <a href="../../notes/llm/inference/03_inference.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Optimizing latency</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/llm/inference/big_inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">vLLM &amp; serving large models</span></a>
   </div>
 </li>
       </ul>
@@ -879,6 +885,7 @@ ul.task-list li input[type="checkbox"] {
   </div>
   
 
+
 </header>
 
 
@@ -898,7 +905,7 @@ Description
 </tr>
 </thead>
 <tbody class="list">
-<tr data-index="0" data-listing-file-modified-sort="1673329742661" data-listing-reading-time-sort="2" data-listing-title-sort="Listings from data" data-listing-filename-sort="listings-from-data.qmd">
+<tr data-index="0" data-listing-file-modified-sort="1673329742661" data-listing-reading-time-sort="2" data-listing-word-count-sort="331" data-listing-title-sort="Listings from data" data-listing-filename-sort="listings-from-data.qmd">
 <td>
 <a href="../../notes/quarto/listings-from-data.html" class="title listing-title">Listings from data</a>
 </td>
@@ -906,7 +913,7 @@ Description
 <span class="listing-description">Example of how to generate listings for external…</span>
 </td>
 </tr>
-<tr data-index="1" data-listing-file-modified-sort="1673329742661" data-listing-reading-time-sort="1" data-listing-title-sort="Merge listings" data-listing-filename-sort="merging.qmd">
+<tr data-index="1" data-listing-file-modified-sort="1673329742661" data-listing-reading-time-sort="1" data-listing-word-count-sort="101" data-listing-title-sort="Merge listings" data-listing-filename-sort="merging.qmd">
 <td>
 <a href="../../notes/quarto/merging.html" class="title listing-title">Merge listings</a>
 </td>
@@ -914,7 +921,7 @@ Description
 <span class="listing-description">Merge listings from multiple sources</span>
 </td>
 </tr>
-<tr data-index="2" data-listing-file-modified-sort="1681950449875" data-listing-reading-time-sort="4" data-listing-title-sort="Syntax Highlighting" data-listing-filename-sort="highlighting.qmd">
+<tr data-index="2" data-listing-file-modified-sort="1681950449875" data-listing-reading-time-sort="4" data-listing-word-count-sort="601" data-listing-title-sort="Syntax Highlighting" data-listing-filename-sort="highlighting.qmd">
 <td>
 <a href="../../notes/quarto/highlighting.html" class="title listing-title">Syntax Highlighting</a>
 </td>
@@ -1046,6 +1053,16 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
   const xrefs = window.document.querySelectorAll('a.quarto-xref');
   const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
     if (id.startsWith('sec-')) {
       // Special case sections, only their first couple elements
       const container = document.createElement("div");
@@ -1058,6 +1075,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return note.innerHTML;
       }
     } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
       return note.innerHTML;
     }
   }
@@ -1067,33 +1089,39 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       instance.disable();
       let url = xref.getAttribute('href');
       let hash = undefined; 
-      try { hash = new URL(url).hash; } catch {}
-      const id = hash.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      if (note !== null) {
-        try {
-          const html = processXRef(id, note);
-          instance.setContent(html);
-        } finally {
-          instance.enable();
-          instance.show();
-        }
+      if (url.startsWith('#')) {
+        hash = url;
       } else {
-        // See if we can fetch this
-        fetch(url.split('#')[0])
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(html, "text/html");
-          const note = htmlDoc.getElementById(id);
-          if (note !== null) {
-            const html = processXRef(id, note);
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
             instance.setContent(html);
-          } 
-        }).finally(() => {
-          instance.enable();
-          instance.show();
-        });
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
       }
     }, function(instance) {
     });
