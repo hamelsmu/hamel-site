@@ -1,0 +1,123 @@
+---
+title: Big Models w/VLLM
+date: last-modified
+description: What to do when your model is too big to fit on a single GPU.
+---
+
+## Introduction
+
+Large models like Llama-70b may not fit in a single GPU.  I previously profiled the smaller 7b model against various inference tools [here](03_inference.ipynb). 
+
+When a model is too big to fit on a single GPU, we can use various techniques to split the model across multiple GPUs, which are outlined [here](https://huggingface.co/docs/transformers/v4.15.0/parallelism).  
+
+
+### Compute & Reproducibility
+
+I used [Modal Labs](https://modal.com/) for serverless compute.  Modal is very [economical](https://modal.com/pricing) and built for machine learning use cases.  Unlike other clouds, there are plenty of A100s available.  They even give you $30 of free credits, which is more than enough to run the experiments in this note. Thanks to Modal, the scripts I reference in this note are reproducible.
+
+## Tensor Parallelism
+
+`vLLM` [supports tensor parallelism](https://vllm.readthedocs.io/en/latest/serving/distributed_serving.html), which you can enable by passing the `tensor_parallel_size` argument to the `LLM` constructor.
+
+I modified [this example Modal code](https://modal.com/docs/guide/ex/vllm_inference) for `Llama v2 13b` to run `Llama v2 70b` on 2 GPUs with tensor parallelism. Below is a simplified diff with the most important changes:
+
+```diff
+def download_model_to_folder():
+    from huggingface_hub import snapshot_download
+
+    snapshot_download(
+-        "meta-llama/Llama-2-13b-chat-hf",
++        "meta-llama/Llama-2-70b-chat-hf",
+        local_dir="/model",
+        token=os.environ["HUGGINGFACE_TOKEN"],
+    )
+
+image = (
+    Image.from_dockerhub("nvcr.io/nvidia/pytorch:22.12-py3")
+    .pip_install("torch==2.0.1", index_url="https://download.pytorch.org/whl/cu118")
++    # Pin vLLM to 8/2/2023
++    .pip_install("vllm @ git+https://github.com/vllm-project/vllm.git@79af7e96a0e2fc9f340d1939192122c3ae38ff17")
+-    # Pin vLLM to 07/19/2023
+-    .pip_install("vllm @ git+https://github.com/vllm-project/vllm.git@bda41c70ddb124134935a90a0d51304d2ac035e8")
+    # Use the barebones hf-transfer package for maximum download speeds. No progress bar, but expect 700MB/s.
+    .pip_install("hf-transfer~=0.1")
+    .run_function(
+        download_model_to_folder,
+        secret=Secret.from_name("huggingface"),
+        timeout=60 * 20)
+)
+...
+
+-@stub.cls(gpu="A100", secret=Secret.from_name("huggingface"))
++@stub.cls(gpu=gpu.A100(count=2, memory=40), secret=Secret.from_name("huggingface"))
+class Model:
+    def __enter__(self):
+        from vllm import LLM
+
+        # Load the model. Tip: MPT models may require `trust_remote_code=true`.
+-       self.llm = LLM(MODEL_DIR)
++       self.llm = LLM(MODEL_DIR, tensor_parallel_size=2, gpu_memory_utilization=0.8)
+        self.llm = LLM(MODEL_DIR)
+        self.template = """SYSTEM: You are a helpful assistant.
+USER: {}
+ASSISTANT: """
+
+    @method()
+    def generate(self, user_questions):
+        from vllm import SamplingParams
+
+        prompts = [self.template.format(q) for q in user_questions]
+        sampling_params = SamplingParams(
+            temperature=0.75,
+            top_p=1,
+            max_tokens=800,
+            presence_penalty=1.15,
+        )
+        result = self.llm.generate(prompts, sampling_params)    
+```
+
+See [big-inference-vllm.py](https://github.com/hamelsmu/hamel/blob/master/notes/llm/inference/big-inference-vllm.py) for the actual script I used.  It's mostly the same as diff above, except I added instrumentation to log statistics to this [W&B project](https://wandb.ai/hamelsmu/llama-inference/table).
+
+After setting the appropriate [secrets](https://modal.com/docs/guide/secrets) for HuggingFace and Weights & Biases, You can run this code on Modal with the following command:
+
+```bash
+modal run big-inference-vllm.py
+```
+
+### Results (Throughput)
+
+`vLLM` is specifically optimized for throughput, so unlike the [previous study](03_inference.ipynb), I decided to focus on throughput instead of latency. In the diff above, take note of the call to `self.llm.generate`, which is described in the [vLLM documentation as follows](https://vllm.readthedocs.io/en/latest/getting_started/quickstart.html):
+
+> Call `llm.generate` to generate the outputs. It adds the input prompts to vLLM engine’s waiting queue and executes the vLLM engine to generate the outputs with high throughput.
+
+![Screenshot from this [W&B Project](https://wandb.ai/hamelsmu/llama-inference/table)](2023-08-07-07-15-39.png)
+
+The above results are collected by running the [same 59 prompts](https://github.com/hamelsmu/hamel/blob/master/notes/llm/inference/questions.py) by using `llm.generate` through the model.
+
+:::{.callout-warning}
+
+### Do Not Compare To Latency Benchmark
+
+The tok/sec number you see here is VERY different than the latency benchmark shown on [this note](03_inference.ipynb).  This particular benchmark maximizes throughput by running multiple requests in parallel.  The previous latency benchmark was measuring the time it takes to process a single request.
+
+:::
+
+#### Observations
+
+These are specific observations for `vLLM` and `Llama v2 70b`:
+
+- You can run Llama v2 70b on **1 A100 (40GB) GPU or on 2 A10 GPUs**.  
+- A100s are faster than A10s, but A10s are significantly cheaper.[^1] 
+- Scaling up to more GPUs increases throughput at first, but then seems to diminish.  It appears like there is a goldilocks zone in terms of the right number of GPUs to maximize throughput.  I did not explore this in detail, as Modal only has instances with specific numbers of GPUs.[^2]
+- I had to fight vLLM to make this work by being careful to use the right versions of CUDA, vLLM and Torch and also setting `gpu_memory_utilization=0.8`. I also found that things don't work reliably if you are not using a A100 or A10 GPU, as these are the GPUs that vLLM are most tested on.
+
+[^1]: As of 8/6/2023 2 A10s costs `.000612 / sec` on Modal, whereas 1 A100 40GB will cost `0.001036 / sec`.  See [this pricing chart](https://modal.com/pricing)
+[^2]: For A10 and A100 you can only get up to 4 GPUs.  Furthermore, I ran into an issue with vLLM and llama 70b where it doesn't like an odd number of GPUs.
+
+## Aside: Pipeline Parallelism
+
+In theory, this is slower than Tensor Parallelism, but it's more compatible with a wider range of models from the HuggingFace Hub.  By default, HuggingFace [accelerate](https://huggingface.co/docs/accelerate/index) will [automatically](https://huggingface.co/docs/accelerate/usage_guides/big_modeling) split the model across multiple GPUs when you pass `device_map="auto"`.  (Accelerate offers other kinds of parallelism as well, like integrations with [DeepSpeed](https://huggingface.co/docs/accelerate/usage_guides/deepspeed)).
+
+[This blog post](https://huggingface.co/blog/accelerate-large-models) and [these docs](https://huggingface.co/docs/accelerate/usage_guides/big_modeling) are an excellent place to start.
+
+I will be exploring this and other kinds of parallelism in future notes.

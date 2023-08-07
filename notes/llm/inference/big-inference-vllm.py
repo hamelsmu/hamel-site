@@ -2,7 +2,7 @@
 import os
 from modal import Image, Secret, Stub, method, gpu
 
-NUM_GPUS = 1
+NUM_GPUS = 2
 MODEL_NM = "meta-llama/Llama-2-70b-chat-hf"
 
 def download_model_to_folder():
@@ -42,7 +42,7 @@ class Model:
             wandb.init(
                 id=stub.app.app_id,
                 project='llama-inference',
-                entity='hamelsmu')
+                entity=None)
             wandb.run.summary["model"] = MODEL_NM
             wandb.run.summary["num_gpus"] = NUM_GPUS
             wandb.run.summary["GPU"] = "A100 (40GB)"
