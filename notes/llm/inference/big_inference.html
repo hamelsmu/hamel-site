@@ -100,6 +100,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 <link rel="stylesheet" href="../../../styles.css">
@@ -997,17 +1000,72 @@ Be Careful To Mind The Cache When Downloading Files
 </section>
 <section id="what-happens-with-smaller-models" class="level2">
 <h2 class="anchored" data-anchor-id="what-happens-with-smaller-models">What Happens With Smaller Models?</h2>
-<p>Even though distributed inference is interesting for big models that do not fit on a single GPU, exciting things happen when you serve smaller models this way. Below, I test throughput for <code>Llama v2 7b</code> on 1, 2, and 4 GPUs. The throughput is measured by passsing <a href="https://github.com/hamelsmu/hamel/blob/master/notes/llm/inference/questions.py">these 59 prompts</a> to <code>llm.generate</code>. <code>llm.generate</code> is described in the <a href="https://vllm.readthedocs.io/en/latest/getting_started/quickstart.html">vLLM documentation</a>:</p>
+<p>Even though distributed inference is interesting for big models that do not fit on a single GPU, interesting things happen when you serve smaller models this way. Below, I test throughput for <code>Llama v2 7b</code> on 1, 2, and 4 GPUs. The throughput is measured by passsing <a href="https://github.com/hamelsmu/hamel/blob/master/notes/llm/inference/questions.py">these 59 prompts</a> to <code>llm.generate</code>. <code>llm.generate</code> is described in the <a href="https://vllm.readthedocs.io/en/latest/getting_started/quickstart.html">vLLM documentation</a>:</p>
 <blockquote class="blockquote">
 <p>Call <code>llm.generate</code> to generate the outputs. It adds the input prompts to vLLM engine’s waiting queue and executes the vLLM engine to generate the outputs with high throughput.</p>
 </blockquote>
-<p>Here are the results:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="wandb-vllm.png" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">Screenshot from this <a href="https://wandb.ai/hamelsmu/llama-inference/table">W&amp;B Project</a></figcaption>
-</figure>
+<p>Here are the results, averaged over 5 runs for each row:</p>
+<div id="2599b8d7" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display" data-execution_count="1">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">avg tok/sec</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">model</th>
+<th data-quarto-table-cell-role="th">GPU</th>
+<th data-quarto-table-cell-role="th">num_gpus</th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">Llama-2-70b-chat-hf</td>
+<td data-quarto-table-cell-role="th">NVIDIA A100-SXM4-40GB</td>
+<td data-quarto-table-cell-role="th">4</td>
+<td>380.9</td>
+</tr>
+<tr class="even">
+<td rowspan="6" data-quarto-table-cell-role="th" data-valign="top">Llama-2-7b-chat-hf</td>
+<td rowspan="3" data-quarto-table-cell-role="th" data-valign="top">NVIDIA A10</td>
+<td data-quarto-table-cell-role="th">1</td>
+<td>458.8</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>497.3</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">4</td>
+<td>543.6</td>
+</tr>
+<tr class="odd">
+<td rowspan="3" data-quarto-table-cell-role="th" data-valign="top">NVIDIA A100-SXM4-40GB</td>
+<td data-quarto-table-cell-role="th">1</td>
+<td>842.9</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2</td>
+<td>699.1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>650.7</td>
+</tr>
+</tbody>
+</table>
+
 </div>
+</div>
+</div>
+<p>You can see all the individual runs <a href="https://wandb.ai/hamelsmu/llama-inference?workspace=user-hamelsmu">here</a>. In my experiments, the 70b model needed a minimum of 4 A100s to run, so that’s why there is only one row for that model (Modal only has instances with 1, 2, or 4 GPUs).</p>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1023,11 +1081,10 @@ Do Not Compare To Latency Benchmark
 </div>
 <section id="observations" class="level3">
 <h3 class="anchored" data-anchor-id="observations">Observations</h3>
-<p>These are specific observations for <code>vLLM</code> and <code>Llama v2 7b</code> (the smaller model):</p>
 <ul>
-<li>A100s are faster than A10s, but A10s are significantly cheaper.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></li>
-<li>Scaling up to more GPUs increases throughput at first, but then seems to diminish. It appears like there is a Goldilocks zone in terms of the right number of GPUs to maximize throughput. I did not explore this in detail, as Modal only has instances with specific numbers of GPUs.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></li>
-<li>The much larger <code>Llama v2 70b</code> model is not much slower than its 7b counterpart! I was able to get ~400 tok/sec of throughput on 4 A100s which isn’t too bad!</li>
+<li>A100s are much faster than A10s, but A10s are significantly cheaper.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></li>
+<li>On A10s, scaling up to more GPUs increases throughput at first, but then seems to diminish. It appears like there is a Goldilocks zone in terms of the right number of GPUs to maximize throughput. I did not explore this in detail, as Modal only has instances with specific numbers of GPUs.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></li>
+<li>The much larger <code>Llama v2 70b</code> model is only ~2x slower than its 7b counterpart.</li>
 </ul>
 </section>
 </section>
