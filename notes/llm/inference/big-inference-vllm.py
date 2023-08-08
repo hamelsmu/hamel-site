@@ -3,13 +3,11 @@ import os
 from modal import Image, Secret, Stub, method, gpu
 
 NUM_GPUS = 4
-MODEL_NM = "meta-llama/Llama-2-70b-chat-hf"
-
 def download_model_to_folder():
     from huggingface_hub import snapshot_download
 
     snapshot_download(
-        MODEL_NM,
+        "meta-llama/Llama-2-70b-chat-hf",
         local_dir="/model",
         token=os.environ["HUGGINGFACE_TOKEN"],
     )
@@ -43,7 +41,6 @@ class Model:
                 id=stub.app.app_id,
                 project='llama-inference',
                 entity=None)
-            wandb.run.summary["model"] = MODEL_NM
             wandb.run.summary["num_gpus"] = NUM_GPUS
             wandb.run.summary["GPU"] = "A100 (40GB)"
             wandb.run.log_code()
