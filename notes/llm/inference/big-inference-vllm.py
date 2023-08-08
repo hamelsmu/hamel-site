@@ -20,6 +20,7 @@ image = (
     .pip_install("wandb")
     # Use the barebones hf-transfer package for maximum download speeds. No progress bar, but expect 700MB/s.
     .pip_install("hf-transfer~=0.1")
+    .pip_install("GPUtil", force_build=True)
     .run_function(
         download_model_to_folder,
         secret=Secret.from_name("my-huggingface-secret"),
@@ -34,23 +35,32 @@ class Model:
         import wandb
         from vllm import LLM
         import torch
+        import json
+        import GPUtil
+        
+        gpus = GPUtil.getGPUs()
+
+        with open("/model/config.json") as f:
+            config = json.load(f)
+        model_nm = config["_name_or_path"]
 
         wandb_enabled = bool(os.environ.get("WANDB_API_KEY"))
         if wandb_enabled:
             wandb.init(
                 id=stub.app.app_id,
                 project='llama-inference',
-                entity=None)
-            wandb.run.summary["num_gpus"] = NUM_GPUS
-            wandb.run.summary["GPU"] = "A100 (40GB)"
+                entity='hamelsmu')
+            wandb.run.summary["num_gpus"] = len(gpus)
+            wandb.run.summary["model"] = model_nm
+            wandb.run.summary["GPU"] = gpus[0].name
             wandb.run.log_code()
         
-        cfg = {"model": MODEL_NM, "num_gpus": NUM_GPUS}
+        cfg = {"model": model_nm, "num_gpus": len(gpus)}
         if wandb.run:
             wandb.run.config.update(cfg)
 
         torch.cuda.empty_cache() 
-        self.llm = LLM("/model", tensor_parallel_size=NUM_GPUS)
+        self.llm = LLM("/model", tensor_parallel_size=len(gpus))
         self.template = """SYSTEM: You are a helpful assistant.
 USER: {}
 ASSISTANT: """
