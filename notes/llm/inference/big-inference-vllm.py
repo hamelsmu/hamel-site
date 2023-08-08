@@ -2,7 +2,7 @@
 import os
 from modal import Image, Secret, Stub, method, gpu
 
-NUM_GPUS = 2
+NUM_GPUS = 4
 MODEL_NM = "meta-llama/Llama-2-70b-chat-hf"
 
 def download_model_to_folder():
@@ -52,9 +52,8 @@ class Model:
         if wandb.run:
             wandb.run.config.update(cfg)
 
-        # Load the model. Tip: MPT models may require `trust_remote_code=true`.
         torch.cuda.empty_cache() 
-        self.llm = LLM("/model", tensor_parallel_size=NUM_GPUS, gpu_memory_utilization=0.8)
+        self.llm = LLM("/model", tensor_parallel_size=NUM_GPUS)
         self.template = """SYSTEM: You are a helpful assistant.
 USER: {}
 ASSISTANT: """
