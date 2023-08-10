@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2023-08-06">
+<meta name="dcterms.date" content="2023-08-10">
 <meta name="description" content="An exploration of ways to optimize on latency.">
 
 <title>Hamel’s Blog - Optimizing latency</title>
@@ -876,6 +876,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
   <li><a href="#notes-on-tools" id="toc-notes-on-tools" class="nav-link" data-scroll-target="#notes-on-tools">Notes On Tools</a>
   <ul class="collapse">
+  <li><a href="#mlc" id="toc-mlc" class="nav-link" data-scroll-target="#mlc">mlc</a></li>
   <li><a href="#ctranslate2" id="toc-ctranslate2" class="nav-link" data-scroll-target="#ctranslate2">CTranslate2</a></li>
   <li><a href="#text-generation-inference-tgi" id="toc-text-generation-inference-tgi" class="nav-link" data-scroll-target="#text-generation-inference-tgi">Text Generation Inference (TGI)</a>
   <ul class="collapse">
@@ -910,7 +911,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 6, 2023</p>
+      <p class="date">August 10, 2023</p>
     </div>
   </div>
   
@@ -925,7 +926,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="summary">Summary</h2>
 <p>Below is a summary of my findings:</p>
 <ul>
-<li>🏁 <strong><a href="https://github.com/oobabooga/text-generation-webui">exllama via text-generation-webui</a> is the fastest</strong>, but I don’t really like the software because installation is brittle and its trying to do too many things at once (front-end, back end etc). You can also try <a href="https://github.com/turboderp/exllama">exllama</a> alone without the webserver (but I didn’t have time to try this yet). <em>This wasn’t the fastest up until recently when I updated the newest version and re-ran the benchmarks.</em></li>
+<li>🏁 <strong><a href="https://mlc.ai/mlc-llm/docs/index.html">mlc</a> is the fastest</strong>, but I had some issues with the the compiled models with the non-chat variants and their supplied python API for some reason. This is so fast that I’m skeptical and am now motivated to measure quality (if I have time). When checking the outputs manually, they didn’t seem that different than other approaches.</li>
 <li>❤️ <strong><a href="https://github.com/OpenNMT/CTranslate2">CTranslate2</a> is my favorite tool, which is among the fastest but is also the easiest to use</strong>. The documentation is the best out of all of the solutions I tried. Furthermore, I think that the ergonomics are excellent for the models that they support. Unlike vLLM, CTranslate doesn’t seem to support distributed inference just yet.</li>
 <li>🛠️ <strong><a href="https://vllm.readthedocs.io/en/latest/">vLLM</a> is really fast, but CTranslate can be much faster.</strong> On other hand, <strong>vLLM supports distributed inference</strong>, which is something you will need for larger models. <strong>vLLM might be the sweet spot for serving very large models.</strong></li>
 <li>😐 <strong><a href="https://github.com/huggingface/text-generation-inference">Text Generation Inference</a> is an ok option (but nowhere near as fast as <code>vLLM</code>) if you want to deploy HuggingFace LLMs in a standard way</strong>. TGI has some nice features like telemetry baked in (<a href="https://opentelemetry.io/docs/concepts/signals/traces/">via OpenTelemetry</a>) and integration with the HF ecosystem like <a href="https://huggingface.co/inference-endpoints">inference endpoints</a>. One thing to note that as of 7/28/2023, the license for TGI was changed to be more <strong><a href="https://github.com/huggingface/text-generation-inference/commit/bde25e62b33b05113519e5dbf75abda06a03328e">restrictive that may interfere with certain commercial uses</a></strong>. I am personally not a fan of the license.</li>
@@ -945,7 +946,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <center>
 Llama-v2-7b benchmark: <i>batch size = 1, max output tokens = 200</i>
 </center>
-<div id="7a61bcf2-8fb6-4f35-8eb5-68085efb2008" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div id="8b12f7ad-fd94-4d1c-b59f-c3f30e67f85d" class="cell">
 <div class="cell-output cell-output-display">
 <div>
 
@@ -1031,6 +1032,14 @@ Llama-v2-7b benchmark: <i>batch size = 1, max output tokens = 200</i>
 <td>200.0</td>
 </tr>
 <tr class="odd">
+<td data-quarto-table-cell-role="th">mlc</td>
+<td data-quarto-table-cell-role="th">q4f16</td>
+<td data-quarto-table-cell-role="th">A6000</td>
+<td>117.1</td>
+<td>1.3</td>
+<td>153.9</td>
+</tr>
+<tr class="even">
 <td data-quarto-table-cell-role="th">text-generation-webui</td>
 <td data-quarto-table-cell-role="th">exllama</td>
 <td data-quarto-table-cell-role="th">A6000</td>
@@ -1038,7 +1047,7 @@ Llama-v2-7b benchmark: <i>batch size = 1, max output tokens = 200</i>
 <td>1.7</td>
 <td>134.0</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td rowspan="2" data-quarto-table-cell-role="th" data-valign="top">vllm</td>
 <td rowspan="2" data-quarto-table-cell-role="th" data-valign="top">-</td>
 <td data-quarto-table-cell-role="th">A100 (on Modal Labs)</td>
@@ -1046,7 +1055,7 @@ Llama-v2-7b benchmark: <i>batch size = 1, max output tokens = 200</i>
 <td>3.4</td>
 <td>143.1</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td data-quarto-table-cell-role="th">A6000</td>
 <td>46.4</td>
 <td>3.8</td>
@@ -1075,47 +1084,75 @@ Llama-v2-7b benchmark: <i>batch size = 1, max output tokens = 200</i>
 <section id="notes-on-tools" class="level1">
 <h1>Notes On Tools</h1>
 <p>Other than benchmarking, an important goal of this study was to understand how to use different platforms &amp; tools.</p>
+<section id="mlc" class="level2">
+<h2 class="anchored" data-anchor-id="mlc">mlc</h2>
+<p>Start with compiling the model as shown in <a href="https://mlc.ai/mlc-llm/docs/compilation/compile_models.html">these docs</a></p>
+<p>After <a href="https://mlc.ai/mlc-llm/docs/compilation/compile_models.html#install-mlc-llm-package">installing MLC</a>, you can compile <code>meta-llama/Llama-2-7b-chat-hf</code> like so:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> mlc_llm.build <span class="dt">\</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>--hf-path meta-llama/Llama-2-7b-chat-hf <span class="dt">\</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>--target cuda <span class="at">--quantization</span> q4f16_1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The arguments for the compliation are documented <a href="https://mlc.ai/mlc-llm/docs/compilation/compile_models.html#compile-command-specification">here</a>. This puts the model in the <code>./dist/</code> folder with the name <code>Llama-2-7b-chat-hf-q4f16_1</code>.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I wasn’t able to get <code>meta-llama/Llama-2-7b-hf</code> to compile correctly for whatever reason, so am using the chat variant (<code>Llama-2-7b-chat-hf</code>) as a proxy. Even though the non-chat variant technically compiled, the model didn’t seem to really work out of the box. There might be something specific to mlc or their python API but I didn’t have enough time to investigate why.</p>
+</div>
+</div>
+<p>You use <a href="https://mlc.ai/mlc-llm/docs/deploy/python.html">this python api</a> to use the compiled model:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> mlc_chat <span class="im">import</span> ChatModule, ChatConfig</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>cfg <span class="op">=</span> ChatConfig(max_gen_len<span class="op">=</span><span class="dv">200</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>cm <span class="op">=</span> ChatModule(model<span class="op">=</span><span class="st">"Llama-2-7b-chat-hf-q4f16_1"</span>, chat_config<span class="op">=</span>cfg)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>output <span class="op">=</span> cm.generate(prompt<span class="op">=</span>prompt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You can see the full benchmarking code <a href="https://github.com/hamelsmu/llama-inference/blob/master/mlc/mlc.py">here</a>.</p>
+</section>
 <section id="ctranslate2" class="level2">
 <h2 class="anchored" data-anchor-id="ctranslate2">CTranslate2</h2>
 <p><a href="https://github.com/OpenNMT/CTranslate2">CTranslate2</a> is an optimization tool that can make models ridiculously fast. h/t to <a href="https://twitter.com/abacaj/status/1685107222097903617?s=20">Anton</a>. The documentation for CTranslate2 contains <a href="https://opennmt.net/CTranslate2/guides/transformers.html#llama-2">specific instructions for llama models</a>.</p>
 <p>To optimize <code>llama v2</code>, we first need to quantize the model. This can be done like so:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ct2-transformers-converter</span> <span class="at">--model</span> meta-llama/Llama-2-7b-hf <span class="at">--quantization</span> int8 <span class="at">--output_dir</span> llama-2-7b-ct2 <span class="at">--force</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ct2-transformers-converter</span> <span class="at">--model</span> meta-llama/Llama-2-7b-hf <span class="at">--quantization</span> int8 <span class="at">--output_dir</span> llama-2-7b-ct2 <span class="at">--force</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><code>meta-llama/Llama-2-7b-hf</code> refers to the <a href="https://huggingface.co/meta-llama/Llama-2-7b-hf">HuggingFace repo for this model</a>. The benchmarking code is as follows (can also be found <a href="https://github.com/hamelsmu/llama-inference/blob/master/ctranslate/bench.py">here</a>):</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> ctranslate2</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> transformers</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>sys.path.append(<span class="st">'../common/'</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> questions <span class="im">import</span> questions</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>generator <span class="op">=</span> ctranslate2.Generator(<span class="st">"llama-2-7b-ct2"</span>, device<span class="op">=</span><span class="st">"cuda"</span>)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>tokenizer <span class="op">=</span> transformers.AutoTokenizer.from_pretrained(<span class="st">"meta-llama/Llama-2-7b-hf"</span>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict(prompt:<span class="bu">str</span>):</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Generate text give a prompt"</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    start <span class="op">=</span> time.perf_counter()</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    tokens <span class="op">=</span> tokenizer.convert_ids_to_tokens(tokenizer.encode(prompt))</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> generator.generate_batch([tokens], sampling_topk<span class="op">=</span><span class="dv">1</span>, max_length<span class="op">=</span><span class="dv">200</span>, include_prompt_in_result<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    tokens <span class="op">=</span> results[<span class="dv">0</span>].sequences_ids[<span class="dv">0</span>]</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    output <span class="op">=</span> tokenizer.decode(tokens)</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    request_time <span class="op">=</span> time.perf_counter() <span class="op">-</span> start</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">'tok_count'</span>: <span class="bu">len</span>(tokens),</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>            <span class="st">'time'</span>: request_time,</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>            <span class="st">'question'</span>: prompt,</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>            <span class="st">'answer'</span>: output,</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>            <span class="st">'note'</span>: <span class="st">'CTranslate2 int8 quantization'</span>}</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">'__main__'</span>:</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    counter <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    responses <span class="op">=</span> []</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> q <span class="kw">in</span> questions:</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> counter <span class="op">&gt;=</span> <span class="dv">2</span>: responses.append(predict(q))</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>        counter <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame(responses)</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    df.to_csv(<span class="st">'bench-ctranslate-int8.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> ctranslate2</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> transformers</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>sys.path.append(<span class="st">'../common/'</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> questions <span class="im">import</span> questions</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>generator <span class="op">=</span> ctranslate2.Generator(<span class="st">"llama-2-7b-ct2"</span>, device<span class="op">=</span><span class="st">"cuda"</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>tokenizer <span class="op">=</span> transformers.AutoTokenizer.from_pretrained(<span class="st">"meta-llama/Llama-2-7b-hf"</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict(prompt:<span class="bu">str</span>):</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Generate text give a prompt"</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    start <span class="op">=</span> time.perf_counter()</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    tokens <span class="op">=</span> tokenizer.convert_ids_to_tokens(tokenizer.encode(prompt))</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> generator.generate_batch([tokens], sampling_topk<span class="op">=</span><span class="dv">1</span>, max_length<span class="op">=</span><span class="dv">200</span>, include_prompt_in_result<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    tokens <span class="op">=</span> results[<span class="dv">0</span>].sequences_ids[<span class="dv">0</span>]</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    output <span class="op">=</span> tokenizer.decode(tokens)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    request_time <span class="op">=</span> time.perf_counter() <span class="op">-</span> start</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">'tok_count'</span>: <span class="bu">len</span>(tokens),</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>            <span class="st">'time'</span>: request_time,</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>            <span class="st">'question'</span>: prompt,</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>            <span class="st">'answer'</span>: output,</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>            <span class="st">'note'</span>: <span class="st">'CTranslate2 int8 quantization'</span>}</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">'__main__'</span>:</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    counter <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    responses <span class="op">=</span> []</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> q <span class="kw">in</span> questions:</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> counter <span class="op">&gt;=</span> <span class="dv">2</span>: responses.append(predict(q))</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>        counter <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame(responses)</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    df.to_csv(<span class="st">'bench-ctranslate-int8.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="text-generation-inference-tgi" class="level2">
 <h2 class="anchored" data-anchor-id="text-generation-inference-tgi">Text Generation Inference (TGI)</h2>
@@ -1137,26 +1174,26 @@ License Restrictions
 <div class="code-with-filename-file">
 <pre><strong>“start_server.sh”</strong></pre>
 </div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-z</span> <span class="st">"</span><span class="va">$HUGGING_FACE_HUB_TOKEN</span><span class="st">"</span> <span class="bu">]</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="cf">then</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"HUGGING_FACE_HUB_TOKEN is not set. Please set it before running this script."</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="bu">exit</span> 1</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="va">model</span><span class="op">=</span><span class="st">"TheBloke/Llama-2-7B-GPTQ"</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="va">volume</span><span class="op">=</span><span class="va">$PWD</span>/data</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--gpus</span> all <span class="dt">\</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a> <span class="at">-e</span> HUGGING_FACE_HUB_TOKEN=<span class="va">$HUGGING_FACE_HUB_TOKEN</span> <span class="dt">\</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a> <span class="at">-e</span> GPTQ_BITS=4 <span class="at">-e</span> GPTQ_GROUPSIZE=128 <span class="dt">\</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a> <span class="at">--shm-size</span> 5g <span class="at">-p</span> 8081:80 <span class="dt">\</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a> <span class="at">-v</span> <span class="va">$volume</span>:/data ghcr.io/huggingface/text-generation-inference <span class="dt">\</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a> <span class="at">--max-best-of</span> 1 <span class="st">"</span><span class="va">$@</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-z</span> <span class="st">"</span><span class="va">$HUGGING_FACE_HUB_TOKEN</span><span class="st">"</span> <span class="bu">]</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="cf">then</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"HUGGING_FACE_HUB_TOKEN is not set. Please set it before running this script."</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="bu">exit</span> 1</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="va">model</span><span class="op">=</span><span class="st">"TheBloke/Llama-2-7B-GPTQ"</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="va">volume</span><span class="op">=</span><span class="va">$PWD</span>/data</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--gpus</span> all <span class="dt">\</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a> <span class="at">-e</span> HUGGING_FACE_HUB_TOKEN=<span class="va">$HUGGING_FACE_HUB_TOKEN</span> <span class="dt">\</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a> <span class="at">-e</span> GPTQ_BITS=4 <span class="at">-e</span> GPTQ_GROUPSIZE=128 <span class="dt">\</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a> <span class="at">--shm-size</span> 5g <span class="at">-p</span> 8081:80 <span class="dt">\</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a> <span class="at">-v</span> <span class="va">$volume</span>:/data ghcr.io/huggingface/text-generation-inference <span class="dt">\</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a> <span class="at">--max-best-of</span> 1 <span class="st">"</span><span class="va">$@</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can then run the server with this command:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> start_server.sh <span class="at">--model-id</span> <span class="st">"meta-llama/Llama-2-7b-hf"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> start_server.sh <span class="at">--model-id</span> <span class="st">"meta-llama/Llama-2-7b-hf"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1168,22 +1205,22 @@ Help
 </div>
 <div class="callout-body-container callout-body">
 <p>You can see all the options for the TGI container with the help flag like so:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run ghcr.io/huggingface/text-generation-inference <span class="at">--help</span> <span class="kw">|</span> <span class="fu">less</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run ghcr.io/huggingface/text-generation-inference <span class="at">--help</span> <span class="kw">|</span> <span class="fu">less</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <section id="quantization" class="level3">
 <h3 class="anchored" data-anchor-id="quantization">Quantization</h3>
 <p>Quantization was very difficult to get working. There is a <code>—quantize</code> flag with accepts <code>bitsandbytes</code> and <code>gptq</code>. The <code>bitsandbytes</code> approach makes inference <strong>much</strong> slower, which <a href="https://github.com/huggingface/text-generation-inference/issues/309#issuecomment-1542124381">others have reported</a>.</p>
 <p>To make <code>gptq</code> work for llama v2 models requires a bunch of work, you have to <a href="https://github.com/huggingface/text-generation-inference/tree/main/server">install the text-generation-server</a> which can take a while and is very brittle to get right. I had to step through the <a href="https://github.com/huggingface/text-generation-inference/blob/main/server/Makefile">Makefile</a> carefully. After that you have to download the weights with:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">text-generation-server</span> download-weights meta-llama/Llama-2-7b-hf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">text-generation-server</span> download-weights meta-llama/Llama-2-7b-hf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>You can run the following command to perform the quantization (the last argument is the destination directory where the weights are stored).</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">text-generation-server</span> quantize <span class="st">"meta-llama/Llama-2-7b-hf"</span> data/quantized/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">text-generation-server</span> quantize <span class="st">"meta-llama/Llama-2-7b-hf"</span> data/quantized/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><strong>However, this step is not needed for the most popular models, as someone will likely already have quantized and uploaded them to the Hub.</strong></p>
 <section id="pre-quantized-models" class="level4">
 <h4 class="anchored" data-anchor-id="pre-quantized-models">Pre-Quantized Models</h4>
 <p>Alternatively, you can use a pre-quantized model that has been uploaded to the Hub. <a href="https://huggingface.co/TheBloke/Llama-2-7B-GPTQ">TheBloke/Llama-2-7B-GPTQ</a> is a good example of one. To get this to work, you have to be careful to set the <code>GPTQ_BITS</code> and <code>GPTQ_GROUPSIZE</code> environment variables to match the config. For example <a href="https://huggingface.co/TheBloke/Llama-2-7B-GPTQ/blob/main/quantize_config.json#L2-L3">This config</a> necessitates setting <code>GPTQ_BITS=4</code> and <code>GPTQ_GROUPSIZE=128</code> These are already set in <code>start_server.sh</code> shown above. <a href="https://github.com/huggingface/text-generation-inference/pull/671">This PR</a> will eventually fix that.</p>
 <p>To use the <a href="https://huggingface.co/TheBloke/Llama-2-7B-GPTQ">TheBloke/Llama-2-7B-GPTQ</a> with TGI, I can use the same bash script with the following arguments:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> start_server.sh <span class="at">--model-id</span> TheBloke/Llama-2-7B-GPTQ <span class="at">--quantize</span> gptq</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> start_server.sh <span class="at">--model-id</span> TheBloke/Llama-2-7B-GPTQ <span class="at">--quantize</span> gptq</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 <section id="comparison-without-tgi-server" class="level3">
@@ -1202,14 +1239,14 @@ Based on your code (<a href="https://t.co/hSYaPTsEaK">https://t.co/hSYaPTsEaK</a
 <h4 class="anchored" data-anchor-id="huggingface-transformers">HuggingFace Transformers</h4>
 <p>I was able to get slightly better performance without the TGI server as predicted by Phillip, <strong>but it did not account for the the massive gap between some tools</strong> (which is exactly the kind of thing I was looking for).</p>
 <p>To benchmark quantization with bitsandbytes, I <a href="https://huggingface.co/blog/4bit-transformers-bitsandbytes">followed this blog post</a> and wrote <a href="https://github.com/hamelsmu/llama-inference/blob/master/hf/bench.py">this benchmarking code</a>. I quantized the model by loading it like this:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>model_id <span class="op">=</span> <span class="st">"meta-llama/Llama-2-7b-hf"</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>tokenizer <span class="op">=</span> AutoTokenizer.from_pretrained(model_id)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>nf4_config <span class="op">=</span> BitsAndBytesConfig(</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>   load_in_4bit<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>   bnb_4bit_quant_type<span class="op">=</span><span class="st">"nf4"</span>,</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>   bnb_4bit_compute_dtype<span class="op">=</span>torch.bfloat16</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>model_nf4 <span class="op">=</span> AutoModelForCausalLM.from_pretrained(model_id, quantization_config<span class="op">=</span>nf4_config)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>model_id <span class="op">=</span> <span class="st">"meta-llama/Llama-2-7b-hf"</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>tokenizer <span class="op">=</span> AutoTokenizer.from_pretrained(model_id)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>nf4_config <span class="op">=</span> BitsAndBytesConfig(</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>   load_in_4bit<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>   bnb_4bit_quant_type<span class="op">=</span><span class="st">"nf4"</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>   bnb_4bit_compute_dtype<span class="op">=</span>torch.bfloat16</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>model_nf4 <span class="op">=</span> AutoModelForCausalLM.from_pretrained(model_id, quantization_config<span class="op">=</span>nf4_config)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Unlike TGI, I was able to get bitsandbytes to work properly here, but just like TGI it didn’t speed anything up for me with respect to inference latency. As reflected in the benchmark table, I got nearly the same results with transformers <a href="https://github.com/hamelsmu/llama-inference/blob/master/hf/bench.py">without any optimizations</a>.</p>
 </section>
 <section id="gptq" class="level4">
@@ -1223,8 +1260,8 @@ Based on your code (<a href="https://t.co/hSYaPTsEaK">https://t.co/hSYaPTsEaK</a
 <h2 class="anchored" data-anchor-id="text-generation-webui">Text Generation WebUI</h2>
 <p><a href="https://twitter.com/tmm1/status/1683255057201135616?s=20">Aman</a> let me know about <a href="https://github.com/oobabooga/text-generation-webui">text-generation-web-ui</a>, and also <a href="https://github.com/paul-gauthier/aider/issues/110#issuecomment-1644318545">these instructions</a> for quickly experimenting with <a href="https://github.com/turboderp/exllama">ExLlama</a> and <a href="https://github.com/ggerganov/ggml">ggml</a>. I wasn’t able to get the <code>ggml</code> variant to work properly, unfortunately. If you are really serious about using exllama, I recommend trying to use it without the text generation UI and look at the <a href="https://github.com/turboderp/exllama/tree/master">exllama</a> repo, specifically at <a href="https://github.com/turboderp/exllama/blob/master/test_benchmark_inference.py">test_benchmark_inference.py</a>. (I didn’t have time for this, but if I was going to use exllama for anything serious I would go this route).</p>
 <p>From the root of the <a href="https://github.com/oobabooga/text-generation-webui">text-generation-web-ui</a> repo, you can run the following commands to start an inference server optimized with <code>ExLlama</code>:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> download-model.py TheBloke/Llama-2-7B-GPTQ</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> server.py <span class="at">--listen</span> <span class="at">--extensions</span> openai <span class="at">--loader</span> exllama_hf <span class="at">--model</span> TheBloke_Llama-2-7B-GPTQ</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> download-model.py TheBloke/Llama-2-7B-GPTQ</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> server.py <span class="at">--listen</span> <span class="at">--extensions</span> openai <span class="at">--loader</span> exllama_hf <span class="at">--model</span> TheBloke_Llama-2-7B-GPTQ</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>After the server was started, I used <a href="https://github.com/hamelsmu/llama-inference/blob/master/exllama/bench.py">this code</a> to conduct the benchmark.</p>
 <p>Overall, I didn’t like this particular piece of software much. It’s bit bloated because its trying to do too many things at once (An inference server, Web UIs, and other optimizations). That being said, the documentation is good and it is easy to use.</p>
 <p>I don’t think there is any particular reason to use this unless you want an end-to-end solution that also comes with a web user-interface (which many people want!).</p>
@@ -1232,74 +1269,74 @@ Based on your code (<a href="https://t.co/hSYaPTsEaK">https://t.co/hSYaPTsEaK</a
 <section id="vllm" class="level2">
 <h2 class="anchored" data-anchor-id="vllm">vLLM</h2>
 <p><a href="https://github.com/vllm-project/vllm.git">vLLM</a> only works with CUDA 11.8, which I configured using <a href="https://hamel.dev/notes/cuda.html">this approach</a>. After configuring CUDA and installing the right version of PyTorch, you need to install the bleeding edge from git:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-U</span> git+https://github.com/vllm-project/vllm.git</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-U</span> git+https://github.com/vllm-project/vllm.git</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>A good recipe to use for vLLM can be find on <a href="https://modal.com/docs/guide/ex/vllm_inference">these Modal docs</a>. Surprisingly, I had much lower latency when running on a local <code>A6000</code> vs.&nbsp;a hosted <code>V100</code> on Modal Labs. It’s possible that I did something wrong here. Either way, <strong><code>vLLM</code> offered the lowest latency compared to everything else by a significant margin.</strong> If I really wanted to optimize for latency today, I would reach for <code>vLLM</code>.</p>
 <p><code>vLLM</code> <a href="https://vllm.readthedocs.io/en/latest/serving/distributed_serving.html">offers a server</a>, but I benchmarked the model locally using their tools instead. The code for the benchmarking can be <a href="https://github.com/hamelsmu/llama-inference/blob/master/vllm/bench.py">found here</a>:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> vllm <span class="im">import</span> SamplingParams, LLM</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#from https://modal.com/docs/guide/ex/vllm_inference</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>questions <span class="op">=</span> [</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Coding questions</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Implement a Python function to compute the Fibonacci numbers."</span>,</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Write a Rust function that performs binary exponentiation."</span>,</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"What are the differences between Javascript and Python?"</span>,</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Literature</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Write a story in the style of James Joyce about a trip to the Australian outback in 2083, to see robots in the beautiful desert."</span>,</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Who does Harry turn into a balloon?"</span>,</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Write a tale about a time-traveling historian who's determined to witness the most significant events in human history."</span>,</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Math</span></span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"What is the product of 9 and 8?"</span>,</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"If a train travels 120 kilometers in 2 hours, what is its average speed?"</span>,</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Think through this step by step. If the sequence a_n is defined by a_1 = 3, a_2 = 5, and a_n = a_(n-1) + a_(n-2) for n &gt; 2, find a_6."</span>,</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>MODEL_DIR <span class="op">=</span> <span class="st">"/home/ubuntu/hamel-drive/vllm-models"</span></span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> download_model_to_folder():</span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> huggingface_hub <span class="im">import</span> snapshot_download</span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> os</span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>    snapshot_download(</span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>        <span class="st">"meta-llama/Llama-2-7b-hf"</span>,</span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>        local_dir<span class="op">=</span>MODEL_DIR,</span>
-<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>        token<span class="op">=</span>os.environ[<span class="st">"HUGGING_FACE_HUB_TOKEN"</span>],</span>
-<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> LLM(MODEL_DIR)</span>
-<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> generate(question, llm, note<span class="op">=</span><span class="va">None</span>):</span>
-<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> {<span class="st">'question'</span>: question, <span class="st">'note'</span>: note}</span>
-<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>    sampling_params <span class="op">=</span> SamplingParams(</span>
-<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>        temperature<span class="op">=</span><span class="fl">1.0</span>,</span>
-<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>        top_p<span class="op">=</span><span class="dv">1</span>,</span>
-<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>        max_tokens<span class="op">=</span><span class="dv">200</span>,</span>
-<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>    start <span class="op">=</span> time.perf_counter()</span>
-<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> llm.generate(question, sampling_params)</span>
-<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>    request_time <span class="op">=</span> time.perf_counter() <span class="op">-</span> start</span>
-<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> output <span class="kw">in</span> result:</span>
-<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>        response[<span class="st">'tok_count'</span>] <span class="op">=</span> <span class="bu">len</span>(output.outputs[<span class="dv">0</span>].token_ids)</span>
-<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>        response[<span class="st">'time'</span>] <span class="op">=</span> request_time</span>
-<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>        response[<span class="st">'answer'</span>] <span class="op">=</span> output.outputs[<span class="dv">0</span>].text</span>
-<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> response</span>
-<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">'__main__'</span>:</span>
-<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a>    llm <span class="op">=</span> download_model_to_folder()</span>
-<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>    counter <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a>    responses <span class="op">=</span> []</span>
-<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> q <span class="kw">in</span> questions:</span>
-<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a>        response <span class="op">=</span> generate(question<span class="op">=</span>q, llm<span class="op">=</span>llm, note<span class="op">=</span><span class="st">'vLLM'</span>)</span>
-<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> counter <span class="op">&gt;=</span> <span class="dv">2</span>:</span>
-<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>            responses.append(response)</span>
-<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>        counter <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame(responses)</span>
-<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a>    df.to_csv(<span class="st">'bench-vllm.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> vllm <span class="im">import</span> SamplingParams, LLM</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co">#from https://modal.com/docs/guide/ex/vllm_inference</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>questions <span class="op">=</span> [</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Coding questions</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Implement a Python function to compute the Fibonacci numbers."</span>,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Write a Rust function that performs binary exponentiation."</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"What are the differences between Javascript and Python?"</span>,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Literature</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Write a story in the style of James Joyce about a trip to the Australian outback in 2083, to see robots in the beautiful desert."</span>,</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Who does Harry turn into a balloon?"</span>,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Write a tale about a time-traveling historian who's determined to witness the most significant events in human history."</span>,</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Math</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"What is the product of 9 and 8?"</span>,</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"If a train travels 120 kilometers in 2 hours, what is its average speed?"</span>,</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Think through this step by step. If the sequence a_n is defined by a_1 = 3, a_2 = 5, and a_n = a_(n-1) + a_(n-2) for n &gt; 2, find a_6."</span>,</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>MODEL_DIR <span class="op">=</span> <span class="st">"/home/ubuntu/hamel-drive/vllm-models"</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> download_model_to_folder():</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> huggingface_hub <span class="im">import</span> snapshot_download</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> os</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>    snapshot_download(</span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>        <span class="st">"meta-llama/Llama-2-7b-hf"</span>,</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>        local_dir<span class="op">=</span>MODEL_DIR,</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>        token<span class="op">=</span>os.environ[<span class="st">"HUGGING_FACE_HUB_TOKEN"</span>],</span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> LLM(MODEL_DIR)</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> generate(question, llm, note<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> {<span class="st">'question'</span>: question, <span class="st">'note'</span>: note}</span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>    sampling_params <span class="op">=</span> SamplingParams(</span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>        temperature<span class="op">=</span><span class="fl">1.0</span>,</span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>        top_p<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>        max_tokens<span class="op">=</span><span class="dv">200</span>,</span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>    start <span class="op">=</span> time.perf_counter()</span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> llm.generate(question, sampling_params)</span>
+<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>    request_time <span class="op">=</span> time.perf_counter() <span class="op">-</span> start</span>
+<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> output <span class="kw">in</span> result:</span>
+<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a>        response[<span class="st">'tok_count'</span>] <span class="op">=</span> <span class="bu">len</span>(output.outputs[<span class="dv">0</span>].token_ids)</span>
+<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a>        response[<span class="st">'time'</span>] <span class="op">=</span> request_time</span>
+<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a>        response[<span class="st">'answer'</span>] <span class="op">=</span> output.outputs[<span class="dv">0</span>].text</span>
+<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> response</span>
+<span id="cb14-52"><a href="#cb14-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-53"><a href="#cb14-53" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">'__main__'</span>:</span>
+<span id="cb14-54"><a href="#cb14-54" aria-hidden="true" tabindex="-1"></a>    llm <span class="op">=</span> download_model_to_folder()</span>
+<span id="cb14-55"><a href="#cb14-55" aria-hidden="true" tabindex="-1"></a>    counter <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb14-56"><a href="#cb14-56" aria-hidden="true" tabindex="-1"></a>    responses <span class="op">=</span> []</span>
+<span id="cb14-57"><a href="#cb14-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-58"><a href="#cb14-58" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> q <span class="kw">in</span> questions:</span>
+<span id="cb14-59"><a href="#cb14-59" aria-hidden="true" tabindex="-1"></a>        response <span class="op">=</span> generate(question<span class="op">=</span>q, llm<span class="op">=</span>llm, note<span class="op">=</span><span class="st">'vLLM'</span>)</span>
+<span id="cb14-60"><a href="#cb14-60" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> counter <span class="op">&gt;=</span> <span class="dv">2</span>:</span>
+<span id="cb14-61"><a href="#cb14-61" aria-hidden="true" tabindex="-1"></a>            responses.append(response)</span>
+<span id="cb14-62"><a href="#cb14-62" aria-hidden="true" tabindex="-1"></a>        counter <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb14-63"><a href="#cb14-63" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-64"><a href="#cb14-64" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame(responses)</span>
+<span id="cb14-65"><a href="#cb14-65" aria-hidden="true" tabindex="-1"></a>    df.to_csv(<span class="st">'bench-vllm.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="huggingface-inference-endpoint" class="level2">
 <h2 class="anchored" data-anchor-id="huggingface-inference-endpoint">HuggingFace Inference Endpoint</h2>
