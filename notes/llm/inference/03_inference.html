@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2023-08-10">
+<meta name="dcterms.date" content="2023-08-11">
 <meta name="description" content="An exploration of ways to optimize on latency.">
 
 <title>Hamel’s Blog - Optimizing latency</title>
@@ -911,7 +911,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 10, 2023</p>
+      <p class="date">August 11, 2023</p>
     </div>
   </div>
   
@@ -946,7 +946,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <center>
 Llama-v2-7b benchmark: <i>batch size = 1, max output tokens = 200</i>
 </center>
-<div id="8b12f7ad-fd94-4d1c-b59f-c3f30e67f85d" class="cell">
+<div id="8b12f7ad-fd94-4d1c-b59f-c3f30e67f85d" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="cell-output cell-output-display">
 <div>
 
@@ -1301,7 +1301,7 @@ Based on your code (<a href="https://t.co/hSYaPTsEaK">https://t.co/hSYaPTsEaK</a
 <h2 class="anchored" data-anchor-id="vllm">vLLM</h2>
 <p><a href="https://github.com/vllm-project/vllm.git">vLLM</a> only works with CUDA 11.8, which I configured using <a href="https://hamel.dev/notes/cuda.html">this approach</a>. After configuring CUDA and installing the right version of PyTorch, you need to install the bleeding edge from git:</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-U</span> git+https://github.com/vllm-project/vllm.git</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>A good recipe to use for vLLM can be find on <a href="https://modal.com/docs/guide/ex/vllm_inference">these Modal docs</a>. Surprisingly, I had much lower latency when running on a local <code>A6000</code> vs.&nbsp;a hosted <code>V100</code> on Modal Labs. It’s possible that I did something wrong here. Either way, <strong><code>vLLM</code> offered the lowest latency compared to everything else by a significant margin.</strong> If I really wanted to optimize for latency today, I would reach for <code>vLLM</code>.</p>
+<p>A good recipe to use for vLLM can be find on <a href="https://modal.com/docs/guide/ex/vllm_inference">these Modal docs</a>. Surprisingly, I had much lower latency when running on a local <code>A6000</code> vs.&nbsp;a hosted <code>V100</code> on Modal Labs. It’s possible that I did something wrong here. Currently, <strong><code>vLLM</code> is the fastest solution for when you need distributed inference (i.e.&nbsp;when your model doesn’t fit on a single GPU).</strong>.</p>
 <p><code>vLLM</code> <a href="https://vllm.readthedocs.io/en/latest/serving/distributed_serving.html">offers a server</a>, but I benchmarked the model locally using their tools instead. The code for the benchmarking can be <a href="https://github.com/hamelsmu/llama-inference/blob/master/vllm/bench.py">found here</a>:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> vllm <span class="im">import</span> SamplingParams, LLM</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
