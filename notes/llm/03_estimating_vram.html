@@ -881,9 +881,10 @@ ul.task-list li input[type="checkbox"] {
 <section id="training-w-lora" class="level2">
 <h2 class="anchored" data-anchor-id="training-w-lora">Training w/ LoRA</h2>
 <p>The key to estimating memory needed for training is to anchor off <strong>the % of trainable parameters</strong>. The general formula is:</p>
-<p><code>Estimate from calculator</code> * ( <code>1</code> + <code>% of trainable params</code> * <code>4</code> * <code>1.2</code>)</p>
+<p>(<code>Estimate from calculator in GB</code> + ( <code># of trainable params in Billions</code> * (<code>dtype of trainable params</code> / <code>8</code>) * <code>4</code>)) * <code>1.2</code></p>
 <p>Here is the rationale for each of the terms:</p>
 <ul>
+<li><strong>dtype of trainable params</strong> refers to the dtype of your unfrozen model parameters for LoRA, which is usually a different precision than the rest of the frozen model. It’s common to load the rest of the model with 8-bit or 4-bit quantization and keep the LorA adapters at 32-bit precision. We divide this by 8 to get the number of bytes per parameter. For example, if there are 1B trainable parameters and they are 16-bit, this would add <code>1</code> * (<code>16</code> / <code>8</code>) = <code>2GB</code> to the estimate, which you have to further multiply by <code>4</code> and <code>1.2</code> (see below).</li>
 <li><strong>The 4x</strong> is tied to the popular Adam optimizer (if you use a different one, YMMV). You need 2x for the optimizer, 1x for the model and 1x for the gradients.</li>
 <li><strong>The 1.2x</strong> is additional overhead for the forward pass while training the model. You can read more about this heuristic in <a href="https://blog.eleuther.ai/transformer-math/#total-inference-memory">this blog post</a> from Eleuther AI.</li>
 </ul>
@@ -897,15 +898,15 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The <code>1</code> that is added to the <code>% of trainable params</code> is just a mathematical trick for increasing a quantity by a %. For example, if you want to increase a quantity by 4% you can multiply by 1.04. I only mentioned it because this term confused some people!</p>
+<p>The <code>1</code> added to 20% is just a mathematical trick for increasing a quantity by a %. For example, if you want to increase a quantity by 4% you can multiply by 1.04. I only mentioned it because this term confused some people!</p>
 </div>
 </div>
 <section id="example" class="level3">
 <h3 class="anchored" data-anchor-id="example">Example</h3>
-<p>For example, if you are using Lora and 1% of your parameters are trainable, and the calculator says you need <code>14GB</code> of vRAM, this is how you would calculate the amount of memory you need for training:</p>
-<p><code>14GB</code> * ( <code>1</code> + <code>0.01</code> * <code>4</code> * <code>1.2</code>) =</p>
-<p><code>14GB</code> * <code>1.04</code> * <code>1.2</code> = <strong><code>17.47GB</code></strong></p>
-<p>Answer: ~<strong><code>17.5GB</code></strong></p>
+<p>For example, if you are using Lora and <code>0.5B</code> of your parameters are trainable and are <code>fp16</code>, and the calculator says you need <code>14GB</code> of vRAM, this is how you would calculate the amount of total memory you need for training:</p>
+<p>(<code>14GB</code> + ( <code>0.5</code> * (<code>16</code> / <code>8</code>) * <code>4</code>) ) * <code>1.2</code> =</p>
+<p>(<code>14GB</code> + <code>4</code>) * <code>1.2</code> = <strong><code>21.6</code></strong></p>
+<p>Answer: ~<strong><code>21.6 GB of vRAM</code></strong></p>
 </section>
 </section>
 <section id="inference" class="level2">
