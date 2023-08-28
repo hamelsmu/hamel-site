@@ -5,13 +5,13 @@ description: Determining if you have enough GPU memory.
 
 ## Background
 
-My friend Zach Mueller came out with this [handy calculator](https://twitter.com/TheZachMueller/status/1696157965890339148?s=20), which aims to answer the question "How much GPU memory do I need for a model? on the hub".  His calculator incorporates all of [the math](https://www.anyscale.com/blog/num-every-llm-developer-should-know) that is stuck in many of our heads and puts it into a simple calculator. 
+My friend Zach Mueller came out with this [handy calculator](https://twitter.com/TheZachMueller/status/1696157965890339148?s=20), which aims to answer the question "How much GPU memory do I need for a model?".  His calculator incorporates all of [the math](https://www.anyscale.com/blog/num-every-llm-developer-should-know) that is stuck in many of our heads and puts it into a simple calculator. 
 
 However, I've talked with Zach and others for a couple of weeks about the nuances of the calculator and want to share some additional information I think is helpful.
 
 ## Training w/ LoRA
 
-The key to estimating memory needed for training is to anchor off **the % of trainable parameters**.  The general formula is:
+The key to estimating memory needed for training is to anchor off **the # of trainable parameters**.  The general formula is:
 
 (`Estimate from calculator in GB` + ( `# of trainable params in Billions`  * (`dtype of trainable params` / `8`) * `4`)) * `1.2`
 
