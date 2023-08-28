@@ -17,7 +17,7 @@ The key to estimating memory needed for training is to anchor off **the % of tra
 
 Here is the rationale for each of the terms:
 
-- **dtype of trainable params** refers to the dtype of your unfrozen model parameters for LoRA, which is usually a different precision than the rest of the frozen model.  It's common to load the rest of the model with 8-bit or 4-bit quantization and keep the LorA adapters at 32-bit precision.  We divide this by 8 to get the number of bytes per parameter.  For example, if there are 1B trainable parameters and they are 16-bit, this would add `1` * (`16` / `8`) = `2GB` to the estimate, which you have to further multiply by `4` and `1.2` (see below).
+- **dtype of trainable params** refers to the dtype of your unfrozen model parameters for LoRA, which is usually a different precision than the rest of the frozen model.  It's common to load the rest of the model with 8-bit or 4-bit quantization and keep the LorA adapters at 16 or 32-bit precision.  We divide this by 8 to get the number of bytes per parameter.  For example, if there are 1B trainable parameters and they are 16-bit, this would add `1` * (`16` / `8`) = `2GB` to the estimate, which you have to further multiply by other quantities (see below example).
 - **The 4x** is tied to the popular Adam optimizer (if you use a different one, YMMV).  You need 2x for the optimizer, 1x for the model and 1x for the gradients.
 - **The 1.2x** is additional overhead for the forward pass while training the model.  You can read more about this heuristic in [this blog post](https://blog.eleuther.ai/transformer-math/#total-inference-memory) from Eleuther AI.
 
