@@ -1,0 +1,49 @@
+---
+title: Estimating vRAM
+description: Determining if you have enough GPU memory. 
+---
+
+## Background
+
+My friend Zach Mueller came out with this [handy calculator](https://twitter.com/TheZachMueller/status/1696157965890339148?s=20), which aims to answer the question "How much GPU memory do I need for a model? on the hub".  His calculator incorporates all of [the math](https://www.anyscale.com/blog/num-every-llm-developer-should-know) that is stuck in many of our heads and puts it into a simple calculator. 
+
+However, I've talked with Zach and others for a couple of weeks about the nuances of the calculator and want to share some additional information I think is helpful.
+
+## Training w/ LoRA
+
+The key to estimating memory needed for training is to anchor off **the % of trainable parameters**.  The general formula is:
+
+`Estimate from calculator` * ( `1` + `% of trainable params` * `4` * `1.2`)
+
+Here is the rationale for each of the terms:
+
+- **The 4x** is tied to the popular Adam optimizer (if you use a different one, YMMV).  You need 2x for the optimizer, 1x for the model and 1x for the gradients.
+- **The 1.2x** is additional overhead for the forward pass while training the model.  You can read more about this heuristic in [this blog post](https://blog.eleuther.ai/transformer-math/#total-inference-memory) from Eleuther AI.
+
+:::{.callout-note}
+The `1` that is added to the `% of trainable params` is just a mathematical trick for increasing a quantity by a %.  For example, if you want to increase a quantity by 4% you can multiply by 1.04. I only mentioned it because this term confused some people!
+:::
+
+### Example
+
+For example, if you are using Lora and 1% of your parameters are trainable, and the calculator says you need `14GB` of vRAM, this is how you would calculate the amount of memory you need for training:
+
+`14GB` * ( `1` + `0.01` * `4` * `1.2`) = 
+    
+`14GB` * `1.04` * `1.2` = **`17.47GB`**
+
+Answer: ~**`17.5GB`**
+
+## Inference
+
+The calculator is great as-is for estimating vRAM needed inference.  Even though there are [other caveats](#other-caveats) to be aware of, the calculator is a great baseline to start from.  For inference, you will also have to consider your batch size for continuous batching, which is use-case specific depending on your throughput vs. latency requirements.
+
+## Caveats
+
+There are other optimizations to be aware of that can reduce the amount of memory you need:
+
+- Flash attention
+- Gradient checkpointing
+- Model compilation (ex: MLC)
+
+Distributed training/inference can add some additional overhead, but that is a complex topic that I won't cover here.
