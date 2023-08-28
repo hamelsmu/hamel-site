@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.298">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Hamel’s Blog - Docker</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../favicon.ico" rel="icon">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Hamel’s Blog - Docker">
+<meta property="og:description" content="A collection of blogs and talks on machine learning and data science.">
+<meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
+<meta property="og:site_name" content="Hamel's Blog">
+<meta name="twitter:title" content="Hamel’s Blog - Docker">
+<meta name="twitter:description" content="A collection of blogs and talks on machine learning and data science.">
+<meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
+<meta name="twitter:creator" content="@HamelHusain">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand navbar-dark ">
+      <div class="navbar-container container-fluid">
+          <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html" rel="" target="">
+ <span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../oss/opensource.html" rel="" target="">
+ <span class="menu-text">Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../talks.html" rel="" target="">
+ <span class="menu-text">Talks</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../notes/index.html" rel="" target="">
+ <span class="menu-text">Notes</span></a>
+  </li>  
+</ul>
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../index.xml" rel="" target=""><i class="bi bi-rss" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+          <div class="quarto-navbar-tools">
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../notes/docker/index.html">Docker</a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/concurrency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Python Concurrency</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/cuda.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CUDA Version Management</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/how-to-learn/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">How to learn</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/pandoc/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">pandoc filters</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/docker/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Docker</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/dbt/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">dbt</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/programming-languages/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">programming languages</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/video_editing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Video Editing</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/llm/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LLMs</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/llm/inference/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inference</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/llm/inference/03_inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Optimizing latency</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/llm/inference/big_inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">vLLM &amp; large models</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/llm/01_datasets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Dataset Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/llm/02_langchain_connectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LangChain <code>DocumentLoaders</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/llm/03_estimating_vram.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Estimating vRAM</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/serving/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ML Serving</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/serving/tfserving/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TF Serving</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/serving/tfserving/tf-serving-basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/serving/tfserving/gpu.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GPUs &amp; Batching</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/serving/torchserve/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TorchServe</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/serving/torchserve/basic-torchserve.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/serving/torchserve/hf.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Serving Your Own Model</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/serving/fastapi/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FastAPI</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/k8s/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">K8s</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/02-Basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/03-Secrets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Secrets</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/k8s/storage/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Storage</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/storage/04-Basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Storage Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/storage/05-Dynamic Provisioning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Dynamic Provisioning</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/k8s/scaling/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scaling</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/scaling/06-ReplicaSets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ReplicaSets</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/scaling/07- Scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scaling</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/12-StatefulSet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">StatefulSet</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/13-JobsCron.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Jobs &amp; CronJobs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/14-RolloutsRollbacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Rollouts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/k8s/multi_container_pods/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multi-Container Pods</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/multi_container_pods/08-Multi-Container-Pods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multi-Container Pods</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/multi_container_pods/09-Ambassador Sidecars.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Ambassador Sidecars</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/multi_container_pods/10-Downsides of MC Pods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Restart Conditions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/multi_container_pods/11-Sharing Processes in MC Pods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sharing Processes in MC Pods</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/k8s/helm/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Helm</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/helm/15-Helm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Helm Intro</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/helm/16-Creating Your Own Helm Charts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Creating Helm Charts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/helm/17-Helm Upgrade &amp; Rollbacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Helm Upgrades &amp; Rollbacks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/helm/21-Testing-With-Helm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Testing With Helm</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/18-Developer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Developer tips</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/19-Pod-Lifecycle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pod restart vs.&nbsp;replacement</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/20-Health-Check.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Probes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/22-Resource-Limits.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Resource Limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/22a-Resource-Requests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Requesting resources</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/23-Logging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Logging</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/24-monitoring.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Monitoring</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/25-Ingress.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Ingress</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/26-cluster.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Cluster Components</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/k8s/security/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Security</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/security/26-network-security.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Network Security</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/security/27-container-security.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Securing Containers</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/security/28-workloads.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Webhooks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/security/29-cluster-updates.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Updating a K8s Cluster</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/security/30-rbac.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">RBAC</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/27-workload-placement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Workload Placement</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/28-auto-scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Auto Scaling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/29-preemption.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preemption</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/99-Random.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Random TILs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/k8s/Open Questions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Open Questions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/fastai/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">fastai</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/fastai/01_fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fundamentals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/fastai/02_cv.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Image Classification</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/fastai/03_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/fastai/batch_predicitions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Batch Predictions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/linux/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Linux</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/linux/bash_scripting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Cheatsheet</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/linux/cookbook.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Cookbook</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/linux/misc_utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Misc Utilities</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/linux/osx.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">OSX Shell Tips</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/linux/permprocdata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Processes, Permissions and Moving Data</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/actions/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GitHub Actions</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/actions/ocotkit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ocotokit.js</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/actions/resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Resources</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/prompt-eng/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prompt engineering</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/prompt-eng/course/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/prompt-eng/course/01_guidelines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Guidelines for Prompting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/prompt-eng/course/02_iterative.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Iterative Prompt Development</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/prompt-eng/course/03_summarizing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Summarizing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/prompt-eng/course/04_inferring.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inferring</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/prompt-eng/course/05_transforming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Transforming</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/prompt-eng/course/06_expanding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Expanding</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/prompt-eng/course/07_chatbot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">The Chat Format</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/web-scraping/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Web Scraping</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/web-scraping/browser-to-python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Browser requests to code</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/web-scraping/transcribe-diarize.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Transcribe &amp; Diarize Videos</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/quarto/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quarto</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/quarto/highlighting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Syntax Highlighting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/quarto/listings-from-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Listings from data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/quarto/merging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Merge listings</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/jupyter/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Jupyter</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-19" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/jupyter/Best Way To Launch Jupyter On A Remote Server.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Launch Jupyter on a remote server</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/jupyter/Fix Jupyter CUDA cache.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fix Jupyter CUDA cache</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/jupyter/remote_browser.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Remote Browser For Jupyter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../notes/jupyter/shortcuts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">My Jupyter Shortcuts</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#chapter-1" id="toc-chapter-1" class="nav-link active" data-scroll-target="#chapter-1">Chapter 1</a></li>
+  <li><a href="#chapter-2" id="toc-chapter-2" class="nav-link" data-scroll-target="#chapter-2">Chapter 2</a>
+  <ul class="collapse">
+  <li><a href="#injecting-environment-variables" id="toc-injecting-environment-variables" class="nav-link" data-scroll-target="#injecting-environment-variables">Injecting environment variables</a></li>
+  <li><a href="#automatically-restarting-containers" id="toc-automatically-restarting-containers" class="nav-link" data-scroll-target="#automatically-restarting-containers">Automatically restarting containers</a></li>
+  <li><a href="#removing-containers-vs.-images" id="toc-removing-containers-vs.-images" class="nav-link" data-scroll-target="#removing-containers-vs.-images">Removing containers vs.&nbsp;images</a></li>
+  </ul></li>
+  <li><a href="#chapter-3" id="toc-chapter-3" class="nav-link" data-scroll-target="#chapter-3">Chapter 3</a>
+  <ul class="collapse">
+  <li><a href="#images-as-files" id="toc-images-as-files" class="nav-link" data-scroll-target="#images-as-files">Images as files</a></li>
+  </ul></li>
+  <li><a href="#chapter-4-persistent-storage-.-shared-state-with-volumes" id="toc-chapter-4-persistent-storage-.-shared-state-with-volumes" class="nav-link" data-scroll-target="#chapter-4-persistent-storage-.-shared-state-with-volumes">Chapter 4 Persistent Storage &amp;. Shared State with Volumes</a>
+  <ul class="collapse">
+  <li><a href="#different-kind-of-volumes" id="toc-different-kind-of-volumes" class="nav-link" data-scroll-target="#different-kind-of-volumes">Different kind of Volumes</a></li>
+  <li><a href="#to-persist-data-with-named-volumes" id="toc-to-persist-data-with-named-volumes" class="nav-link" data-scroll-target="#to-persist-data-with-named-volumes">To persist data with named volumes</a></li>
+  <li><a href="#see-where-docker-anonymous-volumes-store-information" id="toc-see-where-docker-anonymous-volumes-store-information" class="nav-link" data-scroll-target="#see-where-docker-anonymous-volumes-store-information">See where Docker anonymous volumes store information</a></li>
+  <li><a href="#other-things-you-didnt-know-about-volumes" id="toc-other-things-you-didnt-know-about-volumes" class="nav-link" data-scroll-target="#other-things-you-didnt-know-about-volumes">Other things you didn’t know about volumes</a></li>
+  <li><a href="#the-volumes-from-flag" id="toc-the-volumes-from-flag" class="nav-link" data-scroll-target="#the-volumes-from-flag">The <code>volumes-from</code> flag</a></li>
+  <li><a href="#cleaning-up-volumes" id="toc-cleaning-up-volumes" class="nav-link" data-scroll-target="#cleaning-up-volumes">Cleaning up volumes</a></li>
+  <li><a href="#advanced-volume-stuff" id="toc-advanced-volume-stuff" class="nav-link" data-scroll-target="#advanced-volume-stuff">Advanced Volume Stuff</a></li>
+  </ul></li>
+  <li><a href="#chapter-5-single-host-networking" id="toc-chapter-5-single-host-networking" class="nav-link" data-scroll-target="#chapter-5-single-host-networking">Chapter 5 Single Host Networking</a>
+  <ul class="collapse">
+  <li><a href="#exposing-ports" id="toc-exposing-ports" class="nav-link" data-scroll-target="#exposing-ports">exposing ports</a></li>
+  </ul></li>
+  <li><a href="#chapter-6-isolation" id="toc-chapter-6-isolation" class="nav-link" data-scroll-target="#chapter-6-isolation">Chapter 6 Isolation</a>
+  <ul class="collapse">
+  <li><a href="#limit-resources-memory-cpu" id="toc-limit-resources-memory-cpu" class="nav-link" data-scroll-target="#limit-resources-memory-cpu">Limit resources: Memory, CPU,</a></li>
+  <li><a href="#running-as-a-user" id="toc-running-as-a-user" class="nav-link" data-scroll-target="#running-as-a-user">Running as a user</a></li>
+  <li><a href="#privileged-containers-try-not-to-do-this" id="toc-privileged-containers-try-not-to-do-this" class="nav-link" data-scroll-target="#privileged-containers-try-not-to-do-this">Privileged Containers: TRY NOT TO DO THIS</a></li>
+  </ul></li>
+  <li><a href="#chapter-7-packaging-software" id="toc-chapter-7-packaging-software" class="nav-link" data-scroll-target="#chapter-7-packaging-software">Chapter 7 packaging software</a>
+  <ul class="collapse">
+  <li><a href="#recovering-changes-to-a-stopped-container" id="toc-recovering-changes-to-a-stopped-container" class="nav-link" data-scroll-target="#recovering-changes-to-a-stopped-container">Recovering changes to a stopped container</a></li>
+  <li><a href="#seeing-changes-to-a-container-from-the-base-image" id="toc-seeing-changes-to-a-container-from-the-base-image" class="nav-link" data-scroll-target="#seeing-changes-to-a-container-from-the-base-image">Seeing changes to a container from the base image</a></li>
+  <li><a href="#other-tricks" id="toc-other-tricks" class="nav-link" data-scroll-target="#other-tricks">Other tricks</a></li>
+  <li><a href="#understanding-images-layers" id="toc-understanding-images-layers" class="nav-link" data-scroll-target="#understanding-images-layers">Understanding Images &amp; Layers</a></li>
+  </ul></li>
+  <li><a href="#chapter-8-build-automation" id="toc-chapter-8-build-automation" class="nav-link" data-scroll-target="#chapter-8-build-automation">Chapter 8 Build Automation</a>
+  <ul class="collapse">
+  <li><a href="#entrypoint-something-arugment-vs.-entrypoint-something-argument" id="toc-entrypoint-something-arugment-vs.-entrypoint-something-argument" class="nav-link" data-scroll-target="#entrypoint-something-arugment-vs.-entrypoint-something-argument">ENTRYPOINT something arugment vs.&nbsp;ENTRYPOINT [“something”, “argument”]</a></li>
+  <li><a href="#cmd-vs.-entrypoint-you-should-really-try-to-always-use-both" id="toc-cmd-vs.-entrypoint-you-should-really-try-to-always-use-both" class="nav-link" data-scroll-target="#cmd-vs.-entrypoint-you-should-really-try-to-always-use-both">CMD vs.&nbsp;ENTRYPOINT (You should really try to always use both!)</a></li>
+  <li><a href="#copy-vs-add" id="toc-copy-vs-add" class="nav-link" data-scroll-target="#copy-vs-add">COPY vs ADD</a></li>
+  <li><a href="#onbuild" id="toc-onbuild" class="nav-link" data-scroll-target="#onbuild">ONBUILD</a></li>
+  <li><a href="#other-stuff" id="toc-other-stuff" class="nav-link" data-scroll-target="#other-stuff">Other Stuff</a></li>
+  <li><a href="#docker-digests" id="toc-docker-digests" class="nav-link" data-scroll-target="#docker-digests">Docker Digests</a></li>
+  </ul></li>
+  <li><a href="#chapter-10-skipped-ch-9" id="toc-chapter-10-skipped-ch-9" class="nav-link" data-scroll-target="#chapter-10-skipped-ch-9">Chapter 10 (skipped Ch 9)</a></li>
+  <li><a href="#chapter-11-docker-compose" id="toc-chapter-11-docker-compose" class="nav-link" data-scroll-target="#chapter-11-docker-compose">Chapter 11 Docker Compose</a>
+  <ul class="collapse">
+  <li><a href="#scaling-up-wdocker-compose" id="toc-scaling-up-wdocker-compose" class="nav-link" data-scroll-target="#scaling-up-wdocker-compose">Scaling Up w/Docker Compose</a></li>
+  <li><a href="#templating-docker-compose-files" id="toc-templating-docker-compose-files" class="nav-link" data-scroll-target="#templating-docker-compose-files">Templating Docker Compose Files</a></li>
+  </ul></li>
+  <li><a href="#chapter-12-clusters-wmachine-swarm" id="toc-chapter-12-clusters-wmachine-swarm" class="nav-link" data-scroll-target="#chapter-12-clusters-wmachine-swarm">Chapter 12 Clusters w/Machine &amp; Swarm</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/hamelsmu/hamel/edit/master/notes/docker/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Docker</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+<p>Notes from the book <a href="https://www.manning.com/books/docker-in-action-second-edition?utm_source=google&amp;utm_medium=search&amp;utm_campaign=dynamicsearch&amp;gclid=CjwKCAjwmMX4BRAAEiwA-zM4JtyXLeFoALyh7xvEtg9B7nTbf3VeOFzo6Sdu119z94d6cll6XsbKgxoCRmMQAvD_BwE">Docker In Action</a></p>
+<p><tocinline toc="{toc}">;</tocinline></p>
+<section id="chapter-1" class="level1">
+<h1>Chapter 1</h1>
+<ul>
+<li>Docker containers are faster than VMs to start, partly because they do NOT offer any hardware virtualization.
+<ul>
+<li>VMs provide hardware abstractions so you can run operating systems.</li>
+</ul></li>
+<li>Docker uses Linux <code>namespaces</code> and <code>cgropus</code>
+<ul>
+<li>Hamel: I don’t know what this is</li>
+</ul></li>
+</ul>
+</section>
+<section id="chapter-2" class="level1">
+<h1>Chapter 2</h1>
+<ul>
+<li><p>Getting help:</p>
+<ul>
+<li><code>docker help cp</code></li>
+<li><code>docker help run</code></li>
+</ul></li>
+<li><p>Linking containers: <code>docker run --link</code></p>
+<ul>
+<li>this is <a href="https://docs.docker.com/network/links/">apparently deprecated</a> per the docs</li>
+<li>Opens a secure tunnel between two containers automatically</li>
+<li>Also exposes environment variables and other things (see the docs)</li>
+</ul></li>
+<li><p><code>docker cp</code> copy files from a container to local filesystem</p></li>
+<li><p>Detach an interactive container:</p>
+<ul>
+<li>Hold down <code>Control</code> and press <code>P</code> then <code>Q</code></li>
+</ul></li>
+<li><p>Get logs <code>docker logs &lt;container name&gt;</code></p>
+<ul>
+<li>Hamel: This is like <code>kubectl logs</code></li>
+</ul></li>
+<li><p>Run a new command in a running container <code>docker exec</code></p>
+<ul>
+<li><code>docker exec &lt;container_name&gt; ps</code> will run the <code>ps</code> command and emit that to stdout</li>
+</ul></li>
+<li><p>Rename a container with <code>docker rename &lt;current_name&gt; &lt;new_name&gt;</code></p></li>
+<li><p><code>docker exec</code> run additional processes in an already running container</p></li>
+<li><p><code>docker create</code> is the same as <code>docker run</code> except that the container is created in a stopped state.</p></li>
+<li><p><code>docker run --read-only</code> allows you to run a container in a read only state, which you only need to do in special circumstances (you probably never need to use this). You can make exceptions to the read only constraint with the <code>-v</code> flag:</p></li>
+</ul>
+<p><img src="Docker-In-Action/6453FD28-1552-474C-9869-F6E01C6EC9C8.png" class="img-fluid"></p>
+<ul>
+<li>Override the entrypoint using the <code>--entrypoint</code> flag (this is discussed in part 2 of the book).</li>
+</ul>
+<p><img src="Docker-In-Action/276CD61C-3D6F-485A-8D88-8C2DD2EF8B5D.png" class="img-fluid"></p>
+<section id="injecting-environment-variables" class="level3">
+<h3 class="anchored" data-anchor-id="injecting-environment-variables">Injecting environment variables</h3>
+<p>With the <code>--env</code> or <code>-e</code> flags.<br>
+A nice trick to see all the environment variables in a docker container is to use the Unix command <code>env</code></p>
+<p><img src="Docker-In-Action/2070CA60-7C95-4BE8-B2C8-F68FF6B09C66.png" class="img-fluid"></p>
+<p>Setting multiple environment variables: use <code>\</code> for multiline like this:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> create <span class="dt">\</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--env</span> WORDPRESS_DB_HOST=<span class="op">&lt;</span>my database hostname<span class="op">&gt;</span> <span class="dt">\</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--env</span> WORDPRESS_DB_USER=site_admin <span class="dt">\</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--env</span> WORDPRESS_DB_PASSWORD=MeowMix42 <span class="dt">\ </span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">wordpress:4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="automatically-restarting-containers" class="level3">
+<h3 class="anchored" data-anchor-id="automatically-restarting-containers">Automatically restarting containers</h3>
+<p>Docker uses an exponential backoff strategy - double the previous time waiting until restarting.</p>
+<p><code>docker run -d --restart always ...</code></p>
+<p>See <a href="https://docs.docker.com/engine/reference/run/#restart-policies---restart">these restart policies</a></p>
+<ul>
+<li>no</li>
+<li>on-failure[:max-retries]</li>
+<li>always</li>
+<li>unless-stopped</li>
+</ul>
+</section>
+<section id="removing-containers-vs.-images" class="level3">
+<h3 class="anchored" data-anchor-id="removing-containers-vs.-images">Removing containers vs.&nbsp;images</h3>
+<p><strong>Containers are the actual instantiation of an image</strong>, just like how an object is an instantion of an instance of a class.</p>
+<p><code>docker rm</code>: remove a container <code>docker rmi</code>: remove an image</p>
+</section>
+</section>
+<section id="chapter-3" class="level1">
+<h1>Chapter 3</h1>
+<ul>
+<li>Two ways to publish an image
+<ul>
+<li>Build locally, push image to registry</li>
+<li>Make a <code>Dockerfile</code> and use DockerHub’s build system. <strong>This is preferred and considered to be safer, and DockerHub will mark your image as trusted if you do this</strong> because it is the only way to provide transparency to what is in your image.</li>
+</ul></li>
+<li>Search dockerhub by keyword , sorted descending by stars
+<ul>
+<li><code>docker search &lt;keyword&gt;</code></li>
+<li>example: <code>docker search postgres</code></li>
+</ul></li>
+<li>Using Alternative registries
+<ul>
+<li><code>docker pull quay.io/dockerinaction/ch3_hello_registry:latest</code></li>
+</ul></li>
+</ul>
+<section id="images-as-files" class="level3">
+<h3 class="anchored" data-anchor-id="images-as-files">Images as files</h3>
+<p>You can transport, save and load images as files! (You don’t have to push them to a registry).</p>
+<p><img src="Docker-In-Action/AD7BCDC9-8130-45AE-89A9-DE5410EE845B.png" class="img-fluid"></p>
+<p>You can then load the image:</p>
+<p><code>docker load -i myfile.tar</code></p>
+</section>
+</section>
+<section id="chapter-4-persistent-storage-.-shared-state-with-volumes" class="level1">
+<h1>Chapter 4 Persistent Storage &amp;. Shared State with Volumes</h1>
+<p><code>-v</code> and <code>--volume</code> are aliases</p>
+<p><code>--volumes-from="&lt;container-name&gt;"</code> Mount all volumes from the given container</p>
+<section id="different-kind-of-volumes" class="level3">
+<h3 class="anchored" data-anchor-id="different-kind-of-volumes">Different kind of Volumes</h3>
+<ol type="1">
+<li>Bind mount - this is what you always use</li>
+<li>Docker managed volume (2 kinds)
+<ol type="1">
+<li>Anonymous</li>
+<li>Named volume (a special case of Anonymous)</li>
+</ol></li>
+</ol>
+<p><a href="https://docs.docker.com/storage/volumes/">Use volumes | Docker Documentation</a> - Named vs.&nbsp;Anonymous volumes: <a href="https://medium.com/faun/what-are-anonymous-and-named-volumes-6cd787822a7d">article</a> - Hamel: maybe? You might use named volumes to persist data between containers.</p>
+</section>
+<section id="to-persist-data-with-named-volumes" class="level3">
+<h3 class="anchored" data-anchor-id="to-persist-data-with-named-volumes">To persist data with named volumes</h3>
+<p>Named volume is a kind of anonymous volume where the mount point is managed by Docker. Example of how you used a named volume:</p>
+<ol type="1">
+<li><p>Start container with a <strong>named volume</strong>: <code>docker run --name myDatabaseWithVolume -v appdata:/var/lib/mysql  mysql</code> save a table in the mysql database</p></li>
+<li><p>Start a new container with the same <strong>named volume</strong> <code>docker run --name myDatabaseWithVolume2 -v appdata:/var/lib/mysql mysql</code> You should be able to see the same table you created in the last container b/c data has been persisted.</p></li>
+</ol>
+</section>
+<section id="see-where-docker-anonymous-volumes-store-information" class="level3">
+<h3 class="anchored" data-anchor-id="see-where-docker-anonymous-volumes-store-information">See where Docker anonymous volumes store information</h3>
+<p>Unlike a bind mount, where you explicitly name the host location, docker will manage the storage location of anonymous volumes. But how do you know where the files are stored on the host?</p>
+<p>You can use <code>docker inspect</code> command filtered for the <code>Volumes</code> key to find the storage location on the host.</p>
+<p>Create a container with an anonymous volume. <code>docker run -v /some/location --name cass-shared alpine</code></p>
+<p><code>docker inspect -f "{{json .Volumes}}" cass-shared</code></p>
+<p>This will output a json blob which will show the mount points.</p>
+</section>
+<section id="other-things-you-didnt-know-about-volumes" class="level3">
+<h3 class="anchored" data-anchor-id="other-things-you-didnt-know-about-volumes">Other things you didn’t know about volumes</h3>
+<ul>
+<li>when you mount a volume, it overrides any files already at that location
+<ul>
+<li>You can mount specific files which avoid this</li>
+<li>if you specify a host directory that doesn’t exist Docker will create it for you
+<ul>
+<li>exception: If you are mounting a file instead of a directory and it doesn’t exist on the host, Docker will throw an error</li>
+</ul></li>
+</ul></li>
+<li>you can mount a volume as read only <code>-v /source:/destination:ro</code>
+<ul>
+<li>see docs (there is this optional third argument for volumes)</li>
+</ul></li>
+</ul>
+</section>
+<section id="the-volumes-from-flag" class="level3">
+<h3 class="anchored" data-anchor-id="the-volumes-from-flag">The <code>volumes-from</code> flag</h3>
+<p>Allows you to share volumes with another container. When you use this flag, the same volumes are mounted into your container at the same location.</p>
+<p><img src="Docker-In-Action/6B5A3266-48E5-4A8F-9051-651971AD8824.png" class="img-fluid"></p>
+<p>Volumes are copied transitively, so this will automatically mount volumes that are also mounted this way from another container.</p>
+<p><strong>Caveats</strong> - You cannot mount a shared volume to a different location within a container. This is a limitation of <code>--volumes-from</code> - If you have a collision in the destination mount point among several <code>volumes-from</code> only one volume will survive, which you can ascertain from <code>docker inpsect</code> - see above for how to use <code>docker inspect</code> - You cannot change the write permission of the volume, you inherit whatever the permission is in the source container.</p>
+</section>
+<section id="cleaning-up-volumes" class="level3">
+<h3 class="anchored" data-anchor-id="cleaning-up-volumes">Cleaning up volumes</h3>
+<p><code>-v</code> flag</p>
+<p><code>docker rm -v</code> will delete any managed volumes referenced by the target container</p>
+<p>However, if you delete all containers but forget a <code>-v</code> flag you will be left with an <strong>orphaned volume</strong>. This is bad b/c it takes up disk space until cleaned up. You have to run complicated cleanup steps to get rid of orphans.</p>
+<p>Solution: There is none, <strong>its a good habit to use -v anytime you call docker rm</strong></p>
+<p>Hamel: this means that- - Don’t use managed volumes unless you really need it - If you do use them, try to include makefiles that include <code>-v</code> as a part of things</p>
+</section>
+<section id="advanced-volume-stuff" class="level3">
+<h3 class="anchored" data-anchor-id="advanced-volume-stuff">Advanced Volume Stuff</h3>
+<ul>
+<li>You can have a volume container p.&nbsp;72 so that you can reference <code>--volume-from</code> from all your containers.<br>
+</li>
+<li>Data-paced volume containers, you can pre-load volume containers with data p.&nbsp;73</li>
+<li>You can change the behavior of currently running containers by mounting configuration files and application in volumes. In a way, Hamel</li>
+</ul>
+</section>
+</section>
+<section id="chapter-5-single-host-networking" class="level1">
+<h1>Chapter 5 Single Host Networking</h1>
+<ul>
+<li>Terminology:
+<ul>
+<li>protocols: tcp, http</li>
+<li>interfaces: IP addresses</li>
+<li>ports: you know what this means
+<ul>
+<li>Customary ports:
+<ul>
+<li>HTTP: 80</li>
+<li>MySQL: 3306</li>
+<li>Memcached: 11211</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+<p>Discuss advanced networking and creating a network using the <code>docker network</code> command. Hamel: I don’t see an immediate use for this.</p>
+<ul>
+<li>Special container networks:
+<ul>
+<li><code>host</code>
+<ul>
+<li><code>docker run --network host</code> allows you to pretend like the host is your local machine, and you can expose any port and that will bind to the host.</li>
+</ul></li>
+<li><code>none</code>
+<ul>
+<li><code>docker run --network none</code> closes all connection to the outside world. This is useful for security.</li>
+</ul></li>
+</ul></li>
+</ul>
+<section id="exposing-ports" class="level3">
+<h3 class="anchored" data-anchor-id="exposing-ports">exposing ports</h3>
+<p><code>-p 8080</code> This binds port 8080 to a <strong>random</strong> port on the host! you can find the port that the container is bound to by <code>docker port &lt;image name&gt;</code> example: <code>docker run -p 8080 --name listener alpine</code> <code>docker port listener</code></p>
+<p>This will give you output that looks like <code>container --&gt; host</code> (which is reverse the other nomenclature of <code>host:container</code></p>
+<p><code>-p 8080:8080</code> this binds the container’s port to the host’s port 8080</p>
+<p><code>-p 0.0.0.0:8080:8080/tcp</code> same as above but specifies the interface and the tcp protocol.</p>
+<p>Syntax is <code>-p &lt;host-interface&gt;:&lt;host-port&gt;:&lt;target-port&gt;/&lt;protocol&gt;</code></p>
+</section>
+</section>
+<section id="chapter-6-isolation" class="level1">
+<h1>Chapter 6 Isolation</h1>
+<section id="limit-resources-memory-cpu" class="level3">
+<h3 class="anchored" data-anchor-id="limit-resources-memory-cpu">Limit resources: Memory, CPU,</h3>
+<ul>
+<li><code>-m</code> or <code>--memory</code>
+<ul>
+<li>number, where unit = b, k, m or g</li>
+<li>memory limits are not reservations, just caps</li>
+</ul></li>
+<li><code>--cpu-shares</code>
+<ul>
+<li>is a weight you set that is used to calculate % of CPU usage allowed</li>
+<li>% is calculated as weight / (sum of all weights)</li>
+<li>only enforced when there is contention for a CPU</li>
+</ul></li>
+<li><code>--cpuset-cpus</code> : limits process to a specific CPU
+<ul>
+<li><code>docker run -d --cpuset-cpus 0</code> Restricts to CPU number 0</li>
+<li>Can specify a list or <code>0,1,2</code> or a range <code>0-2</code></li>
+</ul></li>
+<li><code>--device</code>
+<ul>
+<li>mount your webcam: <code>docker run --device /dev/video0:/dev/video0</code></li>
+</ul></li>
+<li>Shared memory : Hamel this was too advanced for me</li>
+</ul>
+</section>
+<section id="running-as-a-user" class="level3">
+<h3 class="anchored" data-anchor-id="running-as-a-user">Running as a user</h3>
+<ul>
+<li>You can only inspect the default run-as User by creating or pulling the image
+<ul>
+<li>see p.&nbsp;113</li>
+</ul></li>
+<li>Change run-as user
+<ul>
+<li><code>docker run --user nobody</code></li>
+<li><strong>The user has to exist in the image when doing this or you will get an error</strong>. The user will not be created automatically for you.</li>
+<li>See available users:
+<ul>
+<li><code>docker run --rm busybox:latest awk -F: '$0=$1' /etc/passwd</code></li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="privileged-containers-try-not-to-do-this" class="level3">
+<h3 class="anchored" data-anchor-id="privileged-containers-try-not-to-do-this">Privileged Containers: TRY NOT TO DO THIS</h3>
+<ul>
+<li>This is how you run Docker-in-Docker</li>
+<li>Priviliged containers <strong>have root privileges on the host</strong>.<br>
+</li>
+<li><code>--privilged</code> on <code>docker create</code> or <code>docker run</code></li>
+</ul>
+</section>
+</section>
+<section id="chapter-7-packaging-software" class="level1">
+<h1>Chapter 7 packaging software</h1>
+<p>Aside: cleaning up your docker environment</p>
+<p><code>docker image prune -a</code> and <code>docker container prune</code></p>
+<section id="recovering-changes-to-a-stopped-container" class="level3">
+<h3 class="anchored" data-anchor-id="recovering-changes-to-a-stopped-container">Recovering changes to a stopped container</h3>
+<p>I always thought you have to commit changes in order to preserve changes to an image you made in a container. This is not true (although committing changes is a good idea).</p>
+<p><strong>Any changes you make to a container is saved even if the container is exited</strong></p>
+<p>To recover changes to a container</p>
+<ol type="1">
+<li>Find the container (if you didn’t name it with <code>docker run --name</code> it will be named for you), using <code>docker ps -a</code></li>
+<li>Start the container using <code>docker start -ai &lt;container_name&gt;</code> the <code>-ai</code> flags mean to attach and run interactively</li>
+<li>Now you are in the container you can verify that everything you installed is still there!</li>
+</ol>
+<p>Note: if you run your container initially with <code>docker run --rm</code> this automatically removes your container upon exit, so this might not be recommended as your changes are not recoverable if you forget to commit</p>
+<p><img src="Docker-In-Action/D79BAEDA-4071-4040-8B7B-2B864588FA9E.png" class="img-fluid"></p>
+</section>
+<section id="seeing-changes-to-a-container-from-the-base-image" class="level3">
+<h3 class="anchored" data-anchor-id="seeing-changes-to-a-container-from-the-base-image">Seeing changes to a container from the base image</h3>
+<p><code>docker diff &lt;container name&gt;</code> will output a long list of of file changes: - A: file added - D: file deleted - C: file changed</p>
+</section>
+<section id="other-tricks" class="level3">
+<h3 class="anchored" data-anchor-id="other-tricks">Other tricks</h3>
+<p>You can override the entry point to the container <strong>permanently</strong> by using the <code>--entrypoint</code> flag: <code>docker run --entrypoint</code></p>
+</section>
+<section id="understanding-images-layers" class="level3">
+<h3 class="anchored" data-anchor-id="understanding-images-layers">Understanding Images &amp; Layers</h3>
+<ul>
+<li>files are stored in a Union file system, so they are stored in specific layers. The file system you are seeing as an end user are a union of all the layers. Each time a change is made to a union file system, that change is recorded on a new layer on top of all of the others. The “union” of all of those layers, or top-down view, is what the container (and user) sees when accessing the file system.
+<ul>
+<li>This means <strong>if you are not careful you can bloat the file system by making a bunch of unnecessary changes to add/delete files.</strong></li>
+</ul></li>
+<li><code>docker commit</code> commits the top-layer changes to an image, meaning all the files changes are saved.</li>
+</ul>
+<p><strong>See image size with</strong></p>
+<p><code>docker images</code>. Even though you remove a file, the image size will increase! This is because of the Union File System</p>
+<p><strong>See size of all layers</strong></p>
+<p><code>docker history &lt;image name&gt;</code></p>
+<p><strong>flatten an image</strong> This is kind of complicated, you can do this by exporting and importing the filesystem into a base image See pg. 140. BUT there is an experimental feature called <code>docker build --squash -t &lt;image&gt; .</code>You can enable experimental features by following these instructions: <a href="https://docs.docker.com/engine/reference/commandline/dockerd/#description">dockerd Docker Documentation</a>. For Mac, you can turn on experimental features by setting <code>experimental: true</code> in `settings&gt; Command Line &gt; enable experimental</p>
+</section>
+</section>
+<section id="chapter-8-build-automation" class="level1">
+<h1>Chapter 8 Build Automation</h1>
+<ul>
+<li>use <code>.dockerignore</code> to prevent certain files from being copied</li>
+<li>You can set multiple environment variables at once in Dockerfile</li>
+<li>You can use environment variables in the <code>LABEL</code> command
+<ul>
+<li>The metadata makes it clear that the environment variable substitution works. You can use this form of substitution in the ENV, ADD, COPY, WORKDIR, VOLUME, EXPOSE, and USER instructions.</li>
+</ul></li>
+</ul>
+<pre class="docker"><code>ENV APPROOT "/app" APP "mailer.sh" VERSION "0.6"
+LABEL base.name "Mailer Archetype" base.version "${VERSION}"</code></pre>
+<ul>
+<li>view metadata using the command <code>docker inspect &lt;image name&gt;</code></li>
+</ul>
+<section id="entrypoint-something-arugment-vs.-entrypoint-something-argument" class="level3">
+<h3 class="anchored" data-anchor-id="entrypoint-something-arugment-vs.-entrypoint-something-argument">ENTRYPOINT something arugment vs.&nbsp;ENTRYPOINT [“something”, “argument”]</h3>
+<p><strong>TLDR; use the ugly list approach</strong></p>
+<p>There are two instruction forms <strong>shell form</strong> and <strong>exec form</strong> <a href="https://stackoverflow.com/questions/42805750/dockerfile-cmd-shell-versus-exec-form">docker - Dockerfile CMD shell versus exec form - Stack Overflow</a></p>
+<p>The ENTRYPOINT instruction has two forms: the shell form and an exec form. The shell form looks like a shell command with whitespace-delimited arguments. The exec form is a string array where the first value is the command to execute and the remaining values are arguments. .</p>
+<p><strong>Most importantly, if the shell form is used for ENTRYPOINT, then all other arguments provided by the CMD instruction or at runtime as extra arguments to docker run will be ignored. This makes the shell form of ENTRYPOINT less flexible.</strong></p>
+<p>Other commands can use the <strong>exec form</strong> too! You must use the exec form when any of the arguments contain a whitespace:</p>
+<pre class="docker"><code>FROM dockerinaction/mailer-base:0.6 
+COPY ["./log-impl", "${APPROOT}"] 
+RUN chmod a+x ${APPROOT}/${APP} &amp;&amp; \ chown example:example /var/log 
+USER example:example 
+VOLUME ["/var/log"]  # each value in this array will be created as a new volume definition
+CMD ["/var/log/mailer.log"]</code></pre>
+<p>Note: you usually don’t want to specify a volume at build time.</p>
+</section>
+<section id="cmd-vs.-entrypoint-you-should-really-try-to-always-use-both" class="level3">
+<h3 class="anchored" data-anchor-id="cmd-vs.-entrypoint-you-should-really-try-to-always-use-both">CMD vs.&nbsp;ENTRYPOINT (You should really try to always use both!)</h3>
+<p>CMD is actually an argument list for the <code>ENTRYPOINT</code>.</p>
+<ul>
+<li>Logically when you run a container it runs as <code>&lt;default shell program&gt; ENTRYPOINT CMD</code></li>
+<li>You can override the <code>ENTRYPOINT</code> with <code>docker run --entrypoint</code>, and you can override commands by just passing commands to docker run : <code>docker run &lt;image name&gt; &lt;command&gt;</code></li>
+</ul>
+<pre class="docker"><code>FROM ubuntu
+
+ENTRYPOINT [ "ls" ]
+CMD ["-lah"]</code></pre>
+<p>As you can see using ENTRYPOINT as well as CMD separately provides your downstream users with the most flexibility.</p>
+</section>
+<section id="copy-vs-add" class="level3">
+<h3 class="anchored" data-anchor-id="copy-vs-add">COPY vs ADD</h3>
+<p>Use COPY. ADD has additional functionality like ability to download from urls and decompress files, which proved opaque over time and you shouldn’t use it.</p>
+</section>
+<section id="onbuild" class="level3">
+<h3 class="anchored" data-anchor-id="onbuild">ONBUILD</h3>
+<p>The ONBUILD instruction defines instructions to execute if the resulting image is used as a base for another build. those ONBUILD instructions are executed after the FROM instruction and before the next instruction in a Dockerfile.</p>
+<pre class="docker"><code>FROM busybox:latest 
+WORKDIR /app RUN touch /app/base-evidence 
+ONBUILD RUN ls -al /app</code></pre>
+</section>
+<section id="other-stuff" class="level3">
+<h3 class="anchored" data-anchor-id="other-stuff">Other Stuff</h3>
+<ul>
+<li>You should always validate the presence of required environment variables in a startup shell script like <code>entrypoint.sh</code></li>
+</ul>
+</section>
+<section id="docker-digests" class="level3">
+<h3 class="anchored" data-anchor-id="docker-digests">Docker Digests</h3>
+<p>Reference the exact SHA of a Container which is the only way to guarantee the image you are referencing has not changed. @ symbol followed by the digest.</p>
+<p>Hamel: doesn’t look like a good way to find history of digests, but you can see the current SHA when you use <code>docker pull</code> , you can see the SHA as well if you call <code>docker images --digests</code></p>
+<pre class="docker"><code>FROM debian@sha256:d5e87cfcb730...</code></pre>
+</section>
+</section>
+<section id="chapter-10-skipped-ch-9" class="level1">
+<h1>Chapter 10 (skipped Ch 9)</h1>
+<ul>
+<li>You can run your own customized registry. Simplest version can be hosted from a Docker Container!</li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># start a local registry on port 5000</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="at">--name</span> personal_registry</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a> <span class="ex">\ -p</span> 5000:5000 <span class="at">--restart</span><span class="op">=</span>always </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a> <span class="ex">\ registry:2</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># push an image to the registry (using the same image that created the registry for convenience)</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> tag registry:2 localhost:5000/distribution:2 </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> push localhost:5000/distribution:2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Note that <code>docker push</code> syntax is actually <code>docker push &lt;registry url&gt;/org/repo</code></p>
+<p>This chapter discusses many more things which are skipped: - Centralized registries - Enhancements - Durable blog storage - Integrating through notifications</p>
+</section>
+<section id="chapter-11-docker-compose" class="level1">
+<h1>Chapter 11 Docker Compose</h1>
+<p>Docker compose for fastpages:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="st">"3"</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">services</span><span class="kw">:</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">fastpages</span><span class="kw">:</span><span class="at"> </span><span class="ot">&amp;fastpages</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">working_dir</span><span class="kw">:</span><span class="at"> /data</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">environment</span><span class="kw">:</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> INPUT_BOOL_SAVE_MARKDOWN=false</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">build</span><span class="kw">:</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">context</span><span class="kw">:</span><span class="at"> ./_action_files</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">dockerfile</span><span class="kw">:</span><span class="at"> ./Dockerfile</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> fastpages-dev</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">logging</span><span class="kw">:</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">driver</span><span class="kw">:</span><span class="at"> json-file</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">options</span><span class="kw">:</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">max-size</span><span class="kw">:</span><span class="at"> 50m</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">stdin_open</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">tty</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> .:/data/</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">converter</span><span class="kw">:</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">&lt;&lt;</span><span class="kw">:</span><span class="at"> </span><span class="ot">*fastpages</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">command</span><span class="kw">:</span><span class="at"> /fastpages/action_entrypoint.sh</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">watcher</span><span class="kw">:</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">&lt;&lt;</span><span class="kw">:</span><span class="at"> </span><span class="ot">*fastpages</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">command</span><span class="kw">:</span><span class="at"> watchmedo shell-command --command /fastpages/action_entrypoint.sh --pattern *.ipynb --recursive --drop</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">jekyll</span><span class="kw">:</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">working_dir</span><span class="kw">:</span><span class="at"> /data</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> hamelsmu/fastpages-jekyll</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">restart</span><span class="kw">:</span><span class="at"> unless-stopped</span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"4000:4000"</span></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> .:/data/</span></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="fu">    command</span><span class="kw">: </span><span class="ch">&gt;</span></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>     bash -c "gem install bundler</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>     &amp;&amp; jekyll serve --trace --strict_front_matter"</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The above uses YAML anchors: <a href="https://confluence.atlassian.com/bitbucket/yaml-anchors-960154027.html">YAML anchors - Atlassian Documentation</a></p>
+<p>Start a particular service: <code>docker-compose up &lt;service name&gt;</code> Rebuild a service <code>docker-compose build &lt;service name&gt;</code></p>
+<p>You can express dependencies with <code>depends_on</code> which is useful for compose to know which services to restart or start in a specified order.</p>
+<p>See examples of Docker Compose files on p 243</p>
+<section id="scaling-up-wdocker-compose" class="level3">
+<h3 class="anchored" data-anchor-id="scaling-up-wdocker-compose">Scaling Up w/Docker Compose</h3>
+<p>That’s right you don’t need docker swarm. This example uses <a href="https://github.com/dockerinaction/ch11_coffee_api/blob/master/docker-compose.yml">ch11_coffee_api/docker-compose.yml at master · dockerinaction/ch11_coffee_api · GitHub</a></p>
+<ol type="1">
+<li>Get list of containers that are currently providing the service.</li>
+</ol>
+<p><code>docker-compose ps coffee</code></p>
+<pre><code>          Name                 Command       State            Ports
+----------------------------------------------------------------------------
+ch11_coffee_api_coffee_1   ./entrypoint.sh   Up      0.0.0.0:32768-&gt;3000/tcp</code></pre>
+<ol start="2" type="1">
+<li>Scale it up with <code>docker-compose up --scale</code></li>
+</ol>
+<p><code>docker-compose up --scale coffee=5</code></p>
+<p>When you run <code>docker-compose ps coffee</code>:</p>
+<pre><code>docker-compose ps coffee                                                                                                                         ✔
+          Name                 Command       State            Ports
+----------------------------------------------------------------------------
+ch11_coffee_api_coffee_1   ./entrypoint.sh   Up      0.0.0.0:32768-&gt;3000/tcp
+ch11_coffee_api_coffee_2   ./entrypoint.sh   Up      0.0.0.0:32769-&gt;3000/tcp
+ch11_coffee_api_coffee_3   ./entrypoint.sh   Up      0.0.0.0:32771-&gt;3000/tcp
+ch11_coffee_api_coffee_4   ./entrypoint.sh   Up      0.0.0.0:32770-&gt;3000/tcp
+ch11_coffee_api_coffee_5   ./entrypoint.sh   Up      0.0.0.0:32772-&gt;3000/tcp</code></pre>
+<p>Note that the coffee service binds to port <code>0</code> on your host, which is an <strong>ephemeral port</strong>, which just means that your host machine assigns the service to a random port. This is required if you plan on using <code>docker compose up --scale</code></p>
+<p>The service was bound to port 0 on the host with</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coffee</span><span class="kw">:</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">build</span><span class="kw">:</span><span class="at"> ./coffee</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">user</span><span class="kw">:</span><span class="at"> 777:777</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">restart</span><span class="kw">:</span><span class="at"> always</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">expose</span><span class="kw">:</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="dv">3000</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="st">"0:3000"</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co">...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ol start="3" type="1">
+<li>Load balancer</li>
+</ol>
+<p>Problem with this kind of scaling is you don’t know the ports in advance , and you don’t want to hit these individual endpoints, you need a load balancer. This <a href="https://pspdfkit.com/blog/2018/how-to-use-docker-compose-to-run-multiple-instances-of-a-service-in-development/#adding-a-load-balancer">blog post</a> shows you how to luse NGINX as a load balancer.</p>
+<p>You will need something like this in your compose file</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">nginx</span><span class="kw">:</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> nginx:latest</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> ./nginx.conf:/etc/nginx/nginx.conf:ro</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">depends_on</span><span class="kw">:</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> pspdfkit</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"4000:4000"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="templating-docker-compose-files" class="level3">
+<h3 class="anchored" data-anchor-id="templating-docker-compose-files">Templating Docker Compose Files</h3>
+<p>You can read about this here: <a href="https://docs.docker.com/compose/extends/">Share Compose configurations between files and projects | Docker Documentation</a>, allows you to override certain things from a base compose file.</p>
+</section>
+</section>
+<section id="chapter-12-clusters-wmachine-swarm" class="level1">
+<h1>Chapter 12 Clusters w/Machine &amp; Swarm</h1>
+<p>Hamel: I skipped this completely</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        for (let i = 0; i < 2; i++) {
+          container.appendChild(note.children[i].cloneNode(true));
+        }
+        return container.innerHTML
+      } else {
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/hamelhusain/">
+      <i class="bi bi-linkedin" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/HamelHusain">
+      <i class="bi bi-twitter" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/hamelsmu">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="../../index.xml">
+      <i class="bi bi-rss" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
