@@ -218,6 +218,7 @@ from pydantic import BaseModel
 from typing import List
 from shiny import module, ui, render, reactive
 import shiny.experimental as x
+from pprint import pprint
 
 def _get_role(m):
     role = m['role'].upper()
@@ -236,7 +237,7 @@ def render_input_chat(run, markdown=True):
     cards = []
     num_inputs = len(run.inputs)
     for i,m in enumerate(run.inputs):
-        content = str(_get_content(m))
+        content = str(_get_content(m)).replace('#', '') # just for the demo
         cards.append(
             x.ui.card(
                 x.ui.card_header(ui.div({"style": "display: flex; justify-content: space-between;"},
