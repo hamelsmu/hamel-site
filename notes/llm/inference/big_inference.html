@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2023-08-08">
+<meta name="dcterms.date" content="2023-11-06">
 <meta name="description" content="Using tensor parallelism w/ vLLM &amp; Modal to run Llama 70b">
 
 <title>Hamel’s Blog - vLLM &amp; large models</title>
@@ -887,7 +887,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#aside-pipeline-parallelism" id="toc-aside-pipeline-parallelism" class="nav-link" data-scroll-target="#aside-pipeline-parallelism">Aside: Pipeline Parallelism</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel/edit/master/notes/llm/inference/big_inference.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/llm/inference/big_inference.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -910,7 +910,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 8, 2023</p>
+      <p class="date">November 6, 2023</p>
     </div>
   </div>
   
@@ -985,7 +985,7 @@ Correction
 <span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="st">-       self.llm = LLM(MODEL_DIR)</span></span>
 <span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="va">+       self.llm = LLM(MODEL_DIR, tensor_parallel_size=4)</span></span>
 <span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>...  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>See <a href="https://github.com/hamelsmu/hamel/blob/master/notes/llm/inference/big-inference-vllm.py">big-inference-vllm.py</a> for the actual script I used.</p>
+<p>See <a href="https://github.com/hamelsmu/hamel-site/blob/master/notes/llm/inference/big-inference-vllm.py">big-inference-vllm.py</a> for the actual script I used.</p>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1006,7 +1006,7 @@ Be Careful To Mind The Cache When Downloading Files
 </section>
 <section id="what-happens-with-smaller-models" class="level2">
 <h2 class="anchored" data-anchor-id="what-happens-with-smaller-models">What Happens With Smaller Models?</h2>
-<p>Even though distributed inference is interesting for big models that do not fit on a single GPU, interesting things happen when you serve smaller models this way. Below, I test throughput for <code>Llama v2 7b</code> on 1, 2, and 4 GPUs. The throughput is measured by passsing <a href="https://github.com/hamelsmu/hamel/blob/master/notes/llm/inference/questions.py">these 59 prompts</a> to <code>llm.generate</code>. <code>llm.generate</code> is described in the <a href="https://vllm.readthedocs.io/en/latest/getting_started/quickstart.html">vLLM documentation</a>:</p>
+<p>Even though distributed inference is interesting for big models that do not fit on a single GPU, interesting things happen when you serve smaller models this way. Below, I test throughput for <code>Llama v2 7b</code> on 1, 2, and 4 GPUs. The throughput is measured by passsing <a href="https://github.com/hamelsmu/hamel-site/blob/master/notes/llm/inference/questions.py">these 59 prompts</a> to <code>llm.generate</code>. <code>llm.generate</code> is described in the <a href="https://vllm.readthedocs.io/en/latest/getting_started/quickstart.html">vLLM documentation</a>:</p>
 <blockquote class="blockquote">
 <p>Call <code>llm.generate</code> to generate the outputs. It adds the input prompts to vLLM engine’s waiting queue and executes the vLLM engine to generate the outputs with high throughput.</p>
 </blockquote>
