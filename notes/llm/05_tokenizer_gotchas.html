@@ -880,7 +880,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
   <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example</a></li>
-  <li><a href="#solution" id="toc-solution" class="nav-link" data-scroll-target="#solution">Solution</a></li>
+  <li><a href="#solutions" id="toc-solutions" class="nav-link" data-scroll-target="#solutions">Solutions</a>
+  <ul class="collapse">
+  <li><a href="#decode-your-inference-data" id="toc-decode-your-inference-data" class="nav-link" data-scroll-target="#decode-your-inference-data">1. Decode your inference data</a></li>
+  <li><a href="#use-hf-chat-templating" id="toc-use-hf-chat-templating" class="nav-link" data-scroll-target="#use-hf-chat-templating">2. Use HF chat templating</a></li>
+  </ul></li>
+  <li><a href="#other-examples" id="toc-other-examples" class="nav-link" data-scroll-target="#other-examples">Other Examples</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.dev/hamelsmu/hamel-site/blob/master/notes/llm/05_tokenizer_gotchas.ipynb" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
@@ -975,8 +980,10 @@ your server's decoding: [6504, 32001]</code></pre>
 </div>
 </section>
 </section>
-<section id="solution" class="level2">
-<h2 class="anchored" data-anchor-id="solution">Solution</h2>
+<section id="solutions" class="level2">
+<h2 class="anchored" data-anchor-id="solutions">Solutions</h2>
+<section id="decode-your-inference-data" class="level3">
+<h3 class="anchored" data-anchor-id="decode-your-inference-data">1. Decode your inference data</h3>
 <p>Decode your inference data right before your forward pass. For example, you’ll notice the newline is missing if you do this. This is one way to tell that something fishy is going on.</p>
 <div class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>dec(enc(srv))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -984,6 +991,19 @@ your server's decoding: [6504, 32001]</code></pre>
 <pre><code>'Ok&lt;|im_start|&gt;'</code></pre>
 </div>
 </div>
+</section>
+<section id="use-hf-chat-templating" class="level3">
+<h3 class="anchored" data-anchor-id="use-hf-chat-templating">2. Use HF chat templating</h3>
+<p>Use the new HuggingFace <a href="https://huggingface.co/docs/transformers/chat_templating">chat template</a> when possible. This will help avoid these issues (however i would still check using method #1 to be sure!). Related GitHub Issue <a href="https://github.com/huggingface/transformers/issues/25304#issuecomment-1728111915">comment</a>.</p>
+</section>
+</section>
+<section id="other-examples" class="level2">
+<h2 class="anchored" data-anchor-id="other-examples">Other Examples</h2>
+<p>These are other examples of people being bitten by drift between differences in tokenization between training and inference time:</p>
+<ol type="1">
+<li>This <a href="https://github.com/huggingface/transformers/issues/25304">GitHub Issue</a>.</li>
+<li>This <a href="https://twitter.com/johnowhitaker/status/1732097798286475578">Tweet</a>.</li>
+</ol>
 
 
 </section>
