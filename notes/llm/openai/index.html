@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Generate transcriptions of videos with speaker labels.">
+<meta name="description" content="Notes on using OpenAI">
 
-<title>Hamel’s Blog - Transcribe &amp; Diarize Videos</title>
+<title>Hamel’s Blog - OpenAI</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,59 +21,27 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../../">
-<link href="../../favicon.ico" rel="icon">
-<script src="../../site_libs/quarto-html/quarto.js"></script>
-<script src="../../site_libs/quarto-html/popper.min.js"></script>
-<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-listing/list.min.js"></script>
+<script src="../../../site_libs/quarto-listing/quarto-listing.js"></script>
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -94,16 +62,47 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<script>
 
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-listing .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
 
-<link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Hamel’s Blog - Transcribe &amp; Diarize Videos">
-<meta property="og:description" content="Generate transcriptions of videos with speaker labels.">
-<meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
+    const options = {
+      valueNames: ['listing-title','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-title-sort'] }],
+      
+      searchColumns: ["listing-date","listing-title","listing-author"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  </script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../../../styles.css">
+<meta property="og:title" content="Hamel’s Blog - OpenAI">
+<meta property="og:description" content="Notes on using OpenAI">
+<meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359222-2b7e938e-27c4-4556-aacb-f5a81ce77b2d.png">
 <meta property="og:site-name" content="Hamel's Blog">
-<meta name="twitter:title" content="Hamel’s Blog - Transcribe &amp; Diarize Videos">
-<meta name="twitter:description" content="Generate transcriptions of videos with speaker labels.">
-<meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
+<meta name="twitter:title" content="Hamel’s Blog - OpenAI">
+<meta name="twitter:description" content="Notes on using OpenAI">
+<meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359222-2b7e938e-27c4-4556-aacb-f5a81ce77b2d.png">
 <meta name="twitter:creator" content="@HamelHusain">
 <meta name="twitter:card" content="summary">
 </head>
@@ -116,25 +115,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
           <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../index.html" rel="" target="">
+    <a class="nav-link" href="../../../index.html" rel="" target="">
  <span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../oss/opensource.html" rel="" target="">
+    <a class="nav-link" href="../../../oss/opensource.html" rel="" target="">
  <span class="menu-text">Projects</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../talks.html" rel="" target="">
+    <a class="nav-link" href="../../../talks.html" rel="" target="">
  <span class="menu-text">Talks</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../notes/index.html" rel="" target="">
+    <a class="nav-link" href="../../../notes/index.html" rel="" target="">
  <span class="menu-text">Notes</span></a>
   </li>  
 </ul>
           <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="../../index.xml" rel="" target=""><i class="bi bi-rss" role="img">
+    <a class="nav-link" href="../../../index.xml" rel="" target=""><i class="bi bi-rss" role="img">
 </i> 
  <span class="menu-text"></span></a>
   </li>  
@@ -149,7 +148,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../notes/web-scraping/index.html">Web Scraping</a></li><li class="breadcrumb-item"><a href="../../notes/web-scraping/transcribe-diarize.html">Transcribe &amp; Diarize Videos</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/openai/index.html">OpenAI</a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -163,64 +162,64 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/concurrency.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/concurrency.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Python Concurrency</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/cuda.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/cuda.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">CUDA Version Management</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/how-to-learn/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/how-to-learn/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">How to learn</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/pandoc/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/pandoc/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">pandoc filters</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/docker/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/docker/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Docker</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/dbt/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/dbt/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">dbt</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/programming-languages/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/programming-languages/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">programming languages</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/video_editing.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/video_editing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Video Editing</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/llm/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">LLMs</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/llm/inference/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/inference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Inference</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -229,13 +228,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/inference/03_inference.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/inference/03_inference.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Optimizing latency</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/inference/big_inference.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/inference/big_inference.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">vLLM &amp; large models</span></a>
   </div>
 </li>
@@ -243,16 +242,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/llm/openai/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/openai/index.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">OpenAI</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/openai/func_template.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/openai/func_template.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Function prompts</span></a>
   </div>
 </li>
@@ -260,31 +259,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/01_datasets.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/01_datasets.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Dataset Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/02_langchain_connectors.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/02_langchain_connectors.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">LangChain <code>DocumentLoaders</code></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/03_estimating_vram.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/03_estimating_vram.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Estimating vRAM</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/04_data_cleaning.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/04_data_cleaning.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Tools for curating LLM data</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/05_tokenizer_gotchas.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/05_tokenizer_gotchas.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Tokenization Gotchas</span></a>
   </div>
 </li>
@@ -292,7 +291,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/serving/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/serving/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">ML Serving</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -301,7 +300,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/serving/tfserving/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/serving/tfserving/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">TF Serving</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -310,13 +309,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/serving/tfserving/tf-serving-basics.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/serving/tfserving/tf-serving-basics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/serving/tfserving/gpu.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/serving/tfserving/gpu.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">GPUs &amp; Batching</span></a>
   </div>
 </li>
@@ -324,7 +323,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/serving/torchserve/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/serving/torchserve/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">TorchServe</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -333,13 +332,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/serving/torchserve/basic-torchserve.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/serving/torchserve/basic-torchserve.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/serving/torchserve/hf.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/serving/torchserve/hf.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Serving Your Own Model</span></a>
   </div>
 </li>
@@ -347,7 +346,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/serving/fastapi/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/serving/fastapi/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">FastAPI</span></a>
   </div>
 </li>
@@ -355,7 +354,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/k8s/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">K8s</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -364,19 +363,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/02-Basics.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/02-Basics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/03-Secrets.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/03-Secrets.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Secrets</span></a>
   </div>
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/k8s/storage/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/storage/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Storage</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -385,13 +384,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/storage/04-Basics.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/storage/04-Basics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Storage Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/storage/05-Dynamic Provisioning.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/storage/05-Dynamic Provisioning.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Dynamic Provisioning</span></a>
   </div>
 </li>
@@ -399,7 +398,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/k8s/scaling/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/scaling/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Scaling</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -408,13 +407,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/scaling/06-ReplicaSets.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/scaling/06-ReplicaSets.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">ReplicaSets</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/scaling/07- Scaling.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/scaling/07- Scaling.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Scaling</span></a>
   </div>
 </li>
@@ -422,25 +421,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/12-StatefulSet.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/12-StatefulSet.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">StatefulSet</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/13-JobsCron.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/13-JobsCron.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Jobs &amp; CronJobs</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/14-RolloutsRollbacks.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/14-RolloutsRollbacks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Rollouts</span></a>
   </div>
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/k8s/multi_container_pods/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/multi_container_pods/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Multi-Container Pods</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -449,25 +448,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/multi_container_pods/08-Multi-Container-Pods.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/multi_container_pods/08-Multi-Container-Pods.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Multi-Container Pods</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/multi_container_pods/09-Ambassador Sidecars.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/multi_container_pods/09-Ambassador Sidecars.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Ambassador Sidecars</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/multi_container_pods/10-Downsides of MC Pods.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/multi_container_pods/10-Downsides of MC Pods.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Restart Conditions</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/multi_container_pods/11-Sharing Processes in MC Pods.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/multi_container_pods/11-Sharing Processes in MC Pods.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Sharing Processes in MC Pods</span></a>
   </div>
 </li>
@@ -475,7 +474,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/k8s/helm/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/helm/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Helm</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -484,25 +483,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/helm/15-Helm.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/helm/15-Helm.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Helm Intro</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/helm/16-Creating Your Own Helm Charts.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/helm/16-Creating Your Own Helm Charts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Creating Helm Charts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/helm/17-Helm Upgrade &amp; Rollbacks.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/helm/17-Helm Upgrade &amp; Rollbacks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Helm Upgrades &amp; Rollbacks</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/helm/21-Testing-With-Helm.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/helm/21-Testing-With-Helm.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Testing With Helm</span></a>
   </div>
 </li>
@@ -510,61 +509,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/18-Developer.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/18-Developer.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Developer tips</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/19-Pod-Lifecycle.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/19-Pod-Lifecycle.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Pod restart vs.&nbsp;replacement</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/20-Health-Check.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/20-Health-Check.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Probes</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/22-Resource-Limits.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/22-Resource-Limits.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Resource Limits</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/22a-Resource-Requests.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/22a-Resource-Requests.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Requesting resources</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/23-Logging.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/23-Logging.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Logging</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/24-monitoring.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/24-monitoring.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Monitoring</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/25-Ingress.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/25-Ingress.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Ingress</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/26-cluster.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/26-cluster.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Cluster Components</span></a>
   </div>
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/k8s/security/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/security/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Security</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -573,31 +572,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/security/26-network-security.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/security/26-network-security.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Network Security</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/security/27-container-security.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/security/27-container-security.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Securing Containers</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/security/28-workloads.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/security/28-workloads.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Webhooks</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/security/29-cluster-updates.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/security/29-cluster-updates.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Updating a K8s Cluster</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/security/30-rbac.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/security/30-rbac.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">RBAC</span></a>
   </div>
 </li>
@@ -605,31 +604,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/27-workload-placement.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/27-workload-placement.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Workload Placement</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/28-auto-scaling.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/28-auto-scaling.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Auto Scaling</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/29-preemption.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/29-preemption.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preemption</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/99-Random.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/99-Random.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Random TILs</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/Open Questions.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/Open Questions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Open Questions</span></a>
   </div>
 </li>
@@ -637,7 +636,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/fastai/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/fastai/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">fastai</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -646,25 +645,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/fastai/01_fundamentals.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fastai/01_fundamentals.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Fundamentals</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/fastai/02_cv.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fastai/02_cv.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Image Classification</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/fastai/03_data.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fastai/03_data.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Data</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/fastai/batch_predicitions.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fastai/batch_predicitions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Batch Predictions</span></a>
   </div>
 </li>
@@ -672,7 +671,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/linux/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/linux/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Linux</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -681,31 +680,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/linux/bash_scripting.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/linux/bash_scripting.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Cheatsheet</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/linux/cookbook.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/linux/cookbook.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Cookbook</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/linux/misc_utils.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/linux/misc_utils.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Misc Utilities</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/linux/osx.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/linux/osx.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">OSX Shell Tips</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/linux/permprocdata.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/linux/permprocdata.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Processes, Permissions and Moving Data</span></a>
   </div>
 </li>
@@ -713,7 +712,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/actions/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/actions/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">GitHub Actions</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -722,13 +721,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/actions/ocotkit.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/actions/ocotkit.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">ocotokit.js</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/actions/resources.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/actions/resources.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Resources</span></a>
   </div>
 </li>
@@ -736,7 +735,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/prompt-eng/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/prompt-eng/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Prompt engineering</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -745,7 +744,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/prompt-eng/course/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/prompt-eng/course/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Course</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -754,43 +753,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/01_guidelines.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/01_guidelines.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Guidelines for Prompting</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/02_iterative.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/02_iterative.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Iterative Prompt Development</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/03_summarizing.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/03_summarizing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Summarizing</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/04_inferring.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/04_inferring.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Inferring</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/05_transforming.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/05_transforming.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Transforming</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/06_expanding.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/06_expanding.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Expanding</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/07_chatbot.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/07_chatbot.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">The Chat Format</span></a>
   </div>
 </li>
@@ -800,22 +799,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/web-scraping/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/web-scraping/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Web Scraping</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/web-scraping/browser-to-python.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/web-scraping/browser-to-python.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Browser requests to code</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/web-scraping/transcribe-diarize.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../../notes/web-scraping/transcribe-diarize.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Transcribe &amp; Diarize Videos</span></a>
   </div>
 </li>
@@ -823,7 +822,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/quarto/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/quarto/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Quarto</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -832,19 +831,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-19" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/quarto/highlighting.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/quarto/highlighting.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Syntax Highlighting</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/quarto/listings-from-data.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/quarto/listings-from-data.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Listings from data</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/quarto/merging.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/quarto/merging.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Merge listings</span></a>
   </div>
 </li>
@@ -852,7 +851,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/jupyter/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/jupyter/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Jupyter</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-20" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -861,25 +860,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-20" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/jupyter/Best Way To Launch Jupyter On A Remote Server.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/jupyter/Best Way To Launch Jupyter On A Remote Server.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Launch Jupyter on a remote server</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/jupyter/Fix Jupyter CUDA cache.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/jupyter/Fix Jupyter CUDA cache.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Fix Jupyter CUDA cache</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/jupyter/remote_browser.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/jupyter/remote_browser.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Remote Browser For Jupyter</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/jupyter/shortcuts.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/jupyter/shortcuts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">My Jupyter Shortcuts</span></a>
   </div>
 </li>
@@ -891,33 +890,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#motivation" id="toc-motivation" class="nav-link active" data-scroll-target="#motivation">Motivation</a></li>
-  <li><a href="#tools" id="toc-tools" class="nav-link" data-scroll-target="#tools">Tools</a></li>
-  <li><a href="#steps" id="toc-steps" class="nav-link" data-scroll-target="#steps">Steps</a>
-  <ul class="collapse">
-  <li><a href="#download-the-audio-file-with-yt-dlp." id="toc-download-the-audio-file-with-yt-dlp." class="nav-link" data-scroll-target="#download-the-audio-file-with-yt-dlp.">1. Download the audio file with yt-dlp.</a></li>
-  <li><a href="#generate-the-transcript-with-diarization." id="toc-generate-the-transcript-with-diarization." class="nav-link" data-scroll-target="#generate-the-transcript-with-diarization.">2. Generate the transcript with diarization.</a></li>
-  </ul></li>
-  <li><a href="#preview" id="toc-preview" class="nav-link" data-scroll-target="#preview">Preview</a></li>
-  <li><a href="#other-projects" id="toc-other-projects" class="nav-link" data-scroll-target="#other-projects">Other projects</a></li>
-  </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/web-scraping/transcribe-diarize.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Transcribe &amp; Diarize Videos</h1>
+<h1 class="title">OpenAI</h1>
 </div>
 
 <div>
   <div class="description">
-    Generate transcriptions of videos with speaker labels.
+    Notes on using OpenAI
   </div>
 </div>
 
@@ -932,97 +917,39 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<section id="motivation" class="level1">
-<h1>Motivation</h1>
-<p>I wanted to generate transcriptions of videos with speaker labels. Segmenting or labeling the speakers in audio like this is referred to as <code>Diarization</code> or <code>Diarisation</code> <a href="https://en.wikipedia.org/wiki/Speaker_diarisation">(wikipedia)</a>. Unfortunately, <a href="https://github.com/openai/whisper/discussions/264">OpenAi’s Whisper doesn’t do diarization</a>.</p>
-</section>
-<section id="tools" class="level1">
-<h1>Tools</h1>
-<p>You need to install these tools per the instructions on their respective repos:</p>
-<ol type="1">
-<li><p><a href="https://github.com/yt-dlp/yt-dlp">yt-dlp</a>: like youtube-dl minus some bugs. Use this to download the video.</p></li>
-<li><p><a href="https://github.com/m-bain/whisperX">WhisperX</a>: performs the Diarization</p></li>
-</ol>
-<p>Additionally, I used a machine with an Nvidia 3090 GPU running Ubuntu 22.04.</p>
-</section>
-<section id="steps" class="level1">
-<h1>Steps</h1>
-<p>I’m going to transcribe <a href="https://youtu.be/g_6nQBsE4pU">this video</a> as an example.</p>
-<section id="download-the-audio-file-with-yt-dlp." class="level2">
-<h2 class="anchored" data-anchor-id="download-the-audio-file-with-yt-dlp.">1. Download the audio file with <a href="https://github.com/yt-dlp/yt-dlp">yt-dlp</a>.</h2>
-<p>The <code>-o "audio.%(ext)s"</code> argument is used to name the output as <code>audo.mp3</code>. The <code>%(ext)s</code> is a placeholder for the file extension. The <code>--extract-audio</code> and <code>--audio-format mp3</code> arguments are used to extract the audio from the video and convert it to mp3 format.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">yt-dlp</span> <span class="at">--extract-audio</span> <span class="at">--audio-format</span> mp3 <span class="dt">\</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">-o</span> <span class="st">"audio.%(ext)s"</span> https://youtu.be/g_6nQBsE4pU</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>The above command will generate <code>audio.mp3</code> in the current directory.</p>
-</section>
-<section id="generate-the-transcript-with-diarization." class="level2">
-<h2 class="anchored" data-anchor-id="generate-the-transcript-with-diarization.">2. Generate the transcript with diarization.</h2>
-<p>This is done with <a href="https://github.com/m-bain/whisperX">WhisperX</a>. Make sure you carefully follow the instructions in the WhisperX repo corresponding to <a href="https://github.com/m-bain/whisperX#speaker-diarization">Speaker Diarization</a>: you have to click on three Hugging Face repos and accept their terms &amp; conditions.</p>
-<p>The <a href="https://youtu.be/g_6nQBsE4pU">video</a> I’m working with has 2 speakers, so that’s why I’m setting <code>--min_speakers</code> and <code>--max_speakers</code> equal to 2. The <code>--hf_token</code> argument is the Hugging Face token you get from following the instructions in the WhisperX repo.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">whisperx</span> audio.mp3 <span class="at">--model</span> large-v2 <span class="at">--diarize</span> <span class="dt">\</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">--min_speakers</span> 2 <span class="at">--max_speakers</span> 2 <span class="at">--hf_token</span> <span class="op">&lt;</span>your_hf_token<span class="op">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>This will produce files with the following extensions <code>audio.{srt, vtt, txt, tsv, json}</code> in the current directory. You can limit the formats with <code>--output_format</code> and write these files to a different directory with <code>--output_dir</code>. The <code>.json</code> file contains the most detailed information about the diarization, with world-level predictions, whereas the <code>.vtt</code> and <code>.srt</code> files will contain a more human-readable transcript with speaker labels. I suggest looking at these files to see which one suits your needs.</p>
-<p>If looking at the <code>.json</code> file, I recommend using <code>jq</code> with a command like this to see the first row of the <code>segments</code> array in that file:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">jq</span> <span class="st">'.segments[0]'</span> audio.json</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-</section>
-<section id="preview" class="level1">
-<h1>Preview</h1>
-<p>Here’s a preview of the <code>.vtt</code> file:</p>
-<pre><code>&gt; head -n40  audio.vtt
-
-WEBVTT
-
-00:00.248 --&gt; 00:13.531
-[SPEAKER_01]: Hi, this is Jeremy Howard, and you're listening to Coffee Time Data Science, a podcast for data science enthusiasts, where I interview practitioners, researchers, and Kagglers about their journey, experience, and talk all things data science.
-
-00:13.531 --&gt; 00:17.151
-[SPEAKER_01]: And before we begin, I apologize for the change to our schedule.
-
-00:17.151 --&gt; 00:22.593
-[SPEAKER_01]: Of course, usually you would be seeing Chai Time Data Science on this channel with Sanyam Bhutani.
-
-00:22.593 --&gt; 00:24.373
-[SPEAKER_01]: Unfortunately, he's not available today.
-
-00:24.373 --&gt; 00:29.514
-[SPEAKER_01]: He had a prior appointment on another podcast, and he was not able to join Chai Time Data Science.
-
-00:29.974 --&gt; 00:34.338
-[SPEAKER_01]: We hope you enjoy this special episode of Coffee Time Data Science.
-
-00:34.338 --&gt; 00:45.148
-[SPEAKER_01]: And without further ado, I would like to invite our very special VIP guest, newly anointed Kaggle Grand Master, Sanyam Bhutani.
-
-00:45.148 --&gt; 00:47.190
-[SPEAKER_01]: Sanyam, welcome to Coffee Time Data Science.
-
-00:48.372 --&gt; 00:49.073
-[SPEAKER_00]: Thank you, Jeremy.
-
-00:49.073 --&gt; 00:53.537
-[SPEAKER_00]: Usually, I'm very anti coffee, but I'll have to allow that.
-
-00:53.537 --&gt; 00:55.678
-[SPEAKER_00]: I still can't believe you weren't kidding.
-
-00:55.678 --&gt; 00:59.421
-[SPEAKER_00]: And I mentioned in our message also, like I, I think I don't deserve this.
-
-00:59.421 --&gt; 01:00.042
-[SPEAKER_00]: But thank you.</code></pre>
-</section>
-<section id="other-projects" class="level1">
-<h1>Other projects</h1>
-<ul>
-<li><a href="https://huggingface.co/spaces/vumichien/Whisper_speaker_diarization">HuggingFace: Whisper Speaker Diarization</a>. I tried this, and while it worked decently, the results were not as good as WhisperX out of the box.</li>
-<li><a href="https://github.com/pyannote/pyannote-audio">Pyannote-audio</a>. H/T Tansihq Abraham for pointing this out to me. WhisperX also uses it.</li>
-</ul>
 
 
-</section>
 
-</main> <!-- /main -->
+
+<div class="quarto-listing quarto-listing-container-table" id="listing-listing">
+
+<table class="quarto-listing-table table">
+<thead>
+<tr>
+<th>
+Title
+</th>
+<th>
+Description
+</th>
+</tr>
+</thead>
+<tbody class="list">
+<tr data-index="0" data-listing-date-sort="1702760951000" data-listing-file-modified-sort="1702760951885" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-title-sort="Function prompts" data-listing-filename-sort="func_template.ipynb">
+<td>
+<a href="../../../notes/llm/openai/func_template.html" class="title listing-title">Function prompts</a>
+</td>
+<td>
+<span class="listing-description">How is OpenAI formatting its prompt for function…</span>
+</td>
+</tr>
+</tbody>
+
+</table>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+</div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -1283,13 +1210,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </a>
   </li>  
     <li class="nav-item compact">
-    <a class="nav-link" href="../../index.xml">
+    <a class="nav-link" href="../../../index.xml">
       <i class="bi bi-rss" role="img">
 </i> 
     </a>
   </li>  
 </ul>
-    </div>
+    <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/llm/openai/index.qmd" class="toc-action">Edit this page</a></p></div></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
