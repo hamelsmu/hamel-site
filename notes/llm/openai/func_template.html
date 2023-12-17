@@ -1121,11 +1121,10 @@ ingredients: string[],
 </section>
 <section id="appendix-nested-parameters" class="level2">
 <h2 class="anchored" data-anchor-id="appendix-nested-parameters">Appendix: nested parameters</h2>
-<p>You can supply arbitrarily nested parameters with a <a href="https://json-schema.org/understanding-json-schema">JSON schema</a>. OpenAI appears to condense these types of of things quite nicely (expand the code cell below to see the full definition).</p>
-<p>I couldn’t see how OpenAI indicated optional vs.&nbsp;required parameters in their prompt, however my jailbreak might be lossy (perhaps that is indicated in comments?).</p>
+<p>You can supply arbitrarily nested parameters with a <a href="https://json-schema.org/understanding-json-schema">JSON schema</a>. <strong>OpenAI appears to condense these types of of things quite nicely.</strong></p>
 <div class="cell">
-<details>
-<summary>See full function definition</summary>
+<details open="">
+<summary>Hide/Show</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>tools <span class="op">=</span> [{<span class="st">'type'</span>: <span class="st">'function'</span>,</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"function"</span>: {</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"name"</span>: <span class="st">"book_hotel"</span>,  <span class="co"># Must be a valid string as per guidelines</span></span>
@@ -1183,31 +1182,43 @@ ingredients: string[],
 </details>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># expand above cell if you want to see definition of `tools`</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>response, _ <span class="op">=</span> chat(messages, tools<span class="op">=</span>tools, temperature<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(unpack_msg(response))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>response, _ <span class="op">=</span> chat(messages, tools<span class="op">=</span>tools, temperature<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(unpack_msg(response))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>namespace functions {
 
-  // Book a hotel room with specified preferences
-  type book_hotel = (_: {
-    guest_info: {
-      name: string;
-      contact: {
-        email: string;
-        phone: string;
-      };
-    },
-    room_preferences: {
-      room_type: string;
-      amenities: {
-        wifi: boolean;
-        breakfast_included: boolean;
-      };
-    },
-  }) =&gt; any;
+// Book a hotel room with specified preferences
+type book_hotel = (_: {
+guest_info: {
+  name: string;
+  contact: {
+  email: string;
+  phone: string;
+};
+},
+room_preferences: {
+  room_type: string;
+  amenities: {
+  wifi: boolean;
+  breakfast_included: boolean;
+};
+},
+}) =&gt; any;
 
 } // namespace functions</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I couldn’t see how OpenAI indicated optional vs.&nbsp;required parameters in their prompt, however my jailbreak might be lossy (perhaps that is indicated in comments?).</p>
 </div>
 </div>
 
