@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.450">
+<meta name="generator" content="quarto-1.4.533">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -48,7 +48,13 @@ ul.task-list li input[type="checkbox"] {
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -57,6 +63,7 @@ ul.task-list li input[type="checkbox"] {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
@@ -95,14 +102,41 @@ ul.task-list li input[type="checkbox"] {
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
 <link rel="stylesheet" href="styles.css">
-<link rel="alternate" type="application/rss+xml" title="Hamel's Blog" href="index.xml"><meta property="og:title" content="">
+<link rel="alternate" type="application/rss+xml" title="Hamel's Blog" href="index.xml" data-external="1"><meta property="og:title" content="Hamel’s Blog">
 <meta property="og:description" content="A collection of technical blogs and talks on machine learning and data science.">
 <meta property="og:image" content="https://hamel.dev/quarto.png">
-<meta property="og:site-name" content="Hamel's Blog">
+<meta property="og:site_name" content="Hamel's Blog">
 <meta property="og:image:height" content="576">
 <meta property="og:image:width" content="960">
-<meta name="twitter:title" content="">
+<meta name="twitter:title" content="Hamel’s Blog">
 <meta name="twitter:description" content="A collection of technical blogs and talks on machine learning and data science.">
 <meta name="twitter:image" content="https://hamel.dev/quarto.png">
 <meta name="twitter:creator" content="@HamelHusain">
@@ -115,31 +149,31 @@ ul.task-list li input[type="checkbox"] {
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand navbar-dark ">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
           <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" rel="" target="" aria-current="page">
- <span class="menu-text">Blog</span></a>
+    <a class="nav-link active" href="./index.html" aria-current="page"> 
+<span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./oss/opensource.html" rel="" target="">
- <span class="menu-text">Projects</span></a>
+    <a class="nav-link" href="./oss/opensource.html"> 
+<span class="menu-text">Projects</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./talks.html" rel="" target="">
- <span class="menu-text">Talks</span></a>
+    <a class="nav-link" href="./talks.html"> 
+<span class="menu-text">Talks</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./notes/index.html" rel="" target="">
- <span class="menu-text">Notes</span></a>
+    <a class="nav-link" href="./notes/index.html"> 
+<span class="menu-text">Notes</span></a>
   </li>  
 </ul>
           <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="./index.xml" rel="" target=""><i class="bi bi-rss" role="img">
+    <a class="nav-link" href="./index.xml"> <i class="bi bi-rss" role="img">
 </i> 
- <span class="menu-text"></span></a>
+<span class="menu-text"></span></a>
   </li>  
 </ul>
           <div class="quarto-navbar-tools">
@@ -158,22 +192,26 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#get-in-touch" id="toc-get-in-touch" class="nav-link active" data-scroll-target="#get-in-touch">💼 Get In Touch</a></li>
-  <li><a href="#blog-posts" id="toc-blog-posts" class="nav-link" data-scroll-target="#blog-posts">📮 Blog Posts</a></li>
+  <li><a href="#feed" id="toc-feed" class="nav-link" data-scroll-target="#feed">📮 Feed</a></li>
   <li><a href="#subscribe" id="toc-subscribe" class="nav-link" data-scroll-target="#subscribe">📬 Subscribe</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hamelsmu/hamel-site/edit/master/index.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 
 
-<div class="profile-header quarto-layout-panel">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="quarto-layout-cell" style="flex-basis: 21.0%;justify-content: center;">
+
+<div>
+
+</div>
+<div class="profile-header quarto-layout-panel" data-layout="[21,79]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 21.0%;justify-content: center;display: flex;">
 <p><img src="hamel_transparent.png" class="profile-pic img-fluid"></p>
 </div>
-<div class="quarto-layout-cell" style="flex-basis: 79.0%;justify-content: center;">
+<div class="quarto-layout-cell" style="flex-basis: 79.0%;justify-content: flex-start;display: flex;">
 <p>Hello, I’m Hamel Husain. I’m a machine learning engineer who loves building machine learning infrastructure and tools 👷🏼‍♂️. I lead or contribute to many popular <a href="./oss/opensource.html">open-source machine learning projects</a>. Furthermore, I have extensive experience (20+ years) as a machine learning engineer <a href="https://www.linkedin.com/in/hamelhusain/">across various industries</a>, including large tech companies like Airbnb and GitHub.</p>
 </div>
 </div>
@@ -185,10 +223,10 @@ ul.task-list li input[type="checkbox"] {
 <p>I’m open to consulting work and other forms of advisory. Email me at <code>hamel@parlance-labs.com</code> if you’d like to chat!</p>
 <hr>
 </section>
-<section id="blog-posts" class="level2">
-<h2 class="anchored" data-anchor-id="blog-posts">📮 Blog Posts</h2>
+<section id="feed" class="level2">
+<h2 class="anchored" data-anchor-id="feed">📮 Feed</h2>
+<p>A curated collection of blog posts and shorter form <a href="notes/">notes</a>.</p>
 <div id="listing-blog-listings" class="quarto-listing quarto-listing-container-table">
-
 <table class="quarto-listing-table table">
 <thead>
 <tr>
@@ -201,7 +239,39 @@ Title
 </tr>
 </thead>
 <tbody class="list">
-<tr data-index="0" data-categories="Jupyter,nbdev" data-listing-date-sort="1685430000000" data-listing-file-modified-sort="1701362837266" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-title-sort="On commercializing nbdev" data-listing-filename-sort="index.qmd">
+<tr data-index="0" data-categories="LLMs,Notes" data-listing-date-sort="1702800000000" data-listing-title-sort="Tokenization Gotchas">
+<td>
+<span class="listing-date">12/17/23</span>
+</td>
+<td>
+<a href="notes/llm/05_tokenizer_gotchas.html" class="title listing-title">Tokenization Gotchas</a>
+</td>
+</tr>
+<tr data-index="1" data-categories="LLMs,Notes" data-listing-date-sort="1700035200000" data-listing-title-sort="Tools for curating LLM Data">
+<td>
+<span class="listing-date">11/15/23</span>
+</td>
+<td>
+<a href="notes/llm/04_data_cleaning.html" class="title listing-title">Tools for curating LLM Data</a>
+</td>
+</tr>
+<tr data-index="2" data-categories="LLMs,Notes" data-listing-date-sort="1698476400000" data-listing-title-sort="vLLM &amp; Large Models">
+<td>
+<span class="listing-date">10/28/23</span>
+</td>
+<td>
+<a href="notes/llm/inference/big_inference.html" class="title listing-title">vLLM &amp; Large Models</a>
+</td>
+</tr>
+<tr data-index="3" data-categories="LLMs,Notes" data-listing-date-sort="1697353200000" data-listing-title-sort="Optimizing LLM latency">
+<td>
+<span class="listing-date">10/15/23</span>
+</td>
+<td>
+<a href="notes/llm/inference/03_inference.html" class="title listing-title">Optimizing LLM latency</a>
+</td>
+</tr>
+<tr data-index="4" data-categories="Jupyter,nbdev" data-listing-date-sort="1685430000000" data-listing-file-modified-sort="1701362837266" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1200" data-listing-title-sort="On commercializing nbdev" data-listing-filename-sort="index.qmd">
 <td>
 <span class="listing-date">5/30/23</span>
 </td>
@@ -209,7 +279,7 @@ Title
 <a href="./blog/posts/nbdev/index.html" class="title listing-title">On commercializing nbdev</a>
 </td>
 </tr>
-<tr data-index="1" data-categories="K8s" data-listing-date-sort="1673856000000" data-listing-file-modified-sort="1701362837265" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-title-sort="Why Should ML Engineers Learn Kubernetes?" data-listing-filename-sort="index.qmd">
+<tr data-index="5" data-categories="K8s" data-listing-date-sort="1673856000000" data-listing-file-modified-sort="1701362837265" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1455" data-listing-title-sort="Why Should ML Engineers Learn Kubernetes?" data-listing-filename-sort="index.qmd">
 <td>
 <span class="listing-date">1/16/23</span>
 </td>
@@ -217,7 +287,7 @@ Title
 <a href="./blog/posts/k8s/index.html" class="title listing-title">Why Should ML Engineers Learn Kubernetes?</a>
 </td>
 </tr>
-<tr data-index="2" data-categories="Jupyter,Quarto,nbdev" data-listing-date-sort="1658991600000" data-listing-title-sort="nbdev + Quarto: A new secret weapon for productivity">
+<tr data-index="6" data-categories="Jupyter,Quarto,nbdev" data-listing-date-sort="1658991600000" data-listing-title-sort="nbdev + Quarto: A new secret weapon for productivity">
 <td>
 <span class="listing-date">7/28/22</span>
 </td>
@@ -225,7 +295,7 @@ Title
 <a href="https://www.fast.ai/2022/07/28/nbdev-v2/" class="title listing-title">nbdev + Quarto: A new secret weapon for productivity</a>
 </td>
 </tr>
-<tr data-index="3" data-categories="Metaflow,Jupyter" data-listing-date-sort="1644393600000" data-listing-title-sort="Notebooks in production with Metaflow">
+<tr data-index="7" data-categories="Metaflow,Jupyter" data-listing-date-sort="1644393600000" data-listing-title-sort="Notebooks in production with Metaflow">
 <td>
 <span class="listing-date">2/9/22</span>
 </td>
@@ -233,7 +303,7 @@ Title
 <a href="https://outerbounds.com/blog/notebooks-in-production-with-metaflow/" class="title listing-title">Notebooks in production with Metaflow</a>
 </td>
 </tr>
-<tr data-index="4" data-categories="python" data-listing-date-sort="1608278400000" data-listing-title-sort="ghapi, a new third-party Python client for the GitHub API">
+<tr data-index="8" data-categories="python" data-listing-date-sort="1608278400000" data-listing-title-sort="ghapi, a new third-party Python client for the GitHub API">
 <td>
 <span class="listing-date">12/18/20</span>
 </td>
@@ -241,7 +311,7 @@ Title
 <a href="https://github.blog/2020-12-18-learn-about-ghapi-a-new-third-party-python-client-for-the-github-api/" class="title listing-title">ghapi, a new third-party Python client for the GitHub API</a>
 </td>
 </tr>
-<tr data-index="5" data-categories="nbdev,Jupyter" data-listing-date-sort="1605859200000" data-listing-title-sort="Nbdev: A literate programming environment that democratizes software engineering best practices">
+<tr data-index="9" data-categories="nbdev,Jupyter" data-listing-date-sort="1605859200000" data-listing-title-sort="Nbdev: A literate programming environment that democratizes software engineering best practices">
 <td>
 <span class="listing-date">11/20/20</span>
 </td>
@@ -249,7 +319,7 @@ Title
 <a href="https://github.blog/2020-11-20-nbdev-a-literate-programming-environment-that-democratizes-software-engineering-best-practices/" class="title listing-title">Nbdev: A literate programming environment that democratizes software engineering best practices</a>
 </td>
 </tr>
-<tr data-index="6" data-categories="python" data-listing-date-sort="1598943600000" data-listing-title-sort="fastcore: An Underrated Python Library">
+<tr data-index="10" data-categories="python" data-listing-date-sort="1598943600000" data-listing-title-sort="fastcore: An Underrated Python Library">
 <td>
 <span class="listing-date">9/1/20</span>
 </td>
@@ -257,7 +327,7 @@ Title
 <a href="https://fastpages.fast.ai/fastcore" class="title listing-title">fastcore: An Underrated Python Library</a>
 </td>
 </tr>
-<tr data-index="7" data-categories="Kubeflow,papermill,Tekton,GitOps,Jupyter" data-listing-date-sort="1598943600000" data-listing-title-sort="Data Science Meets Devops: MLOps with Jupyter, Git, &amp; Kubernetes">
+<tr data-index="11" data-categories="Kubeflow,papermill,Tekton,GitOps,Jupyter" data-listing-date-sort="1598943600000" data-listing-title-sort="Data Science Meets Devops: MLOps with Jupyter, Git, &amp; Kubernetes">
 <td>
 <span class="listing-date">9/1/20</span>
 </td>
@@ -265,7 +335,7 @@ Title
 <a href="https://blog.kubeflow.org/mlops/" class="title listing-title">Data Science Meets Devops: MLOps with Jupyter, Git, &amp; Kubernetes</a>
 </td>
 </tr>
-<tr data-index="8" data-categories="Actions" data-listing-date-sort="1583481600000" data-listing-title-sort="GitHub Actions: Providing Data Scientists With New Superpowers.">
+<tr data-index="12" data-categories="Actions" data-listing-date-sort="1583481600000" data-listing-title-sort="GitHub Actions: Providing Data Scientists With New Superpowers.">
 <td>
 <span class="listing-date">3/6/20</span>
 </td>
@@ -273,7 +343,7 @@ Title
 <a href="https://fastpages.fast.ai/actions/markdown/2020/03/06/fastpages-actions.html" class="title listing-title">GitHub Actions: Providing Data Scientists With New Superpowers.</a>
 </td>
 </tr>
-<tr data-index="9" data-categories="Jupyter" data-listing-date-sort="1582272000000" data-listing-title-sort="Introducing fastpages, An easy to use blogging platform with extra features for Jupyter Notebooks.">
+<tr data-index="13" data-categories="Jupyter" data-listing-date-sort="1582272000000" data-listing-title-sort="Introducing fastpages, An easy to use blogging platform with extra features for Jupyter Notebooks.">
 <td>
 <span class="listing-date">2/21/20</span>
 </td>
@@ -281,7 +351,7 @@ Title
 <a href="https://fastpages.fast.ai/fastpages/jupyter/2020/02/21/introducing-fastpages.html" class="title listing-title">Introducing fastpages, An easy to use blogging platform with extra features for Jupyter Notebooks.</a>
 </td>
 </tr>
-<tr data-index="10" data-categories="python" data-listing-date-sort="1580889600000" data-listing-title-sort="Python Concurrency: The Tricky Bits">
+<tr data-index="14" data-categories="python" data-listing-date-sort="1580889600000" data-listing-title-sort="Python Concurrency: The Tricky Bits">
 <td>
 <span class="listing-date">2/5/20</span>
 </td>
@@ -289,7 +359,7 @@ Title
 <a href="https://python.hamel.dev/concurrency/" class="title listing-title">Python Concurrency: The Tricky Bits</a>
 </td>
 </tr>
-<tr data-index="11" data-categories="ML-On-Code,NLP" data-listing-date-sort="1568962800000" data-listing-title-sort="CodeSearchNet Challenge: Evaluating the State of Semantic Code Search">
+<tr data-index="15" data-categories="ML-On-Code,NLP" data-listing-date-sort="1568962800000" data-listing-title-sort="CodeSearchNet Challenge: Evaluating the State of Semantic Code Search">
 <td>
 <span class="listing-date">9/20/19</span>
 </td>
@@ -297,7 +367,7 @@ Title
 <a href="https://arxiv.org/abs/1909.09436" class="title listing-title">CodeSearchNet Challenge: Evaluating the State of Semantic Code Search</a>
 </td>
 </tr>
-<tr data-index="12" data-categories="NLP" data-listing-date-sort="1554879600000" data-listing-title-sort="How to Automate Tasks on GitHub With Machine Learning for Fun and Profit">
+<tr data-index="16" data-categories="NLP" data-listing-date-sort="1554879600000" data-listing-title-sort="How to Automate Tasks on GitHub With Machine Learning for Fun and Profit">
 <td>
 <span class="listing-date">4/10/19</span>
 </td>
@@ -305,7 +375,7 @@ Title
 <a href="https://medium.com/@hamelhusain/mlapp-419f90e8f007?source=friends_link&amp;sk=760e18a2d6e60999d7eb2887352a92a8" class="title listing-title">How to Automate Tasks on GitHub With Machine Learning for Fun and Profit</a>
 </td>
 </tr>
-<tr data-index="13" data-categories="ML-On-Code,NLP" data-listing-date-sort="1527577200000" data-listing-title-sort="How To Create Natural Language Semantic Search for Arbitrary Objects With Deep&nbsp;Learning">
+<tr data-index="17" data-categories="ML-On-Code,NLP" data-listing-date-sort="1527577200000" data-listing-title-sort="How To Create Natural Language Semantic Search for Arbitrary Objects With Deep&nbsp;Learning">
 <td>
 <span class="listing-date">5/29/18</span>
 </td>
@@ -313,7 +383,7 @@ Title
 <a href="https://medium.com/@hamelhusain/semantic-code-search-3cd6d244a39c" class="title listing-title">How To Create Natural Language Semantic Search for Arbitrary Objects With Deep&nbsp;Learning</a>
 </td>
 </tr>
-<tr data-index="14" data-categories="NLP" data-listing-date-sort="1516262400000" data-listing-title-sort="How To Create Magical Data Products Using Sequence-to-Sequence Models">
+<tr data-index="18" data-categories="NLP" data-listing-date-sort="1516262400000" data-listing-title-sort="How To Create Magical Data Products Using Sequence-to-Sequence Models">
 <td>
 <span class="listing-date">1/18/18</span>
 </td>
@@ -321,7 +391,7 @@ Title
 <a href="https://towardsdatascience.com/how-to-create-data-products-that-are-magical-using-sequence-to-sequence-models-703f86a231f8" class="title listing-title">How To Create Magical Data Products Using Sequence-to-Sequence Models</a>
 </td>
 </tr>
-<tr data-index="15" data-categories="Infra" data-listing-date-sort="1513411200000" data-listing-title-sort="How Docker Can Help You Become A More Effective Data Scientist">
+<tr data-index="19" data-categories="Infra" data-listing-date-sort="1513411200000" data-listing-title-sort="How Docker Can Help You Become A More Effective Data Scientist">
 <td>
 <span class="listing-date">12/16/17</span>
 </td>
@@ -329,7 +399,7 @@ Title
 <a href="https://towardsdatascience.com/how-docker-can-help-you-become-a-more-effective-data-scientist-7fc048ef91d5" class="title listing-title">How Docker Can Help You Become A More Effective Data Scientist</a>
 </td>
 </tr>
-<tr data-index="16" data-categories="AutoML" data-listing-date-sort="1494399600000" data-listing-title-sort="Automated Machine Learning — A Paradigm Shift That Accelerates Data Scientist Productivity @ Airbnb">
+<tr data-index="20" data-categories="AutoML" data-listing-date-sort="1494399600000" data-listing-title-sort="Automated Machine Learning — A Paradigm Shift That Accelerates Data Scientist Productivity @ Airbnb">
 <td>
 <span class="listing-date">5/10/17</span>
 </td>
@@ -338,7 +408,6 @@ Title
 </td>
 </tr>
 </tbody>
-
 </table>
 <div class="listing-no-matching d-none">
 No matching items
@@ -433,10 +502,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -446,8 +514,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -460,6 +537,120 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
       return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -503,6 +694,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -528,6 +720,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -620,12 +838,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </a>
   </li>  
 </ul>
-    </div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
   </div>
 </footer>
+
 
 
 
