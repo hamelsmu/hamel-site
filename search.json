@@ -2204,6 +2204,13 @@
     "text": "Deploying Dokku Apps with GitHub Actions\nYou can automatically deploy Dokuu apps with GitHub Actions, which is helpful if you don’t want to fiddle with pushing to the Dokku host. Here is an example GitHub Action workflow that does this:\n\n\ndeploy-dokku.yml\n\nname: CI\non:\n  workflow_dispatch:\n  push:\n    branches: [main]\n\nconcurrency: # Cancel previous jobs to avoid deploy locks on dokku\n  group: ${{ github.ref }}\n  cancel-in-progress: true\n\njobs:\n  deploy-dokku:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Checkout code\n        uses: actions/checkout@v2\n        with:\n          fetch-depth: 0\n      \n      - name: Install SSH key\n        run: |\n          echo \"${{ secrets.DOKKU_SSH_PRIVATE_KEY }}\" &gt; private_key.pem\n          chmod 600 private_key.pem\n\n      - name: Add remote and push\n        run: |\n          git remote add dokku dokku@rechat.co:llm-eval\n          GIT_SSH_COMMAND=\"ssh -i private_key.pem -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no\" git push dokku main -f"
   },
   {
+    "objectID": "blog/posts/dokku/index.html#why-did-i-write-this",
+    "href": "blog/posts/dokku/index.html#why-did-i-write-this",
+    "title": "Dokku: my favorite personal serverless platform",
+    "section": "Why Did I Write This?",
+    "text": "Why Did I Write This?\nI needed notes for myself, as I had to dig up these details whenever I wanted to deploy a new app. I hope you find it useful, too!"
+  },
+  {
     "objectID": "blog/posts/nbdev/index.html",
     "href": "blog/posts/nbdev/index.html",
     "title": "On commercializing nbdev",
