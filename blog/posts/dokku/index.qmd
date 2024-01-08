@@ -1,0 +1,190 @@
+---
+title: "Dokku: my favorite personal serverless platform"
+description: Like Heroku, but you own it.
+categories: [infra, severless]
+author: Hamel Husain
+date: 2024-01-16
+image: images/serverless.png
+order: 1
+---
+
+![With Dokku, you can turn a VPS into a powerful serverless platform](images/serverless.png)
+
+## What is Dokku?
+
+[Dokku](https://dokku.com/) is an open-source Platform as a Service (PaaS) that runs on a single server of your choice. **It's like [Heroku](https://www.heroku.com/), but you own it.** It is a great way to get many of the benefits of Heroku without the costs (Heroku can get quite expensive!).
+
+**I run my Dokku server on a $7/month vps on [OVHcloud](https://us.ovhcloud.com/).**  I serve multiple websites and applications on this server.  Some of the features I love about Dokku:
+
+- Easy to use (like Heroku).
+- Automatic SSL certificate management via [Let's Encrypt](https://letsencrypt.org/).
+- Basic Auth support so I can password-protect sites.
+- Scale up and down with a single command.
+- Flexibility to handle any application (Node, Python, etc), including defining a Docker container.
+- Lots of [official plugins](https://dokku.com/docs/community/plugins/?h=plugins#official-plugins) that do almost anything I want.
+- Easily deploy with git commands.
+
+# Minimal Dokku examples
+
+Make sure you [install Dokku](https://dokku.com/docs/getting-started/installation/) on your VPS.  As I mentioned, I use [OVH](https://us.ovhcloud.com/).
+
+## Deploying Apps as A Docker Container
+
+I have deployed various applications [for my clients](https://nbsanity.com/), which include things like [nbsanity](https://nbsanity.com/), [data cleaning tools for LLMs](https://langfree.parlance-labs.com/tutorials/shiny.html#run-the-shiny-app-locally), and private static sites.  An easy way to do this is with a Docker container.
+
+To deploy a Docker container, I put a Dockerfile in the root of my git repo like this:
+
+```{.dockerfile filename="Dockerfile"}
+FROM python:3.10
+
+COPY . /app
+WORKDIR /app
+
+# Install the local package
+RUN pip install .
+
+# this directory contains app.py that defines a FastApi app
+WORKDIR /app/
+
+ENTRYPOINT ["./entrypoint.sh"]
+```
+
+:::{.callout-tip}
+
+Scripts to [rule them all](https://github.com/github/scripts-to-rule-them-all).
+
+The `entrypoint.sh` script allows me to easily run the app locally or in a Docker container.  It looks like this:
+
+```{.bash filename="entrypoint.sh"}
+#!/bin/bash
+exec uvicorn main:app --port "$PORT" --host 0.0.0.0
+```
+
+::::
+
+On the Dokku host, create the app:
+
+```bash
+dokku apps:create myapp
+```
+
+Locally, add the Dokku host as a remote and push to it:
+
+```bash
+git remote add dokku dokku@dokku:myapp
+git push dokku main
+```
+
+That's it - your app should be running on the Dokku host!  You can scale it up/down with the following command (and do a whole lot more):
+
+```bash
+#scale to two workers
+dokku ps:scale myapp web=2
+```
+
+## Static Sites
+
+GitHub Pages is annoying in that you can't easily deploy private static sites without paying for an expensive Enterprise account.  With Dokku, you can easily deploy a static site from a private GitHub Repo and password-protect it.
+
+We will assume that you have a static site in a git repo in a folder named `_site`.
+
+**On the Dokku host**, create an app named `mysite` and set the `NGINX_ROOT` environment variable to `_site`:
+
+```bash
+dokku apps:create mystite
+dokku config:set static-site NGINX_ROOT=_site
+```
+
+Also on the Dokku host, install [basic auth](https://github.com/dokku/dokku-http-auth) and [set permissions](https://github.com/dokku/dokku-http-auth/issues/15#issuecomment-1637058437) so the plugin can work properly.
+
+```bash
+# do setup for the auth plugin that we will use later
+sudo dokku plugin:install https://github.com/dokku/dokku-http-auth.git
+sudo chmod +x /home/dokku
+```
+
+**Locally**, set up access to the Dokku host and name it `dokku` in your `~/.ssh/config` file.  For example, here is mine:
+
+```
+Host dokku
+  HostName <The external IP address of your Dokku host>
+  User ubuntu
+  IdentityFile /Users/hamel/.ssh/dokku
+```
+
+Then do the following from the root of your git repo that contains the static site:
+
+```bash
+
+touch .static # <1> 
+echo BUILDPACK_URL=https://github.com/dokku/buildpack-nginx > .env # <2>
+git remote add dokku dokku@dokku:mysite # <3>
+```
+1. tells dokku that this is a static site
+2. tells dokku to use the nginx buildpack for static sites (it will usually automatically detect this, but if you have a project with code and a static site, you need to tell it to use the nginx buildpack so it doesn't get confused).
+3. add the dokku host as a remote
+
+Finally, deploy your application:
+
+```bash
+git push dokku main
+```
+
+You can now add auth by running the following command on the Dokku host:
+
+```bash 
+dokku http-auth:enable mystite <username> <password>
+```
+
+:::{.callout-note}
+
+You can add multiple usernames/passwords and even filter specific IPs.  See [the docs](https://github.com/dokku/dokku-http-auth).
+
+:::
+
+:::{.callout-tip}
+
+### SSL / HTTPS
+
+It's often desirable to have HTTPS for your site.  Dokku makes this easy with the [Let's Encrypt Plugin](https://github.com/dokku/dokku-letsencrypt), which will even auto-renew for you.  I don't use this, because I'm letting [Cloudflare handle this with its proxy](https://developers.cloudflare.com/dns/manage-dns-records/reference/proxied-dns-records/). 
+
+If you are using Cloudflare this way, activating this plugin will mess things up (don't worry its easy to disable).  Honestly, I think it's easier to let Cloudflare handle it if you are already doing so.
+
+:::
+
+
+
+## Deploying Dokku Apps with GitHub Actions
+
+You can automatically deploy Dokuu apps with GitHub Actions, which is helpful if you don't want to fiddle with pushing to the Dokku host.  Here is an example GitHub Action workflow that does this:
+
+```{.yaml filename="deploy-dokku.yml"}
+name: CI
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+concurrency: # Cancel previous jobs to avoid deploy locks on dokku
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-dokku:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      
+      - name: Install SSH key
+        run: |
+          echo "${{ secrets.DOKKU_SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+
+      - name: Add remote and push
+        run: |
+          git remote add dokku dokku@rechat.co:llm-eval
+          GIT_SSH_COMMAND="ssh -i private_key.pem -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git push dokku main -f
+```
