@@ -2169,6 +2169,125 @@
     "text": "nbdev + Quarto: A new secret weapon for productivity, the fastai blog, July 2022.\nNotebooks in production with Metaflow Introduces a new Metaflow feature that allows users to use notebooks in production ML workflows.\nPython Concurrency: The Tricky Bits: An exploration of threads, processes, and coroutines in Python, with interesting examples that illuminate the differences between each.\nghapi, a new third-party Python client for the GitHub API by Jeremy Howard & Hamel Husain, GitHub Repo.\nNbdev: A literate programming environment that democratizes software engineering best practices by Hamel Husain, Jeremy Howard, The GitHub Blog.\nfastcore: An Underrated Python Library by Hamel Husain, Jeremy Howard, GitHub Repo.\nData Science Meets Devops: MLOps with Jupyter, Git, & Kubernetes: An end-to-end example of deploying a machine learning product using Jupyter, Papermill, Tekton, GitOps and Kubeflow. by Jeremy Lewi, Hamel_Husain, The Kubeflow Blog.\nIntroducing fastpages, An easy to use blogging platform with extra features for Jupyter Notebooks. by Jeremy Howard & Hamel Husain, GitHub Repo\nGitHub Actions: Providing Data Scientists With New Superpowers by Jeremy Howard & Hamel Husain.\nCodeSearchNet Challenge: Evaluating the State of Semantic Code Search: by Miltiadis Allamanis, Marc Brockschmidt, Hamel Husain, Ho-Hsiang Wu, Tiferet Gazit GitHub Repo\nHow To Create Natural Language Semantic Search for Arbitrary Objects With Deep Learning. (Related: GitHub engineering blog article, Live demo)\nHow To Create Magical Data Products Using Sequence-to-Sequence Models\nHow to Automate Tasks on GitHub With Machine Learning for Fun and Profit\nHow Docker Can Make You A More Effective Data Scientist\nAutomated Machine Learning, A Paradigm Shift That Accelerates Data Scientst Productivity At Airbnb"
   },
   {
+    "objectID": "blog/posts/dokku/index.html",
+    "href": "blog/posts/dokku/index.html",
+    "title": "Dokku: my favorite personal serverless platform",
+    "section": "",
+    "text": "With Dokku, you can turn a VPS into a powerful serverless platform"
+  },
+  {
+    "objectID": "blog/posts/dokku/index.html#what-is-dokku",
+    "href": "blog/posts/dokku/index.html#what-is-dokku",
+    "title": "Dokku: my favorite personal serverless platform",
+    "section": "What is Dokku?",
+    "text": "What is Dokku?\nDokku is an open-source Platform as a Service (PaaS) that runs on a single server of your choice. It’s like Heroku, but you own it. It is a great way to get many of the benefits of Heroku without the costs (Heroku can get quite expensive!).\nI run my Dokku server on a $7/month vps on OVHcloud. I serve multiple websites and applications on this server. Some of the features I love about Dokku:\n\nEasy to use (like Heroku).\nAutomatic SSL certificate management via Let’s Encrypt.\nBasic Auth support so I can password-protect sites.\nScale up and down with a single command.\nFlexibility to handle any application (Node, Python, etc), including defining a Docker container.\nLots of official plugins that do almost anything I want.\nEasily deploy with git commands."
+  },
+  {
+    "objectID": "blog/posts/dokku/index.html#deploying-apps-as-a-docker-container",
+    "href": "blog/posts/dokku/index.html#deploying-apps-as-a-docker-container",
+    "title": "Dokku: my favorite personal serverless platform",
+    "section": "Deploying Apps as A Docker Container",
+    "text": "Deploying Apps as A Docker Container\nI have deployed various applications for my clients, which include things like nbsanity, data cleaning tools for LLMs, and private static sites. An easy way to do this is with a Docker container.\nTo deploy a Docker container, I put a Dockerfile in the root of my git repo like this:\n\n\nDockerfile\n\nFROM python:3.10\n\nCOPY . /app\nWORKDIR /app\n\n# Install the local package\nRUN pip install .\n\n# this directory contains app.py that defines a FastApi app\nWORKDIR /app/\n\nENTRYPOINT [\"./entrypoint.sh\"]\n\n\n\n\n\n\n\nTip\n\n\n\nScripts to rule them all.\nThe entrypoint.sh script allows me to easily run the app locally or in a Docker container. It looks like this:\n\n\nentrypoint.sh\n\n#!/bin/bash\nexec uvicorn main:app --port \"$PORT\" --host 0.0.0.0\n\n\n\nOn the Dokku host, create the app:\ndokku apps:create myapp\nLocally, add the Dokku host as a remote and push to it:\ngit remote add dokku dokku@dokku:myapp\ngit push dokku main\nThat’s it - your app should be running on the Dokku host! You can scale it up/down with the following command (and do a whole lot more):\n#scale to two workers\ndokku ps:scale myapp web=2"
+  },
+  {
+    "objectID": "blog/posts/dokku/index.html#static-sites",
+    "href": "blog/posts/dokku/index.html#static-sites",
+    "title": "Dokku: my favorite personal serverless platform",
+    "section": "Static Sites",
+    "text": "Static Sites\nGitHub Pages is annoying in that you can’t easily deploy private static sites without paying for an expensive Enterprise account. With Dokku, you can easily deploy a static site from a private GitHub Repo and password-protect it.\nWe will assume that you have a static site in a git repo in a folder named _site.\nOn the Dokku host, create an app named mysite and set the NGINX_ROOT environment variable to _site:\ndokku apps:create mystite\ndokku config:set static-site NGINX_ROOT=_site\nAlso on the Dokku host, install basic auth and set permissions so the plugin can work properly.\n# do setup for the auth plugin that we will use later\nsudo dokku plugin:install https://github.com/dokku/dokku-http-auth.git\nsudo chmod +x /home/dokku\nLocally, set up access to the Dokku host and name it dokku in your ~/.ssh/config file. For example, here is mine:\nHost dokku\n  HostName &lt;The external IP address of your Dokku host&gt;\n  User ubuntu\n  IdentityFile /Users/hamel/.ssh/dokku\nThen do the following from the root of your git repo that contains the static site:\n\n1touch .static\n2echo BUILDPACK_URL=https://github.com/dokku/buildpack-nginx &gt; .env\n3git remote add dokku dokku@dokku:mysite\n\n1\n\ntells dokku that this is a static site\n\n2\n\ntells dokku to use the nginx buildpack for static sites (it will usually automatically detect this, but if you have a project with code and a static site, you need to tell it to use the nginx buildpack so it doesn’t get confused).\n\n3\n\nadd the dokku host as a remote\n\n\nFinally, deploy your application:\ngit push dokku main\nYou can now add auth by running the following command on the Dokku host:\ndokku http-auth:enable mystite &lt;username&gt; &lt;password&gt;\n\n\n\n\n\n\nNote\n\n\n\nYou can add multiple usernames/passwords and even filter specific IPs. See the docs.\n\n\n\n\n\n\n\n\nSSL / HTTPS\n\n\n\nIt’s often desirable to have HTTPS for your site. Dokku makes this easy with the Let’s Encrypt Plugin, which will even auto-renew for you. I don’t use this, because I’m letting Cloudflare handle this with its proxy.\nIf you are using Cloudflare this way, activating this plugin will mess things up (don’t worry its easy to disable). Honestly, I think it’s easier to let Cloudflare handle it if you are already doing so."
+  },
+  {
+    "objectID": "blog/posts/dokku/index.html#deploying-dokku-apps-with-github-actions",
+    "href": "blog/posts/dokku/index.html#deploying-dokku-apps-with-github-actions",
+    "title": "Dokku: my favorite personal serverless platform",
+    "section": "Deploying Dokku Apps with GitHub Actions",
+    "text": "Deploying Dokku Apps with GitHub Actions\nYou can automatically deploy Dokuu apps with GitHub Actions, which is helpful if you don’t want to fiddle with pushing to the Dokku host. Here is an example GitHub Action workflow that does this:\n\n\ndeploy-dokku.yml\n\nname: CI\non:\n  workflow_dispatch:\n  push:\n    branches: [main]\n\nconcurrency: # Cancel previous jobs to avoid deploy locks on dokku\n  group: ${{ github.ref }}\n  cancel-in-progress: true\n\njobs:\n  deploy-dokku:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Checkout code\n        uses: actions/checkout@v2\n        with:\n          fetch-depth: 0\n      \n      - name: Install SSH key\n        run: |\n          echo \"${{ secrets.DOKKU_SSH_PRIVATE_KEY }}\" &gt; private_key.pem\n          chmod 600 private_key.pem\n\n      - name: Add remote and push\n        run: |\n          git remote add dokku dokku@rechat.co:llm-eval\n          GIT_SSH_COMMAND=\"ssh -i private_key.pem -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no\" git push dokku main -f"
+  },
+  {
+    "objectID": "blog/posts/nbdev/index.html",
+    "href": "blog/posts/nbdev/index.html",
+    "title": "On commercializing nbdev",
+    "section": "",
+    "text": "nbdev is a software development tool based on Jupyter that feels like its from the future.\nA few friends have asked me why I decided not to commercialize nbdev, especially after putting lots of work into the project, including leaving my full-time job to work on it. So I thought I would write a short post to explain my reasoning."
+  },
+  {
+    "objectID": "blog/posts/nbdev/index.html#background",
+    "href": "blog/posts/nbdev/index.html#background",
+    "title": "On commercializing nbdev",
+    "section": "Background",
+    "text": "Background\nnbdev is an innovative software development framework for Python that embraces literate and exploratory programming. I worked on nbdev from 2020-2023 with Jeremy Howard and, later, Wasim Lorgat. I had the privilege and excitement of exploring the boundaries of developer tools and exploratory programming while working with very talented software engineers. In addition to creating a tool many people enjoyed, I enjoyed using nbdev for personal and professional projects."
+  },
+  {
+    "objectID": "blog/posts/nbdev/index.html#opportunities",
+    "href": "blog/posts/nbdev/index.html#opportunities",
+    "title": "On commercializing nbdev",
+    "section": "Opportunities",
+    "text": "Opportunities\nWhile conducting product research, I interviewed many developers from different backgrounds to understand their pain points and needs. All developers I talked to struggled with one key challenge: it was difficult, if not impossible, to convince other engineers to use nbdev.\nThe following are the biggest reasons that prevented adoption:\n\nFriction in onboarding engineers. In many companies, there are often existing Python projects, and it can be detrimental to maintain different ways of doing things when a company has already settled upon one way that it has built processes and tools around.\nCollisions with the rest of the software development stack: it was (and still is) a pain to version control notebooks in a way that’s conducive to collaboration. For practical purposes, you cannot perform code reviews of notebooks on GitHub without purchasing a tool called ReviewNB. So instead of convincing people to use nbdev, you have to convince them to use nbdev and ReviewNB. This makes the barrier to initial adoption considerably high - as procuring software in many organizations is a non-trivial process involving security review, compliance, legal and other stakeholders.\n\nI viewed solving the above problems as potential opportunities for commercializing nbdev."
+  },
+  {
+    "objectID": "blog/posts/nbdev/index.html#shifting-focus",
+    "href": "blog/posts/nbdev/index.html#shifting-focus",
+    "title": "On commercializing nbdev",
+    "section": "Shifting Focus",
+    "text": "Shifting Focus\nJeremy, Wasim, and I eventually settled on the idea of “WordPress for developers,” a hosted site allowing people to create and share nbdev projects. We thought this would be an excellent way to get people to try nbdev without installing anything. The idea was to narrow the audience to people interested in hosting projects on a platform that promoted exploration and sharing, similar to Glitch that was as easy to use and pragmatic as Wordpress.\nAround the same time we began discussing hosted tools, the machine learning world experienced a tectonic shift due to the explosion of Generative AI, namely Stable Diffusion. fast.ai, the organization that created nbdev, was also changing its focus. fast.ai’s prime directive was to make deep learning accessible to as many people as possible, and generative AI was too important to ignore. Accordingly, Jeremy placed his full attention on a Stable Diffusion course.\nThis pivot caused some turbulence as we navigated the different priorities of nbdev, generative AI research, and making money. We eventually settled on offering consulting services for everything related to fast.ai in the form of fast.ai partners, which would allow us to bootstrap ourselves financially and embrace the larger mission of fast.ai (including generative AI and research). Eventually, I found the splintered focus across so many areas to be unproductive1 and decided to step away from everything except consulting to regain my footing.\nSoon after that, ChatGPT emerged onto the scene and caused further shifts in machine learning that were orders of magnitude larger than their text-to-image predecessors. Pretty soon, all of my clients were interested in language models, and I found myself working exclusively on operationalizing them (a skill that I have cultivated by working in machine learning for 20+ years). Additionally, LLMs profoundly changed the nature of software development, especially the kind of software development that nbdev was designed to support2. These factors and those discussed earlier suggested it was a good time to step away from nbdev and focus on other things."
+  },
+  {
+    "objectID": "blog/posts/nbdev/index.html#what-i-learned",
+    "href": "blog/posts/nbdev/index.html#what-i-learned",
+    "title": "On commercializing nbdev",
+    "section": "What I learned",
+    "text": "What I learned\nI learned some important lessons during this process:\n\nJust because you love a project and find it useful, that doesn’t necessarily imply that it’s ripe for commercialization. I always struggled to gain conviction that there was a good business model for nbdev.3 Instead, I pursued this path because I was drawn to the idea of starting a business with people I really liked. Ultimately, I learned that at least one person needs strong conviction in addition to being excited about the people you are working with - not just one or the other.4 I also learned that it’s important to be honest with yourself about your (and your team’s) level of conviction and not try to force something that isn’t there.\nListen to your instincts. I ignored my instincts on multiple occasions throughout this journey. As I’ve grown older, I’ve learned to make this mistake much less often, but I could have done better here.\nDon’t be afraid to pivot. I think we avoided unnecessary churn by steering clear of a situation that wasn’t promising. I’m much more excited about the work I’m doing now.5\nOwn your own brand. My professional brand became increasingly tied to fast.ai and my friend Jeremy Howard. I’m grateful for the growth I’ve experienced under this mentorship – but I believe it is important to build your own distinct brand and identity. I discovered it can be challenging to build your own brand when you are working on someone else’s project6, and is something I struggled with. I’m looking forward to working on this more."
+  },
+  {
+    "objectID": "blog/posts/nbdev/index.html#future-directions",
+    "href": "blog/posts/nbdev/index.html#future-directions",
+    "title": "On commercializing nbdev",
+    "section": "Future Directions",
+    "text": "Future Directions\nI suspect that I’m not completely finished with nbdev. I may revisit the project or related ideas when the time is right. I’m excited by the work Posit is doing in the areas of literate and exploratory programming, which include many of the ideas explored in nbdev. Wasim has even joined the team at Posit, so I’m excited to see what they come up with.7\nRegarding what I’m working on next – I’ll have to save my thoughts on that for another post 😊."
+  },
+  {
+    "objectID": "blog/posts/nbdev/index.html#footnotes",
+    "href": "blog/posts/nbdev/index.html#footnotes",
+    "title": "On commercializing nbdev",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nI burned out several times during this process, but I didn’t realize why at the time. Not surprisingly, trying to focus on too many things at once was the root cause.↩︎\nSee this demo for ideas on how coding with LLMs might look like, especially with notebooks.↩︎\nThe problem with the hosted solution is that this is not something I would want to use. I can’t picture myself trying to host code on something other than GitHub/GitLab.↩︎\nWithout shared conviction, there is no glue holding everyone together and people can drift apart.↩︎\nI’ll share more about this in a future post.↩︎\nI don’t believe this is always the case, but it can be true depending on the dynamics of the group.↩︎\nWe previously partnered with Posit and JJ Allaire and built nbdev on top of Quarto. I’m currently advising Posit on their product and strategy. They have additional projects on their roadmap that I cannot disclose now.↩︎"
+  },
+  {
+    "objectID": "talks.html",
+    "href": "talks.html",
+    "title": "🎤 Talks",
+    "section": "",
+    "text": "These are a list of talks I’ve given:\n\nEvaluating and Productionizing LLMs, Vanishing Data Podcast, Nov 2023.\nInnovating on Software Development, Data Council, March 2023.\nAutoML, Literate Programming, and Data Tooling Cargo Cults, Vanishing Gradients Podcast with Hugo Bowne Anderson, July 2022.\nHow to evaluate ML Tooling: Guest Lecutre for Stanford CS 329S ML Systems Design, Feb 2022. Slides, Video\nJupyterCon 2020: “fastpages - A new, open source Jupyter notebook blogging system.”. Slides, Video.\nGradient Descent by Weights & Biases: A discussion on Automated Machine Learning, CodeSearchNet, GitHub Actions and MLOps: Video\nGitHub Universe 2019: “Machine Learning Ops With GitHub Actions & Kubernetes”. Video\nTensorFlow World, 2019: “Automating your developer workflow on GitHub with Tensorflow”. Slides, Link\nData Skeptic Interview, Jan 2018: “Semantic Search at Github”.\nKubeCon 2018, “Natural Language Code Search With Kubeflow”. Slides, Video\nKDD, London August 2018: Hands on tutorial, “Feature Extraction and Summarization With Sequence to Sequence Learning”. Tutorial-site\nMl4all, Portland May 2018: “How to Create Magical Data Products Using Sequence-to-Sequence Models”. Slides, Video\nODSC, San Francisco Nov 2017: “Advice For New And Junior Data Scientists” Video"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Hamel's Blog",
+    "section": "",
+    "text": "I’m currently an independent consultant helping companies operationalize LLMs at Parlance Labs. At GitHub, I lead CodeSearchNet, a large language model for semantic search that was a precursor to CoPilot, a large language model used by millions of developers."
+  },
+  {
+    "objectID": "index.html#get-in-touch",
+    "href": "index.html#get-in-touch",
+    "title": "Hamel's Blog",
+    "section": "💼 Get In Touch",
+    "text": "💼 Get In Touch\nDo you need help operationalizing ML or large language models?\nI’m open to consulting work and other forms of advisory. Email me at hamel@parlance-labs.com if you’d like to chat!"
+  },
+  {
+    "objectID": "index.html#feed",
+    "href": "index.html#feed",
+    "title": "Hamel's Blog",
+    "section": "📮 Feed",
+    "text": "📮 Feed\nA curated collection of blog posts and shorter form notes.\n\n\n    \n      \n      \n    \n\n\n\n\n\nDate\n\n\nTitle\n\n\n\n\n\n\n1/16/24\n\n\nDokku: my favorite personal serverless platform\n\n\n\n\n12/17/23\n\n\nTokenization Gotchas\n\n\n\n\n11/15/23\n\n\nTools for curating LLM Data\n\n\n\n\n10/28/23\n\n\nvLLM & Large Models\n\n\n\n\n10/15/23\n\n\nOptimizing LLM latency\n\n\n\n\n5/30/23\n\n\nOn commercializing nbdev\n\n\n\n\n1/16/23\n\n\nWhy Should ML Engineers Learn Kubernetes?\n\n\n\n\n7/28/22\n\n\nnbdev + Quarto: A new secret weapon for productivity\n\n\n\n\n2/9/22\n\n\nNotebooks in production with Metaflow\n\n\n\n\n12/18/20\n\n\nghapi, a new third-party Python client for the GitHub API\n\n\n\n\n11/20/20\n\n\nNbdev: A literate programming environment that democratizes software engineering best practices\n\n\n\n\n9/1/20\n\n\nfastcore: An Underrated Python Library\n\n\n\n\n9/1/20\n\n\nData Science Meets Devops: MLOps with Jupyter, Git, & Kubernetes\n\n\n\n\n3/6/20\n\n\nGitHub Actions: Providing Data Scientists With New Superpowers.\n\n\n\n\n2/21/20\n\n\nIntroducing fastpages, An easy to use blogging platform with extra features for Jupyter Notebooks.\n\n\n\n\n2/5/20\n\n\nPython Concurrency: The Tricky Bits\n\n\n\n\n9/20/19\n\n\nCodeSearchNet Challenge: Evaluating the State of Semantic Code Search\n\n\n\n\n4/10/19\n\n\nHow to Automate Tasks on GitHub With Machine Learning for Fun and Profit\n\n\n\n\n5/29/18\n\n\nHow To Create Natural Language Semantic Search for Arbitrary Objects With Deep Learning\n\n\n\n\n1/18/18\n\n\nHow To Create Magical Data Products Using Sequence-to-Sequence Models\n\n\n\n\n12/16/17\n\n\nHow Docker Can Help You Become A More Effective Data Scientist\n\n\n\n\n5/10/17\n\n\nAutomated Machine Learning — A Paradigm Shift That Accelerates Data Scientist Productivity @ Airbnb\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "index.html#subscribe",
+    "href": "index.html#subscribe",
+    "title": "Hamel's Blog",
+    "section": "📬 Subscribe",
+    "text": "📬 Subscribe\nSubscribe via  RSS."
+  },
+  {
     "objectID": "blog/posts/k8s/index.html",
     "href": "blog/posts/k8s/index.html",
     "title": "Why Should ML Engineers Learn Kubernetes?",
@@ -2232,95 +2351,11 @@
     "text": "Footnotes\n\n\nVicki is not someone who is impressed by flashy or new technologies and is someone who takes a pragmatic approach to get the job done. When she says you should learn K8s, you should pay attention!↩︎\nEach subsection of this article has a picture that has been generated by Stable diffusion with a prompt that very similar to the image caption.↩︎\nThese systems are AWS - Sagemaker, Azure - AzureML and GCP - VertexAI.↩︎\nSome organizations have built solutions that avoid K8s. For example, BigHat uses a solution based on AWS SageMaker + Lambda and other hosted solutions. So it might be a mistake to try to move over to K8s in that example – you should try to leverage your company’s existing tech stack where possible!↩︎\nMy friend Michał Jastrzębski, who specializes in ML infrastructure, has shared the following colorful anecdote with me: “when I hear Data Scientists shouldn’t learn K8s”, I hear “DevOps needs to learn Airflow”.↩︎\nSpecifically, K8s concepts that are relevant are namespaces, labels and RBAC.↩︎"
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Hamel's Blog",
-    "section": "",
-    "text": "I’m currently an independent consultant helping companies operationalize LLMs at Parlance Labs. At GitHub, I lead CodeSearchNet, a large language model for semantic search that was a precursor to CoPilot, a large language model used by millions of developers."
-  },
-  {
-    "objectID": "index.html#get-in-touch",
-    "href": "index.html#get-in-touch",
-    "title": "Hamel's Blog",
-    "section": "💼 Get In Touch",
-    "text": "💼 Get In Touch\nDo you need help operationalizing ML or large language models?\nI’m open to consulting work and other forms of advisory. Email me at hamel@parlance-labs.com if you’d like to chat!"
-  },
-  {
-    "objectID": "index.html#feed",
-    "href": "index.html#feed",
-    "title": "Hamel's Blog",
-    "section": "📮 Feed",
-    "text": "📮 Feed\nA curated collection of blog posts and shorter form notes.\n\n\n    \n      \n      \n    \n\n\n\n\n\nDate\n\n\nTitle\n\n\n\n\n\n\n12/17/23\n\n\nTokenization Gotchas\n\n\n\n\n11/15/23\n\n\nTools for curating LLM Data\n\n\n\n\n10/28/23\n\n\nvLLM & Large Models\n\n\n\n\n10/15/23\n\n\nOptimizing LLM latency\n\n\n\n\n5/30/23\n\n\nOn commercializing nbdev\n\n\n\n\n1/16/23\n\n\nWhy Should ML Engineers Learn Kubernetes?\n\n\n\n\n7/28/22\n\n\nnbdev + Quarto: A new secret weapon for productivity\n\n\n\n\n2/9/22\n\n\nNotebooks in production with Metaflow\n\n\n\n\n12/18/20\n\n\nghapi, a new third-party Python client for the GitHub API\n\n\n\n\n11/20/20\n\n\nNbdev: A literate programming environment that democratizes software engineering best practices\n\n\n\n\n9/1/20\n\n\nfastcore: An Underrated Python Library\n\n\n\n\n9/1/20\n\n\nData Science Meets Devops: MLOps with Jupyter, Git, & Kubernetes\n\n\n\n\n3/6/20\n\n\nGitHub Actions: Providing Data Scientists With New Superpowers.\n\n\n\n\n2/21/20\n\n\nIntroducing fastpages, An easy to use blogging platform with extra features for Jupyter Notebooks.\n\n\n\n\n2/5/20\n\n\nPython Concurrency: The Tricky Bits\n\n\n\n\n9/20/19\n\n\nCodeSearchNet Challenge: Evaluating the State of Semantic Code Search\n\n\n\n\n4/10/19\n\n\nHow to Automate Tasks on GitHub With Machine Learning for Fun and Profit\n\n\n\n\n5/29/18\n\n\nHow To Create Natural Language Semantic Search for Arbitrary Objects With Deep Learning\n\n\n\n\n1/18/18\n\n\nHow To Create Magical Data Products Using Sequence-to-Sequence Models\n\n\n\n\n12/16/17\n\n\nHow Docker Can Help You Become A More Effective Data Scientist\n\n\n\n\n5/10/17\n\n\nAutomated Machine Learning — A Paradigm Shift That Accelerates Data Scientist Productivity @ Airbnb\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "index.html#subscribe",
-    "href": "index.html#subscribe",
-    "title": "Hamel's Blog",
-    "section": "📬 Subscribe",
-    "text": "📬 Subscribe\nSubscribe via  RSS."
-  },
-  {
-    "objectID": "talks.html",
-    "href": "talks.html",
-    "title": "🎤 Talks",
-    "section": "",
-    "text": "These are a list of talks I’ve given:\n\nEvaluating and Productionizing LLMs, Vanishing Data Podcast, Nov 2023.\nInnovating on Software Development, Data Council, March 2023.\nAutoML, Literate Programming, and Data Tooling Cargo Cults, Vanishing Gradients Podcast with Hugo Bowne Anderson, July 2022.\nHow to evaluate ML Tooling: Guest Lecutre for Stanford CS 329S ML Systems Design, Feb 2022. Slides, Video\nJupyterCon 2020: “fastpages - A new, open source Jupyter notebook blogging system.”. Slides, Video.\nGradient Descent by Weights & Biases: A discussion on Automated Machine Learning, CodeSearchNet, GitHub Actions and MLOps: Video\nGitHub Universe 2019: “Machine Learning Ops With GitHub Actions & Kubernetes”. Video\nTensorFlow World, 2019: “Automating your developer workflow on GitHub with Tensorflow”. Slides, Link\nData Skeptic Interview, Jan 2018: “Semantic Search at Github”.\nKubeCon 2018, “Natural Language Code Search With Kubeflow”. Slides, Video\nKDD, London August 2018: Hands on tutorial, “Feature Extraction and Summarization With Sequence to Sequence Learning”. Tutorial-site\nMl4all, Portland May 2018: “How to Create Magical Data Products Using Sequence-to-Sequence Models”. Slides, Video\nODSC, San Francisco Nov 2017: “Advice For New And Junior Data Scientists” Video"
-  },
-  {
-    "objectID": "blog/posts/nbdev/index.html",
-    "href": "blog/posts/nbdev/index.html",
-    "title": "On commercializing nbdev",
-    "section": "",
-    "text": "nbdev is a software development tool based on Jupyter that feels like its from the future.\nA few friends have asked me why I decided not to commercialize nbdev, especially after putting lots of work into the project, including leaving my full-time job to work on it. So I thought I would write a short post to explain my reasoning."
-  },
-  {
-    "objectID": "blog/posts/nbdev/index.html#background",
-    "href": "blog/posts/nbdev/index.html#background",
-    "title": "On commercializing nbdev",
-    "section": "Background",
-    "text": "Background\nnbdev is an innovative software development framework for Python that embraces literate and exploratory programming. I worked on nbdev from 2020-2023 with Jeremy Howard and, later, Wasim Lorgat. I had the privilege and excitement of exploring the boundaries of developer tools and exploratory programming while working with very talented software engineers. In addition to creating a tool many people enjoyed, I enjoyed using nbdev for personal and professional projects."
-  },
-  {
-    "objectID": "blog/posts/nbdev/index.html#opportunities",
-    "href": "blog/posts/nbdev/index.html#opportunities",
-    "title": "On commercializing nbdev",
-    "section": "Opportunities",
-    "text": "Opportunities\nWhile conducting product research, I interviewed many developers from different backgrounds to understand their pain points and needs. All developers I talked to struggled with one key challenge: it was difficult, if not impossible, to convince other engineers to use nbdev.\nThe following are the biggest reasons that prevented adoption:\n\nFriction in onboarding engineers. In many companies, there are often existing Python projects, and it can be detrimental to maintain different ways of doing things when a company has already settled upon one way that it has built processes and tools around.\nCollisions with the rest of the software development stack: it was (and still is) a pain to version control notebooks in a way that’s conducive to collaboration. For practical purposes, you cannot perform code reviews of notebooks on GitHub without purchasing a tool called ReviewNB. So instead of convincing people to use nbdev, you have to convince them to use nbdev and ReviewNB. This makes the barrier to initial adoption considerably high - as procuring software in many organizations is a non-trivial process involving security review, compliance, legal and other stakeholders.\n\nI viewed solving the above problems as potential opportunities for commercializing nbdev."
-  },
-  {
-    "objectID": "blog/posts/nbdev/index.html#shifting-focus",
-    "href": "blog/posts/nbdev/index.html#shifting-focus",
-    "title": "On commercializing nbdev",
-    "section": "Shifting Focus",
-    "text": "Shifting Focus\nJeremy, Wasim, and I eventually settled on the idea of “WordPress for developers,” a hosted site allowing people to create and share nbdev projects. We thought this would be an excellent way to get people to try nbdev without installing anything. The idea was to narrow the audience to people interested in hosting projects on a platform that promoted exploration and sharing, similar to Glitch that was as easy to use and pragmatic as Wordpress.\nAround the same time we began discussing hosted tools, the machine learning world experienced a tectonic shift due to the explosion of Generative AI, namely Stable Diffusion. fast.ai, the organization that created nbdev, was also changing its focus. fast.ai’s prime directive was to make deep learning accessible to as many people as possible, and generative AI was too important to ignore. Accordingly, Jeremy placed his full attention on a Stable Diffusion course.\nThis pivot caused some turbulence as we navigated the different priorities of nbdev, generative AI research, and making money. We eventually settled on offering consulting services for everything related to fast.ai in the form of fast.ai partners, which would allow us to bootstrap ourselves financially and embrace the larger mission of fast.ai (including generative AI and research). Eventually, I found the splintered focus across so many areas to be unproductive1 and decided to step away from everything except consulting to regain my footing.\nSoon after that, ChatGPT emerged onto the scene and caused further shifts in machine learning that were orders of magnitude larger than their text-to-image predecessors. Pretty soon, all of my clients were interested in language models, and I found myself working exclusively on operationalizing them (a skill that I have cultivated by working in machine learning for 20+ years). Additionally, LLMs profoundly changed the nature of software development, especially the kind of software development that nbdev was designed to support2. These factors and those discussed earlier suggested it was a good time to step away from nbdev and focus on other things."
-  },
-  {
-    "objectID": "blog/posts/nbdev/index.html#what-i-learned",
-    "href": "blog/posts/nbdev/index.html#what-i-learned",
-    "title": "On commercializing nbdev",
-    "section": "What I learned",
-    "text": "What I learned\nI learned some important lessons during this process:\n\nJust because you love a project and find it useful, that doesn’t necessarily imply that it’s ripe for commercialization. I always struggled to gain conviction that there was a good business model for nbdev.3 Instead, I pursued this path because I was drawn to the idea of starting a business with people I really liked. Ultimately, I learned that at least one person needs strong conviction in addition to being excited about the people you are working with - not just one or the other.4 I also learned that it’s important to be honest with yourself about your (and your team’s) level of conviction and not try to force something that isn’t there.\nListen to your instincts. I ignored my instincts on multiple occasions throughout this journey. As I’ve grown older, I’ve learned to make this mistake much less often, but I could have done better here.\nDon’t be afraid to pivot. I think we avoided unnecessary churn by steering clear of a situation that wasn’t promising. I’m much more excited about the work I’m doing now.5\nOwn your own brand. My professional brand became increasingly tied to fast.ai and my friend Jeremy Howard. I’m grateful for the growth I’ve experienced under this mentorship – but I believe it is important to build your own distinct brand and identity. I discovered it can be challenging to build your own brand when you are working on someone else’s project6, and is something I struggled with. I’m looking forward to working on this more."
-  },
-  {
-    "objectID": "blog/posts/nbdev/index.html#future-directions",
-    "href": "blog/posts/nbdev/index.html#future-directions",
-    "title": "On commercializing nbdev",
-    "section": "Future Directions",
-    "text": "Future Directions\nI suspect that I’m not completely finished with nbdev. I may revisit the project or related ideas when the time is right. I’m excited by the work Posit is doing in the areas of literate and exploratory programming, which include many of the ideas explored in nbdev. Wasim has even joined the team at Posit, so I’m excited to see what they come up with.7\nRegarding what I’m working on next – I’ll have to save my thoughts on that for another post 😊."
-  },
-  {
-    "objectID": "blog/posts/nbdev/index.html#footnotes",
-    "href": "blog/posts/nbdev/index.html#footnotes",
-    "title": "On commercializing nbdev",
-    "section": "Footnotes",
-    "text": "Footnotes\n\n\nI burned out several times during this process, but I didn’t realize why at the time. Not surprisingly, trying to focus on too many things at once was the root cause.↩︎\nSee this demo for ideas on how coding with LLMs might look like, especially with notebooks.↩︎\nThe problem with the hosted solution is that this is not something I would want to use. I can’t picture myself trying to host code on something other than GitHub/GitLab.↩︎\nWithout shared conviction, there is no glue holding everyone together and people can drift apart.↩︎\nI’ll share more about this in a future post.↩︎\nI don’t believe this is always the case, but it can be true depending on the dynamics of the group.↩︎\nWe previously partnered with Posit and JJ Allaire and built nbdev on top of Quarto. I’m currently advising Posit on their product and strategy. They have additional projects on their roadmap that I cannot disclose now.↩︎"
-  },
-  {
     "objectID": "blog/secret.html",
     "href": "blog/secret.html",
     "title": "Hamel’s Blog",
     "section": "",
-    "text": "This page is supposed to be secret!\n\n\n\nA listing of all my blog posts can be found here\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nOn commercializing nbdev\n\n\n\n\n\n\nJupyter\n\n\nnbdev\n\n\n\nWhy I decided not to commercialize nbdev.\n\n\n\n\n\nMay 30, 2023\n\n\nHamel Husain\n\n\n\n\n\n\n\n\n\n\n\n\nWhy Should ML Engineers Learn Kubernetes?\n\n\n\n\n\n\nK8s\n\n\n\nLearning K8s can give you an unreasonable advantage as an MLE and unblock your team.\n\n\n\n\n\nJan 16, 2023\n\n\nHamel Husain\n\n\n\n\n\n\nNo matching items"
+    "text": "This page is supposed to be secret!\n\n\n\nA listing of all my blog posts can be found here\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDokku: my favorite personal serverless platform\n\n\n\n\n\n\ninfra\n\n\nseverless\n\n\n\nLike Heroku, but you own it.\n\n\n\n\n\nJan 16, 2024\n\n\nHamel Husain\n\n\n\n\n\n\n\n\n\n\n\n\nOn commercializing nbdev\n\n\n\n\n\n\nJupyter\n\n\nnbdev\n\n\n\nWhy I decided not to commercialize nbdev.\n\n\n\n\n\nMay 30, 2023\n\n\nHamel Husain\n\n\n\n\n\n\n\n\n\n\n\n\nWhy Should ML Engineers Learn Kubernetes?\n\n\n\n\n\n\nK8s\n\n\n\nLearning K8s can give you an unreasonable advantage as an MLE and unblock your team.\n\n\n\n\n\nJan 16, 2023\n\n\nHamel Husain\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "notes/how-to-learn/index.html",

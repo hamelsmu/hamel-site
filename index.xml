@@ -17,7 +17,437 @@
 <width>144</width>
 </image>
 <generator>quarto-1.4.533</generator>
-<lastBuildDate>Sun, 17 Dec 2023 08:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 16 Jan 2024 08:00:00 GMT</lastBuildDate>
+<item>
+  <title>Dokku: my favorite personal serverless platform</title>
+  <dc:creator>Hamel Husain</dc:creator>
+  <link>https://hamel.dev/blog/posts/dokku/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="img-fluid quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://hamel.dev/blog/posts/dokku/images/serverless.png" class="img-fluid figure-img"></p>
+<figcaption>With Dokku, you can turn a VPS into a powerful serverless platform</figcaption>
+</figure>
+</div>
+<section id="what-is-dokku" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-dokku">What is Dokku?</h2>
+<p><a href="https://dokku.com/">Dokku</a> is an open-source Platform as a Service (PaaS) that runs on a single server of your choice. <strong>It’s like <a href="https://www.heroku.com/">Heroku</a>, but you own it.</strong> It is a great way to get many of the benefits of Heroku without the costs (Heroku can get quite expensive!).</p>
+<p><strong>I run my Dokku server on a $7/month vps on <a href="https://us.ovhcloud.com/">OVHcloud</a>.</strong> I serve multiple websites and applications on this server. Some of the features I love about Dokku:</p>
+<ul>
+<li>Easy to use (like Heroku).</li>
+<li>Automatic SSL certificate management via <a href="https://letsencrypt.org/">Let’s Encrypt</a>.</li>
+<li>Basic Auth support so I can password-protect sites.</li>
+<li>Scale up and down with a single command.</li>
+<li>Flexibility to handle any application (Node, Python, etc), including defining a Docker container.</li>
+<li>Lots of <a href="https://dokku.com/docs/community/plugins/?h=plugins#official-plugins">official plugins</a> that do almost anything I want.</li>
+<li>Easily deploy with git commands.</li>
+</ul>
+</section>
+<section id="minimal-dokku-examples" class="level1">
+<h1>Minimal Dokku examples</h1>
+<p>Make sure you <a href="https://dokku.com/docs/getting-started/installation/">install Dokku</a> on your VPS. As I mentioned, I use <a href="https://us.ovhcloud.com/">OVH</a>.</p>
+<section id="deploying-apps-as-a-docker-container" class="level2">
+<h2 class="anchored" data-anchor-id="deploying-apps-as-a-docker-container">Deploying Apps as A Docker Container</h2>
+<p>I have deployed various applications <a href="https://nbsanity.com/">for my clients</a>, which include things like <a href="https://nbsanity.com/">nbsanity</a>, <a href="https://langfree.parlance-labs.com/tutorials/shiny.html#run-the-shiny-app-locally">data cleaning tools for LLMs</a>, and private static sites. An easy way to do this is with a Docker container.</p>
+<p>To deploy a Docker container, I put a Dockerfile in the root of my git repo like this:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>Dockerfile</strong></pre>
+</div>
+<div class="sourceCode" id="cb1" data-filename="Dockerfile" style="background: #f1f3f5;"><pre class="sourceCode dockerfile code-with-copy"><code class="sourceCode dockerfile"><span id="cb1-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">FROM</span> python:3.10</span>
+<span id="cb1-2"></span>
+<span id="cb1-3"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">COPY</span> . /app</span>
+<span id="cb1-4"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">WORKDIR</span> /app</span>
+<span id="cb1-5"></span>
+<span id="cb1-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Install the local package</span></span>
+<span id="cb1-7"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">RUN</span> <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">pip</span> install .</span>
+<span id="cb1-8"></span>
+<span id="cb1-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># this directory contains app.py that defines a FastApi app</span></span>
+<span id="cb1-10"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">WORKDIR</span> /app/</span>
+<span id="cb1-11"></span>
+<span id="cb1-12"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">ENTRYPOINT</span> [<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"./entrypoint.sh"</span>]</span></code></pre></div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Scripts to <a href="https://github.com/github/scripts-to-rule-them-all">rule them all</a>.</p>
+<p>The <code>entrypoint.sh</code> script allows me to easily run the app locally or in a Docker container. It looks like this:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>entrypoint.sh</strong></pre>
+</div>
+<div class="sourceCode" id="cb2" data-filename="entrypoint.sh" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#!/bin/bash</span></span>
+<span id="cb2-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">exec</span> uvicorn main:app <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--port</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$PORT</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--host</span> 0.0.0.0</span></code></pre></div>
+</div>
+</div>
+</div>
+<p>On the Dokku host, create the app:</p>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">dokku</span> apps:create myapp</span></code></pre></div>
+<p>Locally, add the Dokku host as a remote and push to it:</p>
+<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> remote add dokku dokku@dokku:myapp</span>
+<span id="cb4-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> push dokku main</span></code></pre></div>
+<p>That’s it - your app should be running on the Dokku host! You can scale it up/down with the following command (and do a whole lot more):</p>
+<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#scale to two workers</span></span>
+<span id="cb5-2"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">dokku</span> ps:scale myapp web=2</span></code></pre></div>
+</section>
+<section id="static-sites" class="level2">
+<h2 class="anchored" data-anchor-id="static-sites">Static Sites</h2>
+<p>GitHub Pages is annoying in that you can’t easily deploy private static sites without paying for an expensive Enterprise account. With Dokku, you can easily deploy a static site from a private GitHub Repo and password-protect it.</p>
+<p>We will assume that you have a static site in a git repo in a folder named <code>_site</code>.</p>
+<p><strong>On the Dokku host</strong>, create an app named <code>mysite</code> and set the <code>NGINX_ROOT</code> environment variable to <code>_site</code>:</p>
+<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">dokku</span> apps:create mystite</span>
+<span id="cb6-2"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">dokku</span> config:set static-site NGINX_ROOT=_site</span></code></pre></div>
+<p>Also on the Dokku host, install <a href="https://github.com/dokku/dokku-http-auth">basic auth</a> and <a href="https://github.com/dokku/dokku-http-auth/issues/15#issuecomment-1637058437">set permissions</a> so the plugin can work properly.</p>
+<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># do setup for the auth plugin that we will use later</span></span>
+<span id="cb7-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sudo</span> dokku plugin:install https://github.com/dokku/dokku-http-auth.git</span>
+<span id="cb7-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sudo</span> chmod +x /home/dokku</span></code></pre></div>
+<p><strong>Locally</strong>, set up access to the Dokku host and name it <code>dokku</code> in your <code>~/.ssh/config</code> file. For example, here is mine:</p>
+<pre><code>Host dokku
+  HostName &lt;The external IP address of your Dokku host&gt;
+  User ubuntu
+  IdentityFile /Users/hamel/.ssh/dokku</code></pre>
+<p>Then do the following from the root of your git repo that contains the static site:</p>
+<div class="sourceCode" id="annotated-cell-8" style="background: #f1f3f5;"><pre class="sourceCode bash code-annotation-code code-with-copy code-annotated"><code class="sourceCode bash"><span id="annotated-cell-8-1"></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-8-2" class="code-annotation-target"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">touch</span> .static</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-8-3" class="code-annotation-target"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> BUILDPACK_URL=https://github.com/dokku/buildpack-nginx <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> .env</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-8-4" class="code-annotation-target"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> remote add dokku dokku@dokku:mysite</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-8" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="2" data-code-annotation="1">tells dokku that this is a static site</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="3" data-code-annotation="2">tells dokku to use the nginx buildpack for static sites (it will usually automatically detect this, but if you have a project with code and a static site, you need to tell it to use the nginx buildpack so it doesn’t get confused).</span>
+</dd>
+<dt data-target-cell="annotated-cell-8" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-cell="annotated-cell-8" data-code-lines="4" data-code-annotation="3">add the dokku host as a remote</span>
+</dd>
+</dl>
+<p>Finally, deploy your application:</p>
+<div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> push dokku main</span></code></pre></div>
+<p>You can now add auth by running the following command on the Dokku host:</p>
+<div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">dokku</span> http-auth:enable mystite <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>username<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>password<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span></span></code></pre></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You can add multiple usernames/passwords and even filter specific IPs. See <a href="https://github.com/dokku/dokku-http-auth">the docs</a>.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+SSL / HTTPS
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>It’s often desirable to have HTTPS for your site. Dokku makes this easy with the <a href="https://github.com/dokku/dokku-letsencrypt">Let’s Encrypt Plugin</a>, which will even auto-renew for you. I don’t use this, because I’m letting <a href="https://developers.cloudflare.com/dns/manage-dns-records/reference/proxied-dns-records/">Cloudflare handle this with its proxy</a>.</p>
+<p>If you are using Cloudflare this way, activating this plugin will mess things up (don’t worry its easy to disable). Honestly, I think it’s easier to let Cloudflare handle it if you are already doing so.</p>
+</div>
+</div>
+</section>
+<section id="deploying-dokku-apps-with-github-actions" class="level2">
+<h2 class="anchored" data-anchor-id="deploying-dokku-apps-with-github-actions">Deploying Dokku Apps with GitHub Actions</h2>
+<p>You can automatically deploy Dokuu apps with GitHub Actions, which is helpful if you don’t want to fiddle with pushing to the Dokku host. Here is an example GitHub Action workflow that does this:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>deploy-dokku.yml</strong></pre>
+</div>
+<div class="sourceCode" id="cb11" data-filename="deploy-dokku.yml" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb11-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">name</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> CI</span></span>
+<span id="cb11-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">on</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb11-3"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">workflow_dispatch</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb11-4"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">push</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb11-5"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">branches</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">main</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span></span>
+<span id="cb11-6"></span>
+<span id="cb11-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">concurrency</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"> # Cancel previous jobs to avoid deploy locks on dokku</span></span>
+<span id="cb11-8"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">group</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> ${{ github.ref }}</span></span>
+<span id="cb11-9"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cancel-in-progress</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">true</span></span>
+<span id="cb11-10"></span>
+<span id="cb11-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">jobs</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb11-12"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">deploy-dokku</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb11-13"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">runs-on</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> ubuntu-latest</span></span>
+<span id="cb11-14"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">steps</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb11-15"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">      </span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">-</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">name</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> Checkout code</span></span>
+<span id="cb11-16"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">        </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">uses</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> actions/checkout@v2</span></span>
+<span id="cb11-17"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">        </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">with</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb11-18"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">          </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fetch-depth</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb11-19"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">      </span></span>
+<span id="cb11-20"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">      </span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">-</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">name</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> Install SSH key</span></span>
+<span id="cb11-21"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">        run</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">: </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">|</span></span>
+<span id="cb11-22">          echo "${{ secrets.DOKKU_SSH_PRIVATE_KEY }}" &gt; private_key.pem</span>
+<span id="cb11-23">          chmod 600 private_key.pem</span>
+<span id="cb11-24"></span>
+<span id="cb11-25"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">      </span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">-</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">name</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> Add remote and push</span></span>
+<span id="cb11-26"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">        run</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">: </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">|</span></span>
+<span id="cb11-27">          git remote add dokku dokku@rechat.co:llm-eval</span>
+<span id="cb11-28">          GIT_SSH_COMMAND="ssh -i private_key.pem -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git push dokku main -f</span></code></pre></div>
+</div>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <category>infra</category>
+  <category>severless</category>
+  <guid>https://hamel.dev/blog/posts/dokku/</guid>
+  <pubDate>Tue, 16 Jan 2024 08:00:00 GMT</pubDate>
+  <media:content url="https://hamel.dev/blog/posts/dokku/images/serverless.png" medium="image" type="image/png" height="144" width="144"/>
+</item>
 <item>
   <title>Tokenization Gotchas</title>
   <link>https://hamel.dev/</link>
@@ -398,15 +828,6 @@ K8s For Data Scientists Course
   <category>NLP</category>
   <guid>https://hamel.dev/</guid>
   <pubDate>Thu, 18 Jan 2018 08:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>How Docker Can Help You Become A More Effective Data Scientist</title>
-  <link>https://hamel.dev/</link>
-  <description>A tutorial on Docker for Data Scientists.
-</description>
-  <category>Infra</category>
-  <guid>https://hamel.dev/</guid>
-  <pubDate>Sat, 16 Dec 2017 08:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
