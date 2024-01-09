@@ -168,11 +168,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#what-is-dokku" id="toc-what-is-dokku" class="nav-link active" data-scroll-target="#what-is-dokku">What is Dokku?</a></li>
-  <li><a href="#minimal-dokku-examples" id="toc-minimal-dokku-examples" class="nav-link" data-scroll-target="#minimal-dokku-examples">Minimal Dokku examples</a>
+  <li><a href="#minimal-dokku-examples" id="toc-minimal-dokku-examples" class="nav-link" data-scroll-target="#minimal-dokku-examples">Minimal Dokku Examples</a>
   <ul class="collapse">
   <li><a href="#deploying-apps-as-a-docker-container" id="toc-deploying-apps-as-a-docker-container" class="nav-link" data-scroll-target="#deploying-apps-as-a-docker-container">Deploying Apps as A Docker Container</a></li>
   <li><a href="#static-sites" id="toc-static-sites" class="nav-link" data-scroll-target="#static-sites">Static Sites</a></li>
-  <li><a href="#deploying-dokku-apps-with-github-actions" id="toc-deploying-dokku-apps-with-github-actions" class="nav-link" data-scroll-target="#deploying-dokku-apps-with-github-actions">Deploying Dokku Apps with GitHub Actions</a></li>
+  <li><a href="#deploying-with-github-actions" id="toc-deploying-with-github-actions" class="nav-link" data-scroll-target="#deploying-with-github-actions">Deploying With GitHub Actions</a></li>
   <li><a href="#why-did-i-write-this" id="toc-why-did-i-write-this" class="nav-link" data-scroll-target="#why-did-i-write-this">Why Did I Write This?</a></li>
   </ul></li>
   </ul>
@@ -229,8 +229,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <section id="what-is-dokku" class="level2">
 <h2 class="anchored" data-anchor-id="what-is-dokku">What is Dokku?</h2>
-<p><a href="https://dokku.com/">Dokku</a> is an open-source Platform as a Service (PaaS) that runs on a single server of your choice. <strong>It’s like <a href="https://www.heroku.com/">Heroku</a>, but you own it.</strong> It is a great way to get many of the benefits of Heroku without the costs (Heroku can get quite expensive!).</p>
-<p><strong>I run my Dokku server on a $7/month vps on <a href="https://us.ovhcloud.com/">OVHcloud</a>.</strong> I serve multiple websites and applications on this server. Some of the features I love about Dokku:</p>
+<p><a href="https://dokku.com/">Dokku</a> is an open-source Platform as a Service (PaaS) that runs on a single server of your choice. <strong>It’s like <a href="https://www.heroku.com/">Heroku</a>, but you own it.</strong> It is a great way to get the benefits of Heroku without the costs (Heroku can get quite expensive!). I need to deploy many applications for my <a href="https://parlance-labs.com/">LLM consulting work</a>. Having a cost-effective, easy-to-use serverless platform is essential for me.</p>
+<p><strong>I run a Dokku server on a $7/month VPS on <a href="https://us.ovhcloud.com/">OVHcloud</a></strong> for non-gpu workloads. These applications include things like <a href="https://nbsanity.com/">nbsanity</a> and <a href="https://langfree.parlance-labs.com/tutorials/shiny.html#run-the-shiny-app-locally">data cleaning tools for LLMs</a>.</p>
+<p>Some of the features I love about Dokku:</p>
 <ul>
 <li>Easy to use (like Heroku).</li>
 <li>Automatic SSL certificate management via <a href="https://letsencrypt.org/">Let’s Encrypt</a>.</li>
@@ -242,11 +243,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 </section>
 <section id="minimal-dokku-examples" class="level1">
-<h1>Minimal Dokku examples</h1>
+<h1>Minimal Dokku Examples</h1>
 <p>Make sure you <a href="https://dokku.com/docs/getting-started/installation/">install Dokku</a> on your VPS. As I mentioned, I use <a href="https://us.ovhcloud.com/">OVH</a>.</p>
 <section id="deploying-apps-as-a-docker-container" class="level2">
 <h2 class="anchored" data-anchor-id="deploying-apps-as-a-docker-container">Deploying Apps as A Docker Container</h2>
-<p>I have deployed various applications <a href="https://nbsanity.com/">for my clients</a>, which include things like <a href="https://nbsanity.com/">nbsanity</a>, <a href="https://langfree.parlance-labs.com/tutorials/shiny.html#run-the-shiny-app-locally">data cleaning tools for LLMs</a>, and private static sites. An easy way to do this is with a Docker container.</p>
+<p>An easy way to deploy applications is with a Docker container.</p>
 <p>To deploy a Docker container, I put a Dockerfile in the root of my git repo like this:</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -260,7 +261,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Install the local package</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="ex">pip</span> install .</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># this directory contains app.py that defines a FastApi app</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># This directory contains app.py, a FastApi app</span></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="kw">WORKDIR</span> /app/</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="kw">ENTRYPOINT</span> [<span class="st">"./entrypoint.sh"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -288,46 +289,45 @@ Tip
 </div>
 <p>On the Dokku host, create the app:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dokku</span> apps:create myapp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Locally</strong>, set up access to the Dokku host and name it <code>dokku</code> in your <code>~/.ssh/config</code> file. For example, here is mine:</p>
+<pre><code>Host dokku
+  HostName &lt;The external IP address of your Dokku host&gt;
+  User ubuntu
+  IdentityFile /Users/hamel/.ssh/dokku</code></pre>
 <p>Locally, add the Dokku host as a remote and push to it:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> remote add dokku dokku@dokku:myapp</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push dokku main</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> remote add dokku dokku@dokku:myapp</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push dokku main</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>That’s it - your app should be running on the Dokku host! You can scale it up/down with the following command (and do a whole lot more):</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#scale to two workers</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dokku</span> ps:scale myapp web=2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#scale to two workers</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dokku</span> ps:scale myapp web=2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="static-sites" class="level2">
 <h2 class="anchored" data-anchor-id="static-sites">Static Sites</h2>
 <p>GitHub Pages is annoying in that you can’t easily deploy private static sites without paying for an expensive Enterprise account. With Dokku, you can easily deploy a static site from a private GitHub Repo and password-protect it.</p>
 <p>We will assume that you have a static site in a git repo in a folder named <code>_site</code>.</p>
 <p><strong>On the Dokku host</strong>, create an app named <code>mysite</code> and set the <code>NGINX_ROOT</code> environment variable to <code>_site</code>:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dokku</span> apps:create mystite</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dokku</span> config:set static-site NGINX_ROOT=_site</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dokku</span> apps:create mystite</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dokku</span> config:set static-site NGINX_ROOT=_site</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Also on the Dokku host, install <a href="https://github.com/dokku/dokku-http-auth">basic auth</a> and <a href="https://github.com/dokku/dokku-http-auth/issues/15#issuecomment-1637058437">set permissions</a> so the plugin can work properly.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># do setup for the auth plugin that we will use later</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dokku plugin:install https://github.com/dokku/dokku-http-auth.git</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> chmod +x /home/dokku</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>Locally</strong>, set up access to the Dokku host and name it <code>dokku</code> in your <code>~/.ssh/config</code> file. For example, here is mine:</p>
-<pre><code>Host dokku
-  HostName &lt;The external IP address of your Dokku host&gt;
-  User ubuntu
-  IdentityFile /Users/hamel/.ssh/dokku</code></pre>
-<p>Then do the following from the root of your git repo that contains the static site:</p>
-<div class="sourceCode" id="annotated-cell-8"><pre class="sourceCode bash code-annotation-code code-with-copy code-annotated"><code class="sourceCode bash"><span id="annotated-cell-8-1"><a href="#annotated-cell-8-1" aria-hidden="true" tabindex="-1"></a></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-8-2" class="code-annotation-target"><a href="#annotated-cell-8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> .static</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-8-3" class="code-annotation-target"><a href="#annotated-cell-8-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> BUILDPACK_URL=https://github.com/dokku/buildpack-nginx <span class="op">&gt;</span> .env</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-8-4" class="code-annotation-target"><a href="#annotated-cell-8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> remote add dokku dokku@dokku:mysite</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># do setup for the auth plugin that we will use later</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dokku plugin:install https://github.com/dokku/dokku-http-auth.git</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> chmod +x /home/dokku</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Then execute the following commands from the root of your git repo that contains the static site. :</p>
+<div class="sourceCode" id="annotated-cell-8"><pre class="sourceCode bash code-annotation-code code-with-copy code-annotated"><code class="sourceCode bash"><a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-8-1" class="code-annotation-target"><a href="#annotated-cell-8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> .static</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-8-2" class="code-annotation-target"><a href="#annotated-cell-8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> BUILDPACK_URL=https://github.com/dokku/buildpack-nginx <span class="op">&gt;</span> .env</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-8" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-8-3" class="code-annotation-target"><a href="#annotated-cell-8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> remote add dokku dokku@dokku:mysite</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <dl class="code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-8" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-cell="annotated-cell-8" data-code-lines="2" data-code-annotation="1">tells dokku that this is a static site</span>
+<span data-code-cell="annotated-cell-8" data-code-lines="1" data-code-annotation="1">tells <code>dokku</code> that this is a static site</span>
 </dd>
 <dt data-target-cell="annotated-cell-8" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-cell="annotated-cell-8" data-code-lines="3" data-code-annotation="2">tells dokku to use the nginx buildpack for static sites (it will usually automatically detect this, but if you have a project with code and a static site, you need to tell it to use the nginx buildpack so it doesn’t get confused).</span>
+<span data-code-cell="annotated-cell-8" data-code-lines="2" data-code-annotation="2">tells <code>dokku</code> to use the nginx buildpack for static sites (it will usually automatically detect this, but if you have a project with code and a static site, you need to tell it to use the nginx buildpack so it doesn’t get confused).</span>
 </dd>
 <dt data-target-cell="annotated-cell-8" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-cell="annotated-cell-8" data-code-lines="4" data-code-annotation="3">add the dokku host as a remote</span>
+<span data-code-cell="annotated-cell-8" data-code-lines="3" data-code-annotation="3">add the <code>dokku</code> host as a remote. For this to work, make sure <code>dokku</code> is a hostname in your <code>~/.ssh/config</code> file as described <a href="#deploying-apps-as-a-docker-container">in the previous section</a>.</span>
 </dd>
 </dl>
 <p>Finally, deploy your application:</p>
@@ -362,9 +362,9 @@ SSL / HTTPS
 </div>
 </div>
 </section>
-<section id="deploying-dokku-apps-with-github-actions" class="level2">
-<h2 class="anchored" data-anchor-id="deploying-dokku-apps-with-github-actions">Deploying Dokku Apps with GitHub Actions</h2>
-<p>You can automatically deploy Dokuu apps with GitHub Actions, which is helpful if you don’t want to fiddle with pushing to the Dokku host. Here is an example GitHub Action workflow that does this:</p>
+<section id="deploying-with-github-actions" class="level2">
+<h2 class="anchored" data-anchor-id="deploying-with-github-actions">Deploying With GitHub Actions</h2>
+<p>You can automatically deploy Dokku apps with GitHub Actions, which is helpful if you don’t want to fiddle with pushing to the Dokku host. Here is an example GitHub Action workflow that does this:</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>deploy-dokku.yml</strong></pre>
@@ -401,7 +401,7 @@ SSL / HTTPS
 </section>
 <section id="why-did-i-write-this" class="level2">
 <h2 class="anchored" data-anchor-id="why-did-i-write-this">Why Did I Write This?</h2>
-<p>I needed notes for myself, as I had to dig up these details whenever I wanted to deploy a new app. I hope you find it useful, too!</p>
+<p>I had to dig up these details whenever I wanted to deploy a new app, so I had to write it up anyway. I hope you find it useful, too!</p>
 
 
 </section>
