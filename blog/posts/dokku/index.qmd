@@ -12,9 +12,11 @@ order: 1
 
 ## What is Dokku?
 
-[Dokku](https://dokku.com/) is an open-source Platform as a Service (PaaS) that runs on a single server of your choice. **It's like [Heroku](https://www.heroku.com/), but you own it.** It is a great way to get many of the benefits of Heroku without the costs (Heroku can get quite expensive!).
+[Dokku](https://dokku.com/) is an open-source Platform as a Service (PaaS) that runs on a single server of your choice. **It's like [Heroku](https://www.heroku.com/), but you own it.** It is a great way to get the benefits of Heroku without the costs (Heroku can get quite expensive!). I need to deploy many applications for my [LLM consulting work](https://parlance-labs.com/).  Having a cost-effective, easy-to-use serverless platform is essential for me.
 
-**I run my Dokku server on a $7/month vps on [OVHcloud](https://us.ovhcloud.com/).**  I serve multiple websites and applications on this server.  Some of the features I love about Dokku:
+**I run a Dokku server on a $7/month VPS on [OVHcloud](https://us.ovhcloud.com/)** for non-gpu workloads.  These applications include things like [nbsanity](https://nbsanity.com/) and [data cleaning tools for LLMs](https://langfree.parlance-labs.com/tutorials/shiny.html#run-the-shiny-app-locally). 
+
+Some of the features I love about Dokku:
 
 - Easy to use (like Heroku).
 - Automatic SSL certificate management via [Let's Encrypt](https://letsencrypt.org/).
@@ -24,13 +26,13 @@ order: 1
 - Lots of [official plugins](https://dokku.com/docs/community/plugins/?h=plugins#official-plugins) that do almost anything I want.
 - Easily deploy with git commands.
 
-# Minimal Dokku examples
+# Minimal Dokku Examples
 
 Make sure you [install Dokku](https://dokku.com/docs/getting-started/installation/) on your VPS.  As I mentioned, I use [OVH](https://us.ovhcloud.com/).
 
 ## Deploying Apps as A Docker Container
 
-I have deployed various applications [for my clients](https://nbsanity.com/), which include things like [nbsanity](https://nbsanity.com/), [data cleaning tools for LLMs](https://langfree.parlance-labs.com/tutorials/shiny.html#run-the-shiny-app-locally), and private static sites.  An easy way to do this is with a Docker container.
+An easy way to deploy applications is with a Docker container.
 
 To deploy a Docker container, I put a Dockerfile in the root of my git repo like this:
 
@@ -43,7 +45,7 @@ WORKDIR /app
 # Install the local package
 RUN pip install .
 
-# this directory contains app.py that defines a FastApi app
+# This directory contains app.py, a FastApi app
 WORKDIR /app/
 
 ENTRYPOINT ["./entrypoint.sh"]
@@ -66,6 +68,15 @@ On the Dokku host, create the app:
 
 ```bash
 dokku apps:create myapp
+```
+
+**Locally**, set up access to the Dokku host and name it `dokku` in your `~/.ssh/config` file.  For example, here is mine:
+
+```
+Host dokku
+  HostName <The external IP address of your Dokku host>
+  User ubuntu
+  IdentityFile /Users/hamel/.ssh/dokku
 ```
 
 Locally, add the Dokku host as a remote and push to it:
@@ -103,26 +114,16 @@ sudo dokku plugin:install https://github.com/dokku/dokku-http-auth.git
 sudo chmod +x /home/dokku
 ```
 
-**Locally**, set up access to the Dokku host and name it `dokku` in your `~/.ssh/config` file.  For example, here is mine:
-
-```
-Host dokku
-  HostName <The external IP address of your Dokku host>
-  User ubuntu
-  IdentityFile /Users/hamel/.ssh/dokku
-```
-
-Then do the following from the root of your git repo that contains the static site:
+Then execute the following commands from the root of your git repo that contains the static site. :
 
 ```bash
-
 touch .static # <1> 
 echo BUILDPACK_URL=https://github.com/dokku/buildpack-nginx > .env # <2>
 git remote add dokku dokku@dokku:mysite # <3>
 ```
-1. tells dokku that this is a static site
-2. tells dokku to use the nginx buildpack for static sites (it will usually automatically detect this, but if you have a project with code and a static site, you need to tell it to use the nginx buildpack so it doesn't get confused).
-3. add the dokku host as a remote
+1. tells `dokku` that this is a static site
+2. tells `dokku` to use the nginx buildpack for static sites (it will usually automatically detect this, but if you have a project with code and a static site, you need to tell it to use the nginx buildpack so it doesn't get confused).
+3. add the `dokku` host as a remote.  For this to work, make sure `dokku` is a hostname in your `~/.ssh/config` file as described [in the previous section](#deploying-apps-as-a-docker-container).
 
 Finally, deploy your application:
 
@@ -154,9 +155,9 @@ If you are using Cloudflare this way, activating this plugin will mess things up
 
 
 
-## Deploying Dokku Apps with GitHub Actions
+## Deploying With GitHub Actions
 
-You can automatically deploy Dokuu apps with GitHub Actions, which is helpful if you don't want to fiddle with pushing to the Dokku host.  Here is an example GitHub Action workflow that does this:
+You can automatically deploy Dokku apps with GitHub Actions, which is helpful if you don't want to fiddle with pushing to the Dokku host.  Here is an example GitHub Action workflow that does this:
 
 ```{.yaml filename="deploy-dokku.yml"}
 name: CI
@@ -191,4 +192,4 @@ jobs:
 
 ## Why Did I Write This?
 
-I needed notes for myself, as I had to dig up these details whenever I wanted to deploy a new app.  I hope you find it useful, too!
+I had to dig up these details whenever I wanted to deploy a new app, so I had to write it up anyway.  I hope you find it useful, too!
