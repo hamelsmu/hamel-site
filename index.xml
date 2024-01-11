@@ -17,7 +17,577 @@
 <width>144</width>
 </image>
 <generator>quarto-1.4.533</generator>
-<lastBuildDate>Tue, 16 Jan 2024 08:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 11 Jan 2024 08:00:00 GMT</lastBuildDate>
+<item>
+  <title>How To Debug Axolotl</title>
+  <dc:creator>Hamel Husain</dc:creator>
+  <link>https://hamel.dev/blog/posts/axolotl/</link>
+  <description><![CDATA[ 
+
+
+
+
+<p><img src="https://hamel.dev/blog/posts/axolotl/images/debug_axolotl.png" class="img-fluid"></p>
+<section id="motivation" class="level2">
+<h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
+<p><a href="https://github.com/OpenAccess-AI-Collective/axolotl">Axolotl</a> is a great project for fine-tuning LLMs. I started contributing to the project, and I found that it was difficult to debug. I wanted to share some tips and tricks I learned along the way, along with configuration files for debugging with VSCode. Moreover, I think being able to debug axolotl empowers developers who encounter bugs or want to understand how the code works. I hope this document helps you get started.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+This content is now part of the Axolotl docs!
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><a href="https://github.com/OpenAccess-AI-Collective/axolotl/pull/1089">I contributed</a> this blog post’s contents as documentation for the axolotl project. <strong>You can find this content <a href="https://github.com/OpenAccess-AI-Collective/axolotl/blob/main/docs/debugging.md">in the axolotl repo here</a></strong>.</p>
+</div>
+</div>
+</section>
+<section id="general-tips" class="level2">
+<h2 class="anchored" data-anchor-id="general-tips">General Tips</h2>
+<p>While debugging, it’s helpful to simplify your test scenario as much as possible. Here are some tips for doing so:</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>All of these tips are incorporated into the example configuration for debugging with VSCode below.</p>
+</div>
+</div>
+<ol type="1">
+<li><p><strong>Eliminate Concurrency</strong>: Restrict the number of processes to 1 for both training and data preprocessing:</p>
+<ul>
+<li>Set <code>CUDA_VISIBLE_DEVICES</code> to a single GPU, ex: <code>export CUDA_VISIBLE_DEVICES=0</code>.</li>
+<li>Set <code>dataset_processes: 1</code> in your axolotl config or run the training command with <code>--dataset_processes=1</code>.</li>
+</ul></li>
+<li><p><strong>Use a small dataset</strong>: Construct or use a small dataset from HF Hub. When using a small dataset, you will often have to make sure <code>sample_packing: False</code> and <code>eval_sample_packing: False</code> to avoid errors. If you are in a pinch and don’t have time to construct a small dataset but want to use from the HF Hub, you can shard the data (this will still tokenize the entire dataset but will only use a fraction of the data for training. For example, to shard the dataset into 20 pieces, add the following to your axolotl config):</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dataset</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb1-2"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    ...</span></span>
+<span id="cb1-3"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">shards</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span></span></code></pre></div></li>
+<li><p><strong>Use a small model</strong>: A good example of a small model is <a href="https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0">TinyLlama/TinyLlama-1.1B-Chat-v1.0</a>.</p></li>
+<li><p><strong>Minimize iteration time</strong>: Make sure the training loop finishes as fast as possible, with these settings.</p>
+<ul>
+<li><code>micro_batch_size: 1</code></li>
+<li><code>max_steps: 1</code></li>
+<li><code>val_set_size: 0</code></li>
+</ul></li>
+<li><p><strong>Clear Caches:</strong> Axolotl caches certain steps and so does the underlying HuggingFace trainer. You may want to clear some of these caches when debugging.</p>
+<ul>
+<li>Data preprocessing: When debugging data preprocessing, which includes prompt template formation, you may want to delete the directory set in <code>dataset_prepared_path:</code> in your axolotl config. If you didn’t set this value, the default is <code>last_run_prepared</code>.</li>
+<li>HF Hub: If you are debugging data preprocessing, you should clear the relevant HF cache <a href="https://huggingface.co/docs/datasets/cache">HuggingFace cache</a>, by deleting the appropriate <code>~/.cache/huggingface/datasets/...</code> folder(s).</li>
+<li><strong>The recommended approach is to redirect all outputs and caches to a temporary folder and delete selected subfolders before each run. This is demonstrated in the example configuration below.</strong></li>
+</ul></li>
+</ol>
+</section>
+<section id="debugging-with-vscode" class="level2">
+<h2 class="anchored" data-anchor-id="debugging-with-vscode">Debugging with VSCode</h2>
+<section id="background" class="level3">
+<h3 class="anchored" data-anchor-id="background">Background</h3>
+<p>The below example shows how to configure VSCode to debug data preprocessing of the <code>sharegpt</code> format. This is the format used when you have the following in your axolotl config:</p>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">datasets</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span></span>
+<span id="cb2-2"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">-</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">path</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> &lt;path to your sharegpt formatted dataset&gt;</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"> # example on HF Hub: philschmid/guanaco-sharegpt-style</span></span>
+<span id="cb2-3"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">type</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> sharegpt</span></span></code></pre></div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you are already familiar with advanced VSCode debugging, you can skip the below explanation and look at the files <a href="../.vscode/launch.json">.vscode/launch.json</a> and <a href="https://github.com/OpenAccess-AI-Collective/axolotl/blob/main/.vscode/tasks.json">.vscode/tasks.json</a> for an example configuration.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you prefer to watch a video, rather than read, you can skip to the video tutorial below (but doing both is recommended).</p>
+</div>
+</div>
+</section>
+<section id="configuration" class="level3">
+<h3 class="anchored" data-anchor-id="configuration">Configuration</h3>
+<p>The easiest way to get started is to modify the <a href="https://github.com/OpenAccess-AI-Collective/axolotl/blob/main/.vscode/launch.json">.vscode/launch.json</a> file in the axolotl GitHub repo. This is just an example configuration, so you may need to modify or copy it to suit your needs.</p>
+<p>For example, to mimic the command <code>cd devtools &amp;&amp; CUDA_VISIBLE_DEVICES=0 accelerate launch -m axolotl.cli.train dev_sharegpt.yml</code>, you would use the below configuration<sup>1</sup>. Note that we add additional flags that override the axolotl config and incorporate the tips above (see the comments). We also set the working directory to <code>devtools</code> and set the <code>env</code> variable <code>HF_HOME</code> to a temporary folder that is later partially deleted. This is because we want to delete the HF dataset cache before each run in order to ensure that the data preprocessing code is run from scratch.</p>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// https://github.com/OpenAccess-AI-Collective/axolotl/blob/main/.vscode/launch.json</span></span>
+<span id="cb3-2">{</span>
+<span id="cb3-3">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"version"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"0.2.0"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb3-4">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"configurations"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> [</span>
+<span id="cb3-5">        {</span>
+<span id="cb3-6">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"name"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Debug axolotl prompt - sharegpt"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb3-7">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"type"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"python"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb3-8">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"module"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"accelerate.commands.launch"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb3-9">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"request"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"launch"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb3-10">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"args"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> [</span>
+<span id="cb3-11">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"-m"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"axolotl.cli.train"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dev_sharegpt.yml"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb3-12">                <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// The flags below simplify debugging by overriding the axolotl config </span></span>
+<span id="cb3-13">                <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// with the debugging tips above.  Modify as needed.</span></span>
+<span id="cb3-14">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"--dataset_processes=1"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span>      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// limits data preprocessing to one process</span></span>
+<span id="cb3-15">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"--max_steps=1"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span>              <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// limits training to just one step</span></span>
+<span id="cb3-16">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"--batch_size=1"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span>             <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// minimizes batch size</span></span>
+<span id="cb3-17">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"--micro_batch_size=1"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span>       <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// minimizes batch size</span></span>
+<span id="cb3-18">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"--val_set_size=0"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span>           <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// disables validation</span></span>
+<span id="cb3-19">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"--sample_packing=False"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span>     <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// disables sample packing which is necessary for small datasets</span></span>
+<span id="cb3-20">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"--eval_sample_packing=False"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// disables sample packing on eval set</span></span>
+<span id="cb3-21">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"--dataset_prepared_path=temp_debug/axolotl_outputs/data"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// send data outputs to a temp folder</span></span>
+<span id="cb3-22">                <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"--output_dir=temp_debug/axolotl_outputs/model"</span> <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// send model outputs to a temp folder</span></span>
+<span id="cb3-23">                ]<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb3-24">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"console"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"integratedTerminal"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span>      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// show output in the integrated terminal</span></span>
+<span id="cb3-25">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cwd"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"${workspaceFolder}/devtools"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// set working directory to devtools from the root of the project</span></span>
+<span id="cb3-26">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"justMyCode"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">true</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span>                   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// step through only axolotl code</span></span>
+<span id="cb3-27">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"env"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> {<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"CUDA_VISIBLE_DEVICES"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"0"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Since we aren't doing distributed training, we need to limit to one GPU</span></span>
+<span id="cb3-28">                    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"HF_HOME"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"${workspaceFolder}/devtools/temp_debug/.hf-cache"</span>}<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// send HF cache to a temp folder</span></span>
+<span id="cb3-29">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"preLaunchTask"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cleanup-for-dataprep"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// delete temp folders (see below)</span></span>
+<span id="cb3-30">        }</span>
+<span id="cb3-31">    ]</span>
+<span id="cb3-32">}</span></code></pre></div>
+<p><strong>Additional notes about this configuration:</strong></p>
+<ul>
+<li>The argument <code>justMyCode</code> is set to <code>true</code> such that you step through only the axolotl code. If you want to step into dependencies, set this to <code>false</code>.</li>
+<li>The <code>preLaunchTask</code>: <code>cleanup-for-dataprep</code> is defined in <a href="https://github.com/OpenAccess-AI-Collective/axolotl/blob/main/.vscode/tasks.json">.vscode/tasks.json</a> and is used to delete the following folders before debugging, which is essential to ensure that the data pre-processing code is run from scratch:
+<ul>
+<li><code>./devtools/temp_debug/axolotl_outputs</code></li>
+<li><code>./devtools/temp_debug/.hf-cache/datasets</code></li>
+</ul></li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You may not want to delete these folders. For example, if you are debugging model training instead of data pre-processing, you may NOT want to delete the cache or output folders. You may also need to add additional tasks to the <code>tasks.json</code> file depending on your use case.</p>
+</div>
+</div>
+<p>Below is the <a href="https://github.com/OpenAccess-AI-Collective/axolotl/blob/main/.vscode/tasks.json">./vscode/tasks.json</a> file that defines the <code>cleanup-for-dataprep</code> task. This task is run before each debugging session when you use the above configuration. Note how there are two tasks that delete the two folders mentioned above. The third task <code>cleanup-for-dataprep</code> is a composite task that combines the two tasks. A composite task is necessary because VSCode does not allow you to specify multiple tasks in the <code>preLaunchTask</code> argument of the <code>launch.json</code> file.</p>
+<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// https://github.com/OpenAccess-AI-Collective/axolotl/blob/main/.vscode/tasks.json</span></span>
+<span id="cb4-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// this file is used by launch.json</span></span>
+<span id="cb4-3">{</span>
+<span id="cb4-4">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"version"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2.0.0"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-5">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tasks"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> [</span>
+<span id="cb4-6">      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// this task changes into the devtools directory and deletes the temp_debug/axolotl_outputs folder</span></span>
+<span id="cb4-7">      {</span>
+<span id="cb4-8">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"label"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"delete-outputs"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-9">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"type"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"shell"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-10">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"command"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rm -rf temp_debug/axolotl_outputs"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-11">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"options"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>{ <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cwd"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"${workspaceFolder}/devtools"</span>}<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-12">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"problemMatcher"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> []</span>
+<span id="cb4-13">      }<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-14">      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// this task changes into the devtools directory and deletes the `temp_debug/.hf-cache/datasets` folder</span></span>
+<span id="cb4-15">      {</span>
+<span id="cb4-16">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"label"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"delete-temp-hf-dataset-cache"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-17">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"type"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"shell"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-18">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"command"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rm -rf temp_debug/.hf-cache/datasets"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-19">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"options"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>{ <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cwd"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"${workspaceFolder}/devtools"</span>}<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-20">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"problemMatcher"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> []</span>
+<span id="cb4-21">      }<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-22">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// this task combines the two tasks above</span></span>
+<span id="cb4-23">      {</span>
+<span id="cb4-24">       <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"label"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cleanup-for-dataprep"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-25">       <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dependsOn"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> [<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"delete-outputs"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"delete-temp-hf-dataset-cache"</span>]<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-26">      }</span>
+<span id="cb4-27">    ]</span>
+<span id="cb4-28">}</span></code></pre></div>
+</section>
+<section id="customizing-your-debugger" class="level3">
+<h3 class="anchored" data-anchor-id="customizing-your-debugger">Customizing your debugger</h3>
+<p>Your debugging use case may differ from the example above. The easiest thing to do is to put your own axolotl config in the <code>devtools</code> folder and modify the <code>launch.json</code> file to use your config. You may also want to modify the <code>preLaunchTask</code> to delete different folders or not delete anything at all.</p>
+</section>
+<section id="video-tutorial" class="level3">
+<h3 class="anchored" data-anchor-id="video-tutorial">Video Tutorial</h3>
+<p>The following video tutorial walks through the above configuration and demonstrates how to debug with VSCode:</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/xUUB11yeMmc?si=z6Ea1BrRYkq6wsMx" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+
+
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>The config actually mimics the command <code>CUDA_VISIBLE_DEVICES=0 python -m accelerate.commands.launch -m axolotl.cli.train devtools/sharegpt.yml</code>, but this is the same thing.↩︎</p></li>
+</ol>
+</section></div> ]]></description>
+  <category>LLMs</category>
+  <category>fine-tuning</category>
+  <category>axolotl</category>
+  <guid>https://hamel.dev/blog/posts/axolotl/</guid>
+  <pubDate>Thu, 11 Jan 2024 08:00:00 GMT</pubDate>
+  <media:content url="https://hamel.dev/blog/posts/axolotl/images/serverless.png" medium="image" type="image/png"/>
+</item>
 <item>
   <title>Dokku: my favorite personal serverless platform</title>
   <dc:creator>Hamel Husain</dc:creator>
@@ -449,7 +1019,7 @@ font-style: inherit;">|</span></span>
   <category>infra</category>
   <category>severless</category>
   <guid>https://hamel.dev/blog/posts/dokku/</guid>
-  <pubDate>Tue, 16 Jan 2024 08:00:00 GMT</pubDate>
+  <pubDate>Tue, 09 Jan 2024 08:00:00 GMT</pubDate>
   <media:content url="https://hamel.dev/blog/posts/dokku/images/serverless.png" medium="image" type="image/png" height="144" width="144"/>
 </item>
 <item>
@@ -823,15 +1393,6 @@ K8s For Data Scientists Course
   <category>NLP</category>
   <guid>https://hamel.dev/</guid>
   <pubDate>Tue, 29 May 2018 07:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>How To Create Magical Data Products Using Sequence-to-Sequence Models</title>
-  <link>https://hamel.dev/</link>
-  <description>A tutorial on how to summarize text and generate features from Github Issues using deep learning with Keras and TensorFlow.
-</description>
-  <category>NLP</category>
-  <guid>https://hamel.dev/</guid>
-  <pubDate>Thu, 18 Jan 2018 08:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
