@@ -173,7 +173,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#deploying-apps-as-a-docker-container" id="toc-deploying-apps-as-a-docker-container" class="nav-link" data-scroll-target="#deploying-apps-as-a-docker-container">Deploying Apps as A Docker Container</a></li>
   <li><a href="#static-sites" id="toc-static-sites" class="nav-link" data-scroll-target="#static-sites">Static Sites</a></li>
   </ul></li>
-  <li><a href="#deploying-with-github-actions" id="toc-deploying-with-github-actions" class="nav-link" data-scroll-target="#deploying-with-github-actions">Deploying With GitHub Actions</a></li>
+  <li><a href="#deploying-with-github-actions" id="toc-deploying-with-github-actions" class="nav-link" data-scroll-target="#deploying-with-github-actions">Deploying With GitHub Actions</a>
+  <ul class="collapse">
+  <li><a href="#miscellaneous-tips" id="toc-miscellaneous-tips" class="nav-link" data-scroll-target="#miscellaneous-tips">Miscellaneous Tips</a>
+  <ul class="collapse">
+  <li><a href="#run-a-command-remotely" id="toc-run-a-command-remotely" class="nav-link" data-scroll-target="#run-a-command-remotely">Run a command remotely</a></li>
+  <li><a href="#docker-cache" id="toc-docker-cache" class="nav-link" data-scroll-target="#docker-cache">Docker cache</a></li>
+  <li><a href="#rebuild-without-pushing" id="toc-rebuild-without-pushing" class="nav-link" data-scroll-target="#rebuild-without-pushing">Rebuild without pushing</a></li>
+  </ul></li>
+  </ul></li>
   <li><a href="#why-did-i-write-this" id="toc-why-did-i-write-this" class="nav-link" data-scroll-target="#why-did-i-write-this">Why Did I Write This?</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/blog/posts/dokku/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
@@ -399,6 +407,26 @@ SSL / HTTPS
 <span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>          git remote add dokku dokku@rechat.co:llm-eval</span>
 <span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>          GIT_SSH_COMMAND="ssh -i private_key.pem -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git push dokku main -f</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<section id="miscellaneous-tips" class="level2">
+<h2 class="anchored" data-anchor-id="miscellaneous-tips">Miscellaneous Tips</h2>
+<p>These are things I often forget, so I’m writing them down here. For these examples, assume my app is named <code>llm-eval</code> and my host is <code>rechat.co</code>.</p>
+<section id="run-a-command-remotely" class="level3">
+<h3 class="anchored" data-anchor-id="run-a-command-remotely">Run a command remotely</h3>
+<p>You don’t have to ssh into the Dokku host just to execute commands. You can execute them remotely via the <code>dokku</code> user like this:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># https://dokku.com/docs/deployment/application-management/</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> dokku@rechat.co apps:list</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="docker-cache" class="level3">
+<h3 class="anchored" data-anchor-id="docker-cache">Docker cache</h3>
+<p>This is how you can <a href="https://dokku.com/docs/advanced-usage/repository-management/">invalidate the docker cache</a> for a fresh build:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> dokku@rechat.co repo:purge-cache llm-eval</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="rebuild-without-pushing" class="level3">
+<h3 class="anchored" data-anchor-id="rebuild-without-pushing">Rebuild without pushing</h3>
+<p>Sometimes you want to rebuild without pushing. There are <a href="https://dokku.com/docs/processes/process-management/">many ways to do this</a>, but one way is like this:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> dokku@rehcat.co ps:rebuild llm-eval</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
 </section>
 <section id="why-did-i-write-this" class="level1">
 <h1>Why Did I Write This?</h1>
