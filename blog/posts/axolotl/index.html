@@ -172,9 +172,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#debugging-with-vscode" id="toc-debugging-with-vscode" class="nav-link" data-scroll-target="#debugging-with-vscode">Debugging with VSCode</a>
   <ul class="collapse">
   <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup">Setup</a></li>
   <li><a href="#configuration" id="toc-configuration" class="nav-link" data-scroll-target="#configuration">Configuration</a></li>
   <li><a href="#customizing-your-debugger" id="toc-customizing-your-debugger" class="nav-link" data-scroll-target="#customizing-your-debugger">Customizing your debugger</a></li>
   <li><a href="#video-tutorial" id="toc-video-tutorial" class="nav-link" data-scroll-target="#video-tutorial">Video Tutorial</a></li>
+  </ul></li>
+  <li><a href="#debugging-with-docker" id="toc-debugging-with-docker" class="nav-link" data-scroll-target="#debugging-with-docker">Debugging With Docker</a>
+  <ul class="collapse">
+  <li><a href="#setup-1" id="toc-setup-1" class="nav-link" data-scroll-target="#setup-1">Setup</a></li>
+  <li><a href="#attach-to-container" id="toc-attach-to-container" class="nav-link" data-scroll-target="#attach-to-container">Attach To Container</a></li>
+  <li><a href="#video---attaching-to-docker-on-remote-host" id="toc-video---attaching-to-docker-on-remote-host" class="nav-link" data-scroll-target="#video---attaching-to-docker-on-remote-host">Video - Attaching To Docker On Remote Host</a></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/blog/posts/axolotl/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
@@ -258,6 +265,7 @@ Note
 </div>
 </div>
 <ol type="1">
+<li><p><strong>Make sure you are using the latest version of axolotl</strong>: This project changes often and bugs get fixed fast. Check your git branch and make sure you have pulled the latest changes from <code>main</code>.</p></li>
 <li><p><strong>Eliminate Concurrency</strong>: Restrict the number of processes to 1 for both training and data preprocessing:</p>
 <ul>
 <li>Set <code>CUDA_VISIBLE_DEVICES</code> to a single GPU, ex: <code>export CUDA_VISIBLE_DEVICES=0</code>.</li>
@@ -317,42 +325,52 @@ Tip
 </div>
 </div>
 </section>
+<section id="setup" class="level3">
+<h3 class="anchored" data-anchor-id="setup">Setup</h3>
+<p>Make sure you have an <a href="https://setuptools.pypa.io/en/latest/userguide/development_mode.html">editable install</a> of Axolotl, which ensures that changes you make to the code are reflected at runtime. Run the following commands from the root of this project:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip3</span> install packaging</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pip3</span> install <span class="at">-e</span> <span class="st">'.[flash-attn,deepspeed]'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="remote-hosts" class="level4">
+<h4 class="anchored" data-anchor-id="remote-hosts">Remote Hosts</h4>
+<p>If you developing on a remote host, you can easily use VSCode to debug remotely. To do so, you will need to follow this <a href="https://code.visualstudio.com/docs/remote/ssh">remote - SSH guide</a>. You can also see the video below on <a href="#video---attaching-to-docker-on-remote-host">Docker and Remote SSH debugging</a>.</p>
+</section>
+</section>
 <section id="configuration" class="level3">
 <h3 class="anchored" data-anchor-id="configuration">Configuration</h3>
 <p>The easiest way to get started is to modify the <a href="https://github.com/OpenAccess-AI-Collective/axolotl/blob/main/.vscode/launch.json">.vscode/launch.json</a> file in the axolotl GitHub repo. This is just an example configuration, so you may need to modify or copy it to suit your needs.</p>
 <p>For example, to mimic the command <code>cd devtools &amp;&amp; CUDA_VISIBLE_DEVICES=0 accelerate launch -m axolotl.cli.train dev_sharegpt.yml</code>, you would use the below configuration<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. Note that we add additional flags that override the axolotl config and incorporate the tips above (see the comments). We also set the working directory to <code>devtools</code> and set the <code>env</code> variable <code>HF_HOME</code> to a temporary folder that is later partially deleted. This is because we want to delete the HF dataset cache before each run in order to ensure that the data preprocessing code is run from scratch.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// https://github.com/OpenAccess-AI-Collective/axolotl/blob/main/.vscode/launch.json</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"version"</span><span class="op">:</span> <span class="st">"0.2.0"</span><span class="op">,</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"configurations"</span><span class="op">:</span> [</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        {</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">"name"</span><span class="op">:</span> <span class="st">"Debug axolotl prompt - sharegpt"</span><span class="op">,</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">"type"</span><span class="op">:</span> <span class="st">"python"</span><span class="op">,</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">"module"</span><span class="op">:</span> <span class="st">"accelerate.commands.launch"</span><span class="op">,</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">"request"</span><span class="op">:</span> <span class="st">"launch"</span><span class="op">,</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">"args"</span><span class="op">:</span> [</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">"-m"</span><span class="op">,</span> <span class="st">"axolotl.cli.train"</span><span class="op">,</span> <span class="st">"dev_sharegpt.yml"</span><span class="op">,</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>                <span class="co">// The flags below simplify debugging by overriding the axolotl config </span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>                <span class="co">// with the debugging tips above.  Modify as needed.</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>                <span class="st">"--dataset_processes=1"</span><span class="op">,</span>      <span class="co">// limits data preprocessing to one process</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>                <span class="st">"--max_steps=1"</span><span class="op">,</span>              <span class="co">// limits training to just one step</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>                <span class="st">"--batch_size=1"</span><span class="op">,</span>             <span class="co">// minimizes batch size</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>                <span class="st">"--micro_batch_size=1"</span><span class="op">,</span>       <span class="co">// minimizes batch size</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>                <span class="st">"--val_set_size=0"</span><span class="op">,</span>           <span class="co">// disables validation</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>                <span class="st">"--sample_packing=False"</span><span class="op">,</span>     <span class="co">// disables sample packing which is necessary for small datasets</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>                <span class="st">"--eval_sample_packing=False"</span><span class="op">,</span><span class="co">// disables sample packing on eval set</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>                <span class="st">"--dataset_prepared_path=temp_debug/axolotl_outputs/data"</span><span class="op">,</span> <span class="co">// send data outputs to a temp folder</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>                <span class="st">"--output_dir=temp_debug/axolotl_outputs/model"</span> <span class="co">// send model outputs to a temp folder</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>                ]<span class="op">,</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>            <span class="st">"console"</span><span class="op">:</span> <span class="st">"integratedTerminal"</span><span class="op">,</span>      <span class="co">// show output in the integrated terminal</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>            <span class="st">"cwd"</span><span class="op">:</span> <span class="st">"${workspaceFolder}/devtools"</span><span class="op">,</span> <span class="co">// set working directory to devtools from the root of the project</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>            <span class="st">"justMyCode"</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span>                   <span class="co">// step through only axolotl code</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>            <span class="st">"env"</span><span class="op">:</span> {<span class="st">"CUDA_VISIBLE_DEVICES"</span><span class="op">:</span> <span class="st">"0"</span><span class="op">,</span>  <span class="co">// Since we aren't doing distributed training, we need to limit to one GPU</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"HF_HOME"</span><span class="op">:</span> <span class="st">"${workspaceFolder}/devtools/temp_debug/.hf-cache"</span>}<span class="op">,</span> <span class="co">// send HF cache to a temp folder</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>            <span class="st">"preLaunchTask"</span><span class="op">:</span> <span class="st">"cleanup-for-dataprep"</span><span class="op">,</span> <span class="co">// delete temp folders (see below)</span></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">// https://github.com/OpenAccess-AI-Collective/axolotl/blob/main/.vscode/launch.json</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"version"</span><span class="op">:</span> <span class="st">"0.2.0"</span><span class="op">,</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"configurations"</span><span class="op">:</span> [</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        {</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">"name"</span><span class="op">:</span> <span class="st">"Debug axolotl prompt - sharegpt"</span><span class="op">,</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">"type"</span><span class="op">:</span> <span class="st">"python"</span><span class="op">,</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">"module"</span><span class="op">:</span> <span class="st">"accelerate.commands.launch"</span><span class="op">,</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">"request"</span><span class="op">:</span> <span class="st">"launch"</span><span class="op">,</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">"args"</span><span class="op">:</span> [</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">"-m"</span><span class="op">,</span> <span class="st">"axolotl.cli.train"</span><span class="op">,</span> <span class="st">"dev_sharegpt.yml"</span><span class="op">,</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>                <span class="co">// The flags below simplify debugging by overriding the axolotl config </span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>                <span class="co">// with the debugging tips above.  Modify as needed.</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>                <span class="st">"--dataset_processes=1"</span><span class="op">,</span>      <span class="co">// limits data preprocessing to one process</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>                <span class="st">"--max_steps=1"</span><span class="op">,</span>              <span class="co">// limits training to just one step</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>                <span class="st">"--batch_size=1"</span><span class="op">,</span>             <span class="co">// minimizes batch size</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>                <span class="st">"--micro_batch_size=1"</span><span class="op">,</span>       <span class="co">// minimizes batch size</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>                <span class="st">"--val_set_size=0"</span><span class="op">,</span>           <span class="co">// disables validation</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>                <span class="st">"--sample_packing=False"</span><span class="op">,</span>     <span class="co">// disables sample packing which is necessary for small datasets</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>                <span class="st">"--eval_sample_packing=False"</span><span class="op">,</span><span class="co">// disables sample packing on eval set</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>                <span class="st">"--dataset_prepared_path=temp_debug/axolotl_outputs/data"</span><span class="op">,</span> <span class="co">// send data outputs to a temp folder</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>                <span class="st">"--output_dir=temp_debug/axolotl_outputs/model"</span> <span class="co">// send model outputs to a temp folder</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>                ]<span class="op">,</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>            <span class="st">"console"</span><span class="op">:</span> <span class="st">"integratedTerminal"</span><span class="op">,</span>      <span class="co">// show output in the integrated terminal</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>            <span class="st">"cwd"</span><span class="op">:</span> <span class="st">"${workspaceFolder}/devtools"</span><span class="op">,</span> <span class="co">// set working directory to devtools from the root of the project</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>            <span class="st">"justMyCode"</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span>                   <span class="co">// step through only axolotl code</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>            <span class="st">"env"</span><span class="op">:</span> {<span class="st">"CUDA_VISIBLE_DEVICES"</span><span class="op">:</span> <span class="st">"0"</span><span class="op">,</span>  <span class="co">// Since we aren't doing distributed training, we need to limit to one GPU</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"HF_HOME"</span><span class="op">:</span> <span class="st">"${workspaceFolder}/devtools/temp_debug/.hf-cache"</span>}<span class="op">,</span> <span class="co">// send HF cache to a temp folder</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>            <span class="st">"preLaunchTask"</span><span class="op">:</span> <span class="st">"cleanup-for-dataprep"</span><span class="op">,</span> <span class="co">// delete temp folders (see below)</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><strong>Additional notes about this configuration:</strong></p>
 <ul>
 <li>The argument <code>justMyCode</code> is set to <code>true</code> such that you step through only the axolotl code. If you want to step into dependencies, set this to <code>false</code>.</li>
@@ -376,34 +394,34 @@ Tip
 </div>
 </div>
 <p>Below is the <a href="https://github.com/OpenAccess-AI-Collective/axolotl/blob/main/.vscode/tasks.json">./vscode/tasks.json</a> file that defines the <code>cleanup-for-dataprep</code> task. This task is run before each debugging session when you use the above configuration. Note how there are two tasks that delete the two folders mentioned above. The third task <code>cleanup-for-dataprep</code> is a composite task that combines the two tasks. A composite task is necessary because VSCode does not allow you to specify multiple tasks in the <code>preLaunchTask</code> argument of the <code>launch.json</code> file.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">// https://github.com/OpenAccess-AI-Collective/axolotl/blob/main/.vscode/tasks.json</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">// this file is used by launch.json</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"version"</span><span class="op">:</span> <span class="st">"2.0.0"</span><span class="op">,</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"tasks"</span><span class="op">:</span> [</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>      <span class="co">// this task changes into the devtools directory and deletes the temp_debug/axolotl_outputs folder</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>      {</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"label"</span><span class="op">:</span> <span class="st">"delete-outputs"</span><span class="op">,</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"type"</span><span class="op">:</span> <span class="st">"shell"</span><span class="op">,</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"command"</span><span class="op">:</span> <span class="st">"rm -rf temp_debug/axolotl_outputs"</span><span class="op">,</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"options"</span><span class="op">:</span>{ <span class="st">"cwd"</span><span class="op">:</span> <span class="st">"${workspaceFolder}/devtools"</span>}<span class="op">,</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"problemMatcher"</span><span class="op">:</span> []</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>      }<span class="op">,</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>      <span class="co">// this task changes into the devtools directory and deletes the `temp_debug/.hf-cache/datasets` folder</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>      {</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">"label"</span><span class="op">:</span> <span class="st">"delete-temp-hf-dataset-cache"</span><span class="op">,</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">"type"</span><span class="op">:</span> <span class="st">"shell"</span><span class="op">,</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">"command"</span><span class="op">:</span> <span class="st">"rm -rf temp_debug/.hf-cache/datasets"</span><span class="op">,</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">"options"</span><span class="op">:</span>{ <span class="st">"cwd"</span><span class="op">:</span> <span class="st">"${workspaceFolder}/devtools"</span>}<span class="op">,</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">"problemMatcher"</span><span class="op">:</span> []</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>      }<span class="op">,</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>        <span class="co">// this task combines the two tasks above</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>      {</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>       <span class="st">"label"</span><span class="op">:</span> <span class="st">"cleanup-for-dataprep"</span><span class="op">,</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>       <span class="st">"dependsOn"</span><span class="op">:</span> [<span class="st">"delete-outputs"</span><span class="op">,</span> <span class="st">"delete-temp-hf-dataset-cache"</span>]<span class="op">,</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">// https://github.com/OpenAccess-AI-Collective/axolotl/blob/main/.vscode/tasks.json</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">// this file is used by launch.json</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"version"</span><span class="op">:</span> <span class="st">"2.0.0"</span><span class="op">,</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"tasks"</span><span class="op">:</span> [</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>      <span class="co">// this task changes into the devtools directory and deletes the temp_debug/axolotl_outputs folder</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>      {</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"label"</span><span class="op">:</span> <span class="st">"delete-outputs"</span><span class="op">,</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"type"</span><span class="op">:</span> <span class="st">"shell"</span><span class="op">,</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"command"</span><span class="op">:</span> <span class="st">"rm -rf temp_debug/axolotl_outputs"</span><span class="op">,</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"options"</span><span class="op">:</span>{ <span class="st">"cwd"</span><span class="op">:</span> <span class="st">"${workspaceFolder}/devtools"</span>}<span class="op">,</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"problemMatcher"</span><span class="op">:</span> []</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>      }<span class="op">,</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>      <span class="co">// this task changes into the devtools directory and deletes the `temp_debug/.hf-cache/datasets` folder</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>      {</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">"label"</span><span class="op">:</span> <span class="st">"delete-temp-hf-dataset-cache"</span><span class="op">,</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">"type"</span><span class="op">:</span> <span class="st">"shell"</span><span class="op">,</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">"command"</span><span class="op">:</span> <span class="st">"rm -rf temp_debug/.hf-cache/datasets"</span><span class="op">,</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">"options"</span><span class="op">:</span>{ <span class="st">"cwd"</span><span class="op">:</span> <span class="st">"${workspaceFolder}/devtools"</span>}<span class="op">,</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">"problemMatcher"</span><span class="op">:</span> []</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>      }<span class="op">,</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>        <span class="co">// this task combines the two tasks above</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>      {</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>       <span class="st">"label"</span><span class="op">:</span> <span class="st">"cleanup-for-dataprep"</span><span class="op">,</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>       <span class="st">"dependsOn"</span><span class="op">:</span> [<span class="st">"delete-outputs"</span><span class="op">,</span> <span class="st">"delete-temp-hf-dataset-cache"</span>]<span class="op">,</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="customizing-your-debugger" class="level3">
 <h3 class="anchored" data-anchor-id="customizing-your-debugger">Customizing your debugger</h3>
@@ -412,7 +430,59 @@ Tip
 <section id="video-tutorial" class="level3">
 <h3 class="anchored" data-anchor-id="video-tutorial">Video Tutorial</h3>
 <p>The following video tutorial walks through the above configuration and demonstrates how to debug with VSCode:</p>
-<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/xUUB11yeMmc?si=z6Ea1BrRYkq6wsMx" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/xUUB11yeMmc" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+</section>
+</section>
+<section id="debugging-with-docker" class="level2">
+<h2 class="anchored" data-anchor-id="debugging-with-docker">Debugging With Docker</h2>
+<p>Using <a href="https://hub.docker.com/r/winglian/axolotl/tags">official Axolotl Docker images</a> is a great way to debug your code, and is a very popular way to use Axolotl. Attaching VSCode to Docker takes a few more steps.</p>
+<section id="setup-1" class="level3">
+<h3 class="anchored" data-anchor-id="setup-1">Setup</h3>
+<p>On the host that is running axolotl (ex: if you are using a remote host), clone the axolotl repo and change your current directory to the root:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/OpenAccess-AI-Collective/axolotl</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> axolotl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you already have axolotl cloned on your host, make sure you have the latest changes and change into the root of the project.</p>
+</div>
+</div>
+<p>Next, run the desired docker image and mount the current directory. Below is a docker command you can run to do this:<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--privileged</span> <span class="at">--gpus</span> <span class="st">'"all"'</span> <span class="at">--shm-size</span> 10g <span class="at">--rm</span> <span class="at">-it</span> <span class="at">--name</span> axolotl <span class="at">--ipc</span><span class="op">=</span>host <span class="at">--ulimit</span> memlock=-1 <span class="at">--ulimit</span> stack=67108864 <span class="at">--mount</span> type=bind,src=<span class="st">"</span><span class="va">${PWD}</span><span class="st">"</span>,target=/workspace/axolotl <span class="at">-v</span> <span class="va">${HOME}</span>/.cache/huggingface:/root/.cache/huggingface winglian/axolotl:main-py3.10-cu118-2.0.1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To understand which containers are available, see the <a href="../README.md#docker">Docker section of the README</a> and the <a href="https://hub.docker.com/r/winglian/axolotl/tags">DockerHub repo</a>. For details of how the Docker containers are built, see axolotl’s <a href="../.github/workflows/main.yml">Docker CI builds</a>.</p>
+</div>
+</div>
+<p>You will now be in the container. Next, perform an editable install of Axolotl:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip3</span> install packaging</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pip3</span> install <span class="at">-e</span> <span class="st">'.[flash-attn,deepspeed]'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="attach-to-container" class="level3">
+<h3 class="anchored" data-anchor-id="attach-to-container">Attach To Container</h3>
+<p>Next, if you are using a remote host, <a href="https://code.visualstudio.com/docs/remote/ssh">Remote into this host with VSCode</a>. If you are using a local host, you can skip this step.</p>
+<p>Next, select <code>Dev Containers: Attach to Running Container...</code> using the command palette (<code>CMD + SHIFT + P</code>) in VSCode. You will be prompted to select a container to attach to. Select the container you just created. You will now be in the container with a working directory that is at the root of the project. Any changes you make to the code will be reflected both in the container and on the host.</p>
+<p>Now you are ready to debug as described above (see <a href="#debugging-with-vscode">Debugging with VSCode</a>).</p>
+</section>
+<section id="video---attaching-to-docker-on-remote-host" class="level3">
+<h3 class="anchored" data-anchor-id="video---attaching-to-docker-on-remote-host">Video - Attaching To Docker On Remote Host</h3>
+<p>Here is a short video that demonstrates how to attach to a Docker container on a remote host:</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/A_A2CEHj4ew" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
 
 
 </section>
@@ -423,6 +493,7 @@ Tip
 
 <ol>
 <li id="fn1"><p>The config actually mimics the command <code>CUDA_VISIBLE_DEVICES=0 python -m accelerate.commands.launch -m axolotl.cli.train devtools/sharegpt.yml</code>, but this is the same thing.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Many of the below flags are recommended best practices by Nvidia when using nvidia-container-toolkit. You can read more about these flags <a href="https://docs.nvidia.com/deeplearning/frameworks/user-guide/index.html">here</a>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
