@@ -190,11 +190,11 @@ jobs:
           GIT_SSH_COMMAND="ssh -i private_key.pem -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git push dokku main -f
 ```
 
-## Miscellaneous Tips
+# Miscellaneous Tips
 
 These are things I often forget, so I'm writing them down here.  For these examples, assume my app is named `llm-eval` and my host is `rechat.co`.
 
-### Run a command remotely
+## Run commands remotely
 
 You don't have to ssh into the Dokku host just to execute commands. You can execute them remotely via the `dokku` user like this:
 
@@ -203,7 +203,7 @@ You don't have to ssh into the Dokku host just to execute commands. You can exec
 ssh dokku@rechat.co apps:list
 ```
 
-### Docker cache
+## Docker cache
 
 This is how you can [invalidate the docker cache](https://dokku.com/docs/advanced-usage/repository-management/) for a fresh build:
 
@@ -211,7 +211,7 @@ This is how you can [invalidate the docker cache](https://dokku.com/docs/advance
 ssh dokku@rechat.co repo:purge-cache llm-eval
 ```
 
-### Rebuild without pushing
+## Rebuild without pushing
 
 Sometimes you want to rebuild without pushing.  There are [many ways to do this](https://dokku.com/docs/processes/process-management/), but one way is like this:
 
