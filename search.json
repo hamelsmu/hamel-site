@@ -4,7 +4,14 @@
     "href": "oss/opensource.html",
     "title": " Open Source",
     "section": "",
-    "text": "My open source work has been focused on developer tools and infrastructure. I’ve contributed to projects such as fastai, Metaflow, Kubeflow, Jupyter, and Great Expectations, as well as many others. I list some of these below:"
+    "text": "My open-source work has been focused on developer tools and infrastructure. I’ve contributed to projects such as fastai, Metaflow, Kubeflow, Jupyter, and Great Expectations, as well as many others. I list some of these below:"
+  },
+  {
+    "objectID": "oss/opensource.html#axolotl",
+    "href": "oss/opensource.html#axolotl",
+    "title": " Open Source",
+    "section": " Axolotl",
+    "text": "Axolotl\nI am a core contributor to Axolotl, a library for efficient fine-tuning of large language models. I also wrote an in-depth debugging guide for Axolotl."
   },
   {
     "objectID": "oss/opensource.html#fastai",
@@ -1880,7 +1887,7 @@
     "href": "notes/llm/inference/big_inference.html#introduction",
     "title": "vLLM & large models",
     "section": "Introduction",
-    "text": "Introduction\nLarge models like Llama-2-70b may not fit in a single GPU. I previously profiled the smaller 7b model against various inference tools. When a model is too big to fit on a single GPU, we can use various techniques to split the model across multiple GPUs.\n\nCompute & Reproducibility\nI used Modal Labs for serverless compute. Modal is very economical and built for machine learning use cases. Unlike other clouds, there are plenty of A100s available. They even give you $30 of free credits, which is more than enough to run the experiments in this note. Thanks to Modal, the scripts I reference in this note are reproducible.\nIn this note, I’m using modal client version: 0.50.2889",
+    "text": "Introduction\nLet’s paste an image below:\n\nLarge models like Llama-2-70b may not fit in a single GPU. I previously profiled the smaller 7b model against various inference tools. When a model is too big to fit on a single GPU, we can use various techniques to split the model across multiple GPUs.\n\nCompute & Reproducibility\nI used Modal Labs for serverless compute. Modal is very economical and built for machine learning use cases. Unlike other clouds, there are plenty of A100s available. They even give you $30 of free credits, which is more than enough to run the experiments in this note. Thanks to Modal, the scripts I reference in this note are reproducible.\nIn this note, I’m using modal client version: 0.50.2889",
     "crumbs": [
       "LLMs",
       "Inference",
@@ -1904,7 +1911,7 @@
     "href": "notes/llm/inference/big_inference.html#what-happens-with-smaller-models",
     "title": "vLLM & large models",
     "section": "What Happens With Smaller Models?",
-    "text": "What Happens With Smaller Models?\nEven though distributed inference is interesting for big models that do not fit on a single GPU, interesting things happen when you serve smaller models this way. Below, I test throughput for Llama v2 7b on 1, 2, and 4 GPUs. The throughput is measured by passsing these 59 prompts to llm.generate. llm.generate is described in the vLLM documentation:\n\nCall llm.generate to generate the outputs. It adds the input prompts to vLLM engine’s waiting queue and executes the vLLM engine to generate the outputs with high throughput.\n\nHere are the results, averaged over 5 runs for each row:\n\n\n\n\n\n\n\n\n\n\n\navg tok/sec\n\n\nmodel\nGPU\nnum_gpus\n\n\n\n\n\nLlama-2-70b-chat-hf\nNVIDIA A100-SXM4-40GB\n4\n380.9\n\n\nLlama-2-7b-chat-hf\nNVIDIA A10\n1\n458.8\n\n\n2\n497.3\n\n\n4\n543.6\n\n\nNVIDIA A100-SXM4-40GB\n1\n842.9\n\n\n2\n699.1\n\n\n4\n650.7\n\n\n\n\n\n\n\nYou can see all the individual runs here. In my experiments, the 70b model needed a minimum of 4 A100s to run, so that’s why there is only one row for that model (Modal only has instances with 1, 2, or 4 GPUs).\n\n\n\n\n\n\nDo Not Compare To Latency Benchmark\n\n\n\nThe tok/sec number you see here is VERY different than the latency benchmark shown on this note. This particular benchmark maximizes throughput by running multiple requests in parallel. The previous latency benchmark measures the time it takes to process a single request.\n\n\n\nObservations\n\nA100s are much faster than A10s, but A10s are significantly cheaper.1\nOn A10s, scaling up to more GPUs increases throughput at first, but then seems to diminish. It appears like there is a Goldilocks zone in terms of the right number of GPUs to maximize throughput. I did not explore this in detail, as Modal only has instances with specific numbers of GPUs.2\nThe much larger Llama v2 70b model is only ~2x slower than its 7b counterpart.",
+    "text": "What Happens With Smaller Models?\nEven though distributed inference is interesting for big models that do not fit on a single GPU, interesting things happen when you serve smaller models this way. Below, I test throughput for Llama v2 7b on 1, 2, and 4 GPUs. The throughput is measured by passsing these 59 prompts to llm.generate. llm.generate is described in the vLLM documentation:\n\nCall llm.generate to generate the outputs. It adds the input prompts to vLLM engine’s waiting queue and executes the vLLM engine to generate the outputs with high throughput.\n\nHere are the results, averaged over 5 runs for each row:\n\n\n\n\n\n\n\n\n\n\n\navg tok/sec\n\n\nmodel\nGPU\nnum_gpus\n\n\n\n\n\nLlama-2-70b-chat-hf\nNVIDIA A100-SXM4-40GB\n4\n380.9\n\n\nLlama-2-7b-chat-hf\nNVIDIA A10\n1\n458.8\n\n\n2\n497.3\n\n\n4\n543.6\n\n\nNVIDIA A100-SXM4-40GB\n1\n842.9\n\n\n2\n699.1\n\n\n4\n650.7\n\n\n\n\n\n\n\nYou can see all the individual runs here. In my experiments, the 70b model needed a minimum of 4 A100s to run, so that’s why there is only one row for that model (Modal only has instances with 1, 2, or 4 GPUs).\n```{python}\n\n\n\n\n\n\nDo Not Compare To Latency Benchmark\n\n\n\nThe tok/sec number you see here is VERY different than the latency benchmark shown on this note. This particular benchmark maximizes throughput by running multiple requests in parallel. The previous latency benchmark measures the time it takes to process a single request.\n\n\n\nObservations\n\nA100s are much faster than A10s, but A10s are significantly cheaper.1\nOn A10s, scaling up to more GPUs increases throughput at first, but then seems to diminish. It appears like there is a Goldilocks zone in terms of the right number of GPUs to maximize throughput. I did not explore this in detail, as Modal only has instances with specific numbers of GPUs.2\nThe much larger Llama v2 70b model is only ~2x slower than its 7b counterpart.",
     "crumbs": [
       "LLMs",
       "Inference",

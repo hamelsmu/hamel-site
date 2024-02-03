@@ -128,6 +128,34 @@ ul.task-list li input[type="checkbox"] {
   
 
   window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-llm-listings .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-project','listing-description','listing-role','listing-other',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-project-sort'] }],
+      
+      searchColumns: ["listing-project","listing-role","listing-other","listing-description"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-llm-listings'] = new List('listing-llm-listings', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  
+
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
     const listingTargetEl = window.document.querySelector('#listing-other-listings .list');
     if (!listingTargetEl) {
       // No listing discovered, do not attach.
@@ -243,7 +271,8 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#fastai" id="toc-fastai" class="nav-link active" data-scroll-target="#fastai"><img src="img_oss/fastai_small.png" class="img-fluid" style="width:10.0%"> fastai</a></li>
+  <li><a href="#axolotl" id="toc-axolotl" class="nav-link active" data-scroll-target="#axolotl"><img src="img_oss/axolotl.png" class="img-fluid" style="width:8.0%"> Axolotl</a></li>
+  <li><a href="#fastai" id="toc-fastai" class="nav-link" data-scroll-target="#fastai"><img src="img_oss/fastai_small.png" class="img-fluid" style="width:10.0%"> fastai</a></li>
   <li><a href="#metaflow" id="toc-metaflow" class="nav-link" data-scroll-target="#metaflow"><img src="img_oss/metaflow.webp" class="img-fluid" style="width:7.0%"> Metaflow</a></li>
   <li><a href="#kubeflow" id="toc-kubeflow" class="nav-link" data-scroll-target="#kubeflow"><img src="img_oss/kubeflow.jpeg" class="img-fluid" style="width:10.0%"> Kubeflow</a></li>
   <li><a href="#jupyter" id="toc-jupyter" class="nav-link" data-scroll-target="#jupyter"><img src="img_oss/jupyter.png" class="img-fluid" style="width:7.0%"> Jupyter</a></li>
@@ -279,7 +308,12 @@ window.Quarto = {
 </header>
 
 
-<p>My open source work has been focused on developer tools and infrastructure. I’ve contributed to projects such as <a href="#fastai">fastai</a>, <a href="#metaflow">Metaflow</a>, <a href="#kubeflow">Kubeflow</a>, <a href="#jupyter">Jupyter</a>, and <a href="#great-expectations">Great Expectations</a>, as well as <a href="#other">many others</a>. I list some of these below:</p>
+<p>My open-source work has been focused on developer tools and infrastructure. I’ve contributed to projects such as <a href="#fastai">fastai</a>, <a href="#metaflow">Metaflow</a>, <a href="#kubeflow">Kubeflow</a>, <a href="#jupyter">Jupyter</a>, and <a href="#great-expectations">Great Expectations</a>, as well as <a href="#other">many others</a>. I list some of these below:</p>
+<p><br></p>
+<section id="axolotl" class="level2">
+<h2 class="anchored" data-anchor-id="axolotl"><img src="img_oss/axolotl.png" class="img-fluid" style="width:8.0%"> Axolotl</h2>
+<p>I am a core contributor to <a href="https://github.com/OpenAccess-AI-Collective/axolotl">Axolotl</a>, a library for efficient fine-tuning of large language models. I also wrote an in-depth <a href="https://hamel.dev/blog/posts/axolotl/">debugging guide</a> for Axolotl.</p>
+</section>
 <section id="fastai" class="level2">
 <h2 class="anchored" data-anchor-id="fastai"><img src="img_oss/fastai_small.png" class="img-fluid" style="width:10.0%"> fastai</h2>
 <p>I maintain and contribute to a variety of <a href="https://github.com/fastai">fastai</a> projects. Below are the projects I’ve been very involved in:</p>
@@ -539,7 +573,45 @@ No matching items
 
 </section>
 
-</main> <!-- /main -->
+<div class="quarto-listing quarto-listing-container-table" id="listing-llm-listings">
+<table class="quarto-listing-table table">
+<thead>
+<tr>
+<th>
+Project
+</th>
+<th>
+Description
+</th>
+<th>
+Role
+</th>
+<th>
+Other References
+</th>
+</tr>
+</thead>
+<tbody class="list">
+<tr data-index="0" data-listing-project-sort="Axolotl ![GitHub Repo stars](https://img.shields.io/github/stars/OpenAccess-AI-Collective/axolotl?style=social)">
+<td>
+<a href="https://github.com/OpenAccess-AI-Collective/axolotl" class="project listing-project">Axolotl <img src="https://img.shields.io/github/stars/OpenAccess-AI-Collective/axolotl?style=social.png" class="img-fluid" alt="GitHub Repo stars"></a>
+</td>
+<td>
+<span class="listing-description">A platform for resource efficent fine-tuning of large language models. </span>
+</td>
+<td>
+<span class="listing-role">Core Contributor</span>
+</td>
+<td>
+<span class="listing-other"><a href="https://hamel.dev/blog/posts/axolotl/">Blog</a></span>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+</div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

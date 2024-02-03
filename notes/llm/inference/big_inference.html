@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2023-11-30">
+<meta name="dcterms.date" content="2024-01-28">
 <meta name="description" content="Using tensor parallelism w/ vLLM &amp; Modal to run Llama 70b">
 
 <title>Hamel’s Blog - vLLM &amp; large models</title>
@@ -940,7 +940,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">November 30, 2023</p>
+      <p class="date">January 28, 2024</p>
     </div>
   </div>
   
@@ -967,6 +967,8 @@ Correction
 </div>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>Let’s paste an image below:</p>
+<p><img src="images/paste-6.png" class="img-fluid"></p>
 <p>Large models like <a href="https://huggingface.co/meta-llama/Llama-2-70b-hf">Llama-2-70b</a> may not fit in a single GPU. I previously <a href="../../../notes/llm/inference/03_inference.html">profiled</a> the smaller 7b model against various inference tools. When a model is too big to fit on a single GPU, we can use <a href="https://huggingface.co/docs/transformers/v4.15.0/parallelism">various techniques</a> to split the model across multiple GPUs.</p>
 <section id="compute-reproducibility" class="level3">
 <h3 class="anchored" data-anchor-id="compute-reproducibility">Compute &amp; Reproducibility</h3>
@@ -1043,7 +1045,7 @@ Be Careful To Mind The Cache When Downloading Files
 <p>Call <code>llm.generate</code> to generate the outputs. It adds the input prompts to vLLM engine’s waiting queue and executes the vLLM engine to generate the outputs with high throughput.</p>
 </blockquote>
 <p>Here are the results, averaged over 5 runs for each row:</p>
-<div id="780a0330" class="cell" data-execution_count="1">
+<div id="12056873" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -1104,6 +1106,7 @@ Be Careful To Mind The Cache When Downloading Files
 </div>
 </div>
 <p>You can see all the individual runs <a href="https://wandb.ai/hamelsmu/llama-inference?workspace=user-hamelsmu">here</a>. In my experiments, the 70b model needed a minimum of 4 A100s to run, so that’s why there is only one row for that model (Modal only has instances with 1, 2, or 4 GPUs).</p>
+<p>```{python}</p>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
