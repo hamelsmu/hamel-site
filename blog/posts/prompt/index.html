@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.533">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Hamel Husain">
+<meta name="dcterms.date" content="2024-02-14">
+<meta name="description" content="Quickly understand inscrutable LLM frameworks by intercepting LLM API calls.">
+
+<title>Hamel’s Blog - Fuck You, Show Me The Prompt.</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../../../styles.css">
+<meta property="og:title" content="Hamel’s Blog - Fuck You, Show Me The Prompt.">
+<meta property="og:description" content="Quickly understand inscrutable LLM frameworks by intercepting LLM API calls.">
+<meta property="og:image" content="https://hamel.dev/blog/posts/prompt/slap_1.jpg">
+<meta property="og:site_name" content="Hamel's Blog">
+<meta name="twitter:title" content="Hamel’s Blog - Fuck You, Show Me The Prompt.">
+<meta name="twitter:description" content="Quickly understand inscrutable LLM frameworks by intercepting LLM API calls.">
+<meta name="twitter:image" content="https://hamel.dev/blog/posts/prompt/slap_1.jpg">
+<meta name="twitter:creator" content="@HamelHusain">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+          <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../index.html"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../oss/opensource.html"> 
+<span class="menu-text">Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../talks.html"> 
+<span class="menu-text">Talks</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../notes/index.html"> 
+<span class="menu-text">Notes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../hire.html"> 
+<span class="menu-text">Hiring</span></a>
+  </li>  
+</ul>
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../../index.xml"> <i class="bi bi-rss" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          <div class="quarto-navbar-tools">
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table Of Contents</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#motivation-minimize-accidental-complexity" id="toc-motivation-minimize-accidental-complexity" class="nav-link" data-scroll-target="#motivation-minimize-accidental-complexity">Motivation: Minimize accidental complexity</a></li>
+  <li><a href="#intercepting-llm-api-calls" id="toc-intercepting-llm-api-calls" class="nav-link" data-scroll-target="#intercepting-llm-api-calls">Intercepting LLM API calls</a>
+  <ul class="collapse">
+  <li><a href="#setting-up-mitmproxy" id="toc-setting-up-mitmproxy" class="nav-link" data-scroll-target="#setting-up-mitmproxy">Setting Up mitmproxy</a></li>
+  <li><a href="#environment-variables-for-python" id="toc-environment-variables-for-python" class="nav-link" data-scroll-target="#environment-variables-for-python">Environment variables for Python</a></li>
+  </ul></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a>
+  <ul class="collapse">
+  <li><a href="#guardrails" id="toc-guardrails" class="nav-link" data-scroll-target="#guardrails">Guardrails</a></li>
+  <li><a href="#guidance" id="toc-guidance" class="nav-link" data-scroll-target="#guidance">Guidance</a></li>
+  <li><a href="#langchain" id="toc-langchain" class="nav-link" data-scroll-target="#langchain">Langchain</a></li>
+  <li><a href="#instructor" id="toc-instructor" class="nav-link" data-scroll-target="#instructor">Instructor</a></li>
+  <li><a href="#dspy" id="toc-dspy" class="nav-link" data-scroll-target="#dspy">DSPy</a></li>
+  </ul></li>
+  <li><a href="#my-personal-experience" id="toc-my-personal-experience" class="nav-link" data-scroll-target="#my-personal-experience">My Personal Experience</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.dev/hamelsmu/hamel-site/blob/master/blog/posts/prompt/index.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Fuck You, Show Me The Prompt.</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">llms</div>
+    <div class="quarto-category">ml</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    Quickly understand inscrutable LLM frameworks by intercepting LLM API calls.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Hamel Husain </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 14, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+<nav id="TOC-body" role="doc-toc">
+    <h2 id="toc-title">Table Of Contents</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background">Background</a></li>
+  <li><a href="#motivation-minimize-accidental-complexity" id="toc-motivation-minimize-accidental-complexity">Motivation: Minimize accidental complexity</a></li>
+  <li><a href="#intercepting-llm-api-calls" id="toc-intercepting-llm-api-calls">Intercepting LLM API calls</a>
+  <ul>
+  <li><a href="#setting-up-mitmproxy" id="toc-setting-up-mitmproxy">Setting Up mitmproxy</a></li>
+  <li><a href="#environment-variables-for-python" id="toc-environment-variables-for-python">Environment variables for Python</a></li>
+  </ul></li>
+  <li><a href="#examples" id="toc-examples">Examples</a>
+  <ul>
+  <li><a href="#guardrails" id="toc-guardrails">Guardrails</a></li>
+  <li><a href="#guidance" id="toc-guidance">Guidance</a></li>
+  <li><a href="#langchain" id="toc-langchain">Langchain</a></li>
+  <li><a href="#instructor" id="toc-instructor">Instructor</a></li>
+  <li><a href="#dspy" id="toc-dspy">DSPy</a></li>
+  </ul></li>
+  <li><a href="#my-personal-experience" id="toc-my-personal-experience">My Personal Experience</a></li>
+  </ul>
+</nav>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>There are many libraries that aim to make the output of your LLMs better by <strong>re-writing or constructing the prompt for you</strong>. These libraries purport to make the output of your LLMs:</p>
+<ul>
+<li>safer <a href="https://github.com/guardrails-ai/guardrails">(ex: guardrails)</a></li>
+<li>deterministic <a href="https://github.com/guidance-ai/guidance">(ex: guidance)</a></li>
+<li>structured <a href="https://github.com/jxnl/instructor">(ex: instructor)</a></li>
+<li>resilient <a href="https://www.langchain.com/">(ex: langchain)</a></li>
+<li>… or even optimized for an arbitrary metric <a href="https://github.com/stanfordnlp/dspy">(ex: DSPy)</a>.</li>
+</ul>
+<p>A common theme among <em>some</em> of these tools is they encourage users to disintermediate themselves from prompting.</p>
+<blockquote class="blockquote">
+<p><a href="https://github.com/stanfordnlp/dspy">DSPy</a>: “This is a new paradigm in which LMs and their prompts fade into the background …. you can compile your program again DSPy will create new effective prompts”</p>
+</blockquote>
+<blockquote class="blockquote">
+<p><a href="https://github.com/guidance-ai/guidance">guidance</a> “guidance is a programming paradigm that offers superior control and efficiency compared to conventional prompting …”</p>
+</blockquote>
+<p>Even when tools don’t discourage prompting, I’ve often found it difficult to retrieve the final prompt(s) these tools send to the language model. <strong>The prompts sent by these tools to the LLM is a natural language description of what these tools are doing, and is the fastest way to understand how they work.</strong> Furthermore, some tools have <a href="https://github.com/stanfordnlp/dspy?tab=readme-ov-file#4-two-powerful-concepts-signatures--teleprompters">dense terminology</a> to describe internal constructs which can further obfuscate what they are doing.</p>
+<p>For reasons I’ll explain below, I think most people would benefit from the following mindset:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="slap_3.jpeg" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>In this blog post, I’ll show you how you can <strong>intercept API calls w/prompts for any tool, without having to fumble through docs or read source code.</strong> I’ll show you how to setup and operate <a href="https://mitmproxy.org/">mitmproxy</a> with examples from the LLM the tools I previously mentioned.</p>
+</section>
+<section id="motivation-minimize-accidental-complexity" class="level2">
+<h2 class="anchored" data-anchor-id="motivation-minimize-accidental-complexity">Motivation: Minimize accidental complexity</h2>
+<p>Before adopting an abstraction, its important to consider the dangers of taking on <a href="https://dev.to/alexbunardzic/software-complexity-essential-accidental-and-incidental-3i4d">accidental complexity</a>. This is acute for LLM abstractions relative to typical programming abstractions.</p>
+<center>
+<blockquote class="twitter-tweet blockquote">
+<p lang="en" dir="ltr">
+Programming abstraction -&gt; a human-like language you can use to translate your task into machine code<br><br>LLM abstraction -&gt; an unintelligible framework you can use to translate your task into human language
+</p>
+— Hamel Husain (<span class="citation" data-cites="HamelHusain">@HamelHusain</span>) <a href="https://twitter.com/HamelHusain/status/1754315254413361553">February 5, 2024</a>
+</blockquote>
+<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</center>
+<p>While this is a cheeky comment, it’s worth keeping this in mind while evaluating tools. There are two primary types of automation that tools provide:</p>
+<ul>
+<li><strong>Interleaving code and LLMs:</strong> Expressing this automation is often best done through code, since code must be run to carry out the task. Examples include routing, executing functions, retries, chaining, etc.</li>
+<li><strong>Re-Writing and constructing prompts</strong>: Expressing your intent is often best done through natural language. However, there are exceptions! For example, it is convenient to express a function definition or schema from code instead of natural language.</li>
+</ul>
+<p>Many frameworks offer both types of automation. However, going too far with the second type can have negative consequences. Seeing the prompt allows you decide:</p>
+<ol type="1">
+<li>Is this framework really necessary?</li>
+<li>Should I just steal the final prompt (a string) and jettison the framework?</li>
+<li>Can we write a better prompt than this (shorter, aligned with your intent, etc)?</li>
+<li>Is this the best approach (do the # of API calls seem appropriate)?</li>
+</ol>
+<p>In my experience, seeing the prompts and API calls are essential to making an informed decisions.</p>
+</section>
+<section id="intercepting-llm-api-calls" class="level2">
+<h2 class="anchored" data-anchor-id="intercepting-llm-api-calls">Intercepting LLM API calls</h2>
+<p>There are many possible ways to intercept LLM API calls, such as monkey patching source code or finding a user-facing option. I’ve found that those approaches take far too much time since the quality of source code and documentation can vary greatly. After all, I just want to see API calls without worrying about how the code works!</p>
+<ul>
+<li>Monkey patching</li>
+<li>Looking for a user-facing option that allows this in the documentation.</li>
+</ul>
+<p>However, I’ve found this can be very time consuming. A framework agnostic way to see API calls is to setup a proxy that logs your outgoing API requests. This is easy to do with <a href="https://mitmproxy.org/">mitmproxy</a>, an free, open-source HTTPS proxy.</p>
+<section id="setting-up-mitmproxy" class="level3">
+<h3 class="anchored" data-anchor-id="setting-up-mitmproxy">Setting Up mitmproxy</h3>
+<p>This is an opinionated way to setup <code>mitmproxy</code>that’s beginner-friendly for our intended purposes:</p>
+<ol type="1">
+<li><p>Follow the installation instructions <a href="https://mitmproxy.org/">on the website</a></p></li>
+<li><p>Start the interactive UI by running <code>mitmweb</code> in the terminal. Pay attention to the url of the interactive UI in the logs which will look something like this: <code>Web server listening at http://127.0.0.1:8081/</code></p></li>
+<li><p>Next, you need to configure your device (i.e.&nbsp;your laptop) to route all traffic through <code>mitproxy</code>, which listens on <code>http://localhost:8080</code>. Per the documentation:</p>
+<blockquote class="blockquote">
+<p>We recommend to simply search the web on how to configure an HTTP proxy for your system. Some operating system have a global settings, some browser have their own, other applications use environment variables, etc.</p>
+</blockquote>
+<p>In my case, A <a href="https://www.google.com/search?q=set+proxy+for+macos&amp;sca_esv=c51a80de1a7d45f0&amp;rlz=1C5CHFA_enUS1048US1049&amp;sxsrf=ACQVn0_ysjr6Kma2_lX8WbB06iPbDi5gUQ%3A1707764982232&amp;ei=9mzKZYXoDcfy0PEPpJqb2Ao&amp;ved=0ahUKEwiFu4CpwKaEAxVHOTQIHSTNBqsQ4dUDCBA&amp;uact=5&amp;oq=set+proxy+for+macos&amp;gs_lp=Egxnd3Mtd2l6LXNlcnAiE3NldCBwcm94eSBmb3IgbWFjb3MyBBAjGCcyBhAAGBYYHjIGEAAYFhgeMgYQABgWGB4yBhAAGBYYHjILEAAYgAQYigUYhgMyCxAAGIAEGIoFGIYDSMk-UMU7WMU7cAd4AZABAJgBVaABVaoBATG4AQPIAQD4AQHCAgoQABhHGNYEGLAD4gMEGAAgQYgGAZAGCA&amp;sclient=gws-wiz-serp">google search for “set proxy for macos”</a> returned these results:</p>
+<blockquote class="blockquote">
+<p>choose Apple menu &gt; System Settings, click Network in the sidebar, click a network service on the right, click Details, then click Proxies.</p>
+</blockquote>
+<p>I then insert <code>localhost</code> and <code>8080</code> in the following places in the UI:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="mac.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div></li>
+<li><p>Next, navigate to <a href="http://mitm.it">http://mitm.it</a> and it will give you instructions on how to install the mitmproxy Certificate Authority (CA), which you will need for intercepting HTTPS requests. (You can also do this manually <a href="https://docs.mitmproxy.org/stable/concepts-certificates/#quick-setup">here</a>.) Also, take note of the location of the CA file as we will reference it later.</p></li>
+<li><p>You can test that everything works by browsing to a website like <a href="https://mitmproxy.org/">https://mitmproxy.org/</a>, and seeing the corresponding output in the mtimweb UI which for me is located at <a href="http://127.0.0.1:8081/">http://127.0.0.1:8081/</a> (look at the logs in your terminal to get the URL).</p></li>
+<li><p>Now that you set everything up, you can disable the proxy that you previously enabled on your network. I do this on my mac by toggling the proxy buttons in the screenshot I showed above. This is because we want to scope the proxy to only the python program to eliminate unnecessary noise.</p></li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Networking related software commonly allows you to proxy outgoing requests by setting environment variables. This is the approach we will use to scope our proxy to specific Python programs. However, I encourage you to play with other types of programs to see what you find after you are comfortable!</p>
+</div>
+</div>
+</section>
+<section id="environment-variables-for-python" class="level3">
+<h3 class="anchored" data-anchor-id="environment-variables-for-python">Environment variables for Python</h3>
+<p>We need to set the following environment variables so that the <code>requests</code> and <code>httpx</code> libraries will direct traffic to the proxy and reference the CA file for HTTPS traffic:</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Make sure you set these environment variables before running any of the code snippets in this blog post.</p>
+</div>
+</div>
+<div id="07c4617c-1d52-4c99-9bed-645efd73ba71" class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The location of my CA File</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>cert_file <span class="op">=</span> <span class="st">'/Users/hamel/Downloads/mitmproxy-ca-cert.pem'</span> </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>os.environ[<span class="st">'REQUESTS_CA_BUNDLE'</span>] <span class="op">=</span> cert_file</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>os.environ[<span class="st">'SSL_CERT_FILE'</span>] <span class="op">=</span> cert_file</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>os.environ[<span class="st">'HTTPS_PROXY'</span>] <span class="op">=</span> <span class="st">'http://127.0.0.1:8080'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You can do a minimal test by running the following code:</p>
+<div id="faf4a70a-bde5-47c0-b649-3179c233c189" class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>requests.post(<span class="st">'https://httpbin.org/post'</span>, </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>              data<span class="op">=</span>{<span class="st">'key'</span>: <span class="st">'value'</span>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;Response [200]&gt;</code></pre>
+</div>
+</div>
+<p>This will appear in the UI like so:</p>
+<p><img src="mitm_01.png" class="img-fluid"></p>
+</section>
+</section>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<p>Now for the fun part, let’s run through some examples of LLM libraries and intercept their API calls!</p>
+<section id="guardrails" class="level3">
+<h3 class="anchored" data-anchor-id="guardrails">Guardrails</h3>
+<p>Guardrails allows you specify structure and types, which it uses to validate and correct the outputs of large language models. This is a hello world example from the <a href="https://github.com/guardrails-ai/guardrails"><code>guardrails-ai/guardrails</code> README</a>:</p>
+<div id="c746dbe7-e96f-4ea0-89d5-ca9b0b0685e8" class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pydantic <span class="im">import</span> BaseModel, Field</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> guardrails <span class="im">import</span> Guard</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> openai</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Pet(BaseModel):</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    pet_type: <span class="bu">str</span> <span class="op">=</span> Field(description<span class="op">=</span><span class="st">"Species of pet"</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    name: <span class="bu">str</span> <span class="op">=</span> Field(description<span class="op">=</span><span class="st">"a unique pet name"</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>prompt <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="st">    What kind of pet should I get and what should I name it?</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="st">    $</span><span class="sc">{gr.complete_json_suffix_v2}</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>guard <span class="op">=</span> Guard.from_pydantic(output_class<span class="op">=</span>Pet, prompt<span class="op">=</span>prompt)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>validated_output, <span class="op">*</span>rest <span class="op">=</span> guard(</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    llm_api<span class="op">=</span>openai.completions.create,</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">"gpt-3.5-turbo-instruct"</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>validated_output<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{
+    "pet_type": "dog",
+    "name": "Buddy</code></pre>
+</div>
+</div>
+<p>What is happening here? How is this structured output and validation working? Looking at the mitmproxy UI, I can see that the above code resulted in two LLM API calls, the first one with these arguments:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode json code-overflow-wrap code-with-copy"><code class="sourceCode json"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"model"</span><span class="fu">:</span> <span class="st">"gpt-3.5-turbo-instruct"</span><span class="fu">,</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"prompt"</span><span class="fu">:</span> <span class="st">"</span><span class="ch">\n</span><span class="st">    What kind of pet should I get and what should I name it?</span><span class="ch">\n\n</span><span class="st">    </span><span class="ch">\n</span><span class="st">Given below is XML that describes the information to extract from this document and the tags to extract it into.</span><span class="ch">\n\n</span><span class="st">&lt;output&gt;</span><span class="ch">\n</span><span class="st">    &lt;string name=</span><span class="ch">\"</span><span class="st">pet_type</span><span class="ch">\"</span><span class="st"> description=</span><span class="ch">\"</span><span class="st">Species of pet</span><span class="ch">\"</span><span class="st">/&gt;</span><span class="ch">\n</span><span class="st">    &lt;string name=</span><span class="ch">\"</span><span class="st">name</span><span class="ch">\"</span><span class="st"> description=</span><span class="ch">\"</span><span class="st">a unique pet name</span><span class="ch">\"</span><span class="st">/&gt;</span><span class="ch">\n</span><span class="st">&lt;/output&gt;</span><span class="ch">\n\n\n</span><span class="st">ONLY return a valid JSON object (no other text is necessary), where the key of the field in JSON is the `name` attribute of the corresponding XML, and the value is of the type specified by the corresponding XML's tag. The JSON MUST conform to the XML format, including any types and format requests e.g. requests for lists, objects and specific types. Be correct and concise.</span><span class="ch">\n\n</span><span class="st">Here are examples of simple (XML, JSON) pairs that show the expected behavior:</span><span class="ch">\n</span><span class="st">- `&lt;string name='foo' format='two-words lower-case' /&gt;` =&gt; `{'foo': 'example one'}`</span><span class="ch">\n</span><span class="st">- `&lt;list name='bar'&gt;&lt;string format='upper-case' /&gt;&lt;/list&gt;` =&gt; `{</span><span class="ch">\"</span><span class="st">bar</span><span class="ch">\"</span><span class="st">: ['STRING ONE', 'STRING TWO', etc.]}`</span><span class="ch">\n</span><span class="st">- `&lt;object name='baz'&gt;&lt;string name=</span><span class="ch">\"</span><span class="st">foo</span><span class="ch">\"</span><span class="st"> format=</span><span class="ch">\"</span><span class="st">capitalize two-words</span><span class="ch">\"</span><span class="st"> /&gt;&lt;integer name=</span><span class="ch">\"</span><span class="st">index</span><span class="ch">\"</span><span class="st"> format=</span><span class="ch">\"</span><span class="st">1-indexed</span><span class="ch">\"</span><span class="st"> /&gt;&lt;/object&gt;` =&gt; `{'baz': {'foo': 'Some String', 'index': 1}}`</span><span class="ch">\n\n\n\n</span><span class="st">Json Output:</span><span class="ch">\n\n</span><span class="st">"</span><span class="fu">,</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"temperature"</span><span class="fu">:</span> <span class="dv">0</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Followed by another call with these arguments:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode json code-overflow-wrap code-with-copy"><code class="sourceCode json"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"model"</span><span class="fu">:</span> <span class="st">"gpt-3.5-turbo-instruct"</span><span class="fu">,</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"prompt"</span><span class="fu">:</span> <span class="st">"</span><span class="ch">\n</span><span class="st">I was given the following response, which was not parseable as JSON.</span><span class="ch">\n\n\"</span><span class="st">{</span><span class="ch">\\</span><span class="st">n    </span><span class="ch">\\\"</span><span class="st">pet_type</span><span class="ch">\\\"</span><span class="st">: </span><span class="ch">\\\"</span><span class="st">dog</span><span class="ch">\\\"</span><span class="st">,</span><span class="ch">\\</span><span class="st">n    </span><span class="ch">\\\"</span><span class="st">name</span><span class="ch">\\\"</span><span class="st">: </span><span class="ch">\\\"</span><span class="st">Buddy</span><span class="ch">\"\n\n</span><span class="st">Help me correct this by making it valid JSON.</span><span class="ch">\n\n</span><span class="st">Given below is XML that describes the information to extract from this document and the tags to extract it into.</span><span class="ch">\n\n</span><span class="st">&lt;output&gt;</span><span class="ch">\n</span><span class="st">    &lt;string name=</span><span class="ch">\"</span><span class="st">pet_type</span><span class="ch">\"</span><span class="st"> description=</span><span class="ch">\"</span><span class="st">Species of pet</span><span class="ch">\"</span><span class="st">/&gt;</span><span class="ch">\n</span><span class="st">    &lt;string name=</span><span class="ch">\"</span><span class="st">name</span><span class="ch">\"</span><span class="st"> description=</span><span class="ch">\"</span><span class="st">a unique pet name</span><span class="ch">\"</span><span class="st">/&gt;</span><span class="ch">\n</span><span class="st">&lt;/output&gt;</span><span class="ch">\n\n\n</span><span class="st">ONLY return a valid JSON object (no other text is necessary), where the key of the field in JSON is the `name` attribute of the corresponding XML, and the value is of the type specified by the corresponding XML's tag. The JSON MUST conform to the XML format, including any types and format requests e.g. requests for lists, objects and specific types. Be correct and concise. If you are unsure anywhere, enter `null`.</span><span class="ch">\n\n\n</span><span class="st">Json Output:</span><span class="ch">\n\n</span><span class="st">"</span><span class="fu">,</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"temperature"</span><span class="fu">:</span> <span class="dv">0</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Woof. That’s a whole lot of ceremony to get structured output! We learned that this library’s approach to structured output uses XML schemas (while others use function calling). It’s worth considering if you can fashion a better or simpler approach now that you the magic has been lifted. Either way, we have immediate insight into how it works without dragging you into uncessary complexity, which is a win.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I’m not going to critique any LLM frameworks in detail in this post. That is a decision you must make depending on your use-case. What’s important is that you know how they work before you inject them into your workflow.</p>
+</div>
+</div>
+</section>
+<section id="guidance" class="level3">
+<h3 class="anchored" data-anchor-id="guidance">Guidance</h3>
+<p>Guidance offers constrained generation and programming constructs for writing prompts. Let’s dive into a hello world example from <a href="https://github.com/guidance-ai/guidance"><code>guidance-ai/guidance</code> README</a>:</p>
+<div id="cfe6882f-e22c-4666-9a66-6ce41262c6ea" class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> guidance <span class="im">import</span> models, user, system, assistant, gen</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>gpt <span class="op">=</span> models.OpenAI(<span class="st">"gpt-3.5-turbo"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> system(): lm <span class="op">=</span> gpt <span class="op">+</span> <span class="st">"You are a cat expert."</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> user(): lm <span class="op">+=</span> <span class="st">"What are the smallest cats?"</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> assistant(): lm <span class="op">+=</span> gen(<span class="st">"answer"</span>, stop<span class="op">=</span><span class="st">"."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre style="margin: 0px; padding: 0px; vertical-align: middle; padding-left: 8px; margin-left: -8px; border-radius: 0px; border-left: 1px solid rgba(127, 127, 127, 0.2); white-space: pre-wrap; font-family: ColfaxAI, Arial; font-size: 15px; line-height: 23px;"><div style="display: flex; border-bottom: 1px solid rgba(127, 127, 127, 0.2); align-items: center;"><div style="flex: 0 0 80px; opacity: 0.5;">system</div><div style="flex-grow: 1; padding: 5px; padding-top: 10px; padding-bottom: 10px; margin-top: 0px; white-space: pre-wrap; margin-bottom: 0px;">You are a cat expert.</div></div><div style="display: flex; border-bottom: 1px solid rgba(127, 127, 127, 0.2); align-items: center;"><div style="flex: 0 0 80px; opacity: 0.5;">user</div><div style="flex-grow: 1; padding: 5px; padding-top: 10px; padding-bottom: 10px; margin-top: 0px; white-space: pre-wrap; margin-bottom: 0px;">What are the smallest cats?</div></div><div style="display: flex; border-bottom: 1px solid rgba(127, 127, 127, 0.2); align-items: center;"><div style="flex: 0 0 80px; opacity: 0.5;">assistant</div><div style="flex-grow: 1; padding: 5px; padding-top: 10px; padding-bottom: 10px; margin-top: 0px; white-space: pre-wrap; margin-bottom: 0px;"><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">The</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> smallest</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> cat</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> breed</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> is</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> the</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Sing</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">apur</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">a</span></div></div></pre>
+</div>
+</div>
+<p>This looks pretty neat! But what is it doing exactly? In particular I wonder if the <code>stop</code> parameter in <code>gen</code> is doing anything. This is the call from the mitmproxy UI:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode json code-overflow-wrap code-with-copy"><code class="sourceCode json"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"max_tokens"</span><span class="fu">:</span> <span class="dv">1000</span><span class="fu">,</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"messages"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"content"</span><span class="fu">:</span> <span class="st">"You are a cat expert."</span><span class="fu">,</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"role"</span><span class="fu">:</span> <span class="st">"system"</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"content"</span><span class="fu">:</span> <span class="st">"What are the smallest cats?"</span><span class="fu">,</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"role"</span><span class="fu">:</span> <span class="st">"user"</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"model"</span><span class="fu">:</span> <span class="st">"gpt-3.5-turbo"</span><span class="fu">,</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"n"</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"stream"</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"temperature"</span><span class="fu">:</span> <span class="dv">0</span><span class="er">.</span><span class="dv">0</span><span class="fu">,</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"top_p"</span><span class="fu">:</span> <span class="fl">1.0</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Interestingly, this request sent by this library doesn’t forward the <a href="https://platform.openai.com/docs/api-reference/chat/create"><code>stop</code> parameter</a> when calling the API, even though it appears to be stopping generation in another way. In this situation, I’m being charged extra for tokens that are generated by the underlying LLM, even though <code>guidance</code> is truncating the output - which is not ideal.</p>
+</section>
+<section id="langchain" class="level3">
+<h3 class="anchored" data-anchor-id="langchain">Langchain</h3>
+<p>Langchain is a multi-tool for all things LLM. Lots of people rely on Langchain when get started with LLMs. Since Langchain has lots of surface area I’ll go through two examples.</p>
+<section id="lcel-batching" class="level4">
+<h4 class="anchored" data-anchor-id="lcel-batching">LCEL Batching</h4>
+<p>First, let’s take a look at the <a href="https://python.langchain.com/docs/expression_language/why#batch">this example</a> from their new <code>LCEL</code> (langchain expression language) guide:</p>
+<div id="ec5c742c-885e-4691-a803-22c470072d4b" class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> langchain_openai <span class="im">import</span> ChatOpenAI</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> langchain_core.prompts <span class="im">import</span> ChatPromptTemplate</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> langchain_core.output_parsers <span class="im">import</span> StrOutputParser</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> langchain_core.runnables <span class="im">import</span> RunnablePassthrough</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>prompt <span class="op">=</span> ChatPromptTemplate.from_template(</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Tell me a short joke about </span><span class="sc">{topic}</span><span class="st">"</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>output_parser <span class="op">=</span> StrOutputParser()</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> ChatOpenAI(model<span class="op">=</span><span class="st">"gpt-3.5-turbo"</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>chain <span class="op">=</span> (</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"topic"</span>: RunnablePassthrough()} </span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">|</span> prompt</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">|</span> model</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">|</span> output_parser</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="e70028f3-3f9e-482c-bc63-05fbf0632c61" class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>chain.batch([<span class="st">"ice cream"</span>, <span class="st">"spaghetti"</span>, <span class="st">"dumplings"</span>, <span class="st">"tofu"</span>, <span class="st">"pizza"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>["Why did the ice cream go to therapy?\n\nBecause it had too many toppings and couldn't find its flavor!",
+ 'Why did the tomato turn red?\n\nBecause it saw the spaghetti sauce!',
+ 'Why did the dumpling go to the bakery?\n\nBecause it kneaded some company!',
+ 'Why did the tofu go to the party?\n\nBecause it wanted to blend in with the crowd!',
+ 'Why did the pizza go to the wedding?\n\nBecause it wanted to be a little cheesy!']</code></pre>
+</div>
+</div>
+<p>That’s interesting! So how does this actually work? When looking at mitmproxy, I see <em>five separate</em> API calls:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span> <span class="dt">"messages"</span><span class="fu">:</span> <span class="ot">[</span><span class="fu">{</span><span class="dt">"content"</span><span class="fu">:</span> <span class="st">"Tell me a short joke about spaghetti"</span><span class="fu">,</span> <span class="dt">"role"</span><span class="fu">:</span> <span class="st">"user"</span><span class="fu">}</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"model"</span><span class="fu">:</span> <span class="st">"gpt-3.5-turbo"</span><span class="fu">,</span> <span class="dt">"n"</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span> <span class="dt">"stream"</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span> <span class="dt">"temperature"</span><span class="fu">:</span> <span class="dv">0</span><span class="er">.</span><span class="dv">7</span><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span> <span class="dt">"messages"</span><span class="fu">:</span> <span class="ot">[</span><span class="fu">{</span><span class="dt">"content"</span><span class="fu">:</span> <span class="st">"Tell me a short joke about ice cream"</span><span class="fu">,</span> <span class="dt">"role"</span><span class="fu">:</span> <span class="st">"user"</span><span class="fu">}</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"model"</span><span class="fu">:</span> <span class="st">"gpt-3.5-turbo"</span><span class="fu">,</span> <span class="dt">"n"</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span> <span class="dt">"stream"</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span> <span class="dt">"temperature"</span><span class="fu">:</span> <span class="dv">0</span><span class="er">.</span><span class="dv">7</span><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>…and so on for each of the five items in the list.</p>
+<p>Three separate calls to OpenAI may be sub-optimal as they are not truly <a href="https://platform.openai.com/docs/guides/rate-limits/batching-requests">batching requests as allowed by the OpenAI API</a>. I’ve personally hit rate limits when using LCEL in this way - its only until I looked at the API calls that I understood what was happening! (It’s easy to be mislead by the word “batch”).</p>
+</section>
+<section id="smartllmchain" class="level4">
+<h4 class="anchored" data-anchor-id="smartllmchain">SmartLLMChain</h4>
+<p>Next I’ll focus on automation that writes prompts for you, particularly <a href="https://api.python.langchain.com/en/latest/smart_llm/langchain_experimental.smart_llm.base.SmartLLMChain.html">SmartLLMChain</a>:</p>
+<div id="600b1e60-6c01-429e-834b-470730b5ea26" class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> langchain.prompts <span class="im">import</span> PromptTemplate</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> langchain_experimental.smart_llm <span class="im">import</span> SmartLLMChain</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> langchain_openai <span class="im">import</span> ChatOpenAI</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>hard_question <span class="op">=</span> <span class="st">"I have a 12 liter jug and a 6 liter jug.</span><span class="ch">\</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="st">I want to measure 6 liters. How do I do it?"</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>prompt <span class="op">=</span> PromptTemplate.from_template(hard_question)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>llm <span class="op">=</span> ChatOpenAI(temperature<span class="op">=</span><span class="dv">0</span>, model_name<span class="op">=</span><span class="st">"gpt-3.5-turbo"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="bdb002f1-5f1b-40a7-ad4f-c9052813ef1f" class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>chain <span class="op">=</span> SmartLLMChain(llm<span class="op">=</span>llm, prompt<span class="op">=</span>prompt, </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                      n_ideas<span class="op">=</span><span class="dv">2</span>, </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                      verbose<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> chain.run({})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="13be7600-e9eb-4ed2-91d9-a8182858ca83" class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Idea 1: 1. Fill the 12 liter jug completely.
+2. Pour the contents of the 12 liter jug into the 6 liter jug. This will leave you with 6 liters in the 12 liter jug.
+3. Empty the 6 liter jug.
+4. Pour the remaining 6 liters from the 12 liter jug into the now empty 6 liter jug.
+5. You now have 6 liters in the 6 liter jug.
+
+Idea 2: 1. Fill the 12 liter jug completely.
+2. Pour the contents of the 12 liter jug into the 6 liter jug. This will leave you with 6 liters in the 12 liter jug.
+3. Empty the 6 liter jug.
+4. Pour the remaining 6 liters from the 12 liter jug into the now empty 6 liter jug.
+5. You now have 6 liters in the 6 liter jug.
+
+Improved Answer:
+1. Fill the 12 liter jug completely.
+2. Pour the contents of the 12 liter jug into the 6 liter jug until the 6 liter jug is full. This will leave you with 6 liters in the 12 liter jug and the 6 liter jug completely filled.
+3. Empty the 6 liter jug.
+4. Pour the remaining 6 liters from the 12 liter jug into the now empty 6 liter jug.
+5. You now have 6 liters in the 6 liter jug.
+
+Full Answer:
+To measure 6 liters using a 12 liter jug and a 6 liter jug, follow these steps:
+1. Fill the 12 liter jug completely.
+2. Pour the contents of the 12 liter jug into the 6 liter jug until the 6 liter jug is full. This will leave you with 6 liters in the 12 liter jug and the 6 liter jug completely filled.
+3. Empty the 6 liter jug.
+4. Pour the remaining 6 liters from the 12 liter jug into the now empty 6 liter jug.
+5. You now have 6 liters in the 6 liter jug.</code></pre>
+</div>
+</div>
+<p>Neat! So what happened exactly? While this API emits logs that show you a lot of information (which I’ve omitted for brevity), the API request pattern is interesting:</p>
+<ol type="1">
+<li><p>Two <em>seperate</em> api calls for each “idea”.</p></li>
+<li><p>Another API call that incorporates the two ideas as context, with the prompt:</p>
+<blockquote class="blockquote">
+<p>You are a researcher tasked with investigating the 2 response options provided. List the flaws and faulty logic of each answer options. Let’w work this out in a step by step way to be sure we have all the errors:”</p>
+</blockquote></li>
+<li><p>A final API call that that takes the critique from step 2 and generates an answer.</p></li>
+</ol>
+<p>Its not clear that this approach is optimal. I am not sure it should take 4 separate API calls to accomplish this task. Perhaps the critique and the final answer could be generated in one step? Furthermore, the prompt has a spelling error (<code>Let'w</code>) but also overly focuses on the negative about identifying errors - which makes me skeptical that this prompt has been optimized or tested.</p>
+</section>
+</section>
+<section id="instructor" class="level3">
+<h3 class="anchored" data-anchor-id="instructor">Instructor</h3>
+<p><a href="https://github.com/jxnl/instructor">Instructor</a> is a framework for structured outputs.</p>
+<section id="strucutred-data-extraction-with-pydantic" class="level4">
+<h4 class="anchored" data-anchor-id="strucutred-data-extraction-with-pydantic">Strucutred data extraction with Pydantic</h4>
+<p>Here is a basic example from the project’s <a href="https://github.com/jxnl/instructor">README</a> that allows you to extract structured data by using Pydantic to define your schema.</p>
+<div id="8469f9f6-6998-4de7-8551-c073929e385c" class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> instructor</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> openai <span class="im">import</span> OpenAI</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pydantic <span class="im">import</span> BaseModel</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> instructor.patch(OpenAI())</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> UserDetail(BaseModel):</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    name: <span class="bu">str</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    age: <span class="bu">int</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>user <span class="op">=</span> client.chat.completions.create(</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span><span class="st">"gpt-3.5-turbo"</span>,</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>    response_model<span class="op">=</span>UserDetail,</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    messages<span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="st">"Extract Jason is 25 years old"</span>}])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can see how this works by inspecting the API call logged to mitmproxy:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode json code-overflow-wrap code-with-copy"><code class="sourceCode json"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"function_call"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>        <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"UserDetail"</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">},</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"functions"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"Correctly extracted `UserDetail` with all the required parameters with correct types"</span><span class="fu">,</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"UserDetail"</span><span class="fu">,</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"parameters"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>                <span class="dt">"properties"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">"age"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"title"</span><span class="fu">:</span> <span class="st">"Age"</span><span class="fu">,</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"integer"</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">},</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">"name"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"title"</span><span class="fu">:</span> <span class="st">"Name"</span><span class="fu">,</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"string"</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">}</span></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>                <span class="fu">},</span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>                <span class="dt">"required"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"age"</span><span class="ot">,</span></span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"name"</span></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>                <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>                <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"object"</span></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>            <span class="fu">}</span></span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"messages"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"content"</span><span class="fu">:</span> <span class="st">"Extract Jason is 25 years old"</span><span class="fu">,</span></span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"role"</span><span class="fu">:</span> <span class="st">"user"</span></span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"model"</span><span class="fu">:</span> <span class="st">"gpt-3.5-turbo"</span></span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This is great. For structured output - <strong>It does exactly what I want, and it correctly uses the OpenAI API the way I would use it</strong> if I were writing this manually (by defining a function schema). I would consider this specific API a zero-cost abstraction, meaning it does exactly what I expect it to with a minimal surface area.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+</section>
+<section id="validation" class="level4">
+<h4 class="anchored" data-anchor-id="validation">Validation</h4>
+<p>However, instructor has other APIs that are more agressive and write prompts for you. For example, consider this <a href="https://jxnl.github.io/instructor/tutorials/4-validation/">validation example</a>. Running through that example should trigger similar questions to the exploration of <a href="#SmartLLMChain">Langchain’s SmartLLMChain</a> above. In this example, you will observe 3 LLM API calls to get the right answer, with the final payload looking like this:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"function_call"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>        <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"Validator"</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">},</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"functions"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"Validate if an attribute is correct and if not,</span><span class="ch">\n</span><span class="st">return a new value with an error message"</span><span class="fu">,</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"Validator"</span><span class="fu">,</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"parameters"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>                <span class="dt">"properties"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">"fixed_value"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"anyOf"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">{</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>                                <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"string"</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">{</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>                                <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"null"</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">}</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>                        <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"default"</span><span class="fu">:</span> <span class="kw">null</span><span class="fu">,</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"If the attribute is not valid, suggest a new value for the attribute"</span><span class="fu">,</span></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"title"</span><span class="fu">:</span> <span class="st">"Fixed Value"</span></span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">},</span></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">"is_valid"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"default"</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"Whether the attribute is valid based on the requirements"</span><span class="fu">,</span></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"title"</span><span class="fu">:</span> <span class="st">"Is Valid"</span><span class="fu">,</span></span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"boolean"</span></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">},</span></span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">"reason"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"anyOf"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">{</span></span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>                                <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"string"</span></span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">{</span></span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>                                <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"null"</span></span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">}</span></span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>                        <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"default"</span><span class="fu">:</span> <span class="kw">null</span><span class="fu">,</span></span>
+<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"The error message if the attribute is not valid, otherwise None"</span><span class="fu">,</span></span>
+<span id="cb21-41"><a href="#cb21-41" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"title"</span><span class="fu">:</span> <span class="st">"Reason"</span></span>
+<span id="cb21-42"><a href="#cb21-42" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">}</span></span>
+<span id="cb21-43"><a href="#cb21-43" aria-hidden="true" tabindex="-1"></a>                <span class="fu">},</span></span>
+<span id="cb21-44"><a href="#cb21-44" aria-hidden="true" tabindex="-1"></a>                <span class="dt">"required"</span><span class="fu">:</span> <span class="ot">[]</span><span class="fu">,</span></span>
+<span id="cb21-45"><a href="#cb21-45" aria-hidden="true" tabindex="-1"></a>                <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"object"</span></span>
+<span id="cb21-46"><a href="#cb21-46" aria-hidden="true" tabindex="-1"></a>            <span class="fu">}</span></span>
+<span id="cb21-47"><a href="#cb21-47" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb21-48"><a href="#cb21-48" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb21-49"><a href="#cb21-49" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"messages"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb21-50"><a href="#cb21-50" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb21-51"><a href="#cb21-51" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"content"</span><span class="fu">:</span> <span class="st">"You are a world class validation model. Capable to determine if the following value is valid for the statement, if it is not, explain why and suggest a new value."</span><span class="fu">,</span></span>
+<span id="cb21-52"><a href="#cb21-52" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"role"</span><span class="fu">:</span> <span class="st">"system"</span></span>
+<span id="cb21-53"><a href="#cb21-53" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb21-54"><a href="#cb21-54" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb21-55"><a href="#cb21-55" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"content"</span><span class="fu">:</span> <span class="st">"Does `According to some perspectives, the meaning of life is to find purpose, happiness, and fulfillment. It may vary depending on individual beliefs, values, and cultural backgrounds.` follow the rules: don't say objectionable things"</span><span class="fu">,</span></span>
+<span id="cb21-56"><a href="#cb21-56" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"role"</span><span class="fu">:</span> <span class="st">"user"</span></span>
+<span id="cb21-57"><a href="#cb21-57" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb21-58"><a href="#cb21-58" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb21-59"><a href="#cb21-59" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"model"</span><span class="fu">:</span> <span class="st">"gpt-3.5-turbo"</span><span class="fu">,</span></span>
+<span id="cb21-60"><a href="#cb21-60" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"temperature"</span><span class="fu">:</span> <span class="dv">0</span></span>
+<span id="cb21-61"><a href="#cb21-61" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Concretely, I’m curious if the validation and healing steps could be collapsed into one LLM call. Furthermore, I wonder if generic validation functions (as supplied in the above payload) are the right way to critique output? I don’t know the answer, but this is an interesting design pattern that is worth poking at.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>As far as LLM frameworks go, I really like this one. The core functionality of defining schemas with Pydantic is very convenient. The code is also very readable and easy to understand. Despite this, I still found it helpful to intercept instructor’s API calls to get another perspective.</p>
+<p>There is a way to set a logging level in instructor to see the raw API calls, however, I like using a framework agnostic approach :)</p>
+</div>
+</div>
+</section>
+</section>
+<section id="dspy" class="level3">
+<h3 class="anchored" data-anchor-id="dspy">DSPy</h3>
+<p><a href="https://github.com/stanfordnlp/dspy">DSPy</a> is the framework that helps you optimize your prompts to optimize any arbitrary metric. There is a fairly steep learning curve to DSPy, partly because it introduces many new technical terms specific to its framework like compilers and teleprompters. However, we can quickly peel back the complexity by looking at the API calls that it makes!</p>
+<p>Let’s run the <a href="https://dspy-docs.vercel.app/docs/quick-start/minimal-example">minimal working example</a>:</p>
+<div id="a3e9870b-741b-4b48-8dd4-c7b619fe8693" class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dspy</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dspy.datasets.gsm8k <span class="im">import</span> GSM8K, gsm8k_metric</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>start_time <span class="op">=</span> time.time()</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up the LM</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>turbo <span class="op">=</span> dspy.OpenAI(model<span class="op">=</span><span class="st">'gpt-3.5-turbo-instruct'</span>, max_tokens<span class="op">=</span><span class="dv">250</span>)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>dspy.settings.configure(lm<span class="op">=</span>turbo)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Load math questions from the GSM8K dataset</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>gms8k <span class="op">=</span> GSM8K()</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>trainset, devset <span class="op">=</span> gms8k.train, gms8k.dev</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="fba9a01d-da36-43ba-a2be-2c6801f9154e" class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> CoT(dspy.Module):</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.prog <span class="op">=</span> dspy.ChainOfThought(<span class="st">"question -&gt; answer"</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, question):</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.prog(question<span class="op">=</span>question)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="95f7feaf-0ad0-4691-9488-a6214abc2bcd" class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dspy.teleprompt <span class="im">import</span> BootstrapFewShotWithRandomSearch</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up the optimizer: we want to "bootstrap" (i.e., self-generate) 8-shot examples of our CoT program.</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># The optimizer will repeat this 10 times (plus some initial attempts) before selecting its best attempt on the devset.</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> <span class="bu">dict</span>(max_bootstrapped_demos<span class="op">=</span><span class="dv">8</span>, max_labeled_demos<span class="op">=</span><span class="dv">8</span>, num_candidate_programs<span class="op">=</span><span class="dv">10</span>, num_threads<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Optimize! Use the `gms8k_metric` here. In general, the metric is going to tell the optimizer how well it's doing.</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>teleprompter <span class="op">=</span> BootstrapFewShotWithRandomSearch(metric<span class="op">=</span>gsm8k_metric, <span class="op">**</span>config)</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>optimized_cot <span class="op">=</span> teleprompter.<span class="bu">compile</span>(CoT(), trainset<span class="op">=</span>trainset, valset<span class="op">=</span>devset)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+This was not very minimal
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Despite this being the official <a href="https://dspy-docs.vercel.app/docs/quick-start/minimal-example">quick-start/minimal working</a> example, this code took <strong>more than 30 minutes to run, and made hundreds of calls to OpenAI!</strong> This cost non-trivial time (and money), especially as an entry-point to the library for someone trying to take a look. There was no prior warning that this would happen.</p>
+</div>
+</div>
+<p>DSPy made 100’s of API calls because it was iteratively sampling examples for a few-shot prompt and selecting the best ones according to the <code>gsm8k_metric</code> on a validation set. I was able to quickly understand this by scanning through the API requests logged to mitmproxy.</p>
+<p>DSPy offers an <code>inspect_history</code> method which allows you to see the the last <code>n</code> prompts and their completions:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>turbo.inspect_history(n<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>I was able to verify that these prompts matched the last few API calls being made in mitmproxy. Overall, I would be motivated to potentially keep the prompt and and jettison the library. That being said, I think I am curious to try this out on industry examples.</p>
+</section>
+</section>
+<section id="my-personal-experience" class="level2">
+<h2 class="anchored" data-anchor-id="my-personal-experience">My Personal Experience</h2>
+<p>Do I hate LLM libraries? No! I think many of the libraries in this blog post could be helpful if used thoughtfully in the right situations. However, I’ve witnessed too many people fall into the trap of using these libraries without understanding what they are doing.</p>
+<p>One thing I focus on as an independent consultant is to make sure my clients don’t take on accidental complexity. It’s very tempting to adopt additional tools given all the excitement around LLMs. Looking at prompts is one way to mitigate that temptation.</p>
+
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>This is a subjective opinion and may be different for you.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/hamelhusain/">
+      <i class="bi bi-linkedin" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/HamelHusain">
+      <i class="bi bi-twitter" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/hamelsmu">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="../../../index.xml">
+      <i class="bi bi-rss" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.dev/hamelsmu/hamel-site/blob/master/blog/posts/prompt/index.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
