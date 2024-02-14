@@ -459,7 +459,7 @@ Important
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>ONLY return a valid JSON object (no other text is necessary), where the key of the field in JSON is the `name` attribute of the corresponding XML, and the value is of the type specified by the corresponding XML's tag. The JSON MUST conform to the XML format, including any types and format requests e.g. requests for lists, objects and specific types. Be correct and concise. If you are unsure anywhere, enter `null`.</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Woof. That’s a whole lot of ceremony to get structured output! We learned that this library’s approach to structured output uses XML schemas (while others use function calling). It’s worth considering if you can fashion a better or simpler approach now that you the magic has been lifted. Either way, we have immediate insight into how it works without dragging you into uncessary complexity, which is a win.</p>
+<p>Woof. That’s a whole lot of ceremony to get structured output! We learned that this library’s approach to structured output uses XML schemas (while others use function calling). It’s worth considering if you can fashion a better or simpler approach now that the magic has been lifted. Either way, we now have insight into how it works without dragging you into unnecessary complexity, which is a win.</p>
 </section>
 <section id="guidance" class="level3">
 <h3 class="anchored" data-anchor-id="guidance">Guidance</h3>
@@ -683,7 +683,7 @@ To measure 6 liters using a 12 liter jug and a 6 liter jug, follow these steps:
 </blockquote></li>
 <li><p>A final API call that that takes the critique from step 2 and generates an answer.</p></li>
 </ol>
-<p>Its not clear that this approach is optimal. I am not sure it should take 4 separate API calls to accomplish this task. Perhaps the critique and the final answer could be generated in one step? Furthermore, the prompt has a spelling error (<code>Let'w</code>) but also overly focuses on the negative about identifying errors - which makes me skeptical that this prompt has been optimized or tested.</p>
+<p>Its not clear that this approach is optimal. I am not sure it should take 4 separate API calls to accomplish this task. Perhaps the critique and the final answer could be generated in one step? Furthermore, the prompt has a spelling error (<code>Let'w</code>) and also overly focuses on the negative about identifying errors - which makes me skeptical that this prompt has been optimized or tested.</p>
 </section>
 </section>
 <section id="instructor" class="level3">
@@ -878,7 +878,7 @@ This was not very minimal
 <p>Despite this being the official <a href="https://dspy-docs.vercel.app/docs/quick-start/minimal-example">quick-start/minimal working</a> example, this code took <strong>more than 30 minutes to run, and made hundreds of calls to OpenAI!</strong> This cost non-trivial time (and money), especially as an entry-point to the library for someone trying to take a look. There was no prior warning that this would happen.</p>
 </div>
 </div>
-<p>DSPy made 100’s of API calls because it was iteratively sampling examples for a few-shot prompt and selecting the best ones according to the <code>gsm8k_metric</code> on a validation set. I was able to quickly understand this by scanning through the API requests logged to mitmproxy.</p>
+<p>DSPy made 100s of API calls because it was iteratively sampling examples for a few-shot prompt and selecting the best ones according to the <code>gsm8k_metric</code> on a validation set. I was able to quickly understand this by scanning through the API requests logged to mitmproxy.</p>
 <p>DSPy offers an <code>inspect_history</code> method which allows you to see the the last <code>n</code> prompts and their completions:</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>turbo.inspect_history(n<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>I was able to verify that these prompts matched the last few API calls being made in mitmproxy. Overall, I would be motivated to potentially keep the prompt and and jettison the library. That being said, I think I am curious to see how this library evolves.</p>
