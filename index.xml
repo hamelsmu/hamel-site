@@ -55,7 +55,7 @@
 </section>
 <section id="motivation-minimize-accidental-complexity" class="level2">
 <h2 class="anchored" data-anchor-id="motivation-minimize-accidental-complexity">Motivation: Minimize accidental complexity</h2>
-<p>Before adopting an abstraction, its important to consider the dangers of taking on <a href="https://dev.to/alexbunardzic/software-complexity-essential-accidental-and-incidental-3i4d">accidental complexity</a>. This danger is acute for LLM abstractions relative to programming abstractions. With LLM abstractions, we often force the user to regress towards write coding instead of conversing with the AI in natural language, which can run counter to the purpose of LLMs:</p>
+<p>Before adopting an abstraction, its important to consider the dangers of taking on <a href="https://dev.to/alexbunardzic/software-complexity-essential-accidental-and-incidental-3i4d">accidental complexity</a>. This danger is acute for LLM abstractions relative to programming abstractions. With LLM abstractions, we often force the user to regress towards writing code instead of conversing with the AI in natural language, which can run counter to the purpose of LLMs:</p>
 <center>
 <blockquote class="twitter-tweet blockquote">
 <p lang="en" dir="ltr">
@@ -137,7 +137,7 @@ Important
 <p>Make sure you set these environment variables before running any of the code snippets in this blog post.</p>
 </div>
 </div>
-<div id="07c4617c-1d52-4c99-9bed-645efd73ba71" class="cell">
+<div id="07c4617c-1d52-4c99-9bed-645efd73ba71" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> os</span>
@@ -168,7 +168,7 @@ background-color: null;
 font-style: inherit;">'http://127.0.0.1:8080'</span></span></code></pre></div>
 </div>
 <p>You can do a minimal test by running the following code:</p>
-<div id="faf4a70a-bde5-47c0-b649-3179c233c189" class="cell">
+<div id="faf4a70a-bde5-47c0-b649-3179c233c189" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> requests</span>
@@ -196,7 +196,7 @@ font-style: inherit;">'value'</span>})</span></code></pre></div>
 <section id="guardrails" class="level3">
 <h3 class="anchored" data-anchor-id="guardrails">Guardrails</h3>
 <p>Guardrails allows you specify structure and types, which it uses to validate and correct the outputs of large language models. This is a hello world example from the <a href="https://github.com/guardrails-ai/guardrails"><code>guardrails-ai/guardrails</code> README</a>:</p>
-<div id="c746dbe7-e96f-4ea0-89d5-ca9b0b0685e8" class="cell">
+<div id="c746dbe7-e96f-4ea0-89d5-ca9b0b0685e8" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> pydantic <span class="im" style="color: #00769E;
@@ -329,7 +329,7 @@ font-style: inherit;">"</span>)</span></code></pre></div>
 <section id="guidance" class="level3">
 <h3 class="anchored" data-anchor-id="guidance">Guidance</h3>
 <p>Guidance offers constrained generation and programming constructs for writing prompts. Let’s dive into a <a href="https://github.com/guidance-ai/guidance/blob/main/notebooks/tutorials/chat.ipynb">chat example from their tutorials</a>:</p>
-<div id="cfe6882f-e22c-4666-9a66-6ce41262c6ea" class="cell">
+<div id="cfe6882f-e22c-4666-9a66-6ce41262c6ea" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> guidance</span>
@@ -652,7 +652,7 @@ font-style: inherit;">500</span>)</span>
 background-color: null;
 font-style: inherit;">return</span> lm</span></code></pre></div>
 </div>
-<div id="7cbd50af-7689-426c-8779-1b0d5e9bfe7a" class="cell">
+<div id="7cbd50af-7689-426c-8779-1b0d5e9bfe7a" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">results <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> gpt35 <span class="op" style="color: #5E5E5E;
@@ -691,7 +691,7 @@ Please elaborate on this plan, and tell me how to best accomplish it.</div></div
 </div>
 </div>
 <p>This looks pretty neat! But what is it doing exactly? <strong>This makes a total of 7 calls to OpenAI</strong>, which I have put in <a href="https://gist.github.com/hamelsmu/d0d75bf702e56987f35cb715f7da4d6a">this gist</a>. <strong>5 of 7 of these API calls are “internal” thoughts asking the LLM to generate ideas.</strong> Even though the temperature is set to 1.0, <strong>these “ideas” are mostly redundant.</strong> The penultimate call to OpenAI enumerates these “ideas” which I’ve included below:</p>
-<div id="a3a0664f-577d-4a0c-96e7-74527036a0be" class="cell">
+<div id="a3a0664f-577d-4a0c-96e7-74527036a0be" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="cell-output cell-output-stdout">
 <pre><code>I want to read more books
 Can you please comment on the pros and cons of each of the following options, and then pick the best option?
@@ -713,7 +713,7 @@ Please discuss each option very briefly (one line for pros, one for cons), and e
 <section id="lcel-batching" class="level4">
 <h4 class="anchored" data-anchor-id="lcel-batching">LCEL Batching</h4>
 <p>First, let’s take a look at the <a href="https://python.langchain.com/docs/expression_language/why#batch">this example</a> from their new <code>LCEL</code> (langchain expression language) guide:</p>
-<div id="ec5c742c-885e-4691-a803-22c470072d4b" class="cell">
+<div id="ec5c742c-885e-4691-a803-22c470072d4b" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> langchain_openai <span class="im" style="color: #00769E;
@@ -773,7 +773,7 @@ background-color: null;
 font-style: inherit;">|</span> output_parser</span>
 <span id="cb11-16">)</span></code></pre></div>
 </div>
-<div id="e70028f3-3f9e-482c-bc63-05fbf0632c61" class="cell">
+<div id="e70028f3-3f9e-482c-bc63-05fbf0632c61" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">chain.batch([<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"ice cream"</span>, <span class="st" style="color: #20794D;
@@ -936,7 +936,7 @@ font-style: inherit;">}</span></span></code></pre></div>
 <section id="smartllmchain" class="level4">
 <h4 class="anchored" data-anchor-id="smartllmchain">SmartLLMChain</h4>
 <p>Next I’ll focus on automation that writes prompts for you, particularly <a href="https://api.python.langchain.com/en/latest/smart_llm/langchain_experimental.smart_llm.base.SmartLLMChain.html">SmartLLMChain</a>:</p>
-<div id="600b1e60-6c01-429e-834b-470730b5ea26" class="cell">
+<div id="600b1e60-6c01-429e-834b-470730b5ea26" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> langchain.prompts <span class="im" style="color: #00769E;
@@ -978,7 +978,7 @@ font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"gpt-3.5-turbo"</span>)</span></code></pre></div>
 </div>
-<div id="bdb002f1-5f1b-40a7-ad4f-c9052813ef1f" class="cell">
+<div id="bdb002f1-5f1b-40a7-ad4f-c9052813ef1f" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1">chain <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> SmartLLMChain(llm<span class="op" style="color: #5E5E5E;
@@ -1000,7 +1000,7 @@ font-style: inherit;">True</span>)</span>
 background-color: null;
 font-style: inherit;">=</span> chain.run({})</span></code></pre></div>
 </div>
-<div id="13be7600-e9eb-4ed2-91d9-a8182858ca83" class="cell">
+<div id="13be7600-e9eb-4ed2-91d9-a8182858ca83" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">print</span>(result)</span></code></pre></div>
@@ -1051,7 +1051,7 @@ To measure 6 liters using a 12 liter jug and a 6 liter jug, follow these steps:
 <section id="structred-data-extraction-with-pydantic" class="level4">
 <h4 class="anchored" data-anchor-id="structred-data-extraction-with-pydantic">Structred data extraction with Pydantic</h4>
 <p>Here is a basic example from the project’s <a href="https://github.com/jxnl/instructor">README</a> that allows you to extract structured data by using Pydantic to define your schema.</p>
-<div id="8469f9f6-6998-4de7-8551-c073929e385c" class="cell">
+<div id="8469f9f6-6998-4de7-8551-c073929e385c" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> instructor</span>
@@ -1696,7 +1696,7 @@ Note
 <h3 class="anchored" data-anchor-id="dspy">DSPy</h3>
 <p><a href="https://github.com/stanfordnlp/dspy">DSPy</a> is the framework that helps you optimize your prompts to optimize any arbitrary metric. There is a fairly steep learning curve to DSPy, partly because it introduces many new technical terms specific to its framework like compilers and teleprompters. However, we can quickly peel back the complexity by looking at the API calls that it makes!</p>
 <p>Let’s run the <a href="https://dspy-docs.vercel.app/docs/quick-start/minimal-example">minimal working example</a>:</p>
-<div id="a3e9870b-741b-4b48-8dd4-c7b619fe8693" class="cell">
+<div id="a3e9870b-741b-4b48-8dd4-c7b619fe8693" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> time</span>
@@ -1740,7 +1740,7 @@ font-style: inherit;">=</span> GSM8K()</span>
 background-color: null;
 font-style: inherit;">=</span> gms8k.train, gms8k.dev</span></code></pre></div>
 </div>
-<div id="fba9a01d-da36-43ba-a2be-2c6801f9154e" class="cell">
+<div id="fba9a01d-da36-43ba-a2be-2c6801f9154e" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">class</span> CoT(dspy.Module):</span>
@@ -1777,7 +1777,7 @@ font-style: inherit;">self</span>.prog(question<span class="op" style="color: #5
 background-color: null;
 font-style: inherit;">=</span>question)</span></code></pre></div>
 </div>
-<div id="95f7feaf-0ad0-4691-9488-a6214abc2bcd" class="cell">
+<div id="95f7feaf-0ad0-4691-9488-a6214abc2bcd" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> dspy.teleprompt <span class="im" style="color: #00769E;
