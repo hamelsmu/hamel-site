@@ -970,6 +970,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Today, MAX runs only on CPUs, but <a href="https://docs.modular.com/max/roadmap">the roadmap</a> points to GPUs coming soon.</p>
+</div>
+</div>
 <section id="impressions" class="level2">
 <h2 class="anchored" data-anchor-id="impressions">Impressions</h2>
 <p><a href="https://twitter.com/marksaroufim?lang=en">Mark Saroufim</a> and I attempted to load Mistral-7b into the Max Engine for an hour to no avail.</p>
@@ -985,8 +998,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Torchscript as a serialization format is older and in maintenance mode compared to more recent <code>torch.compile</code> or <code>torch.export</code> but Max doesn’t support that yet. Discussion <a href="https://discord.com/channels/1087530497313357884/1212827597323509870/1212889053821796382">is here</a>.</li>
 <li>Printing the model is not informative, like it is when you print a torch model (doesn’t show you all the layers and shapes).</li>
 <li>We couldn’t quite understand the output of the model and we eventually hypothesized that <code>torch.script</code> is not the right serialization path for Mistral, but we aren’t sure. I think users will get quite confused by this.</li>
+<li>Max currently targets CPUs rather than GPUs. I am not concerned by this as <a href="https://docs.modular.com/max/roadmap">the roadmap</a> points to GPUs coming soon. I’m hoping that the team can make AMD GPUs fly so we can break the hegemony of Nvidia.</li>
 </ul>
-<p>I’m hoping that the above changes soon, as I’m pretty bullish on the talent level and team working on these things overall.</p>
+<p>I’m hoping that these papercuts change soon. I’m pretty bullish on the talent level of the team working on these things.</p>
 </section>
 <section id="attempting-to-load-mistral-in-the-max-engine" class="level2">
 <h2 class="anchored" data-anchor-id="attempting-to-load-mistral-in-the-max-engine">Attempting To Load Mistral In The Max Engine</h2>
@@ -1096,7 +1110,20 @@ We failed to get this to work
 </section>
 <section id="huggingface-comparison" class="level2">
 <h2 class="anchored" data-anchor-id="huggingface-comparison">HuggingFace Comparison</h2>
-<p>As a sanity check, let’s do inference with <code>transformers</code>:</p>
+<p>Because the outputs of the Max model <a href="#inference">seemed wonky</a>, we did a sanity check to see what the outputs look like when using HuggingFace transformers.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The below code loads model onto the GPU to quickly generate predictions for comparison. (Max doesn’t work with GPUs yet).</p>
+</div>
+</div>
 <div id="58ededf7-1c81-4b5c-a255-c9d5a6088a46" class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoTokenizer, AutoModelForCausalLM</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>hf_path<span class="op">=</span><span class="st">"mistralai/Mistral-7B-v0.1"</span></span>
