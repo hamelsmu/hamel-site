@@ -2849,6 +2849,66 @@
     ]
   },
   {
+    "objectID": "notes/llm/inference/04_max_engine.html",
+    "href": "notes/llm/inference/04_max_engine.html",
+    "title": "Max Inference Engine",
+    "section": "",
+    "text": "Warning\n\n\n\nToday, MAX runs only on CPUs, but the roadmap points to GPUs coming soon.",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "Max Inference Engine"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/04_max_engine.html#impressions",
+    "href": "notes/llm/inference/04_max_engine.html#impressions",
+    "title": "Max Inference Engine",
+    "section": "Impressions",
+    "text": "Impressions\nMark Saroufim and I attempted to load Mistral-7b into the Max Engine.\nHere are my initial impressions.\n\nThe Modular team is super engaging and friendly! I recommend going to their discord with questions.\nPytorch currently feels like a second class citizen (but may not be for long).\n\nYou have to do many more steps to potentially load a Pytorch model vs. TF, and those steps are not clear.1\nHowever, I’ve heard from the team that they plan on investing heavily in Pytorch, even more so than Tensorflow.\n\nI’m not sure why they led with BERT/Tensorflow examples. I would like to see paved paths for modern LLMs like Llama or Mistral. Keep an eye on this repo for examples as these will be added soon.\nModel compilation and loading took 5 minutes. A progress bar for compilation would be really helpful.\nTorchscript as a serialization format is older and in maintenance mode compared to more recent torch.compile or torch.export but Max doesn’t support that yet. Discussion is here. You will probably have better luck with LLMs by first exporting models to ONNX via Optimum.\nPrinting the model is not informative, like it is when you print a torch model (doesn’t show you all the layers and shapes).\nWe couldn’t quite understand the output of the model and we eventually hypothesized that torch.script is not the right serialization path for Mistral, but we aren’t sure. I think users may get confused by this.\nMax currently targets CPUs rather than GPUs. I am not concerned by this as the roadmap points to GPUs coming soon. I’m hoping that the team can make AMD GPUs fly so we can break the hegemony of Nvidia.\n\nI’m optimistic that these papercuts will be resolved soon. I’m pretty bullish on the talent level of the team working on these things.",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "Max Inference Engine"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/04_max_engine.html#attempting-to-load-mistral-in-the-max-engine",
+    "href": "notes/llm/inference/04_max_engine.html#attempting-to-load-mistral-in-the-max-engine",
+    "title": "Max Inference Engine",
+    "section": "Attempting To Load Mistral In The Max Engine",
+    "text": "Attempting To Load Mistral In The Max Engine\nToday, the Modular team released the Max Inference Engine:\n\nMAX Engine is a next-generation compiler and runtime system for neural network graphs. It supercharges the execution of AI models in any format (including TensorFlow, PyTorch, and ONNX), on a wide variety of hardware. MAX Engine also allows you to extend these models with custom ops that MAX Engine can analyze and optimize with other ops in the graph.\n\nThese docs show how to load a TensorFlow model, but I want to load a pytorch LLM like Mistral-7b. I documented my attempt at doing so here.\n\n1. Serialize Model as Torchscript\nIn order to load your model in the Max engine we must serialize the model as torchscript. We can do this by tracing the model graph and then using torch.jit.save to save the model.\n\nimport time\nfrom functools import partial\nfrom transformers import AutoTokenizer, AutoModelForCausalLM\nimport torch\n\n# load model artifacts from the hub\nhf_path=\"mistralai/Mistral-7B-v0.1\"\nmodel = AutoModelForCausalLM.from_pretrained(hf_path,torchscript=True)\ntokenizer = AutoTokenizer.from_pretrained(hf_path)\ntokenizer.pad_token = tokenizer.eos_token\n\n# trace the model and save it with torchscript\nmax_seq_len=128\nmodel_path=\"mistral.pt\"\ntext = \"This is text to be used for tracing\"\n# I'm setting the arguments for tokenizer once so I can reuse it later (they need to be consistent)\nmax_tokenizer = partial(tokenizer, return_tensors=\"pt\",padding=\"max_length\", max_length=max_seq_len)\ninputs = max_tokenizer(text)\ntraced_model = torch.jit.trace(model, [inputs['input_ids'], inputs['attention_mask']])\ntorch.jit.save(traced_model, model_path)\n\n\n\n\n\n\n2. Specify Input Shape\nHaving a set input shape is required for compilation.\nThis next bit is from This code. Apparently there is a way to specify dynamic values for the sequence len and batch size, but we couldn’t figure that out easily from the docs.\n\nfrom max import engine\ninput_spec_list = [\n    engine.TorchInputSpec(shape=tensor.size(), dtype=engine.DType.int64)\n    for tensor in inputs.values()\n]\noptions = engine.TorchLoadOptions(input_spec_list)\n\n\n\n3. Compile and Load Model\n\nstart_time = time.time()\nsession = engine.InferenceSession()\nmodel = session.load(model_path, options)\n\nend_time = time.time()\n\nWow! The model takes ~5 minutes to compile and load. Subsequent compilations are faster, but NOT if I restart the Jupyter Kernel.\n\nelapsed_time = end_time - start_time\nprint(f\"Elapsed time: {elapsed_time} seconds\")\n\nElapsed time: 371.86387610435486 seconds\n\n\n\n\n4. Inference\n\n\n\n\n\n\nWe failed to get this to work\n\n\n\nEven though we could call model.execute the outputs we got didn’t make much sense to us, even after some investigation. Our hypothesis is that execute is not calling model.generate. But this is where we gave up.\n\n\nBe sure to set return_token_type_ids=False, note that I’m using the same arguments for padding and max_length that I used for tracing the model (because I’m using the max_tokenizer which I defined) so the shape is consistent.\n\nINPUT=\"Why did the chicken cross the road?\"\ninp = max_tokenizer(INPUT, return_token_type_ids=False)\nout = model.execute(**inp)\n\nGet the token ids (predictions) and decode them:\n\npreds = out['result0'].argmax(axis=-1)\n\nWe tried to debug this but could not figure out what was wrong, so we gave up here. We aren’t sure why the output looks like this. See what the output is supposed to look like in this section.\n(Scroll to the right to see the full output)\n\n' '.join(tokenizer.batch_decode(preds, skip_special_tokens=False))\n\n'ммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм # do you chicken cross the road?\\n'\n\n\nWe were intrigued by the M and Mark joked that it is some interesting illuminati secret code injected into the model for (i.e. M for Modular) which I thought was funny :)\nOur theory is that torchscript is not the right way to serialize this model and this is some kind of silent failure, but it is hard to know.",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "Max Inference Engine"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/04_max_engine.html#huggingface-comparison",
+    "href": "notes/llm/inference/04_max_engine.html#huggingface-comparison",
+    "title": "Max Inference Engine",
+    "section": "HuggingFace Comparison",
+    "text": "HuggingFace Comparison\nBecause the outputs of the Max model seemed wonky, we did a sanity check to see what the outputs look like when using HuggingFace transformers.\n\n\n\n\n\n\nNote\n\n\n\nThe below code loads model onto the GPU to quickly generate predictions for comparison. (Max doesn’t work with GPUs yet).\n\n\n\nfrom transformers import AutoTokenizer, AutoModelForCausalLM\nhf_path=\"mistralai/Mistral-7B-v0.1\"\nhfmodel = AutoModelForCausalLM.from_pretrained(hf_path,torchscript=True).cuda()\nhftokenizer = AutoTokenizer.from_pretrained(hf_path)\nhftokenizer.pad_token = hftokenizer.eos_token\n\n_p=\"Why did the chicken cross the road?\"\ninput_ids = hftokenizer(_p, return_tensors=\"pt\", \n                      padding=\"max_length\",\n                      truncation=True).input_ids.cuda()\nout_ids = hfmodel.generate(input_ids=input_ids, max_new_tokens=15, \n                          do_sample=False)\n\n\nout = hftokenizer.batch_decode(out_ids.detach().cpu().numpy(), \n                                  skip_special_tokens=True)[0][len(_p):]\nprint(out)\n\n\n\nTo get to the other side.\n\nWhy did the chicken",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "Max Inference Engine"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/04_max_engine.html#footnotes",
+    "href": "notes/llm/inference/04_max_engine.html#footnotes",
+    "title": "Max Inference Engine",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nThe documentation states: “This example uses is a TensorFlow model (which must be converted to SavedModel format), and it’s just as easy to load a model from PyTorch (which must be converted to TorchScript format).” The just as easy part raised my expectations a bit too high as the Pytorch path is not as seamless.↩︎",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "Max Inference Engine"
+    ]
+  },
+  {
     "objectID": "notes/serving/tfserving/tf-serving-basics.html",
     "href": "notes/serving/tfserving/tf-serving-basics.html",
     "title": "Basics",
