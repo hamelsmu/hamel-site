@@ -972,13 +972,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="impressions" class="level2">
 <h2 class="anchored" data-anchor-id="impressions">Impressions</h2>
-<p><a href="https://twitter.com/marksaroufim?lang=en">Mark Saroufim</a> and I <a href="https://www.twitch.tv/videos/2077468423">live-streamed</a> our attempt to load Mistral-7b into the Max Engine for an hour to no avail.</p>
+<p><a href="https://twitter.com/marksaroufim?lang=en">Mark Saroufim</a> and I attempted to load Mistral-7b into the Max Engine for an hour to no avail.</p>
 <p>Here are my initial impressions.</p>
 <ul>
 <li>The Modular team is super engaging and friendly! I recommend going to <a href="https://discord.gg/e6kQTD4k">their discord</a> with questions.</li>
 <li>Pytorch feels (and is as far as we can tell) a second class citizen.
 <ul>
-<li>You have to do many more steps to potentially load a Pytorch model vs.&nbsp;TF, and those steps are not clear.</li>
+<li>You have to do many more steps to potentially load a Pytorch model vs.&nbsp;TF, and those steps are not clear.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></li>
 </ul></li>
 <li>I’m not sure why in 2024 you would lead with BERT/Tensorflow. This is an odd choice, and makes on-boarding much less exciting for me. I would like to see paved paths for modern LLMs like Llama or Mistral - the fact that they are not gives me pause.</li>
 <li>Model compilation and loading took 5 minutes. Compilation needs a progress bar given that it is so long.</li>
@@ -1082,13 +1082,16 @@ We failed to get this to work
 <div id="e3bc115d-e153-4cd9-9ea2-2d2e78186cff" class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>preds <span class="op">=</span> out[<span class="st">'result0'</span>].argmax(axis<span class="op">=-</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>In the <a href="https://www.twitch.tv/videos/2077468423">live stream we tried to debug this</a> but could not figure out what was wrong, so we gave up here. (Scroll to the right to see the full output)</p>
+<p>We tried to debug this but could not figure out what was wrong, so we gave up here. We aren’t sure why the output looks like this. See what the output is supposed to look like in <a href="#huggingface-comparison">this section</a>.</p>
+<p>(Scroll to the right to see the full output)</p>
 <div id="47a947b5-6ea4-4230-a22a-93dadec0d642" class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-overflow-wrap code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">' '</span>.join(tokenizer.batch_decode(preds, skip_special_tokens<span class="op">=</span><span class="va">False</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <pre><code>'ммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм # do you chicken cross the road?\n'</code></pre>
 </div>
 </div>
+<p>We were intrigued by the <code>M</code> and Mark joked that it is some interesting illuminati secret code injected into the model for (i.e.&nbsp;<code>M</code> for <code>Modular</code>) which I thought was funny :)</p>
+<p>Our theory is that torchscript is not the right way to serialize this model and this is some kind of silent failure, but it is hard to know.</p>
 </section>
 </section>
 <section id="huggingface-comparison" class="level2">
@@ -1124,7 +1127,13 @@ Why did the chicken</code></pre>
 
 </section>
 
-</main> <!-- /main -->
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>The <a href="https://docs.modular.com/engine/python/get-started">documentation states</a>: <em>“This example uses is a TensorFlow model (which must be converted to SavedModel format), and it’s just as easy to load a model from PyTorch (which must be converted to TorchScript format).”</em> The <strong>just as easy</strong> part raised my expectations a bit too high but I discovered that the Pytorch path is <em>much</em> more onerous.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
