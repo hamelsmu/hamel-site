@@ -6,9 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Blocking and modifying workloads">
+<meta name="dcterms.date" content="2024-02-29">
+<meta name="description" content="Attempting to load Mistral-7b in Modular’s new Max Inference Engine">
 
-<title>Hamel’s Blog - Webhooks</title>
+<title>Hamel’s Blog - Max Inference Engine</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,10 +22,44 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
 <script src="../../../site_libs/quarto-search/fuse.min.js"></script>
@@ -69,15 +104,19 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
 
 
 <link rel="stylesheet" href="../../../styles.css">
-<meta property="og:title" content="Hamel’s Blog - Webhooks">
-<meta property="og:description" content="Blocking and modifying workloads">
+<meta property="og:title" content="Hamel’s Blog - Max Inference Engine">
+<meta property="og:description" content="Attempting to load Mistral-7b in Modular’s new Max Inference Engine">
 <meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta property="og:site_name" content="Hamel's Blog">
-<meta name="twitter:title" content="Hamel’s Blog - Webhooks">
-<meta name="twitter:description" content="Blocking and modifying workloads">
+<meta name="twitter:title" content="Hamel’s Blog - Max Inference Engine">
+<meta name="twitter:description" content="Attempting to load Mistral-7b in Modular’s new Max Inference Engine">
 <meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta name="twitter:creator" content="@HamelHusain">
 <meta name="twitter:site" content="@HamelHusain">
@@ -130,7 +169,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/k8s/index.html">K8s</a></li><li class="breadcrumb-item"><a href="../../../notes/k8s/security/index.html">Security</a></li><li class="breadcrumb-item"><a href="../../../notes/k8s/security/28-workloads.html">Webhooks</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/inference/index.html">Inference</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/inference/04_max_engine.html">Max Inference Engine</a></li></ol></nav>
         <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -194,20 +233,20 @@ ul.task-list li input[type="checkbox"] {
       <div class="sidebar-item-container"> 
             <a href="../../../notes/llm/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">LLMs</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a href="../../../notes/llm/inference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Inference</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../../notes/llm/inference/03_inference.html" class="sidebar-item-text sidebar-link">
@@ -216,7 +255,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../notes/llm/inference/04_max_engine.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/inference/04_max_engine.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Max Inference Engine</span></a>
   </div>
 </li>
@@ -344,11 +383,11 @@ ul.task-list li input[type="checkbox"] {
       <div class="sidebar-item-container"> 
             <a href="../../../notes/k8s/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">K8s</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../../notes/k8s/02-Basics.html" class="sidebar-item-text sidebar-link">
@@ -553,11 +592,11 @@ ul.task-list li input[type="checkbox"] {
       <div class="sidebar-item-container"> 
             <a href="../../../notes/k8s/security/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Security</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../../notes/k8s/security/26-network-security.html" class="sidebar-item-text sidebar-link">
@@ -572,7 +611,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../notes/k8s/security/28-workloads.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../../notes/k8s/security/28-workloads.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Webhooks</span></a>
   </div>
 </li>
@@ -882,21 +921,33 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#webhook-errors" id="toc-webhook-errors" class="nav-link active" data-scroll-target="#webhook-errors">Webhook Errors</a></li>
+  <li><a href="#impressions" id="toc-impressions" class="nav-link active" data-scroll-target="#impressions">Impressions</a></li>
+  <li><a href="#attempting-to-load-mistral-in-the-max-engine" id="toc-attempting-to-load-mistral-in-the-max-engine" class="nav-link" data-scroll-target="#attempting-to-load-mistral-in-the-max-engine">Attempting To Load Mistral In The Max Engine</a>
+  <ul class="collapse">
+  <li><a href="#serialize-model-as-torchscript" id="toc-serialize-model-as-torchscript" class="nav-link" data-scroll-target="#serialize-model-as-torchscript">1. Serialize Model as Torchscript</a></li>
+  <li><a href="#specify-input-shape" id="toc-specify-input-shape" class="nav-link" data-scroll-target="#specify-input-shape">2. Specify Input Shape</a></li>
+  <li><a href="#compile-and-load-model" id="toc-compile-and-load-model" class="nav-link" data-scroll-target="#compile-and-load-model">3. Compile and Load Model</a></li>
+  <li><a href="#inference" id="toc-inference" class="nav-link" data-scroll-target="#inference">4. Inference</a></li>
+  </ul></li>
+  <li><a href="#huggingface-comparison" id="toc-huggingface-comparison" class="nav-link" data-scroll-target="#huggingface-comparison">HuggingFace Comparison</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/k8s/security/28-workloads.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.dev/hamelsmu/hamel-site/blob/master/notes/llm/inference/04_max_engine.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/k8s/index.html">K8s</a></li><li class="breadcrumb-item"><a href="../../../notes/k8s/security/index.html">Security</a></li><li class="breadcrumb-item"><a href="../../../notes/k8s/security/28-workloads.html">Webhooks</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/inference/index.html">Inference</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/inference/04_max_engine.html">Max Inference Engine</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Webhooks</h1>
-</div>
+<h1 class="title">Max Inference Engine</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">llm</div>
+    <div class="quarto-category">serving</div>
+  </div>
+  </div>
 
 <div>
   <div class="description">
-    Blocking and modifying workloads
+    Attempting to load Mistral-7b in Modular’s new Max Inference Engine
   </div>
 </div>
 
@@ -904,6 +955,12 @@ ul.task-list li input[type="checkbox"] {
 <div class="quarto-title-meta">
 
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 29, 2024</p>
+    </div>
+  </div>
   
     
   </div>
@@ -913,35 +970,156 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div class="callout callout-style-default callout-tip callout-titled">
+<section id="impressions" class="level2">
+<h2 class="anchored" data-anchor-id="impressions">Impressions</h2>
+<p><a href="https://twitter.com/marksaroufim?lang=en">Mark Saroufim</a> and I <a href="https://www.twitch.tv/videos/2077468423">live-streamed</a> our attempt to load Mistral-7b into the Max Engine for an hour to no avail.</p>
+<p>Here are my intitial impressions.</p>
+<ul>
+<li>The Modular team is super engaging and friendly! I recommend going to <a href="https://discord.gg/e6kQTD4k">their discord</a> with questions.</li>
+<li>Pytorch feels (and is as far as we can tell) a second class citizen. I haven’t used Tensorflow in 4 years, so it feels like an oversight.
+<ul>
+<li>You have to do many more steps to potentially load a pytorch model vs.&nbsp;TF</li>
+</ul></li>
+<li>I’m not sure why in 2024 you would lead with BERT/Tensorflow. This is an odd choice, and makes onboarding much less exciting. People want to load a modern LLM like Mistral or Llama.</li>
+<li>Model compilation and loading took 5 minutes. Compilation needs a progress bar given that it is so long.</li>
+<li>Torchscript as a serialization format is older and maintenance mode - it is recommended to use <code>torch.compile</code> or <code>torch.export</code> but Max doesn’t support that yet. Discussion <a href="https://discord.com/channels/1087530497313357884/1212827597323509870/1212889053821796382">is here</a>.</li>
+<li>Printing the model is not informative, like it is when you print a torch model (doesnt show you all the layers and shapes).</li>
+<li>We couldn’t quite understand the output of the model and we eventually hypothesized that <code>torch.script</code> is not the right serialization path for Mistral, but we aren’t sure. I think users will get quite confused by this.</li>
+</ul>
+<p>I’m hoping that the above changes soon, as I’m pretty bullish on the talent level and team working on these things overall.</p>
+</section>
+<section id="attempting-to-load-mistral-in-the-max-engine" class="level2">
+<h2 class="anchored" data-anchor-id="attempting-to-load-mistral-in-the-max-engine">Attempting To Load Mistral In The Max Engine</h2>
+<p>Today, the Modular team released the <a href="https://docs.modular.com/engine/overview">Max Inference Engine</a>:</p>
+<blockquote class="blockquote">
+<p>MAX Engine is a next-generation compiler and runtime system for neural network graphs. It supercharges the execution of AI models in any format (including TensorFlow, PyTorch, and ONNX), on a wide variety of hardware. MAX Engine also allows you to extend these models with custom ops that MAX Engine can analyze and optimize with other ops in the graph.</p>
+</blockquote>
+<p><a href="https://docs.modular.com/engine/python/get-started">These docs</a> show how to load a TensorFlow model, but I want to load a pytorch LLM like Mistral-7b. The Modular team <a href="https://discord.com/channels/1087530497313357884/1212827597323509870/1212844710817824848">helped me figure out</a> how to do this. I wrote down all the steps here.</p>
+<section id="serialize-model-as-torchscript" class="level3">
+<h3 class="anchored" data-anchor-id="serialize-model-as-torchscript">1. Serialize Model as Torchscript</h3>
+<p>In order to load your model in the Max engine we must serialize the model as torchscript. We can do this by tracing the model graph and then using <code>torch.jit.save</code> to save the model.</p>
+<div id="60f1075b-9a37-4157-9fc5-a65d6e3fff14" class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> functools <span class="im">import</span> partial</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoTokenizer, AutoModelForCausalLM</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># load model artifacts from the hub</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>hf_path<span class="op">=</span><span class="st">"mistralai/Mistral-7B-v0.1"</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> AutoModelForCausalLM.from_pretrained(hf_path,torchscript<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>tokenizer <span class="op">=</span> AutoTokenizer.from_pretrained(hf_path)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>tokenizer.pad_token <span class="op">=</span> tokenizer.eos_token</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># trace the model and save it with torchscript</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>max_seq_len<span class="op">=</span><span class="dv">128</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>model_path<span class="op">=</span><span class="st">"mistral.pt"</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>text <span class="op">=</span> <span class="st">"This is text to be used for tracing"</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># I'm setting the arguments for tokenizer once so I can reuse it later (they need to be consistent)</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>max_tokenizer <span class="op">=</span> partial(tokenizer, return_tensors<span class="op">=</span><span class="st">"pt"</span>,padding<span class="op">=</span><span class="st">"max_length"</span>, max_length<span class="op">=</span>max_seq_len)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>inputs <span class="op">=</span> max_tokenizer(text)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>traced_model <span class="op">=</span> torch.jit.trace(model, [inputs[<span class="st">'input_ids'</span>], inputs[<span class="st">'attention_mask'</span>]])</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>torch.jit.save(traced_model, model_path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"51711fc315e74da08a0100b3066cd94c","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+</div>
+</section>
+<section id="specify-input-shape" class="level3">
+<h3 class="anchored" data-anchor-id="specify-input-shape">2. Specify Input Shape</h3>
+<p>Having a set input shape is required for compilation.</p>
+<p>This next bit is from <a href="https://github.com/modularml/max/blob/main/examples/inference/bert-python-torchscript/simple-inference.py#L37-L40">This code</a>. Apparently there is a way to specify dynamic values for the sequence len and batch size, but we couldn’t figure that out easily from the docs.</p>
+<div id="ae2dc8d1-cb1e-4be5-bb5f-918571c916b8" class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> <span class="bu">max</span> <span class="im">import</span> engine</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>input_spec_list <span class="op">=</span> [</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    engine.TorchInputSpec(shape<span class="op">=</span>tensor.size(), dtype<span class="op">=</span>engine.DType.int64)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> tensor <span class="kw">in</span> inputs.values()</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>options <span class="op">=</span> engine.TorchLoadOptions(input_spec_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="compile-and-load-model" class="level3">
+<h3 class="anchored" data-anchor-id="compile-and-load-model">3. Compile and Load Model</h3>
+<div id="aab67867-bfb4-41a6-9576-d49f3af2b67c" class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>start_time <span class="op">=</span> time.time()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>session <span class="op">=</span> engine.InferenceSession()</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> session.load(model_path, options)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>end_time <span class="op">=</span> time.time()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Wow! The model takes ~5 minutes to compile and load. Subsequent compilations are faster, but NOT if I restart the Jupyter Kernel.</p>
+<div id="34c4421f-6a2e-4107-9cad-dfde6308a7cc" class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>elapsed_time <span class="op">=</span> end_time <span class="op">-</span> start_time</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Elapsed time: </span><span class="sc">{</span>elapsed_time<span class="sc">}</span><span class="ss"> seconds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Elapsed time: 371.86387610435486 seconds</code></pre>
+</div>
+</div>
+</section>
+<section id="inference" class="level3">
+<h3 class="anchored" data-anchor-id="inference">4. Inference</h3>
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Tip
+We failed to get this to work
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>ML people should don’t need to worry about creating their own webhooks. It is just useful to know what they are, since some of the terms/concepts can show up in error messages.</p>
+<p>Even though we could call <code>model.execute</code> the outputs we got didn’t make much sense to us, even after some investigation. Our hypothesis is that <code>execute</code> is not calling <code>model.generate</code>. But this is where we gave up.</p>
 </div>
 </div>
-<p>Webhooks provide a way for you to validate if a K8s cluster should run an object. Some of these are built in – like the <code>ResourceQuota</code>, which stops workloads from running if they exceed quotas. Webhooks that block workloads are called <code>ValidatingAdmissionWebhook</code>.</p>
-<p>There is also the <code>MutatingAdmissionWebhook</code> which can modify objects before they are created. This is useful for things like injecting sidecars into pods or adding labels to objects. It’s hard to tell if a resource has been mutated as there is no indication when you run <code>kubectl describe</code>. This is one very undesirable feature of webhooks, as they are hard to debug and are not visible. There is something called an <code>Open Policy Agent (OPA)</code> that can be used to mitigate these issues. Example of confusion caused by a Mutating webhook:</p>
-<p><img src="mutating-webhook.png" class="img-fluid"></p>
-<p>Webhooks can be expressed in arbitrary code like python or javascript. These can run inside or outside the cluster but must be served on HTTPS.</p>
-<p>You have to document the rules of webhooks outside the cluster, as their rules are not discoverable by kubectl.</p>
-<p>Webhooks are used to enforce rules like:</p>
-<ul>
-<li>All pods must have container probes defined</li>
-<li>Pods can only run containers from a specific list of repositories</li>
-<li>All containers must have CPU &amp; Memory limits set</li>
-<li>…etc</li>
-</ul>
-<section id="webhook-errors" class="level2">
-<h2 class="anchored" data-anchor-id="webhook-errors">Webhook Errors</h2>
-<p>This is what webhook error messages might look like when you encounter them:</p>
-<p><img src="webhook.png" class="img-fluid"></p>
+<p>Be sure to set <code>return_token_type_ids=False</code>, note that I’m using the same arguments for <code>padding</code> and <code>max_length</code> that I used for tracing the model (because I’m using the <code>max_tokenizer</code> which I defined) so the shape is consistent.</p>
+<div id="aa922586-8676-4866-95fc-8300cc139d37" class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>INPUT<span class="op">=</span><span class="st">"Why did the chicken cross the road?"</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>inp <span class="op">=</span> max_tokenizer(INPUT, return_token_type_ids<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>out <span class="op">=</span> model.execute(<span class="op">**</span>inp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Get the token ids (predictions) and decode them:</p>
+<div id="e3bc115d-e153-4cd9-9ea2-2d2e78186cff" class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>preds <span class="op">=</span> out[<span class="st">'result0'</span>].argmax(axis<span class="op">=-</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In the <a href="https://www.twitch.tv/videos/2077468423">live stream we tried to debug this</a> but could not figure out what was wrong, so we gave up here. (Scroll to the right to see the full output)</p>
+<div id="47a947b5-6ea4-4230-a22a-93dadec0d642" class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-overflow-wrap code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">' '</span>.join(tokenizer.batch_decode(preds, skip_special_tokens<span class="op">=</span><span class="va">False</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>'ммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм # do you chicken cross the road?\n'</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="huggingface-comparison" class="level2">
+<h2 class="anchored" data-anchor-id="huggingface-comparison">HuggingFace Comparison</h2>
+<p>As a sanity check, let’s do inference with <code>transformers</code>:</p>
+<div id="58ededf7-1c81-4b5c-a255-c9d5a6088a46" class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoTokenizer, AutoModelForCausalLM</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>hf_path<span class="op">=</span><span class="st">"mistralai/Mistral-7B-v0.1"</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>hfmodel <span class="op">=</span> AutoModelForCausalLM.from_pretrained(hf_path,torchscript<span class="op">=</span><span class="va">True</span>).cuda()</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>hftokenizer <span class="op">=</span> AutoTokenizer.from_pretrained(hf_path)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>hftokenizer.pad_token <span class="op">=</span> hftokenizer.eos_token</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>_p<span class="op">=</span><span class="st">"Why did the chicken cross the road?"</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>input_ids <span class="op">=</span> hftokenizer(_p, return_tensors<span class="op">=</span><span class="st">"pt"</span>, </span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>                      padding<span class="op">=</span><span class="st">"max_length"</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>                      truncation<span class="op">=</span><span class="va">True</span>).input_ids.cuda()</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>out_ids <span class="op">=</span> hfmodel.generate(input_ids<span class="op">=</span>input_ids, max_new_tokens<span class="op">=</span><span class="dv">15</span>, </span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>                          do_sample<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="bd26e4c1-d4c2-4c0f-934f-21df76620c79" class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>out <span class="op">=</span> hftokenizer.batch_decode(out_ids.detach().cpu().numpy(), </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                                  skip_special_tokens<span class="op">=</span><span class="va">True</span>)[<span class="dv">0</span>][<span class="bu">len</span>(_p):]</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(out)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+To get to the other side.
+
+Why did the chicken</code></pre>
+</div>
+</div>
 
 
 </section>
@@ -1506,7 +1684,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </a>
   </li>  
 </ul>
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/k8s/security/28-workloads.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.dev/hamelsmu/hamel-site/blob/master/notes/llm/inference/04_max_engine.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
