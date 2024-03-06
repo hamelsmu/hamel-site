@@ -1827,276 +1827,302 @@
     ]
   },
   {
-    "objectID": "notes/llm/02_langchain_connectors.html",
-    "href": "notes/llm/02_langchain_connectors.html",
+    "objectID": "notes/llm/inference/04_max_engine.html",
+    "href": "notes/llm/inference/04_max_engine.html",
+    "title": "Max Inference Engine",
+    "section": "",
+    "text": "Warning\n\n\n\nToday, MAX runs only on CPUs, but the roadmap points to GPUs coming soon.",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "Max Inference Engine"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/04_max_engine.html#impressions",
+    "href": "notes/llm/inference/04_max_engine.html#impressions",
+    "title": "Max Inference Engine",
+    "section": "Impressions",
+    "text": "Impressions\nMark Saroufim and I attempted to load Mistral-7b into the Max Engine.\nHere are my initial impressions.\n\nThe Modular team is super engaging and friendly! I recommend going to their discord with questions.\nPytorch currently feels like a second class citizen (but may not be for long).\n\nYou have to do many more steps to potentially load a Pytorch model vs. TF, and those steps are not clear.1\nHowever, I’ve heard from the team that they plan on investing heavily in Pytorch, even more so than Tensorflow.\n\nI’m not sure why they led with BERT/Tensorflow examples. I would like to see paved paths for modern LLMs like Llama or Mistral. Keep an eye on this repo for examples as these will be added soon.\nModel compilation and loading took 5 minutes. A progress bar for compilation would be really helpful.\nTorchscript as a serialization format is older and in maintenance mode compared to more recent torch.compile or torch.export but Max doesn’t support that yet. Discussion is here. You will probably have better luck with LLMs by first exporting models to ONNX via Optimum.\nPrinting the model is not informative, like it is when you print a torch model (doesn’t show you all the layers and shapes).\nWe couldn’t quite understand the output of the model and we eventually hypothesized that torch.script is not the right serialization path for Mistral, but we aren’t sure. I think users may get confused by this.\nMax currently targets CPUs rather than GPUs. I am not concerned by this as the roadmap points to GPUs coming soon. I’m hoping that the team can make AMD GPUs fly so we can break the hegemony of Nvidia.\n\nI’m optimistic that these papercuts will be resolved soon. I’m pretty bullish on the talent level of the team working on these things.",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "Max Inference Engine"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/04_max_engine.html#attempting-to-load-mistral-in-the-max-engine",
+    "href": "notes/llm/inference/04_max_engine.html#attempting-to-load-mistral-in-the-max-engine",
+    "title": "Max Inference Engine",
+    "section": "Attempting To Load Mistral In The Max Engine",
+    "text": "Attempting To Load Mistral In The Max Engine\nToday, the Modular team released the Max Inference Engine:\n\nMAX Engine is a next-generation compiler and runtime system for neural network graphs. It supercharges the execution of AI models in any format (including TensorFlow, PyTorch, and ONNX), on a wide variety of hardware. MAX Engine also allows you to extend these models with custom ops that MAX Engine can analyze and optimize with other ops in the graph.\n\nThese docs show how to load a TensorFlow model, but I want to load a pytorch LLM like Mistral-7b. I documented my attempt at doing so here.\n\n1. Serialize Model as Torchscript\nIn order to load your model in the Max engine we must serialize the model as torchscript. We can do this by tracing the model graph and then using torch.jit.save to save the model.\n\nimport time\nfrom functools import partial\nfrom transformers import AutoTokenizer, AutoModelForCausalLM\nimport torch\n\n# load model artifacts from the hub\nhf_path=\"mistralai/Mistral-7B-v0.1\"\nmodel = AutoModelForCausalLM.from_pretrained(hf_path,torchscript=True)\ntokenizer = AutoTokenizer.from_pretrained(hf_path)\ntokenizer.pad_token = tokenizer.eos_token\n\n# trace the model and save it with torchscript\nmax_seq_len=128\nmodel_path=\"mistral.pt\"\ntext = \"This is text to be used for tracing\"\n# I'm setting the arguments for tokenizer once so I can reuse it later (they need to be consistent)\nmax_tokenizer = partial(tokenizer, return_tensors=\"pt\",padding=\"max_length\", max_length=max_seq_len)\ninputs = max_tokenizer(text)\ntraced_model = torch.jit.trace(model, [inputs['input_ids'], inputs['attention_mask']])\ntorch.jit.save(traced_model, model_path)\n\n\n\n\n\n\n2. Specify Input Shape\nHaving a set input shape is required for compilation.\nThis next bit is from This code. Apparently there is a way to specify dynamic values for the sequence len and batch size, but we couldn’t figure that out easily from the docs.\n\nfrom max import engine\ninput_spec_list = [\n    engine.TorchInputSpec(shape=tensor.size(), dtype=engine.DType.int64)\n    for tensor in inputs.values()\n]\noptions = engine.TorchLoadOptions(input_spec_list)\n\n\n\n3. Compile and Load Model\n\nstart_time = time.time()\nsession = engine.InferenceSession()\nmodel = session.load(model_path, options)\n\nend_time = time.time()\n\nWow! The model takes ~5 minutes to compile and load. Subsequent compilations are faster, but NOT if I restart the Jupyter Kernel.\n\nelapsed_time = end_time - start_time\nprint(f\"Elapsed time: {elapsed_time} seconds\")\n\nElapsed time: 371.86387610435486 seconds\n\n\n\n\n4. Inference\n\n\n\n\n\n\nWe failed to get this to work\n\n\n\nEven though we could call model.execute the outputs we got didn’t make much sense to us, even after some investigation. Our hypothesis is that execute is not calling model.generate. But this is where we gave up.\n\n\nBe sure to set return_token_type_ids=False, note that I’m using the same arguments for padding and max_length that I used for tracing the model (because I’m using the max_tokenizer which I defined) so the shape is consistent.\n\nINPUT=\"Why did the chicken cross the road?\"\ninp = max_tokenizer(INPUT, return_token_type_ids=False)\nout = model.execute(**inp)\n\nGet the token ids (predictions) and decode them:\n\npreds = out['result0'].argmax(axis=-1)\n\nWe tried to debug this but could not figure out what was wrong, so we gave up here. We aren’t sure why the output looks like this. See what the output is supposed to look like in this section.\n(Scroll to the right to see the full output)\n\n' '.join(tokenizer.batch_decode(preds, skip_special_tokens=False))\n\n'ммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм # do you chicken cross the road?\\n'\n\n\nWe were intrigued by the M and Mark joked that it is some interesting illuminati secret code injected into the model for (i.e. M for Modular) which I thought was funny :)\nOur theory is that torchscript is not the right way to serialize this model and this is some kind of silent failure, but it is hard to know.",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "Max Inference Engine"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/04_max_engine.html#huggingface-comparison",
+    "href": "notes/llm/inference/04_max_engine.html#huggingface-comparison",
+    "title": "Max Inference Engine",
+    "section": "HuggingFace Comparison",
+    "text": "HuggingFace Comparison\nBecause the outputs of the Max model seemed wonky, we did a sanity check to see what the outputs look like when using HuggingFace transformers.\n\n\n\n\n\n\nNote\n\n\n\nThe below code loads model onto the GPU to quickly generate predictions for comparison. (Max doesn’t work with GPUs yet).\n\n\n\nfrom transformers import AutoTokenizer, AutoModelForCausalLM\nhf_path=\"mistralai/Mistral-7B-v0.1\"\nhfmodel = AutoModelForCausalLM.from_pretrained(hf_path,torchscript=True).cuda()\nhftokenizer = AutoTokenizer.from_pretrained(hf_path)\nhftokenizer.pad_token = hftokenizer.eos_token\n\n_p=\"Why did the chicken cross the road?\"\ninput_ids = hftokenizer(_p, return_tensors=\"pt\", \n                      padding=\"max_length\",\n                      truncation=True).input_ids.cuda()\nout_ids = hfmodel.generate(input_ids=input_ids, max_new_tokens=15, \n                          do_sample=False)\n\n\nout = hftokenizer.batch_decode(out_ids.detach().cpu().numpy(), \n                                  skip_special_tokens=True)[0][len(_p):]\nprint(out)\n\n\n\nTo get to the other side.\n\nWhy did the chicken",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "Max Inference Engine"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/04_max_engine.html#footnotes",
+    "href": "notes/llm/inference/04_max_engine.html#footnotes",
+    "title": "Max Inference Engine",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nThe documentation states: “This example uses is a TensorFlow model (which must be converted to SavedModel format), and it’s just as easy to load a model from PyTorch (which must be converted to TorchScript format).” The just as easy part raised my expectations a bit too high as the Pytorch path is not as seamless.↩︎",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "Max Inference Engine"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/big_inference.html",
+    "href": "notes/llm/inference/big_inference.html",
+    "title": "vLLM & large models",
+    "section": "",
+    "text": "Correction\n\n\n\nA previous version of this note suggested that you could run Llama 70b on a single A100. This was incorrect. The Modal container was caching the download of the much smaller 7b model. I have updated the post to reflect this. h/t to Cade Daniel for finding the mistake.",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "vLLM & large models"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/big_inference.html#introduction",
+    "href": "notes/llm/inference/big_inference.html#introduction",
+    "title": "vLLM & large models",
+    "section": "Introduction",
+    "text": "Introduction\nLet’s paste an image below:\n\nLarge models like Llama-2-70b may not fit in a single GPU. I previously profiled the smaller 7b model against various inference tools. When a model is too big to fit on a single GPU, we can use various techniques to split the model across multiple GPUs.\n\nCompute & Reproducibility\nI used Modal Labs for serverless compute. Modal is very economical and built for machine learning use cases. Unlike other clouds, there are plenty of A100s available. They even give you $30 of free credits, which is more than enough to run the experiments in this note. Thanks to Modal, the scripts I reference in this note are reproducible.\nIn this note, I’m using modal client version: 0.50.2889",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "vLLM & large models"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/big_inference.html#distributed-inference-w-vllm",
+    "href": "notes/llm/inference/big_inference.html#distributed-inference-w-vllm",
+    "title": "vLLM & large models",
+    "section": "Distributed Inference w/ vLLM",
+    "text": "Distributed Inference w/ vLLM\nvLLM supports tensor parallelism, which you can enable by passing the tensor_parallel_size argument to the LLM constructor.\nI modified this example Modal code for Llama v2 13b to run Llama v2 70b on 4 GPUs with tensor parallelism. Below is a simplified diff with the most important changes:\ndef download_model_to_folder():\n    from huggingface_hub import snapshot_download\n\n    snapshot_download(\n-        \"meta-llama/Llama-2-13b-chat-hf\",\n+        \"meta-llama/Llama-2-70b-chat-hf\",\n        local_dir=\"/model\",\n        token=os.environ[\"HUGGINGFACE_TOKEN\"],\n    )\n\nimage = (\n    Image.from_dockerhub(\"nvcr.io/nvidia/pytorch:22.12-py3\")\n    .pip_install(\"torch==2.0.1\", index_url=\"https://download.pytorch.org/whl/cu118\")\n+    # Pin vLLM to 8/2/2023\n+    .pip_install(\"vllm @ git+https://github.com/vllm-project/vllm.git@79af7e96a0e2fc9f340d1939192122c3ae38ff17\")\n-    # Pin vLLM to 07/19/2023\n-    .pip_install(\"vllm @ git+https://github.com/vllm-project/vllm.git@bda41c70ddb124134935a90a0d51304d2ac035e8\")\n    # Use the barebones hf-transfer package for maximum download speeds. No progress bar, but expect 700MB/s.\n-    .pip_install(\"hf-transfer~=0.1\")\n+     #Force a rebuild to invalidate the cache (you can remove `force_build=True` after the first time)\n+    .pip_install(\"hf-transfer~=0.1\", force_build=True)\n    .run_function(\n        download_model_to_folder,\n        secret=Secret.from_name(\"huggingface\"),\n        timeout=60 * 20)\n)\n...\n\n-@stub.cls(gpu=\"A100\", secret=Secret.from_name(\"huggingface\"))\n+# You need a minimum of 4 A100s that are the 40GB version\n+@stub.cls(gpu=gpu.A100(count=4, memory=40), secret=Secret.from_name(\"huggingface\"))\nclass Model:\n    def __enter__(self):\n        from vllm import LLM\n\n        # Load the model. Tip: MPT models may require `trust_remote_code=true`.\n-       self.llm = LLM(MODEL_DIR)\n+       self.llm = LLM(MODEL_DIR, tensor_parallel_size=4)\n...  \nSee big-inference-vllm.py for the actual script I used.\n\n\n\n\n\n\nBe Careful To Mind The Cache When Downloading Files\n\n\n\nI found that when I ran the above code and changed the model name, I had to force a rebuild of the image to invalidate the cache. Otherwise, the old version of the model would be used. You can force a rebuild by adding force_build=True to the .pip_install call.\nWhen I initially wrote this note, I was fooled into believing I could load meta-llama/Llama-2-70b-chat-hf on a single A100. It was this tricky issue of the container that cached the download of the much smaller 7b model. 🤦\n\n\nAfter setting the appropriate secrets for HuggingFace and Weights & Biases, You can run this code on Modal with the following command:\nmodal run big-inference-vllm.py\nYou need at least 4 A100 GPUs to serve Llama v2 70b.",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "vLLM & large models"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/big_inference.html#what-happens-with-smaller-models",
+    "href": "notes/llm/inference/big_inference.html#what-happens-with-smaller-models",
+    "title": "vLLM & large models",
+    "section": "What Happens With Smaller Models?",
+    "text": "What Happens With Smaller Models?\nEven though distributed inference is interesting for big models that do not fit on a single GPU, interesting things happen when you serve smaller models this way. Below, I test throughput for Llama v2 7b on 1, 2, and 4 GPUs. The throughput is measured by passsing these 59 prompts to llm.generate. llm.generate is described in the vLLM documentation:\n\nCall llm.generate to generate the outputs. It adds the input prompts to vLLM engine’s waiting queue and executes the vLLM engine to generate the outputs with high throughput.\n\nHere are the results, averaged over 5 runs for each row:\n\n\n\n\n\n\n\n\n\n\n\navg tok/sec\n\n\nmodel\nGPU\nnum_gpus\n\n\n\n\n\nLlama-2-70b-chat-hf\nNVIDIA A100-SXM4-40GB\n4\n380.9\n\n\nLlama-2-7b-chat-hf\nNVIDIA A10\n1\n458.8\n\n\n2\n497.3\n\n\n4\n543.6\n\n\nNVIDIA A100-SXM4-40GB\n1\n842.9\n\n\n2\n699.1\n\n\n4\n650.7\n\n\n\n\n\n\n\nYou can see all the individual runs here. In my experiments, the 70b model needed a minimum of 4 A100s to run, so that’s why there is only one row for that model (Modal only has instances with 1, 2, or 4 GPUs).\n```{python}\n\n\n\n\n\n\nDo Not Compare To Latency Benchmark\n\n\n\nThe tok/sec number you see here is VERY different than the latency benchmark shown on this note. This particular benchmark maximizes throughput by running multiple requests in parallel. The previous latency benchmark measures the time it takes to process a single request.\n\n\n\nObservations\n\nA100s are much faster than A10s, but A10s are significantly cheaper.1\nOn A10s, scaling up to more GPUs increases throughput at first, but then seems to diminish. It appears like there is a Goldilocks zone in terms of the right number of GPUs to maximize throughput. I did not explore this in detail, as Modal only has instances with specific numbers of GPUs.2\nThe much larger Llama v2 70b model is only ~2x slower than its 7b counterpart.",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "vLLM & large models"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/big_inference.html#aside-pipeline-parallelism",
+    "href": "notes/llm/inference/big_inference.html#aside-pipeline-parallelism",
+    "title": "vLLM & large models",
+    "section": "Aside: Pipeline Parallelism",
+    "text": "Aside: Pipeline Parallelism\nIn theory, Pipeline Parallelism (“PP”) is slower than Tensor Parallelism, but tools for PP are compatible with a wider range of models from the HuggingFace Hub. By default, HuggingFace accelerate will automatically split the model across multiple GPUs when you pass device_map=\"auto\". (Accelerate offers other kinds of parallelism as well, like integrations with DeepSpeed).\nThis blog post and these docs are an excellent place to start. I will explore this and other kinds of parallelism in future notes.",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "vLLM & large models"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/big_inference.html#footnotes",
+    "href": "notes/llm/inference/big_inference.html#footnotes",
+    "title": "vLLM & large models",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nAs of 8/6/2023 2 A10s costs .000612 / sec on Modal, whereas 1 A100 40GB will cost 0.001036 / sec. See this pricing chart↩︎\nFor A10 and A100s you can only get up to 4 GPUs. Furthermore, I ran into an issue with vLLM and llama 70b, where it doesn’t like an odd number of GPUs.↩︎",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "vLLM & large models"
+    ]
+  },
+  {
+    "objectID": "notes/llm/finetuning/02_langchain_connectors.html",
+    "href": "notes/llm/finetuning/02_langchain_connectors.html",
     "title": "LangChain DocumentLoaders",
     "section": "",
     "text": "LangChain is library that provides a kitchen sink of tools for LLMs, particularly integrating LLMs with other tools.\nOne underrated feature of Langchain is DocumentLoaders, which allow you to acquire text data from any source, which is super useful even if you aren’t using LLMs at all! (It can also be useful to hijack these loaders to acquire data for fine tuning!)\nFor example, if you are trying to get data from a website as text here are some useful DocumentLoaders:\n\nRecursiveURLLoader\nSeleniumLoader\nSitemapLoader: this is explored below.\n\nI think it is useful to combine LangChain DocumentLoaders with HuggingFace datasets, because it allows you to save, version and do other fun things like perform semantic search of your data with FAISS.\nAs of this writing, there are over 125 different kinds of DocumentLoaders. I haven’t been able to find a loader that isn’t there to quickly acquire data I need.\n\n\nSitemaps are a nice way to see a listing of all pages on a site. This is useful for acquiring all of the text from a large site that might contain many pages. Below, I use the SitemapLoader to get all of the text from https://quarto.org.\n\n\n\n\n\n\nWarning\n\n\n\nThere is currently a bug in langchain, so I had to install an old version right before this commit which broke the SitemapLoader. I had to downgrade to v0.0.202 via pip install langchain==0.0.202\n\n\n\nimport nest_asyncio\nnest_asyncio.apply() # you don't need this line outside notebooks\nfrom langchain.document_loaders.sitemap import SitemapLoader\nsitemap_loader = SitemapLoader(web_path=\"https://quarto.org/sitemap.xml\")\nsitemap_loader.requests_per_second = 4\ndocs = sitemap_loader.load()\n\nFetching pages: 100%|####################################| 269/269 [00:16&lt;00:00, 16.21it/s]\n\n\n\nprint(f'There are {len(docs)} pages')\n\nThere are 269 pages\n\n\nLet’s look at the content of one page:\n\nexample = docs[0]\nexample.dict()\n\n{'page_content': '\\n\\n\\n\\n\\nQuarto - About Quarto\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nOverview\\n\\n\\n\\nGet Started\\n\\n\\n\\nGuide\\n\\n\\n\\nExtensions\\n\\n\\n\\nReference\\n\\n\\n\\nGallery\\n\\n\\n\\nBlog\\n\\n\\n\\nHelp\\n\\n\\n\\n\\n\\nReport a Bug\\n\\n\\n\\n\\nAsk a Question\\n\\n\\n\\n\\nFAQ\\n\\n\\n\\n\\n \\n\\n\\n\\n\\n\\n \\n\\n\\n\\n\\n\\n\\n\\n\\nOn this page\\n\\nGoals\\nProject\\nContribute\\n\\nEdit this pageReport an issue\\n\\n\\n\\n\\n\\nAbout Quarto\\nOpen source tools for scientific and technical publishing\\n\\n\\n\\n\\n\\nGoals\\nThe overarching goal of Quarto is to make the process of creating and collaborating on scientific and technical documents dramatically better. We hope to do this in several dimensions:\\n\\nCreate a writing and publishing environment with great integrated tools for technical content. We want to make authoring with embedded code, equations, figures, complex diagrams, interactive widgets, citations, cross references, and the myriad other special requirements of scientific discourse straightforward and productive for everyone.\\nHelp authors take full advantage of the web as a connected, interactive platform for communications, while still providing the ability to create excellent printed output from the same document source. Researchers shouldn’t need to choose between LaTeX, MS Word, and HTML but rather be able to author documents that target all of them at the same time.\\nMake reproducible research and publications the norm rather than the exception. Reproducibility requires that the code and data required to create a manuscript are an integrated part of it. However, this isn’t often straightforward in practice—Quarto aims to make it easier to adopt a reproducible workflow than not.\\n\\nQuarto is open source software licensed under the GNU GPL v2. We believe that it’s better for everyone if the tools used for research and science are free and open. Reproducibility, widespread sharing of knowledge and techniques, and the leveling of the playing field by eliminating cost barriers are but a few of the shared benefits of free software in science.\\n\\n\\nProject\\nAt the core of Quarto is Pandoc, a powerful and flexible document processing tool. Quarto adds a number of facilities to Pandoc aimed at scientific and technical publishing, including:\\n\\nEmbedding code and output from Python, R, and JavaScript via integration with Jupyter, Knitr, and Observable.\\nA variety of extensions to Pandoc markdown useful for technical writing including cross-references, sub-figures, layout panels, hoverable citations and footnotes, callouts, and more.\\nA project system for rendering groups of documents at once, sharing options across documents, and producing aggregate output like websites and books.\\n\\nDevelopment of Quarto is sponsored by Posit, PBC, where we previously created a similar system (R Markdown) that shared the same goals, but was targeted principally at users of the R language. The same core team works on both Quarto and R Markdown:\\n\\nJ.J. Allaire (@jjallaire)\\nChristophe Dervieux (@cderv)\\nCarlos Scheidegger (@cscheid)\\nCharles Teague (@dragonstyle)\\nYihui Xie (@yihui)\\n\\nWith Quarto, we are hoping to bring these tools to a much wider audience.\\nQuarto is a registered trademark of Posit. Please see our trademark policy for guidelines on usage of the Quarto trademark.\\n\\n\\nContribute\\nYou can contribute to Quarto in many ways:\\n\\nBy opening issues to provide feedback and share ideas.\\nBy submitting Pull Request (PR) to fix opened issues\\nBy submitting Pull Request (PR) to suggest new features (it is considered good practice to open an issue for discussion before working on a pull request for a new feature).\\n\\nPlease be mindful of our code of conduct as you interact with other community members.\\n\\nPull Requests\\nPull requests are very welcome! Here’s how to contribute via PR:\\n\\nFork the repository, clone it locally, and make your changes in a new branch specific to the PR. For example:\\n\\n\\nTerminal\\n\\n# clone your fork\\n$ git clone https://github.com/&lt;username&gt;/quarto-cli\\n\\n# configure for your platform (./configure.sh or ./configure.cmd for windows)\\n$ cd quarto-cli\\n$ ./configure.sh\\n\\n# checkout a new branch\\n$ git checkout -b feature/newthing\\n\\nFor significant changes (e.g more than small bug fixes), ensure that you have signed the individual or corporate contributor agreement as appropriate. You can send the signed copy to jj@rstudio.com.\\nSubmit the pull request. It is ok to submit as draft in your are still working on it but would like some feedback from us. It always good to share in the open that you are working on it.\\n\\nWe’ll try to be as responsive as possible in reviewing and accepting pull requests.\\n\\n\\n \\n\\n\\n \\n\\n\\n\\nProudly supported by \\n\\n\\n\\n\\n\\nAbout\\n\\n\\n\\n\\nFAQ\\n\\n\\n\\n\\nLicense\\n\\n\\n\\n\\nTrademark\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n',\n 'metadata': {'source': 'https://quarto.org/about.html',\n  'loc': 'https://quarto.org/about.html',\n  'lastmod': '2023-07-05T19:35:15.135Z'}}\n\n\n\n\n\nWhen we look at this page, we can see a bunch of unwanted text. The navbar and the sidenav are showing up, and we do not want this. We can update the parsing function to fix this:\n\nfrom bs4 import BeautifulSoup\n\n\ndef remove_nav_and_header_elements(content: BeautifulSoup) -&gt; str:\n    exclude = content.find_all([\"nav\", \"footer\", \"header\", \"head\"])\n    for element in exclude:\n        element.decompose()\n\n    return str(content.get_text()).strip()\n\n\nsitemap_loader = SitemapLoader(web_path=\"https://quarto.org/sitemap.xml\",\n                              parsing_function=remove_nav_and_header_elements)\nsitemap_loader.requests_per_second = 4\ndocs = sitemap_loader.load()\n\nFetching pages: 100%|####################################| 269/269 [00:05&lt;00:00, 52.00it/s]\n\n\n\nexample = docs[0]\nexample.dict()\n\n{'page_content': 'Goals\\nThe overarching goal of Quarto is to make the process of creating and collaborating on scientific and technical documents dramatically better. We hope to do this in several dimensions:\\n\\nCreate a writing and publishing environment with great integrated tools for technical content. We want to make authoring with embedded code, equations, figures, complex diagrams, interactive widgets, citations, cross references, and the myriad other special requirements of scientific discourse straightforward and productive for everyone.\\nHelp authors take full advantage of the web as a connected, interactive platform for communications, while still providing the ability to create excellent printed output from the same document source. Researchers shouldn’t need to choose between LaTeX, MS Word, and HTML but rather be able to author documents that target all of them at the same time.\\nMake reproducible research and publications the norm rather than the exception. Reproducibility requires that the code and data required to create a manuscript are an integrated part of it. However, this isn’t often straightforward in practice—Quarto aims to make it easier to adopt a reproducible workflow than not.\\n\\nQuarto is open source software licensed under the GNU GPL v2. We believe that it’s better for everyone if the tools used for research and science are free and open. Reproducibility, widespread sharing of knowledge and techniques, and the leveling of the playing field by eliminating cost barriers are but a few of the shared benefits of free software in science.\\n\\n\\nProject\\nAt the core of Quarto is Pandoc, a powerful and flexible document processing tool. Quarto adds a number of facilities to Pandoc aimed at scientific and technical publishing, including:\\n\\nEmbedding code and output from Python, R, and JavaScript via integration with Jupyter, Knitr, and Observable.\\nA variety of extensions to Pandoc markdown useful for technical writing including cross-references, sub-figures, layout panels, hoverable citations and footnotes, callouts, and more.\\nA project system for rendering groups of documents at once, sharing options across documents, and producing aggregate output like websites and books.\\n\\nDevelopment of Quarto is sponsored by Posit, PBC, where we previously created a similar system (R Markdown) that shared the same goals, but was targeted principally at users of the R language. The same core team works on both Quarto and R Markdown:\\n\\nJ.J. Allaire (@jjallaire)\\nChristophe Dervieux (@cderv)\\nCarlos Scheidegger (@cscheid)\\nCharles Teague (@dragonstyle)\\nYihui Xie (@yihui)\\n\\nWith Quarto, we are hoping to bring these tools to a much wider audience.\\nQuarto is a registered trademark of Posit. Please see our trademark policy for guidelines on usage of the Quarto trademark.\\n\\n\\nContribute\\nYou can contribute to Quarto in many ways:\\n\\nBy opening issues to provide feedback and share ideas.\\nBy submitting Pull Request (PR) to fix opened issues\\nBy submitting Pull Request (PR) to suggest new features (it is considered good practice to open an issue for discussion before working on a pull request for a new feature).\\n\\nPlease be mindful of our code of conduct as you interact with other community members.\\n\\nPull Requests\\nPull requests are very welcome! Here’s how to contribute via PR:\\n\\nFork the repository, clone it locally, and make your changes in a new branch specific to the PR. For example:\\n\\n\\nTerminal\\n\\n# clone your fork\\n$ git clone https://github.com/&lt;username&gt;/quarto-cli\\n\\n# configure for your platform (./configure.sh or ./configure.cmd for windows)\\n$ cd quarto-cli\\n$ ./configure.sh\\n\\n# checkout a new branch\\n$ git checkout -b feature/newthing\\n\\nFor significant changes (e.g more than small bug fixes), ensure that you have signed the individual or corporate contributor agreement as appropriate. You can send the signed copy to jj@rstudio.com.\\nSubmit the pull request. It is ok to submit as draft in your are still working on it but would like some feedback from us. It always good to share in the open that you are working on it.\\n\\nWe’ll try to be as responsive as possible in reviewing and accepting pull requests.',\n 'metadata': {'source': 'https://quarto.org/about.html',\n  'loc': 'https://quarto.org/about.html',\n  'lastmod': '2023-07-05T19:35:15.135Z'}}",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "LangChain `DocumentLoaders`"
     ]
   },
   {
-    "objectID": "notes/llm/02_langchain_connectors.html#sitemap-loader",
-    "href": "notes/llm/02_langchain_connectors.html#sitemap-loader",
+    "objectID": "notes/llm/finetuning/02_langchain_connectors.html#sitemap-loader",
+    "href": "notes/llm/finetuning/02_langchain_connectors.html#sitemap-loader",
     "title": "LangChain DocumentLoaders",
     "section": "",
     "text": "Sitemaps are a nice way to see a listing of all pages on a site. This is useful for acquiring all of the text from a large site that might contain many pages. Below, I use the SitemapLoader to get all of the text from https://quarto.org.\n\n\n\n\n\n\nWarning\n\n\n\nThere is currently a bug in langchain, so I had to install an old version right before this commit which broke the SitemapLoader. I had to downgrade to v0.0.202 via pip install langchain==0.0.202\n\n\n\nimport nest_asyncio\nnest_asyncio.apply() # you don't need this line outside notebooks\nfrom langchain.document_loaders.sitemap import SitemapLoader\nsitemap_loader = SitemapLoader(web_path=\"https://quarto.org/sitemap.xml\")\nsitemap_loader.requests_per_second = 4\ndocs = sitemap_loader.load()\n\nFetching pages: 100%|####################################| 269/269 [00:16&lt;00:00, 16.21it/s]\n\n\n\nprint(f'There are {len(docs)} pages')\n\nThere are 269 pages\n\n\nLet’s look at the content of one page:\n\nexample = docs[0]\nexample.dict()\n\n{'page_content': '\\n\\n\\n\\n\\nQuarto - About Quarto\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nOverview\\n\\n\\n\\nGet Started\\n\\n\\n\\nGuide\\n\\n\\n\\nExtensions\\n\\n\\n\\nReference\\n\\n\\n\\nGallery\\n\\n\\n\\nBlog\\n\\n\\n\\nHelp\\n\\n\\n\\n\\n\\nReport a Bug\\n\\n\\n\\n\\nAsk a Question\\n\\n\\n\\n\\nFAQ\\n\\n\\n\\n\\n \\n\\n\\n\\n\\n\\n \\n\\n\\n\\n\\n\\n\\n\\n\\nOn this page\\n\\nGoals\\nProject\\nContribute\\n\\nEdit this pageReport an issue\\n\\n\\n\\n\\n\\nAbout Quarto\\nOpen source tools for scientific and technical publishing\\n\\n\\n\\n\\n\\nGoals\\nThe overarching goal of Quarto is to make the process of creating and collaborating on scientific and technical documents dramatically better. We hope to do this in several dimensions:\\n\\nCreate a writing and publishing environment with great integrated tools for technical content. We want to make authoring with embedded code, equations, figures, complex diagrams, interactive widgets, citations, cross references, and the myriad other special requirements of scientific discourse straightforward and productive for everyone.\\nHelp authors take full advantage of the web as a connected, interactive platform for communications, while still providing the ability to create excellent printed output from the same document source. Researchers shouldn’t need to choose between LaTeX, MS Word, and HTML but rather be able to author documents that target all of them at the same time.\\nMake reproducible research and publications the norm rather than the exception. Reproducibility requires that the code and data required to create a manuscript are an integrated part of it. However, this isn’t often straightforward in practice—Quarto aims to make it easier to adopt a reproducible workflow than not.\\n\\nQuarto is open source software licensed under the GNU GPL v2. We believe that it’s better for everyone if the tools used for research and science are free and open. Reproducibility, widespread sharing of knowledge and techniques, and the leveling of the playing field by eliminating cost barriers are but a few of the shared benefits of free software in science.\\n\\n\\nProject\\nAt the core of Quarto is Pandoc, a powerful and flexible document processing tool. Quarto adds a number of facilities to Pandoc aimed at scientific and technical publishing, including:\\n\\nEmbedding code and output from Python, R, and JavaScript via integration with Jupyter, Knitr, and Observable.\\nA variety of extensions to Pandoc markdown useful for technical writing including cross-references, sub-figures, layout panels, hoverable citations and footnotes, callouts, and more.\\nA project system for rendering groups of documents at once, sharing options across documents, and producing aggregate output like websites and books.\\n\\nDevelopment of Quarto is sponsored by Posit, PBC, where we previously created a similar system (R Markdown) that shared the same goals, but was targeted principally at users of the R language. The same core team works on both Quarto and R Markdown:\\n\\nJ.J. Allaire (@jjallaire)\\nChristophe Dervieux (@cderv)\\nCarlos Scheidegger (@cscheid)\\nCharles Teague (@dragonstyle)\\nYihui Xie (@yihui)\\n\\nWith Quarto, we are hoping to bring these tools to a much wider audience.\\nQuarto is a registered trademark of Posit. Please see our trademark policy for guidelines on usage of the Quarto trademark.\\n\\n\\nContribute\\nYou can contribute to Quarto in many ways:\\n\\nBy opening issues to provide feedback and share ideas.\\nBy submitting Pull Request (PR) to fix opened issues\\nBy submitting Pull Request (PR) to suggest new features (it is considered good practice to open an issue for discussion before working on a pull request for a new feature).\\n\\nPlease be mindful of our code of conduct as you interact with other community members.\\n\\nPull Requests\\nPull requests are very welcome! Here’s how to contribute via PR:\\n\\nFork the repository, clone it locally, and make your changes in a new branch specific to the PR. For example:\\n\\n\\nTerminal\\n\\n# clone your fork\\n$ git clone https://github.com/&lt;username&gt;/quarto-cli\\n\\n# configure for your platform (./configure.sh or ./configure.cmd for windows)\\n$ cd quarto-cli\\n$ ./configure.sh\\n\\n# checkout a new branch\\n$ git checkout -b feature/newthing\\n\\nFor significant changes (e.g more than small bug fixes), ensure that you have signed the individual or corporate contributor agreement as appropriate. You can send the signed copy to jj@rstudio.com.\\nSubmit the pull request. It is ok to submit as draft in your are still working on it but would like some feedback from us. It always good to share in the open that you are working on it.\\n\\nWe’ll try to be as responsive as possible in reviewing and accepting pull requests.\\n\\n\\n \\n\\n\\n \\n\\n\\n\\nProudly supported by \\n\\n\\n\\n\\n\\nAbout\\n\\n\\n\\n\\nFAQ\\n\\n\\n\\n\\nLicense\\n\\n\\n\\n\\nTrademark\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n',\n 'metadata': {'source': 'https://quarto.org/about.html',\n  'loc': 'https://quarto.org/about.html',\n  'lastmod': '2023-07-05T19:35:15.135Z'}}",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "LangChain `DocumentLoaders`"
     ]
   },
   {
-    "objectID": "notes/llm/02_langchain_connectors.html#clean-the-data",
-    "href": "notes/llm/02_langchain_connectors.html#clean-the-data",
+    "objectID": "notes/llm/finetuning/02_langchain_connectors.html#clean-the-data",
+    "href": "notes/llm/finetuning/02_langchain_connectors.html#clean-the-data",
     "title": "LangChain DocumentLoaders",
     "section": "",
     "text": "When we look at this page, we can see a bunch of unwanted text. The navbar and the sidenav are showing up, and we do not want this. We can update the parsing function to fix this:\n\nfrom bs4 import BeautifulSoup\n\n\ndef remove_nav_and_header_elements(content: BeautifulSoup) -&gt; str:\n    exclude = content.find_all([\"nav\", \"footer\", \"header\", \"head\"])\n    for element in exclude:\n        element.decompose()\n\n    return str(content.get_text()).strip()\n\n\nsitemap_loader = SitemapLoader(web_path=\"https://quarto.org/sitemap.xml\",\n                              parsing_function=remove_nav_and_header_elements)\nsitemap_loader.requests_per_second = 4\ndocs = sitemap_loader.load()\n\nFetching pages: 100%|####################################| 269/269 [00:05&lt;00:00, 52.00it/s]\n\n\n\nexample = docs[0]\nexample.dict()\n\n{'page_content': 'Goals\\nThe overarching goal of Quarto is to make the process of creating and collaborating on scientific and technical documents dramatically better. We hope to do this in several dimensions:\\n\\nCreate a writing and publishing environment with great integrated tools for technical content. We want to make authoring with embedded code, equations, figures, complex diagrams, interactive widgets, citations, cross references, and the myriad other special requirements of scientific discourse straightforward and productive for everyone.\\nHelp authors take full advantage of the web as a connected, interactive platform for communications, while still providing the ability to create excellent printed output from the same document source. Researchers shouldn’t need to choose between LaTeX, MS Word, and HTML but rather be able to author documents that target all of them at the same time.\\nMake reproducible research and publications the norm rather than the exception. Reproducibility requires that the code and data required to create a manuscript are an integrated part of it. However, this isn’t often straightforward in practice—Quarto aims to make it easier to adopt a reproducible workflow than not.\\n\\nQuarto is open source software licensed under the GNU GPL v2. We believe that it’s better for everyone if the tools used for research and science are free and open. Reproducibility, widespread sharing of knowledge and techniques, and the leveling of the playing field by eliminating cost barriers are but a few of the shared benefits of free software in science.\\n\\n\\nProject\\nAt the core of Quarto is Pandoc, a powerful and flexible document processing tool. Quarto adds a number of facilities to Pandoc aimed at scientific and technical publishing, including:\\n\\nEmbedding code and output from Python, R, and JavaScript via integration with Jupyter, Knitr, and Observable.\\nA variety of extensions to Pandoc markdown useful for technical writing including cross-references, sub-figures, layout panels, hoverable citations and footnotes, callouts, and more.\\nA project system for rendering groups of documents at once, sharing options across documents, and producing aggregate output like websites and books.\\n\\nDevelopment of Quarto is sponsored by Posit, PBC, where we previously created a similar system (R Markdown) that shared the same goals, but was targeted principally at users of the R language. The same core team works on both Quarto and R Markdown:\\n\\nJ.J. Allaire (@jjallaire)\\nChristophe Dervieux (@cderv)\\nCarlos Scheidegger (@cscheid)\\nCharles Teague (@dragonstyle)\\nYihui Xie (@yihui)\\n\\nWith Quarto, we are hoping to bring these tools to a much wider audience.\\nQuarto is a registered trademark of Posit. Please see our trademark policy for guidelines on usage of the Quarto trademark.\\n\\n\\nContribute\\nYou can contribute to Quarto in many ways:\\n\\nBy opening issues to provide feedback and share ideas.\\nBy submitting Pull Request (PR) to fix opened issues\\nBy submitting Pull Request (PR) to suggest new features (it is considered good practice to open an issue for discussion before working on a pull request for a new feature).\\n\\nPlease be mindful of our code of conduct as you interact with other community members.\\n\\nPull Requests\\nPull requests are very welcome! Here’s how to contribute via PR:\\n\\nFork the repository, clone it locally, and make your changes in a new branch specific to the PR. For example:\\n\\n\\nTerminal\\n\\n# clone your fork\\n$ git clone https://github.com/&lt;username&gt;/quarto-cli\\n\\n# configure for your platform (./configure.sh or ./configure.cmd for windows)\\n$ cd quarto-cli\\n$ ./configure.sh\\n\\n# checkout a new branch\\n$ git checkout -b feature/newthing\\n\\nFor significant changes (e.g more than small bug fixes), ensure that you have signed the individual or corporate contributor agreement as appropriate. You can send the signed copy to jj@rstudio.com.\\nSubmit the pull request. It is ok to submit as draft in your are still working on it but would like some feedback from us. It always good to share in the open that you are working on it.\\n\\nWe’ll try to be as responsive as possible in reviewing and accepting pull requests.',\n 'metadata': {'source': 'https://quarto.org/about.html',\n  'loc': 'https://quarto.org/about.html',\n  'lastmod': '2023-07-05T19:35:15.135Z'}}",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "LangChain `DocumentLoaders`"
     ]
   },
   {
-    "objectID": "notes/llm/02_langchain_connectors.html#download-the-data",
-    "href": "notes/llm/02_langchain_connectors.html#download-the-data",
+    "objectID": "notes/llm/finetuning/02_langchain_connectors.html#download-the-data",
+    "href": "notes/llm/finetuning/02_langchain_connectors.html#download-the-data",
     "title": "LangChain DocumentLoaders",
     "section": "Download the data",
     "text": "Download the data\nYou can download the data from the HuggingFace Hub like this:\n\nfrom datasets import load_dataset\nremote_data = load_dataset(repo_name)\n\n\n\n\nUsing custom data configuration hamel--quarto-b88699e31e28f953\n\n\nDownloading and preparing dataset None/None (download: Unknown size, generated: 1.81 MiB, post-processed: Unknown size, total: 1.81 MiB) to /Users/hamel/.cache/huggingface/datasets/hamel___parquet/hamel--quarto-b88699e31e28f953/0.0.0/2a3b91fbd88a2c90d1dbbb32b460cf621d31bd5b05b934492fdef7d8d6f236ec...\nDataset parquet downloaded and prepared to /Users/hamel/.cache/huggingface/datasets/hamel___parquet/hamel--quarto-b88699e31e28f953/0.0.0/2a3b91fbd88a2c90d1dbbb32b460cf621d31bd5b05b934492fdef7d8d6f236ec. Subsequent calls will reuse this data.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nremote_data['train'][0]\n\n{'page_content': 'Goals\\nThe overarching goal of Quarto is to make the process of creating and collaborating on scientific and technical documents dramatically better. We hope to do this in several dimensions:\\n\\nCreate a writing and publishing environment with great integrated tools for technical content. We want to make authoring with embedded code, equations, figures, complex diagrams, interactive widgets, citations, cross references, and the myriad other special requirements of scientific discourse straightforward and productive for everyone.\\nHelp authors take full advantage of the web as a connected, interactive platform for communications, while still providing the ability to create excellent printed output from the same document source. Researchers shouldn’t need to choose between LaTeX, MS Word, and HTML but rather be able to author documents that target all of them at the same time.\\nMake reproducible research and publications the norm rather than the exception. Reproducibility requires that the code and data required to create a manuscript are an integrated part of it. However, this isn’t often straightforward in practice—Quarto aims to make it easier to adopt a reproducible workflow than not.\\n\\nQuarto is open source software licensed under the GNU GPL v2. We believe that it’s better for everyone if the tools used for research and science are free and open. Reproducibility, widespread sharing of knowledge and techniques, and the leveling of the playing field by eliminating cost barriers are but a few of the shared benefits of free software in science.\\n\\n\\nProject\\nAt the core of Quarto is Pandoc, a powerful and flexible document processing tool. Quarto adds a number of facilities to Pandoc aimed at scientific and technical publishing, including:\\n\\nEmbedding code and output from Python, R, and JavaScript via integration with Jupyter, Knitr, and Observable.\\nA variety of extensions to Pandoc markdown useful for technical writing including cross-references, sub-figures, layout panels, hoverable citations and footnotes, callouts, and more.\\nA project system for rendering groups of documents at once, sharing options across documents, and producing aggregate output like websites and books.\\n\\nDevelopment of Quarto is sponsored by Posit, PBC, where we previously created a similar system (R Markdown) that shared the same goals, but was targeted principally at users of the R language. The same core team works on both Quarto and R Markdown:\\n\\nJ.J. Allaire (@jjallaire)\\nChristophe Dervieux (@cderv)\\nCarlos Scheidegger (@cscheid)\\nCharles Teague (@dragonstyle)\\nYihui Xie (@yihui)\\n\\nWith Quarto, we are hoping to bring these tools to a much wider audience.\\nQuarto is a registered trademark of Posit. Please see our trademark policy for guidelines on usage of the Quarto trademark.\\n\\n\\nContribute\\nYou can contribute to Quarto in many ways:\\n\\nBy opening issues to provide feedback and share ideas.\\nBy submitting Pull Request (PR) to fix opened issues\\nBy submitting Pull Request (PR) to suggest new features (it is considered good practice to open an issue for discussion before working on a pull request for a new feature).\\n\\nPlease be mindful of our code of conduct as you interact with other community members.\\n\\nPull Requests\\nPull requests are very welcome! Here’s how to contribute via PR:\\n\\nFork the repository, clone it locally, and make your changes in a new branch specific to the PR. For example:\\n\\n\\nTerminal\\n\\n# clone your fork\\n$ git clone https://github.com/&lt;username&gt;/quarto-cli\\n\\n# configure for your platform (./configure.sh or ./configure.cmd for windows)\\n$ cd quarto-cli\\n$ ./configure.sh\\n\\n# checkout a new branch\\n$ git checkout -b feature/newthing\\n\\nFor significant changes (e.g more than small bug fixes), ensure that you have signed the individual or corporate contributor agreement as appropriate. You can send the signed copy to jj@rstudio.com.\\nSubmit the pull request. It is ok to submit as draft in your are still working on it but would like some feedback from us. It always good to share in the open that you are working on it.\\n\\nWe’ll try to be as responsive as possible in reviewing and accepting pull requests.',\n 'metadata': {'lastmod': '2023-07-05T19:35:15.135Z',\n  'loc': 'https://quarto.org/about.html',\n  'source': 'https://quarto.org/about.html'}}",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "LangChain `DocumentLoaders`"
     ]
   },
   {
-    "objectID": "notes/llm/inference/03_inference.html",
-    "href": "notes/llm/inference/03_inference.html",
-    "title": "Optimizing latency",
-    "section": "",
-    "text": "Below is a summary of my findings:\n\n🏁 mlc is the fastest. This is so fast that I’m skeptical and am now motivated to measure quality (if I have time). When checking the outputs manually, they didn’t seem that different than other approaches.\n❤️ CTranslate2 is my favorite tool, which is among the fastest but is also the easiest to use. The documentation is the best out of all of the solutions I tried. Furthermore, I think that the ergonomics are excellent for the models that they support. Unlike vLLM, CTranslate doesn’t seem to support distributed inference just yet.\n🛠️ vLLM is really fast, but CTranslate can be much faster. On other hand, vLLM supports distributed inference, which is something you will need for larger models. vLLM might be the sweet spot for serving very large models.\n😐 Text Generation Inference is an ok option (but nowhere near as fast as vLLM) if you want to deploy HuggingFace LLMs in a standard way. TGI has some nice features like telemetry baked in (via OpenTelemetry) and integration with the HF ecosystem like inference endpoints. One thing to note that as of 7/28/2023, the license for TGI was changed to be more restrictive that may interfere with certain commercial uses. I am personally not a fan of the license.\n\n\n\nThis study focuses on various approaches to optimizing latency. Specifically, I want to know which tools are the most effective at optimizing latency for open source LLMs. In order to focus on latency, I hold the following variables constant:\n\nbatch size of n = 1 for all prediction requests (holding throughput constant).1\n\nAll experiments were conducted on a Nvidia A6000 GPU, unless otherwise noted.\nMax output tokens were always set to 200.\nAll numbers are calculated as an average over a fixed set of 9 prompts.\nThe model used is meta-llama/Llama-2-7b-hf on the HuggingFace Hub 2.\n\nIn addition to batch size of n = 1 and using a A6000 GPU (unless noted otherwise), I also made sure I warmed up the model by sending an initial inference request before measuring latency.\n\nLlama-v2-7b benchmark: batch size = 1, max output tokens = 200\n\n\n\n\n\n\n\n\n\n\n\n\navg tok/sec\navg time (seconds)\navg output token count\n\n\nplatform\noptions\ngpu\n\n\n\n\n\n\n\nCTranslate2\nfloat16 quantization\nA6000\n44.8\n4.5\n200.0\n\n\nint8 quantization\nA6000\n62.6\n3.2\n200.0\n\n\nHF Hosted Inference Endpoint\n-\nA10G\n30.4\n6.6\n202.0\n\n\nHuggingFace Transformers (no server)\n-\nA6000\n24.6\n7.5\n181.4\n\n\nnf4 4bit quantization bitsandbytes\nA6000\n24.3\n7.6\n181.4\n\n\nTGI\n-\nA6000\n21.1\n9.5\n200.0\n\n\nquantized w/ GPTQ\nA6000\n23.6\n8.8\n200.0\n\n\nquantized w/ bitsandbytes\nA6000\n1.9\n103.0\n200.0\n\n\nmlc\nq4f16\nA6000\n117.1\n1.3\n153.9\n\n\ntext-generation-webui\nexllama\nA6000\n77.0\n1.7\n134.0\n\n\nvllm\n-\nA100 (on Modal Labs)\n41.5\n3.4\n143.1\n\n\nA6000\n46.4\n3.8\n178.0\n\n\n\n\n\n\n\nIn some cases I did not use an A6000 b/c the platform didn’t have that particular GPU available. You can ignore these rows if you like, but I still think it is valuable information. I had access to a A6000, so I just used what I had.\nI noticed that the output of the LLM was quite different (less tokens) when using vLLM. I am not sure if I did something wrong here, or it changes the behavior of the LLM.\nFurthermore, the goal was not to be super precise on these benchmarks but rather to get a general sense of how things work and how they might compare to each other out of the box. Some of the tools above are inference servers which perform logging, tracing etc. in addition to optimizing models which effect latency. The idea is to see where there are significant differences between tools. I discussed this more here.",
-    "crumbs": [
-      "LLMs",
-      "Inference",
-      "Optimizing latency"
-    ]
-  },
-  {
-    "objectID": "notes/llm/inference/03_inference.html#summary",
-    "href": "notes/llm/inference/03_inference.html#summary",
-    "title": "Optimizing latency",
-    "section": "",
-    "text": "Below is a summary of my findings:\n\n🏁 mlc is the fastest. This is so fast that I’m skeptical and am now motivated to measure quality (if I have time). When checking the outputs manually, they didn’t seem that different than other approaches.\n❤️ CTranslate2 is my favorite tool, which is among the fastest but is also the easiest to use. The documentation is the best out of all of the solutions I tried. Furthermore, I think that the ergonomics are excellent for the models that they support. Unlike vLLM, CTranslate doesn’t seem to support distributed inference just yet.\n🛠️ vLLM is really fast, but CTranslate can be much faster. On other hand, vLLM supports distributed inference, which is something you will need for larger models. vLLM might be the sweet spot for serving very large models.\n😐 Text Generation Inference is an ok option (but nowhere near as fast as vLLM) if you want to deploy HuggingFace LLMs in a standard way. TGI has some nice features like telemetry baked in (via OpenTelemetry) and integration with the HF ecosystem like inference endpoints. One thing to note that as of 7/28/2023, the license for TGI was changed to be more restrictive that may interfere with certain commercial uses. I am personally not a fan of the license.\n\n\n\nThis study focuses on various approaches to optimizing latency. Specifically, I want to know which tools are the most effective at optimizing latency for open source LLMs. In order to focus on latency, I hold the following variables constant:\n\nbatch size of n = 1 for all prediction requests (holding throughput constant).1\n\nAll experiments were conducted on a Nvidia A6000 GPU, unless otherwise noted.\nMax output tokens were always set to 200.\nAll numbers are calculated as an average over a fixed set of 9 prompts.\nThe model used is meta-llama/Llama-2-7b-hf on the HuggingFace Hub 2.\n\nIn addition to batch size of n = 1 and using a A6000 GPU (unless noted otherwise), I also made sure I warmed up the model by sending an initial inference request before measuring latency.\n\nLlama-v2-7b benchmark: batch size = 1, max output tokens = 200\n\n\n\n\n\n\n\n\n\n\n\n\navg tok/sec\navg time (seconds)\navg output token count\n\n\nplatform\noptions\ngpu\n\n\n\n\n\n\n\nCTranslate2\nfloat16 quantization\nA6000\n44.8\n4.5\n200.0\n\n\nint8 quantization\nA6000\n62.6\n3.2\n200.0\n\n\nHF Hosted Inference Endpoint\n-\nA10G\n30.4\n6.6\n202.0\n\n\nHuggingFace Transformers (no server)\n-\nA6000\n24.6\n7.5\n181.4\n\n\nnf4 4bit quantization bitsandbytes\nA6000\n24.3\n7.6\n181.4\n\n\nTGI\n-\nA6000\n21.1\n9.5\n200.0\n\n\nquantized w/ GPTQ\nA6000\n23.6\n8.8\n200.0\n\n\nquantized w/ bitsandbytes\nA6000\n1.9\n103.0\n200.0\n\n\nmlc\nq4f16\nA6000\n117.1\n1.3\n153.9\n\n\ntext-generation-webui\nexllama\nA6000\n77.0\n1.7\n134.0\n\n\nvllm\n-\nA100 (on Modal Labs)\n41.5\n3.4\n143.1\n\n\nA6000\n46.4\n3.8\n178.0\n\n\n\n\n\n\n\nIn some cases I did not use an A6000 b/c the platform didn’t have that particular GPU available. You can ignore these rows if you like, but I still think it is valuable information. I had access to a A6000, so I just used what I had.\nI noticed that the output of the LLM was quite different (less tokens) when using vLLM. I am not sure if I did something wrong here, or it changes the behavior of the LLM.\nFurthermore, the goal was not to be super precise on these benchmarks but rather to get a general sense of how things work and how they might compare to each other out of the box. Some of the tools above are inference servers which perform logging, tracing etc. in addition to optimizing models which effect latency. The idea is to see where there are significant differences between tools. I discussed this more here.",
-    "crumbs": [
-      "LLMs",
-      "Inference",
-      "Optimizing latency"
-    ]
-  },
-  {
-    "objectID": "notes/llm/inference/03_inference.html#background",
-    "href": "notes/llm/inference/03_inference.html#background",
-    "title": "Optimizing latency",
-    "section": "Background",
-    "text": "Background\nOne capability you need to be successful with open source LLMs is the ability to serve models efficiently. There are two categories of tools for model inference:\n\nInference servers: these help with providing a web server that can provide a REST/grpc or other interface to interact with your model as a service. These inference servers usually have parameters to help you make trade-offs between throughput and latency. Additionally, some inference servers come with additional features like telemetry, model versioning and more. You can learn more about this topic the serving section of these notes. For LLMs, popular inference servers are the Text Generation Inference (TGI) and vLLM.\nModel Optimization: These modify your model to make them faster for inference. Examples include quantization, Paged Attention, Exllama and more.\n\nIt is common to use both Inference servers and Model Optimization techniques in conjunction. Some inference servers like TGIand vLLM even help you apply optimization techniques.3",
-    "crumbs": [
-      "LLMs",
-      "Inference",
-      "Optimizing latency"
-    ]
-  },
-  {
-    "objectID": "notes/llm/inference/03_inference.html#mlc",
-    "href": "notes/llm/inference/03_inference.html#mlc",
-    "title": "Optimizing latency",
-    "section": "mlc",
-    "text": "mlc\nStart with compiling the model as shown in these docs\nAfter installing MLC, you can compile meta-llama/Llama-2-7b-chat-hf like so:\npython3 -m mlc_llm.build \\\n--hf-path meta-llama/Llama-2-7b-chat-hf \\\n--target cuda --quantization q4f16_1\nThe arguments for the compliation are documented here. This puts the model in the ./dist/ folder with the name Llama-2-7b-chat-hf-q4f16_1.\nYou can use their python client to interact with the compiled model:\nfrom mlc_chat import ChatModule, ChatConfig\ncfg = ChatConfig(max_gen_len=200)\ncm = ChatModule(model=\"Llama-2-7b-chat-hf-q4f16_1\", chat_config=cfg)\noutput = cm.generate(prompt=prompt)\nYou can see the full benchmarking code here.\n\n\n\n\n\n\nWarning\n\n\n\nI wasn’t able to get meta-llama/Llama-2-7b-hf to run correctly with the supplied python client so I am using the chat variant (Llama-2-7b-chat-hf) as a proxy. I asked the kind folks who work on the mlc project and they said the python client is currently designed for chat, such that they have this system prompt that is hard coded for llama models:\n  conv.system =\n      (\"[INST] &lt;&lt;SYS&gt;&gt;\\n\\nYou are a helpful, respectful and honest assistant. \"\n       \"Always answer as helpfully as possible, while being safe. \"\n       \"Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, \"\n       \"or illegal content. \"\n       \"Please ensure that your responses are socially unbiased and positive in nature.\\n\\n\"\n       \"If a question does not make any sense, or is not factually coherent, explain why instead \"\n       \"of answering something not correct. \"\n       \"If you don't know the answer to a question, please don't share false \"\n       \"information.\\n&lt;&lt;/SYS&gt;&gt;\\n\\n \");\nIf you want to fix this, you must edit mlc-chat-config.json, changing conv_template to LM. These docs say more about the config.json.\nThe config file is located in ./dist/&lt;model-name&gt;/params/mlc-chat-config.json. For example:\n&gt; cat ./dist/Llama-2-7b-hf-q4f16_1/params/mlc-chat-config.json\n\n{\n    \"model_lib\": \"Llama-2-7b-hf-q4f16_1\",\n    \"local_id\": \"Llama-2-7b-hf-q4f16_1\",\n    \"conv_template\": \"llama-2\",\n    \"temperature\": 0.7,\n    \"repetition_penalty\": 1.0,\n    \"top_p\": 0.95,\n    \"mean_gen_len\": 128,\n    \"max_gen_len\": 512,\n    \"shift_fill_factor\": 0.3,\n    \"tokenizer_files\": [\n        \"tokenizer.json\",\n        \"tokenizer.model\"\n    ],\n    \"model_category\": \"llama\",\n    \"model_name\": \"Llama-2-7b-hf\"\n}",
-    "crumbs": [
-      "LLMs",
-      "Inference",
-      "Optimizing latency"
-    ]
-  },
-  {
-    "objectID": "notes/llm/inference/03_inference.html#ctranslate2",
-    "href": "notes/llm/inference/03_inference.html#ctranslate2",
-    "title": "Optimizing latency",
-    "section": "CTranslate2",
-    "text": "CTranslate2\nCTranslate2 is an optimization tool that can make models ridiculously fast. h/t to Anton. The documentation for CTranslate2 contains specific instructions for llama models.\nTo optimize llama v2, we first need to quantize the model. This can be done like so:\nct2-transformers-converter --model meta-llama/Llama-2-7b-hf --quantization int8 --output_dir llama-2-7b-ct2 --force\nmeta-llama/Llama-2-7b-hf refers to the HuggingFace repo for this model. The benchmarking code is as follows (can also be found here):\nimport time\nimport ctranslate2\nimport transformers\nimport sys\nsys.path.append('../common/')\nfrom questions import questions\nimport pandas as pd\n\ngenerator = ctranslate2.Generator(\"llama-2-7b-ct2\", device=\"cuda\")\ntokenizer = transformers.AutoTokenizer.from_pretrained(\"meta-llama/Llama-2-7b-hf\")\n\ndef predict(prompt:str):\n    \"Generate text give a prompt\"\n    start = time.perf_counter()\n    tokens = tokenizer.convert_ids_to_tokens(tokenizer.encode(prompt))\n    results = generator.generate_batch([tokens], sampling_topk=1, max_length=200, include_prompt_in_result=False)\n    tokens = results[0].sequences_ids[0]\n    output = tokenizer.decode(tokens)\n    request_time = time.perf_counter() - start\n    return {'tok_count': len(tokens),\n            'time': request_time,\n            'question': prompt,\n            'answer': output,\n            'note': 'CTranslate2 int8 quantization'}\n\nif __name__ == '__main__':\n    counter = 1\n    responses = []\n\n    for q in questions:\n        if counter &gt;= 2: responses.append(predict(q))\n        counter += 1\n\n    df = pd.DataFrame(responses)\n    df.to_csv('bench-ctranslate-int8.csv', index=False)",
-    "crumbs": [
-      "LLMs",
-      "Inference",
-      "Optimizing latency"
-    ]
-  },
-  {
-    "objectID": "notes/llm/inference/03_inference.html#text-generation-inference-tgi",
-    "href": "notes/llm/inference/03_inference.html#text-generation-inference-tgi",
-    "title": "Optimizing latency",
-    "section": "Text Generation Inference (TGI)",
-    "text": "Text Generation Inference (TGI)\n\n\n\n\n\n\nLicense Restrictions\n\n\n\nThe license for TGI was recently changed away from Apache 2.0 to be more restrictive. Be careful when using TGI in commercial applications.\n\n\nText generation inference which is often referred to as “TGI” was easy to use without any optimization. You can run it like this:\n\n\n“start_server.sh”\n\n#!/bin/bash\n\nif [ -z \"$HUGGING_FACE_HUB_TOKEN\" ]\nthen\n  echo \"HUGGING_FACE_HUB_TOKEN is not set. Please set it before running this script.\"\n  exit 1\nfi\n\nmodel=\"TheBloke/Llama-2-7B-GPTQ\"\nvolume=$PWD/data\n\ndocker run --gpus all \\\n -e HUGGING_FACE_HUB_TOKEN=$HUGGING_FACE_HUB_TOKEN \\\n -e GPTQ_BITS=4 -e GPTQ_GROUPSIZE=128 \\\n --shm-size 5g -p 8081:80 \\\n -v $volume:/data ghcr.io/huggingface/text-generation-inference \\\n --max-best-of 1 \"$@\"\n\nWe can then run the server with this command:\nbash start_server.sh --model-id \"meta-llama/Llama-2-7b-hf\"\n\n\n\n\n\n\nHelp\n\n\n\nYou can see all the options for the TGI container with the help flag like so:\ndocker run ghcr.io/huggingface/text-generation-inference --help | less\n\n\n\nQuantization\nQuantization was very difficult to get working. There is a —quantize flag with accepts bitsandbytes and gptq. The bitsandbytes approach makes inference much slower, which others have reported.\nTo make gptq work for llama v2 models requires a bunch of work, you have to install the text-generation-server which can take a while and is very brittle to get right. I had to step through the Makefile carefully. After that you have to download the weights with:\ntext-generation-server download-weights meta-llama/Llama-2-7b-hf\nYou can run the following command to perform the quantization (the last argument is the destination directory where the weights are stored).\ntext-generation-server quantize \"meta-llama/Llama-2-7b-hf\" data/quantized/\nHowever, this step is not needed for the most popular models, as someone will likely already have quantized and uploaded them to the Hub.\n\nPre-Quantized Models\nAlternatively, you can use a pre-quantized model that has been uploaded to the Hub. TheBloke/Llama-2-7B-GPTQ is a good example of one. To get this to work, you have to be careful to set the GPTQ_BITS and GPTQ_GROUPSIZE environment variables to match the config. For example This config necessitates setting GPTQ_BITS=4 and GPTQ_GROUPSIZE=128 These are already set in start_server.sh shown above. This PR will eventually fix that.\nTo use the TheBloke/Llama-2-7B-GPTQ with TGI, I can use the same bash script with the following arguments:\nbash start_server.sh --model-id TheBloke/Llama-2-7B-GPTQ --quantize gptq\n\n\n\nComparison Without TGI Server\nWhen I first drafted this study I got the following response on twitter:\n\n\nBased on your code (https://t.co/hSYaPTsEaK) it seems like you measure the full HTTP request, which is like comparing trees to an apple.\n\n— Philipp Schmid (@_philschmid) July 29, 2023\n\n\nPhillip certainly has a point! I am indeed testing both! I’m looking for big differences in tools here, and since some inference servers have optimization tools, and some optimization tools do not have an inference server I cannot do a true apples to apples comparison. However, I think its still useful to try different things as advertised to see what is possible, and also take note of really significant gaps in latency between tools.\nTherefore, I ran the following tests to perform the similar optimizations as TGI, but without the server to see what happened:\n\nHuggingFace Transformers\nI was able to get slightly better performance without the TGI server as predicted by Phillip, but it did not account for the the massive gap between some tools (which is exactly the kind of thing I was looking for).\nTo benchmark quantization with bitsandbytes, I followed this blog post and wrote this benchmarking code. I quantized the model by loading it like this:\nmodel_id = \"meta-llama/Llama-2-7b-hf\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nnf4_config = BitsAndBytesConfig(\n   load_in_4bit=True,\n   bnb_4bit_quant_type=\"nf4\",\n   bnb_4bit_compute_dtype=torch.bfloat16\n)\nmodel_nf4 = AutoModelForCausalLM.from_pretrained(model_id, quantization_config=nf4_config)\nUnlike TGI, I was able to get bitsandbytes to work properly here, but just like TGI it didn’t speed anything up for me with respect to inference latency. As reflected in the benchmark table, I got nearly the same results with transformers without any optimizations.\n\n\nGPTQ\nI also quantized the model using AutoGPTQ without an inference server to compare against TGI. The code for that is here.\nThe results were so bad ~ 5 tok/sec that I decided not to put this in the table, because it seemed quite off to me.",
-    "crumbs": [
-      "LLMs",
-      "Inference",
-      "Optimizing latency"
-    ]
-  },
-  {
-    "objectID": "notes/llm/inference/03_inference.html#text-generation-webui",
-    "href": "notes/llm/inference/03_inference.html#text-generation-webui",
-    "title": "Optimizing latency",
-    "section": "Text Generation WebUI",
-    "text": "Text Generation WebUI\nAman let me know about text-generation-web-ui, and also these instructions for quickly experimenting with ExLlama and ggml. I wasn’t able to get the ggml variant to work properly, unfortunately. If you are really serious about using exllama, I recommend trying to use it without the text generation UI and look at the exllama repo, specifically at test_benchmark_inference.py. (I didn’t have time for this, but if I was going to use exllama for anything serious I would go this route).\nFrom the root of the text-generation-web-ui repo, you can run the following commands to start an inference server optimized with ExLlama:\npython3 download-model.py TheBloke/Llama-2-7B-GPTQ\npython3 server.py --listen --extensions openai --loader exllama_hf --model TheBloke_Llama-2-7B-GPTQ\nAfter the server was started, I used this code to conduct the benchmark.\nOverall, I didn’t like this particular piece of software much. It’s bit bloated because its trying to do too many things at once (An inference server, Web UIs, and other optimizations). That being said, the documentation is good and it is easy to use.\nI don’t think there is any particular reason to use this unless you want an end-to-end solution that also comes with a web user-interface (which many people want!).",
-    "crumbs": [
-      "LLMs",
-      "Inference",
-      "Optimizing latency"
-    ]
-  },
-  {
-    "objectID": "notes/llm/inference/03_inference.html#vllm",
-    "href": "notes/llm/inference/03_inference.html#vllm",
-    "title": "Optimizing latency",
-    "section": "vLLM",
-    "text": "vLLM\nvLLM only works with CUDA 11.8, which I configured using this approach. After configuring CUDA and installing the right version of PyTorch, you need to install the bleeding edge from git:\npip install -U git+https://github.com/vllm-project/vllm.git\nA good recipe to use for vLLM can be find on these Modal docs. Surprisingly, I had much lower latency when running on a local A6000 vs. a hosted A100 on Modal Labs. It’s possible that I did something wrong here. Currently, vLLM is the fastest solution for when you need distributed inference (i.e. when your model doesn’t fit on a single GPU)..\nvLLM offers a server, but I benchmarked the model locally using their tools instead. The code for the benchmarking can be found here:\nfrom vllm import SamplingParams, LLM\n\n#from https://modal.com/docs/guide/ex/vllm_inference\n\nquestions = [\n    # Coding questions\n    \"Implement a Python function to compute the Fibonacci numbers.\",\n    \"Write a Rust function that performs binary exponentiation.\",\n    \"What are the differences between Javascript and Python?\",\n    # Literature\n    \"Write a story in the style of James Joyce about a trip to the Australian outback in 2083, to see robots in the beautiful desert.\",\n    \"Who does Harry turn into a balloon?\",\n    \"Write a tale about a time-traveling historian who's determined to witness the most significant events in human history.\",\n    # Math\n    \"What is the product of 9 and 8?\",\n    \"If a train travels 120 kilometers in 2 hours, what is its average speed?\",\n    \"Think through this step by step. If the sequence a_n is defined by a_1 = 3, a_2 = 5, and a_n = a_(n-1) + a_(n-2) for n &gt; 2, find a_6.\",\n]\n\nMODEL_DIR = \"/home/ubuntu/hamel-drive/vllm-models\"\n\ndef download_model_to_folder():\n    from huggingface_hub import snapshot_download\n    import os\n\n    snapshot_download(\n        \"meta-llama/Llama-2-7b-hf\",\n        local_dir=MODEL_DIR,\n        token=os.environ[\"HUGGING_FACE_HUB_TOKEN\"],\n    )\n    return LLM(MODEL_DIR)\n\n\ndef generate(question, llm, note=None):\n    response = {'question': question, 'note': note}\n    sampling_params = SamplingParams(\n        temperature=1.0,\n        top_p=1,\n        max_tokens=200,\n    )\n    \n    start = time.perf_counter()\n    result = llm.generate(question, sampling_params)\n    request_time = time.perf_counter() - start\n\n    for output in result:\n        response['tok_count'] = len(output.outputs[0].token_ids)\n        response['time'] = request_time\n        response['answer'] = output.outputs[0].text\n    \n    return response\n\nif __name__ == '__main__':\n    llm = download_model_to_folder()\n    counter = 1\n    responses = []\n\n    for q in questions:\n        response = generate(question=q, llm=llm, note='vLLM')\n        if counter &gt;= 2:\n            responses.append(response)\n        counter += 1\n    \n    df = pd.DataFrame(responses)\n    df.to_csv('bench-vllm.csv', index=False)",
-    "crumbs": [
-      "LLMs",
-      "Inference",
-      "Optimizing latency"
-    ]
-  },
-  {
-    "objectID": "notes/llm/inference/03_inference.html#huggingface-inference-endpoint",
-    "href": "notes/llm/inference/03_inference.html#huggingface-inference-endpoint",
-    "title": "Optimizing latency",
-    "section": "HuggingFace Inference Endpoint",
-    "text": "HuggingFace Inference Endpoint\nI deployed an inference endpoint on HuggingFace for meta-llama/Llama-2-7b-hf, on a Nvidia A10G GPU. I didn’t try to turn on any optimizations like quantization and wanted to see what the default performance would be like.\nThe documentation for these interfaces can be found here. There is also a python client.\nTheir documentation says they are using TGI under the hood. However, my latency was significantly faster on their hosted inference platform than using TGI locally. This could be due to the fact that I used a A10G with them but only a A6000 locally. It’s worth looking into why this discrepancy exists further.\nThe code for this benchmark can be found here.",
-    "crumbs": [
-      "LLMs",
-      "Inference",
-      "Optimizing latency"
-    ]
-  },
-  {
-    "objectID": "notes/llm/inference/03_inference.html#footnotes",
-    "href": "notes/llm/inference/03_inference.html#footnotes",
-    "title": "Optimizing latency",
-    "section": "Footnotes",
-    "text": "Footnotes\n\n\nIt is common to explore the inference vs throughput frontier when conducting inference benchmarks. I did not do this, since I was most interested in latency. Here is an example of how to conduct inference benchmarks that consider both throughput and latency.↩︎\nFor Llama v2 models, you must be careful to use the models ending in -hf as those are the ones that are compatible with the transformers library.↩︎\nThe Modular Inference Engine is another example of an inference server that also applies optimization techniques. At the time of this writing, this is proprietary technology, but its worth keeping an eye on this in the future.↩︎",
-    "crumbs": [
-      "LLMs",
-      "Inference",
-      "Optimizing latency"
-    ]
-  },
-  {
-    "objectID": "notes/llm/01_datasets.html",
-    "href": "notes/llm/01_datasets.html",
+    "objectID": "notes/llm/finetuning/01_datasets.html",
+    "href": "notes/llm/finetuning/01_datasets.html",
     "title": "Dataset Basics",
     "section": "",
     "text": "These are some notes on the basics of working with HF datasets. These are very important if you want to fine tune LLMs because you will be downloading / uploading datasets from the Hub frequently.",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Dataset Basics"
     ]
   },
   {
-    "objectID": "notes/llm/01_datasets.html#wikipedia-dataset",
-    "href": "notes/llm/01_datasets.html#wikipedia-dataset",
+    "objectID": "notes/llm/finetuning/01_datasets.html#wikipedia-dataset",
+    "href": "notes/llm/finetuning/01_datasets.html#wikipedia-dataset",
     "title": "Dataset Basics",
     "section": "Wikipedia Dataset",
     "text": "Wikipedia Dataset\nThere seems to be many subsets. This is the page\n\nds = load_dataset(\"wikitext\", \"wikitext-2-v1\", streaming=True, split=\"validation\")\n\n\nexample = ds.take(5)\n\n\nds.description\n\n' The WikiText language modeling dataset is a collection of over 100 million tokens extracted from the set of verified\\n Good and Featured articles on Wikipedia. The dataset is available under the Creative Commons Attribution-ShareAlike\\n License.\\n'\n\n\n\nlist(example)\n\n[{'text': ''},\n {'text': ' = Homarus gammarus = \\n'},\n {'text': ''},\n {'text': ' Homarus gammarus , known as the European lobster or common lobster , is a species of &lt;unk&gt; lobster from the eastern Atlantic Ocean , Mediterranean Sea and parts of the Black Sea . It is closely related to the American lobster , H. americanus . It may grow to a length of 60 cm ( 24 in ) and a mass of 6 kilograms ( 13 lb ) , and bears a conspicuous pair of claws . In life , the lobsters are blue , only becoming \" lobster red \" on cooking . Mating occurs in the summer , producing eggs which are carried by the females for up to a year before hatching into &lt;unk&gt; larvae . Homarus gammarus is a highly esteemed food , and is widely caught using lobster pots , mostly around the British Isles . \\n'},\n {'text': ''}]",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Dataset Basics"
     ]
   },
   {
-    "objectID": "notes/llm/01_datasets.html#transformations",
-    "href": "notes/llm/01_datasets.html#transformations",
+    "objectID": "notes/llm/finetuning/01_datasets.html#transformations",
+    "href": "notes/llm/finetuning/01_datasets.html#transformations",
     "title": "Dataset Basics",
     "section": "Transformations",
     "text": "Transformations\n\nmap\n\ndef fullnm(d): return {'Full Name': d['First Name'] + ' ' + d['Last Name']}\nds = ds.map(fullnm)\n\n\n\n\n\nds['train'][0]\n\n{'Index': 1,\n 'Customer Id': 'e685B8690f9fbce',\n 'First Name': 'Erik',\n 'Last Name': 'Little',\n 'Company': 'Blankenship PLC',\n 'City': 'Caitlynmouth',\n 'Country': 'Sao Tome and Principe',\n 'Phone 1': '457-542-6899',\n 'Phone 2': '055.415.2664x5425',\n 'Email': 'shanehester@campbell.org',\n 'Subscription Date': '2021-12-23',\n 'Website': 'https://wagner.com/',\n 'Full Name': 'Erik Little'}\n\n\n\nbatched=True for map\nYou operate over a list instead of single items, this can usually speed things up a bit. The below example is significantly faster than the default.\nper the docs:\n\nlist comprehensions are usually faster than executing the same code in a for loop, and we also gain some performance by accessing lots of elements at the same time instead of one by one.\n\n\nUsing Dataset.map() with batched=True will be essential to unlock the speed of the “fast” tokenizers\n\n\ndef fullnm_batched(d): return {'Full Name': [f + ' ' + l for f,l in zip(d['First Name'], d['Last Name'])]}\nds.map(fullnm_batched, batched=True)\n\n\n\n\nDatasetDict({\n    train: Dataset({\n        features: ['Index', 'Customer Id', 'First Name', 'Last Name', 'Company', 'City', 'Country', 'Phone 1', 'Phone 2', 'Email', 'Subscription Date', 'Website', 'Full Name'],\n        num_rows: 500000\n    })\n})\n\n\n\n\nbatched=True speed test\nHF tokenizers can work with or without batch=True, let’s see the difference, first let’s make a text field, let’s use a dataset with a larger text field:\n\nfrom datasets import set_caching_enabled\nset_caching_enabled(False)\n\n\ntds = load_dataset(\"csv\",\n                   data_files='https://archive.ics.uci.edu/ml/machine-learning-databases/00462/drugsCom_raw.zip',\n                   delimiter=\"\\t\");\n\nUsing custom data configuration default-3340c354bf896b6f\nFound cached dataset csv (/Users/hamel/.cache/huggingface/datasets/csv/default-3340c354bf896b6f/0.0.0/652c3096f041ee27b04d2232d41f10547a8fecda3e284a79a0ec4053c916ef7a)\n\n\n\n\n\n\ntds['train']['review'][0]\n\n'\"I&#039;ve tried a few antidepressants over the years (citalopram, fluoxetine, amitriptyline), but none of those helped with my depression, insomnia &amp; anxiety. My doctor suggested and changed me onto 45mg mirtazapine and this medicine has saved my life. Thankfully I have had no side effects especially the most common - weight gain, I&#039;ve actually lost alot of weight. I still have suicidal thoughts but mirtazapine has saved me.\"'\n\n\n\ndef tokenize_function(examples): return tokenizer(examples[\"review\"], truncation=True)\n\n\nWithout batched\n\n%time tds.map(tokenize_function)\n\n\n\n\nCPU times: user 1min 21s, sys: 1.71 s, total: 1min 23s\nWall time: 1min 23s\n\n\nDatasetDict({\n    train: Dataset({\n        features: ['Unnamed: 0', 'drugName', 'condition', 'review', 'rating', 'date', 'usefulCount', 'input_ids', 'token_type_ids', 'attention_mask'],\n        num_rows: 215063\n    })\n})\n\n\n\n\nWith batched\n19 Seconds!\n\n%time tds.map(tokenize_function, batched=True)\n\n\n\n\nCPU times: user 1min 5s, sys: 1.18 s, total: 1min 6s\nWall time: 1min 6s\n\n\nDatasetDict({\n    train: Dataset({\n        features: ['Unnamed: 0', 'drugName', 'condition', 'review', 'rating', 'date', 'usefulCount', 'input_ids', 'token_type_ids', 'attention_mask'],\n        num_rows: 215063\n    })\n})\n\n\n\n\n\nMulticore\n15.7s!\n\nfor values of num_proc other than 8, our tests showed that it was faster to use batched=True without that option. In general, we don’t recommend using Python multiprocessing for fast tokenizers with batched=True.\n\n\n%time tds.map(tokenize_function, batched=True, num_proc=8)\n\n                CPU times: user 911 ms, sys: 533 ms, total: 1.44 s\nWall time: 18.1 s\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDatasetDict({\n    train: Dataset({\n        features: ['Unnamed: 0', 'drugName', 'condition', 'review', 'rating', 'date', 'usefulCount', 'input_ids', 'token_type_ids', 'attention_mask'],\n        num_rows: 215063\n    })\n})\n\n\n\n\n\nselect\nGood to see a preview of different rows\n\nsample = ds['train'].shuffle(seed=42).select(range(10))\nsample[:2]\n\n{'Index': [209712, 246986],\n 'Customer Id': ['fad0d3B75B73cd7', 'D75eCaeAc8C6BD6'],\n 'First Name': ['Jo', 'Judith'],\n 'Last Name': ['Pittman', 'Thomas'],\n 'Company': ['Pineda-Hobbs', 'Mcguire, Alvarado and Kennedy'],\n 'City': ['Traciestad', 'Palmerfort'],\n 'Country': ['Finland', 'Tonga'],\n 'Phone 1': ['001-086-011-7063', '+1-495-667-1061x21703'],\n 'Phone 2': ['853-679-2287x631', '589.777.0504'],\n 'Email': ['gsantos@stuart.biz', 'vchung@bowman.com'],\n 'Subscription Date': ['2020-08-04', '2021-08-14'],\n 'Website': ['https://www.bautista.com/', 'https://wilkerson.org/'],\n 'Full Name': ['Jo Pittman', 'Judith Thomas']}\n\n\n\n\nunique\n\nlen(ds['train'].unique('Index')), ds.num_rows\n\n(500000, {'train': 500000})\n\n\n\n\nrename_column\n\nds = ds.rename_column('Phone 1', new_column_name='Primary Phone Number')\n\n\n\nfilter\n\ndef erik(d): return d['First Name'].lower() == 'erik'\n\ne_ds = ds.filter(erik)\n\n\n\n\n\ne_ds['train'].select(range(5))['First Name']\n\n['Erik', 'Erik', 'Erik', 'Erik', 'Erik']\n\n\n\n\nsort\n\nds['train'].sort('First Name').select(range(10))[:3]\n\n{'Index': [491821, 170619, 212021],\n 'Customer Id': ['84C747dDFac8Dc7', '5886eaffEF8dc6D', 'B8a6cFab936Fb2A'],\n 'First Name': ['Aaron', 'Aaron', 'Aaron'],\n 'Last Name': ['Hull', 'Cain', 'Mays'],\n 'Company': ['Morrow Inc', 'Mccormick-Hardy', 'Hopkins-Larson'],\n 'City': ['West Charles', 'West Connie', 'Mccallchester'],\n 'Country': ['Netherlands', 'Vanuatu', 'Ecuador'],\n 'Primary Phone Number': ['670-796-3507',\n  '323-296-0014',\n  '(594)960-9651x17240'],\n 'Phone 2': ['001-917-832-0423x324',\n  '+1-551-114-3103x05351',\n  '996.174.5737x6442'],\n 'Email': ['ivan16@bender.org',\n  'shelley82@bender.org',\n  'qrhodes@stokes-larson.info'],\n 'Subscription Date': ['2020-05-28', '2021-04-11', '2022-03-19'],\n 'Website': ['http://carney-lawson.info/',\n  'http://www.wiggins.biz/',\n  'http://pugh.com/'],\n 'Full Name': ['Aaron Hull', 'Aaron Cain', 'Aaron Mays']}",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Dataset Basics"
     ]
   },
   {
-    "objectID": "notes/llm/01_datasets.html#dataframes-from-datasets",
-    "href": "notes/llm/01_datasets.html#dataframes-from-datasets",
+    "objectID": "notes/llm/finetuning/01_datasets.html#dataframes-from-datasets",
+    "href": "notes/llm/finetuning/01_datasets.html#dataframes-from-datasets",
     "title": "Dataset Basics",
     "section": "Dataframes from datasets",
     "text": "Dataframes from datasets\nset_format seems to work in place:\n\nds.set_format('pandas')\n\n\nds['train'][:5]\n\n\n\n\n\n\n\n\nIndex\nCustomer Id\nFirst Name\nLast Name\nCompany\nCity\nCountry\nPrimary Phone Number\nPhone 2\nEmail\nSubscription Date\nWebsite\nFull Name\n\n\n\n\n0\n1\ne685B8690f9fbce\nErik\nLittle\nBlankenship PLC\nCaitlynmouth\nSao Tome and Principe\n457-542-6899\n055.415.2664x5425\nshanehester@campbell.org\n2021-12-23\nhttps://wagner.com/\nErik Little\n\n\n1\n2\n6EDdBA3a2DFA7De\nYvonne\nShaw\nJensen and Sons\nJanetfort\nPalestinian Territory\n9610730173\n531-482-3000x7085\nkleinluis@vang.com\n2021-01-01\nhttps://www.paul.org/\nYvonne Shaw\n\n\n2\n3\nb9Da13bedEc47de\nJeffery\nIbarra\nRose, Deleon and Sanders\nDarlenebury\nAlbania\n(840)539-1797x479\n209-519-5817\ndeckerjamie@bartlett.biz\n2020-03-30\nhttps://www.morgan-phelps.com/\nJeffery Ibarra\n\n\n3\n4\n710D4dA2FAa96B5\nJames\nWalters\nKline and Sons\nDonhaven\nBahrain\n+1-985-596-1072x3040\n(528)734-8924x054\ndochoa@carey-morse.com\n2022-01-18\nhttps://brennan.com/\nJames Walters\n\n\n4\n5\n3c44ed62d7BfEBC\nLeslie\nSnyder\nPrice, Mason and Doyle\nMossfort\nCentral African Republic\n812-016-9904x8231\n254.631.9380\ndarrylbarber@warren.org\n2020-01-25\nhttp://www.trujillo-sullivan.info/\nLeslie Snyder\n\n\n\n\n\n\n\nYou can get a proper pandas dataframe like this:\n\n🚨 Under the hood, Dataset.set_format() changes the return format for the dataset’s getitem() dunder method. This means that when we want to create a new object like train_df from a Dataset in the “pandas” format, we need to slice the whole dataset to obtain a pandas.DataFrame. You can verify for yourself that the type of drug_dataset[“train”] is Dataset, irrespective of the output format.\n\n\ndf = ds['train'][:]\ntype(df)\n\npandas.core.frame.DataFrame",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Dataset Basics"
     ]
   },
   {
-    "objectID": "notes/llm/01_datasets.html#datasets-from-dataframes",
-    "href": "notes/llm/01_datasets.html#datasets-from-dataframes",
+    "objectID": "notes/llm/finetuning/01_datasets.html#datasets-from-dataframes",
+    "href": "notes/llm/finetuning/01_datasets.html#datasets-from-dataframes",
     "title": "Dataset Basics",
     "section": "Datasets from DataFrames",
     "text": "Datasets from DataFrames\nThis is going the other direction df -&gt; ds\n\nnew_ds = dataset.from_pandas(df)\nnew_ds\n\nDataset({\n    features: ['Index', 'Customer Id', 'First Name', 'Last Name', 'Company', 'City', 'Country', 'Primary Phone Number', 'Phone 2', 'Email', 'Subscription Date', 'Website', 'Full Name'],\n    num_rows: 500000\n})\n\n\n\nnew_ds[:2]\n\n{'Index': [1, 2],\n 'Customer Id': ['e685B8690f9fbce', '6EDdBA3a2DFA7De'],\n 'First Name': ['Erik', 'Yvonne'],\n 'Last Name': ['Little', 'Shaw'],\n 'Company': ['Blankenship PLC', 'Jensen and Sons'],\n 'City': ['Caitlynmouth', 'Janetfort'],\n 'Country': ['Sao Tome and Principe', 'Palestinian Territory'],\n 'Primary Phone Number': ['457-542-6899', '9610730173'],\n 'Phone 2': ['055.415.2664x5425', '531-482-3000x7085'],\n 'Email': ['shanehester@campbell.org', 'kleinluis@vang.com'],\n 'Subscription Date': ['2021-12-23', '2021-01-01'],\n 'Website': ['https://wagner.com/', 'https://www.paul.org/'],\n 'Full Name': ['Erik Little', 'Yvonne Shaw']}\n\n\n\nReset the format\nNote you can reset the format at anytime:\n\nnew_ds.set_format('pandas')\ntype(new_ds[:3])\n\npandas.core.frame.DataFrame\n\n\n\nnew_ds.reset_format()\ntype(new_ds[:3])\n\ndict",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Dataset Basics"
     ]
   },
   {
-    "objectID": "notes/llm/01_datasets.html#creating-data-partitions",
-    "href": "notes/llm/01_datasets.html#creating-data-partitions",
+    "objectID": "notes/llm/finetuning/01_datasets.html#creating-data-partitions",
+    "href": "notes/llm/finetuning/01_datasets.html#creating-data-partitions",
     "title": "Dataset Basics",
     "section": "Creating data partitions",
     "text": "Creating data partitions\ntrain/test etc.\n\nsplit_ds = new_ds.train_test_split(train_size=0.8, seed=42)\n\n\nsplit_ds\n\nDatasetDict({\n    train: Dataset({\n        features: ['Index', 'Customer Id', 'First Name', 'Last Name', 'Company', 'City', 'Country', 'Primary Phone Number', 'Phone 2', 'Email', 'Subscription Date', 'Website', 'Full Name'],\n        num_rows: 400000\n    })\n    test: Dataset({\n        features: ['Index', 'Customer Id', 'First Name', 'Last Name', 'Company', 'City', 'Country', 'Primary Phone Number', 'Phone 2', 'Email', 'Subscription Date', 'Website', 'Full Name'],\n        num_rows: 100000\n    })\n})\n\n\nYou can create new partitions without train_test_split explicitly by creating a new group like this:\n\nsplit_ds2 = split_ds['train'].train_test_split(train_size=0.8)\n\n\nsplit_ds['train'] = split_ds2['train']\nsplit_ds['validation'] = split_ds2['test']\n\n\nsplit_ds\n\nDatasetDict({\n    train: Dataset({\n        features: ['Index', 'Customer Id', 'First Name', 'Last Name', 'Company', 'City', 'Country', 'Primary Phone Number', 'Phone 2', 'Email', 'Subscription Date', 'Website', 'Full Name'],\n        num_rows: 320000\n    })\n    test: Dataset({\n        features: ['Index', 'Customer Id', 'First Name', 'Last Name', 'Company', 'City', 'Country', 'Primary Phone Number', 'Phone 2', 'Email', 'Subscription Date', 'Website', 'Full Name'],\n        num_rows: 100000\n    })\n    validation: Dataset({\n        features: ['Index', 'Customer Id', 'First Name', 'Last Name', 'Company', 'City', 'Country', 'Primary Phone Number', 'Phone 2', 'Email', 'Subscription Date', 'Website', 'Full Name'],\n        num_rows: 80000\n    })\n})",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Dataset Basics"
     ]
   },
   {
-    "objectID": "notes/llm/01_datasets.html#take-and-skip",
-    "href": "notes/llm/01_datasets.html#take-and-skip",
+    "objectID": "notes/llm/finetuning/01_datasets.html#take-and-skip",
+    "href": "notes/llm/finetuning/01_datasets.html#take-and-skip",
     "title": "Dataset Basics",
     "section": "take and skip",
     "text": "take and skip\nThese are special methods for IterableDataset, these will not work for a regular dataset\n\nlist(sds.take(4))\n\n[{'text': ''},\n {'text': ' = Homarus gammarus = \\n'},\n {'text': ''},\n {'text': ' Homarus gammarus , known as the European lobster or common lobster , is a species of &lt;unk&gt; lobster from the eastern Atlantic Ocean , Mediterranean Sea and parts of the Black Sea . It is closely related to the American lobster , H. americanus . It may grow to a length of 60 cm ( 24 in ) and a mass of 6 kilograms ( 13 lb ) , and bears a conspicuous pair of claws . In life , the lobsters are blue , only becoming \" lobster red \" on cooking . Mating occurs in the summer , producing eggs which are carried by the females for up to a year before hatching into &lt;unk&gt; larvae . Homarus gammarus is a highly esteemed food , and is widely caught using lobster pots , mostly around the British Isles . \\n'}]\n\n\n\nfoo = list(sds.skip(100))\n\n\nlen(foo), len(list(sds))\n\n(3660, 3760)\n\n\nyou can use itertools.islice to get multiple items:\n\nfrom itertools import islice\nlen(list(islice(sds, 5)))\n\n5\n\n\nThe old way looks like this:\n\nnds = load_dataset(\"wikitext\", \"wikitext-2-v1\", \n                   split=\"validation\")\ntype(nds)\n\nFound cached dataset wikitext (/Users/hamel/.cache/huggingface/datasets/wikitext/wikitext-2-v1/1.0.0/a241db52902eaf2c6aa732210bead40c090019a499ceb13bcbfa3f8ab646a126)\n\n\ndatasets.arrow_dataset.Dataset\n\n\n\nds\n\nDatasetDict({\n    train: Dataset({\n        features: ['Index', 'Customer Id', 'First Name', 'Last Name', 'Company', 'City', 'Country', 'Primary Phone Number', 'Phone 2', 'Email', 'Subscription Date', 'Website', 'Full Name'],\n        num_rows: 500000\n    })\n})",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Dataset Basics"
     ]
   },
   {
-    "objectID": "notes/llm/01_datasets.html#login-upload-with-notebook",
-    "href": "notes/llm/01_datasets.html#login-upload-with-notebook",
+    "objectID": "notes/llm/finetuning/01_datasets.html#login-upload-with-notebook",
+    "href": "notes/llm/finetuning/01_datasets.html#login-upload-with-notebook",
     "title": "Dataset Basics",
     "section": "Login & upload with notebook",
     "text": "Login & upload with notebook\n\nfrom huggingface_hub import notebook_login\nnotebook_login()\n\n\n\n\n\nfrom_disk_ds = dataset.load_from_disk('tabular_data')\n\n\nremote_name = 'hamel/tabular-data-test'\nfrom_disk_ds.push_to_hub(remote_name)\n\n\n\n\n\n\n\nUpdating downloaded metadata with the new split.",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Dataset Basics"
     ]
   },
   {
-    "objectID": "notes/llm/01_datasets.html#using-the-cli",
-    "href": "notes/llm/01_datasets.html#using-the-cli",
+    "objectID": "notes/llm/finetuning/01_datasets.html#using-the-cli",
+    "href": "notes/llm/finetuning/01_datasets.html#using-the-cli",
     "title": "Dataset Basics",
     "section": "Using the cli",
     "text": "Using the cli\n\n!huggingface-cli --help\n\nusage: huggingface-cli &lt;command&gt; [&lt;args&gt;]\n\npositional arguments:\n  {login,whoami,logout,repo,lfs-enable-largefiles,lfs-multipart-upload}\n                        huggingface-cli command helpers\n    login               Log in using a token from\n                        huggingface.co/settings/tokens\n    whoami              Find out which huggingface.co account you are logged\n                        in as.\n    logout              Log out\n    repo                {create, ls-files} Commands to interact with your\n                        huggingface.co repos.\n    lfs-enable-largefiles\n                        Configure your repository to enable upload of files &gt;\n                        5GB.\n    lfs-multipart-upload\n                        Command will get called by git-lfs, do not call it\n                        directly.\n\noptional arguments:\n  -h, --help            show this help message and exit\n\n\nYou can use huggingface-cli login to login\nHF datasets are just git repos! You can clone a repo like this:\n\nDatasets are Git repos\nHF datasets are just git repos\n\n_dir = remote_name.split('/')[-1]\n\n!rm -rf {_dir}\n!git clone 'https://huggingface.co/datasets/'{remote_name}\n!ls {_dir}\n\nCloning into 'tabular-data-test'...\nremote: Enumerating objects: 13, done.\nremote: Counting objects: 100% (13/13), done.\nremote: Compressing objects: 100% (12/12), done.\nremote: Total 13 (delta 3), reused 0 (delta 0), pack-reused 0\nUnpacking objects: 100% (13/13), 1.93 KiB | 164.00 KiB/s, done.\ndata               dataset_infos.json\n\n\nThe parquet file is here:\n\n!ls {_dir}'/data'\n\ntrain-00000-of-00001-646295d7cc3e7eab.parquet",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Dataset Basics"
     ]
   },
   {
-    "objectID": "notes/llm/01_datasets.html#dataset-cards",
-    "href": "notes/llm/01_datasets.html#dataset-cards",
+    "objectID": "notes/llm/finetuning/01_datasets.html#dataset-cards",
+    "href": "notes/llm/finetuning/01_datasets.html#dataset-cards",
     "title": "Dataset Basics",
     "section": "Dataset Cards",
     "text": "Dataset Cards\n\nYou specify the dataset card by filling out the README.md file. In the Hub there is a README creation tool that has a template you can fill out.\nThere are tags for the dataset that you can set in the front matter of the README. This is an example. This application can help you generate the tags.",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Dataset Basics"
     ]
   },
@@ -2623,289 +2649,339 @@
     ]
   },
   {
-    "objectID": "notes/llm/05_tokenizer_gotchas.html",
-    "href": "notes/llm/05_tokenizer_gotchas.html",
+    "objectID": "notes/llm/finetuning/05_tokenizer_gotchas.html",
+    "href": "notes/llm/finetuning/05_tokenizer_gotchas.html",
     "title": "Tokenization Gotchas",
     "section": "",
     "text": "Lots of people experience fiddly behavior when using LLMs. For example:\n\n\nUnironically I found this to be very helpful when prompting LLMs. Giving them spaces and new lines pic.twitter.com/vVuxcCuDzB\n\n— anton (@abacaj) November 24, 2023\n\n\nIf you aren’t careful, these can be very hard to debug. This is because of the subtle ways tokenizers work that is not always easy to see by looking at the text.",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Tokenization Gotchas"
     ]
   },
   {
-    "objectID": "notes/llm/05_tokenizer_gotchas.html#background",
-    "href": "notes/llm/05_tokenizer_gotchas.html#background",
+    "objectID": "notes/llm/finetuning/05_tokenizer_gotchas.html#background",
+    "href": "notes/llm/finetuning/05_tokenizer_gotchas.html#background",
     "title": "Tokenization Gotchas",
     "section": "",
     "text": "Lots of people experience fiddly behavior when using LLMs. For example:\n\n\nUnironically I found this to be very helpful when prompting LLMs. Giving them spaces and new lines pic.twitter.com/vVuxcCuDzB\n\n— anton (@abacaj) November 24, 2023\n\n\nIf you aren’t careful, these can be very hard to debug. This is because of the subtle ways tokenizers work that is not always easy to see by looking at the text.",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Tokenization Gotchas"
     ]
   },
   {
-    "objectID": "notes/llm/05_tokenizer_gotchas.html#example",
-    "href": "notes/llm/05_tokenizer_gotchas.html#example",
+    "objectID": "notes/llm/finetuning/05_tokenizer_gotchas.html#example",
+    "href": "notes/llm/finetuning/05_tokenizer_gotchas.html#example",
     "title": "Tokenization Gotchas",
     "section": "Example",
     "text": "Example\nThe below example demonstrates how things can get confusing and can drift between training and inference time.\n\nfrom transformers import AutoTokenizer\nfrom functools import partial\nmodel_id = 'Open-Orca/Mistral-7B-OpenOrca'\ntok = AutoTokenizer.from_pretrained(model_id)\n\n\nenc = partial(tok.encode, add_special_tokens=False)\ndec = partial(tok.decode)\n\n\nMany frameworks do prompt construction by concatenating tokens\nPopular frameworks like axolotl construct prompts by concatenating tokens instead of strings.1 It is reasonable to decode the training data to check what the prompt template is:\nFor example, a prompt may be constructed like this:\n\naxolotl = enc('Ok\\n') + enc('&lt;|im_start|&gt;')\nprint(dec(axolotl))\n\nOk\n&lt;|im_start|&gt;\n\n\n\n\nLet’s say you have an inference server\nIt’s common for inference servers to assemble the prompt for you. The below looks like it should be fine, right?\n\ndef inf_server(inp): \n    return f'{inp}\\n&lt;|im_start|&gt;'\n\nsrv = inf_server('Ok')\nprint(srv)\n\nOk\n&lt;|im_start|&gt;\n\n\n\n\nDrift between your server and the way the model is trained\nWrong! Notice the difference in the decoding of the prompt vs the training data. This is a subtle problem that can be hard to debug.\n\nprint(f'axolotl training data:  {axolotl}')\nprint(f\"your server's decoding: {enc(srv)}\")\n\naxolotl training data:  [6504, 13, 32001]\nyour server's decoding: [6504, 32001]",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Tokenization Gotchas"
     ]
   },
   {
-    "objectID": "notes/llm/05_tokenizer_gotchas.html#solutions",
-    "href": "notes/llm/05_tokenizer_gotchas.html#solutions",
+    "objectID": "notes/llm/finetuning/05_tokenizer_gotchas.html#solutions",
+    "href": "notes/llm/finetuning/05_tokenizer_gotchas.html#solutions",
     "title": "Tokenization Gotchas",
     "section": "Solutions",
     "text": "Solutions\n\n1. Decode your inference data\nDecode your inference data right before your forward pass. For example, you’ll notice the newline is missing if you do this. This is one way to tell that something fishy is going on.\n\ndec(enc(srv))\n\n'Ok&lt;|im_start|&gt;'\n\n\n\n\n2. Use HF chat templating\nUse the new HuggingFace chat template when possible. This will help avoid these issues (however, I would still check using method #1 to be sure!). Related GitHub Issue comment.",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Tokenization Gotchas"
     ]
   },
   {
-    "objectID": "notes/llm/05_tokenizer_gotchas.html#example-axolotl-vs.-huggingface-chat-templates",
-    "href": "notes/llm/05_tokenizer_gotchas.html#example-axolotl-vs.-huggingface-chat-templates",
+    "objectID": "notes/llm/finetuning/05_tokenizer_gotchas.html#example-axolotl-vs.-huggingface-chat-templates",
+    "href": "notes/llm/finetuning/05_tokenizer_gotchas.html#example-axolotl-vs.-huggingface-chat-templates",
     "title": "Tokenization Gotchas",
     "section": "Example: Axolotl vs. HuggingFace Chat Templates",
     "text": "Example: Axolotl vs. HuggingFace Chat Templates\nThis is real example of how tokenization drift can bite you.\n\nChat Template From HuggingFace\n\nfrom transformers import AutoTokenizer\ntokenizer = AutoTokenizer.from_pretrained(\"NousResearch/Llama-2-7b-chat-hf\")\n\nchat = [\n   {\"role\": \"system\", \"content\": \"lorem\"},\n   {\"role\": \"user\", \"content\": \"abc\"},\n   {\"role\": \"assistant\", \"content\": \"ipsum\"},\n   {\"role\": \"user\", \"content\": \"123\"},\n   {\"role\": \"assistant\", \"content\": \"sit\"},\n]\n\nids = tokenizer.apply_chat_template(chat)\nprint(tokenizer.decode(ids))\n\n&lt;s&gt;[INST] &lt;&lt;SYS&gt;&gt;\nlorem\n&lt;&lt;/SYS&gt;&gt;\n\nabc [/INST] ipsum&lt;/s&gt;&lt;s&gt;[INST] 123 [/INST] sit&lt;/s&gt;\n\n\n\n\nSame thing decoded from Axolotl (with a space after &lt;s&gt;)\nGot the token ids from this test.\n\naxolotl_ids = [1, 518, 25580, 29962, 3532, 14816, 29903, 6778, 13, \n                29880, 3668, 13, 29966, 829, 14816, 29903, 6778, 13, \n                13, 10736, 518, 29914, 25580, 29962, 23421, 2, 1, \n                518, 25580, 29962, 29871, 29896, 29906, 29941, 518, \n                29914, 25580, 29962, 7845, 2]\nprint(tokenizer.decode(axolotl_ids))\n\n&lt;s&gt; [INST] &lt;&lt;SYS&gt;&gt;\nlorem\n&lt;&lt;/SYS&gt;&gt;\n\nabc [/INST] ipsum&lt;/s&gt;&lt;s&gt; [INST] 123 [/INST] sit&lt;/s&gt;\n\n\n\n\nLet’s decode HF tokens one at a time\n\nfor i in ids[:9]:\n    print(f'{i}: {tokenizer.decode(i)}')\n\n1: &lt;s&gt;\n29961: [\n25580: INST\n29962: ]\n3532: &lt;&lt;\n14816: SY\n29903: S\n6778: &gt;&gt;\n13: \n\n\n\n\n\nLet’s decode Axolotl tokens one at a time\nSee the second token 518 this is a mismatch with the HF Chat template which is 29961\n\nfor i in axolotl_ids[:9]:\n    print(f'{i}: {tokenizer.decode(i)}')\n\n1: &lt;s&gt;\n518: [\n25580: INST\n29962: ]\n3532: &lt;&lt;\n14816: SY\n29903: S\n6778: &gt;&gt;\n13:",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Tokenization Gotchas"
     ]
   },
   {
-    "objectID": "notes/llm/05_tokenizer_gotchas.html#why-does-this-happen",
-    "href": "notes/llm/05_tokenizer_gotchas.html#why-does-this-happen",
+    "objectID": "notes/llm/finetuning/05_tokenizer_gotchas.html#why-does-this-happen",
+    "href": "notes/llm/finetuning/05_tokenizer_gotchas.html#why-does-this-happen",
     "title": "Tokenization Gotchas",
     "section": "Why does this happen?",
     "text": "Why does this happen?\nAxolotl assembles prompts in token space rather than string space.\n\ntokenizer.encode('&lt;s&gt;', add_special_tokens=False) + tokenizer.encode('[INST]', add_special_tokens=False)\n\n[1, 518, 25580, 29962]\n\n\nHF Chat templates interpolate strings instead\n\ntokenizer.encode('&lt;s&gt;[INST]', add_special_tokens=False)\n\n[1, 29961, 25580, 29962]",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Tokenization Gotchas"
     ]
   },
   {
-    "objectID": "notes/llm/05_tokenizer_gotchas.html#other-examples",
-    "href": "notes/llm/05_tokenizer_gotchas.html#other-examples",
+    "objectID": "notes/llm/finetuning/05_tokenizer_gotchas.html#other-examples",
+    "href": "notes/llm/finetuning/05_tokenizer_gotchas.html#other-examples",
     "title": "Tokenization Gotchas",
     "section": "Other Examples",
     "text": "Other Examples\nThese are other examples of people being bitten by drift between differences in tokenization between training and inference time:\n\nThis GitHub Issue.\nThis Tweet.",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Tokenization Gotchas"
     ]
   },
   {
-    "objectID": "notes/llm/05_tokenizer_gotchas.html#footnotes",
-    "href": "notes/llm/05_tokenizer_gotchas.html#footnotes",
+    "objectID": "notes/llm/finetuning/05_tokenizer_gotchas.html#footnotes",
+    "href": "notes/llm/finetuning/05_tokenizer_gotchas.html#footnotes",
     "title": "Tokenization Gotchas",
     "section": "Footnotes",
     "text": "Footnotes\n\n\nThis is for good reason, as masking must also be done at the token level.↩︎",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Tokenization Gotchas"
     ]
   },
   {
-    "objectID": "notes/llm/03_estimating_vram.html",
-    "href": "notes/llm/03_estimating_vram.html",
+    "objectID": "notes/llm/finetuning/03_estimating_vram.html",
+    "href": "notes/llm/finetuning/03_estimating_vram.html",
     "title": "Estimating vRAM",
     "section": "",
     "text": "These are just estimates\n\n\n\nThe estimates in this post are back-of-the-napkin calculations. They are meant to give you a ballpark estimate of how much vRAM you need. The only way to know for sure is to run your model on your hardware and measure the memory usage. This is especially true for training.1\nI’ll keep updating this post as I learn more and get feedback from others.",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Estimating vRAM"
     ]
   },
   {
-    "objectID": "notes/llm/03_estimating_vram.html#background",
-    "href": "notes/llm/03_estimating_vram.html#background",
+    "objectID": "notes/llm/finetuning/03_estimating_vram.html#background",
+    "href": "notes/llm/finetuning/03_estimating_vram.html#background",
     "title": "Estimating vRAM",
     "section": "Background",
     "text": "Background\nMy friend Zach Mueller came out with this handy calculator, which aims to answer the question “How much GPU memory do I need for a model?”. His calculator incorporates all of the math that is stuck in many of our heads and puts it into a simple calculator.\nHowever, I’ve talked with Zach and others for a couple of weeks about the nuances of the calculator and want to share some additional information I think is helpful.",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Estimating vRAM"
     ]
   },
   {
-    "objectID": "notes/llm/03_estimating_vram.html#training-w-lora",
-    "href": "notes/llm/03_estimating_vram.html#training-w-lora",
+    "objectID": "notes/llm/finetuning/03_estimating_vram.html#training-w-lora",
+    "href": "notes/llm/finetuning/03_estimating_vram.html#training-w-lora",
     "title": "Estimating vRAM",
     "section": "Training w/ LoRA",
     "text": "Training w/ LoRA\nThe key to estimating memory needed for training is to anchor off the # of trainable parameters. The general formula is:\n(Estimate from calculator in GB + ( # of trainable params in Billions * (dtype of trainable params / 8) * 4)) * 1.2\nHere is the rationale for each of the terms:\n\ndtype of trainable params refers to the dtype of your unfrozen model parameters for LoRA, which is usually a different precision than the rest of the frozen model. It’s common to load the rest of the model with 8-bit or 4-bit quantization and keep the LorA adapters at 16 or 32-bit precision. We divide this by 8 to get the number of bytes per parameter. For example, if there are 1B trainable parameters and they are 16-bit, this would add 1 * (16 / 8) = 2GB to the estimate, which you have to further multiply by other quantities (see below example).\nThe 4x is tied to the popular Adam optimizer (if you use a different one, YMMV). You need 2x for the optimizer, 1x for the model and 1x for the gradients.\nThe 1.2x is additional overhead for the forward pass while training the model. You can read more about this heuristic in this blog post from Eleuther AI.\n\n\n\n\n\n\n\nNote\n\n\n\nThe 1 added to 20% is just a mathematical trick for increasing a quantity by a %. For example, if you want to increase a quantity by 20% you can multiply by 1.20. I only mention this because this term confused some people!\n\n\n\nExample\nFor example, if you are using Lora and 0.5B of your parameters are trainable and are fp16, and the calculator says you need 14GB of vRAM, this is how you would calculate the amount of total memory you need for training:\n(14GB + ( 0.5 * (16 / 8) * 4) ) * 1.2 =\n(14GB + 4) * 1.2 = 21.6\nAnswer: ~21.6 GB of vRAM",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Estimating vRAM"
     ]
   },
   {
-    "objectID": "notes/llm/03_estimating_vram.html#inference",
-    "href": "notes/llm/03_estimating_vram.html#inference",
+    "objectID": "notes/llm/finetuning/03_estimating_vram.html#inference",
+    "href": "notes/llm/finetuning/03_estimating_vram.html#inference",
     "title": "Estimating vRAM",
     "section": "Inference",
     "text": "Inference\nThe calculator is great as-is for estimating vRAM needed inference. Even though there are other caveats to be aware of, the calculator is a great baseline to start from. For inference, you will also have to consider your batch size for continuous batching, which is use-case specific depending on your throughput vs. latency requirements.",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Estimating vRAM"
     ]
   },
   {
-    "objectID": "notes/llm/03_estimating_vram.html#caveats",
-    "href": "notes/llm/03_estimating_vram.html#caveats",
+    "objectID": "notes/llm/finetuning/03_estimating_vram.html#caveats",
+    "href": "notes/llm/finetuning/03_estimating_vram.html#caveats",
     "title": "Estimating vRAM",
     "section": "Caveats",
     "text": "Caveats\nThere are other optimizations to be aware of that can reduce the amount of memory you need:\n\nFlash attention\nGradient checkpointing\nModel compilation (ex: MLC)\n\nDistributed training/inference can add some additional overhead, but that is a complex topic that I won’t cover here.",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Estimating vRAM"
     ]
   },
   {
-    "objectID": "notes/llm/03_estimating_vram.html#footnotes",
-    "href": "notes/llm/03_estimating_vram.html#footnotes",
+    "objectID": "notes/llm/finetuning/03_estimating_vram.html#footnotes",
+    "href": "notes/llm/finetuning/03_estimating_vram.html#footnotes",
     "title": "Estimating vRAM",
     "section": "Footnotes",
     "text": "Footnotes\n\n\nSee this thread as an example of how YMMV.↩︎",
     "crumbs": [
       "LLMs",
+      "Fine-tuning",
       "Estimating vRAM"
     ]
   },
   {
-    "objectID": "notes/llm/inference/big_inference.html",
-    "href": "notes/llm/inference/big_inference.html",
-    "title": "vLLM & large models",
+    "objectID": "notes/llm/finetuning/09_template_free.html",
+    "href": "notes/llm/finetuning/09_template_free.html",
+    "title": "Template-free axolotl",
     "section": "",
-    "text": "Correction\n\n\n\nA previous version of this note suggested that you could run Llama 70b on a single A100. This was incorrect. The Modal container was caching the download of the much smaller 7b model. I have updated the post to reflect this. h/t to Cade Daniel for finding the mistake.",
+    "text": "One of the most popular features of axolotl is setting the following configuration value:\n\n\nconfig.yml\n\ntrain_on_inputs: false\n\nIf you declare a dataset formats such as alpaca or chatml, axolotl knows what is an input (i.e. human) vs. an output (i.e. the assistant) and masks the input labels so that your model can focus on predicting the outputs only.\n\n\n\nHowever, there are many situations where you don’t want to use one of these formats or templates (I usually don’t!). This is because they can:\n\nAdd unnecessary boilerplate to your prompts.\nCreate artifacts like special delimiters &lt;|im_start|&gt; that can quickly become footguns if you don’t include them correctly at inference time.\nEnforce a chat interface when you do not want one. Sometimes you just want to fine tune a model to a very specific task and do NOT want multi-turn conversations, roles, etc.\nLimit you to only certain roles that the template allows.\n\n\n\n\nYou can construct your prompts without a template by using the input_output format, by setting type: input_output in your configuration file like this:\n\n\nconfig.yml\n\ntrain_on_inputs: false # Mask segments of your data\ndatasets:\n  - path: output.jsonl\n    type: input_output  # use template free prompt construction\n\nUnlike type: completion, which is also template-free, type: input_output allows you to mask segments of your text. More details on how this works are described below.",
     "crumbs": [
       "LLMs",
-      "Inference",
-      "vLLM & large models"
+      "Fine-tuning",
+      "Template-free axolotl"
     ]
   },
   {
-    "objectID": "notes/llm/inference/big_inference.html#introduction",
-    "href": "notes/llm/inference/big_inference.html#introduction",
-    "title": "vLLM & large models",
-    "section": "Introduction",
-    "text": "Introduction\nLet’s paste an image below:\n\nLarge models like Llama-2-70b may not fit in a single GPU. I previously profiled the smaller 7b model against various inference tools. When a model is too big to fit on a single GPU, we can use various techniques to split the model across multiple GPUs.\n\nCompute & Reproducibility\nI used Modal Labs for serverless compute. Modal is very economical and built for machine learning use cases. Unlike other clouds, there are plenty of A100s available. They even give you $30 of free credits, which is more than enough to run the experiments in this note. Thanks to Modal, the scripts I reference in this note are reproducible.\nIn this note, I’m using modal client version: 0.50.2889",
-    "crumbs": [
-      "LLMs",
-      "Inference",
-      "vLLM & large models"
-    ]
-  },
-  {
-    "objectID": "notes/llm/inference/big_inference.html#distributed-inference-w-vllm",
-    "href": "notes/llm/inference/big_inference.html#distributed-inference-w-vllm",
-    "title": "vLLM & large models",
-    "section": "Distributed Inference w/ vLLM",
-    "text": "Distributed Inference w/ vLLM\nvLLM supports tensor parallelism, which you can enable by passing the tensor_parallel_size argument to the LLM constructor.\nI modified this example Modal code for Llama v2 13b to run Llama v2 70b on 4 GPUs with tensor parallelism. Below is a simplified diff with the most important changes:\ndef download_model_to_folder():\n    from huggingface_hub import snapshot_download\n\n    snapshot_download(\n-        \"meta-llama/Llama-2-13b-chat-hf\",\n+        \"meta-llama/Llama-2-70b-chat-hf\",\n        local_dir=\"/model\",\n        token=os.environ[\"HUGGINGFACE_TOKEN\"],\n    )\n\nimage = (\n    Image.from_dockerhub(\"nvcr.io/nvidia/pytorch:22.12-py3\")\n    .pip_install(\"torch==2.0.1\", index_url=\"https://download.pytorch.org/whl/cu118\")\n+    # Pin vLLM to 8/2/2023\n+    .pip_install(\"vllm @ git+https://github.com/vllm-project/vllm.git@79af7e96a0e2fc9f340d1939192122c3ae38ff17\")\n-    # Pin vLLM to 07/19/2023\n-    .pip_install(\"vllm @ git+https://github.com/vllm-project/vllm.git@bda41c70ddb124134935a90a0d51304d2ac035e8\")\n    # Use the barebones hf-transfer package for maximum download speeds. No progress bar, but expect 700MB/s.\n-    .pip_install(\"hf-transfer~=0.1\")\n+     #Force a rebuild to invalidate the cache (you can remove `force_build=True` after the first time)\n+    .pip_install(\"hf-transfer~=0.1\", force_build=True)\n    .run_function(\n        download_model_to_folder,\n        secret=Secret.from_name(\"huggingface\"),\n        timeout=60 * 20)\n)\n...\n\n-@stub.cls(gpu=\"A100\", secret=Secret.from_name(\"huggingface\"))\n+# You need a minimum of 4 A100s that are the 40GB version\n+@stub.cls(gpu=gpu.A100(count=4, memory=40), secret=Secret.from_name(\"huggingface\"))\nclass Model:\n    def __enter__(self):\n        from vllm import LLM\n\n        # Load the model. Tip: MPT models may require `trust_remote_code=true`.\n-       self.llm = LLM(MODEL_DIR)\n+       self.llm = LLM(MODEL_DIR, tensor_parallel_size=4)\n...  \nSee big-inference-vllm.py for the actual script I used.\n\n\n\n\n\n\nBe Careful To Mind The Cache When Downloading Files\n\n\n\nI found that when I ran the above code and changed the model name, I had to force a rebuild of the image to invalidate the cache. Otherwise, the old version of the model would be used. You can force a rebuild by adding force_build=True to the .pip_install call.\nWhen I initially wrote this note, I was fooled into believing I could load meta-llama/Llama-2-70b-chat-hf on a single A100. It was this tricky issue of the container that cached the download of the much smaller 7b model. 🤦\n\n\nAfter setting the appropriate secrets for HuggingFace and Weights & Biases, You can run this code on Modal with the following command:\nmodal run big-inference-vllm.py\nYou need at least 4 A100 GPUs to serve Llama v2 70b.",
-    "crumbs": [
-      "LLMs",
-      "Inference",
-      "vLLM & large models"
-    ]
-  },
-  {
-    "objectID": "notes/llm/inference/big_inference.html#what-happens-with-smaller-models",
-    "href": "notes/llm/inference/big_inference.html#what-happens-with-smaller-models",
-    "title": "vLLM & large models",
-    "section": "What Happens With Smaller Models?",
-    "text": "What Happens With Smaller Models?\nEven though distributed inference is interesting for big models that do not fit on a single GPU, interesting things happen when you serve smaller models this way. Below, I test throughput for Llama v2 7b on 1, 2, and 4 GPUs. The throughput is measured by passsing these 59 prompts to llm.generate. llm.generate is described in the vLLM documentation:\n\nCall llm.generate to generate the outputs. It adds the input prompts to vLLM engine’s waiting queue and executes the vLLM engine to generate the outputs with high throughput.\n\nHere are the results, averaged over 5 runs for each row:\n\n\n\n\n\n\n\n\n\n\n\navg tok/sec\n\n\nmodel\nGPU\nnum_gpus\n\n\n\n\n\nLlama-2-70b-chat-hf\nNVIDIA A100-SXM4-40GB\n4\n380.9\n\n\nLlama-2-7b-chat-hf\nNVIDIA A10\n1\n458.8\n\n\n2\n497.3\n\n\n4\n543.6\n\n\nNVIDIA A100-SXM4-40GB\n1\n842.9\n\n\n2\n699.1\n\n\n4\n650.7\n\n\n\n\n\n\n\nYou can see all the individual runs here. In my experiments, the 70b model needed a minimum of 4 A100s to run, so that’s why there is only one row for that model (Modal only has instances with 1, 2, or 4 GPUs).\n```{python}\n\n\n\n\n\n\nDo Not Compare To Latency Benchmark\n\n\n\nThe tok/sec number you see here is VERY different than the latency benchmark shown on this note. This particular benchmark maximizes throughput by running multiple requests in parallel. The previous latency benchmark measures the time it takes to process a single request.\n\n\n\nObservations\n\nA100s are much faster than A10s, but A10s are significantly cheaper.1\nOn A10s, scaling up to more GPUs increases throughput at first, but then seems to diminish. It appears like there is a Goldilocks zone in terms of the right number of GPUs to maximize throughput. I did not explore this in detail, as Modal only has instances with specific numbers of GPUs.2\nThe much larger Llama v2 70b model is only ~2x slower than its 7b counterpart.",
-    "crumbs": [
-      "LLMs",
-      "Inference",
-      "vLLM & large models"
-    ]
-  },
-  {
-    "objectID": "notes/llm/inference/big_inference.html#aside-pipeline-parallelism",
-    "href": "notes/llm/inference/big_inference.html#aside-pipeline-parallelism",
-    "title": "vLLM & large models",
-    "section": "Aside: Pipeline Parallelism",
-    "text": "Aside: Pipeline Parallelism\nIn theory, Pipeline Parallelism (“PP”) is slower than Tensor Parallelism, but tools for PP are compatible with a wider range of models from the HuggingFace Hub. By default, HuggingFace accelerate will automatically split the model across multiple GPUs when you pass device_map=\"auto\". (Accelerate offers other kinds of parallelism as well, like integrations with DeepSpeed).\nThis blog post and these docs are an excellent place to start. I will explore this and other kinds of parallelism in future notes.",
-    "crumbs": [
-      "LLMs",
-      "Inference",
-      "vLLM & large models"
-    ]
-  },
-  {
-    "objectID": "notes/llm/inference/big_inference.html#footnotes",
-    "href": "notes/llm/inference/big_inference.html#footnotes",
-    "title": "vLLM & large models",
-    "section": "Footnotes",
-    "text": "Footnotes\n\n\nAs of 8/6/2023 2 A10s costs .000612 / sec on Modal, whereas 1 A100 40GB will cost 0.001036 / sec. See this pricing chart↩︎\nFor A10 and A100s you can only get up to 4 GPUs. Furthermore, I ran into an issue with vLLM and llama 70b, where it doesn’t like an odd number of GPUs.↩︎",
-    "crumbs": [
-      "LLMs",
-      "Inference",
-      "vLLM & large models"
-    ]
-  },
-  {
-    "objectID": "notes/llm/inference/04_max_engine.html",
-    "href": "notes/llm/inference/04_max_engine.html",
-    "title": "Max Inference Engine",
+    "objectID": "notes/llm/finetuning/09_template_free.html#background",
+    "href": "notes/llm/finetuning/09_template_free.html#background",
+    "title": "Template-free axolotl",
     "section": "",
-    "text": "Warning\n\n\n\nToday, MAX runs only on CPUs, but the roadmap points to GPUs coming soon.",
+    "text": "One of the most popular features of axolotl is setting the following configuration value:\n\n\nconfig.yml\n\ntrain_on_inputs: false\n\nIf you declare a dataset formats such as alpaca or chatml, axolotl knows what is an input (i.e. human) vs. an output (i.e. the assistant) and masks the input labels so that your model can focus on predicting the outputs only.\n\n\n\nHowever, there are many situations where you don’t want to use one of these formats or templates (I usually don’t!). This is because they can:\n\nAdd unnecessary boilerplate to your prompts.\nCreate artifacts like special delimiters &lt;|im_start|&gt; that can quickly become footguns if you don’t include them correctly at inference time.\nEnforce a chat interface when you do not want one. Sometimes you just want to fine tune a model to a very specific task and do NOT want multi-turn conversations, roles, etc.\nLimit you to only certain roles that the template allows.\n\n\n\n\nYou can construct your prompts without a template by using the input_output format, by setting type: input_output in your configuration file like this:\n\n\nconfig.yml\n\ntrain_on_inputs: false # Mask segments of your data\ndatasets:\n  - path: output.jsonl\n    type: input_output  # use template free prompt construction\n\nUnlike type: completion, which is also template-free, type: input_output allows you to mask segments of your text. More details on how this works are described below.",
     "crumbs": [
       "LLMs",
-      "Inference",
-      "Max Inference Engine"
+      "Fine-tuning",
+      "Template-free axolotl"
     ]
   },
   {
-    "objectID": "notes/llm/inference/04_max_engine.html#impressions",
-    "href": "notes/llm/inference/04_max_engine.html#impressions",
-    "title": "Max Inference Engine",
-    "section": "Impressions",
-    "text": "Impressions\nMark Saroufim and I attempted to load Mistral-7b into the Max Engine.\nHere are my initial impressions.\n\nThe Modular team is super engaging and friendly! I recommend going to their discord with questions.\nPytorch currently feels like a second class citizen (but may not be for long).\n\nYou have to do many more steps to potentially load a Pytorch model vs. TF, and those steps are not clear.1\nHowever, I’ve heard from the team that they plan on investing heavily in Pytorch, even more so than Tensorflow.\n\nI’m not sure why they led with BERT/Tensorflow examples. I would like to see paved paths for modern LLMs like Llama or Mistral. Keep an eye on this repo for examples as these will be added soon.\nModel compilation and loading took 5 minutes. A progress bar for compilation would be really helpful.\nTorchscript as a serialization format is older and in maintenance mode compared to more recent torch.compile or torch.export but Max doesn’t support that yet. Discussion is here. You will probably have better luck with LLMs by first exporting models to ONNX via Optimum.\nPrinting the model is not informative, like it is when you print a torch model (doesn’t show you all the layers and shapes).\nWe couldn’t quite understand the output of the model and we eventually hypothesized that torch.script is not the right serialization path for Mistral, but we aren’t sure. I think users may get confused by this.\nMax currently targets CPUs rather than GPUs. I am not concerned by this as the roadmap points to GPUs coming soon. I’m hoping that the team can make AMD GPUs fly so we can break the hegemony of Nvidia.\n\nI’m optimistic that these papercuts will be resolved soon. I’m pretty bullish on the talent level of the team working on these things.",
+    "objectID": "notes/llm/finetuning/09_template_free.html#usage",
+    "href": "notes/llm/finetuning/09_template_free.html#usage",
+    "title": "Template-free axolotl",
+    "section": "Usage",
+    "text": "Usage\nThis is how you can use the input_output format:\n\n1. Prepare Data\nTo use the input_output format, collect your data in the following format into a jsonl file (below is the first row from the file output.jsonl pretty-printed):\n\n! head -n1 output.jsonl | python -m json.tool\n\n{\n    \"segments\": [\n        {\n            \"label\": true,\n            \"text\": \"&lt;s&gt;Hello\\n\"\n        },\n        {\n            \"label\": true,\n            \"text\": \"hi there!. \"\n        },\n        {\n            \"label\": false,\n            \"text\": \"goodbye \"\n        },\n        {\n            \"label\": true,\n            \"text\": \"farewell&lt;/s&gt;\"\n        }\n    ]\n}\n\n\nSet label:false when you want to mask a segment of text so that the model isn’t trained on it. Some things to keep in mind:\n\nEOS, BOS, spaces, newlines etc. are entirely up to you. Axolotl concatenates all the segments as-is. The tokenizer doesn’t add anything additional. Notice how I added spaces, newlines, &lt;s&gt; (BOS), and &lt;/s&gt; (EOS) myself.\nMake sure you check the materialized output to validate that the prompt is getting assembled how you like.\n\n\n\n3. Use type: input_output\nLet’s materialize data with our output.jsonl file by setting type: input_output in our axolotl config:\n\n%%writefile training_config.yaml\nbase_model: mistralai/Mistral-7B-v0.1\ndata_seed: 49\nseed: 49\n\ndatasets:\n  - path: output.jsonl\n    type: input_output \nval_set_size: 0.1\n\nsequence_len: 896\nsample_packing: false\n\nmicro_batch_size: 2\ngradient_accumulation_steps: 3\neval_batch_size: 2\nnum_epochs: 1\nlearning_rate: 0.0002\n\ntrain_on_inputs: false\nspecial_tokens:\n  bos_token: \"&lt;s&gt;\"\n  eos_token: \"&lt;/s&gt;\"\n  unk_token: \"&lt;unk&gt;\"\n\nOverwriting training_config.yaml\n\n\nYou can use the following command to materialize your data. The --debug flag will print the tokens, along with the labels so you can verify that the correct items are being ignored:\n\n! python -m axolotl.cli.preprocess training_config.yaml --debug\n\n                                 dP            dP   dP \n                                 88            88   88 \n      .d8888b. dP.  .dP .d8888b. 88 .d8888b. d8888P 88 \n      88'  `88  `8bd8'  88'  `88 88 88'  `88   88   88 \n      88.  .88  .d88b.  88.  .88 88 88.  .88   88   88 \n      `88888P8 dP'  `dP `88888P' dP `88888P'   dP   dP \n                                                       \n                                                       \n\nDownloading data files: 100%|██████████████████| 1/1 [00:00&lt;00:00, 14169.95it/s]\nExtracting data files: 100%|████████████████████| 1/1 [00:00&lt;00:00, 2332.76it/s]\nGenerating train split: 500 examples [00:00, 128762.33 examples/s]\nTokenizing Prompts (num_proc=64): 100%|█| 500/500 [00:01&lt;00:00, 386.09 examples/\nDropping Long Sequences (num_proc=72): 100%|█| 500/500 [00:00&lt;00:00, 1895.44 exa\nSaving the dataset (1/1 shards): 100%|█| 500/500 [00:00&lt;00:00, 50445.05 examples\n(13, 13) hi(12014, 12014) there(736, 736) !(28808, 28808) .(28723, 28723) (28705, 28705) good(-100, 1179) bye(-100, 17664) (-100, 28705) fare(19111, 19111) well(5458, 5458) &lt;/s&gt;(2, 2)\n\n\n\n\n\nIf you look closely, axolotl prints this to help you debug prompt construction (b/c we used the --debug flag):\n&lt;s&gt;(1, 1) Hello(22557, 22557) (13, 13) hi(12014, 12014) there(736, 736) !(28808, 28808) .(28723, 28723) (28705, 28705) good(-100, 1179) bye(-100, 17664) (-100, 28705) fare(19111, 19111) well(5458, 5458) &lt;/s&gt;(2, 2)\nThe format is decoded_token(label, token_id), for example, &lt;s&gt;(1, 1) means that the token is &lt;s&gt;, the label is 1 and the token_id is 1. When the label is -100 then that token is ignored for training.\nHere is another way to check the materialized output (that I personally like):\n\nfrom transformers import AutoTokenizer\nfrom datasets import load_from_disk\nimport yaml\n\ndirectory = !ls last_run_prepared/\nwith open('training_config.yaml', 'r') as f:\n    cfg = yaml.safe_load(f)\nmodel_id = cfg['base_model']\ntok = AutoTokenizer.from_pretrained(model_id)\nds = load_from_disk(f'last_run_prepared/{directory[0]}/')\n\n\nrow = ds[0]\nprint(tok.decode(row['input_ids']))\n\n&lt;s&gt; Hello\n hi there!.  goodbye  farewell&lt;/s&gt;\n\n\nWe can check that the right tokens are ingored by comparing the labels to each token:\n\nimport pandas as pd\npd.DataFrame([{'token': tok.decode(i), 'label': l, 'id':i} for i,l in \n              zip(row['input_ids'], row['labels'])])\n\n\n\n\n\n\n\n\ntoken\nlabel\nid\n\n\n\n\n0\n&lt;s&gt;\n1\n1\n\n\n1\nHello\n22557\n22557\n\n\n2\n\\n\n13\n13\n\n\n3\nhi\n12014\n12014\n\n\n4\nthere\n736\n736\n\n\n5\n!\n28808\n28808\n\n\n6\n.\n28723\n28723\n\n\n7\n\n28705\n28705\n\n\n8\ngood\n-100\n1179\n\n\n9\nbye\n-100\n17664\n\n\n10\n\n-100\n28705\n\n\n11\nfare\n19111\n19111\n\n\n12\nwell\n5458\n5458\n\n\n13\n&lt;/s&gt;\n2\n2\n\n\n\n\n\n\n\nIf we look at the input data, the above table seems correct! (The jsonl version is repeated below for reference):\n\n! head -n1 output.jsonl | python -m json.tool\n\n{\n    \"segments\": [\n        {\n            \"label\": true,\n            \"text\": \"&lt;s&gt;Hello\\n\"\n        },\n        {\n            \"label\": true,\n            \"text\": \"hi there!. \"\n        },\n        {\n            \"label\": false,\n            \"text\": \"goodbye \"\n        },\n        {\n            \"label\": true,\n            \"text\": \"farewell&lt;/s&gt;\"\n        }\n    ]\n}",
     "crumbs": [
       "LLMs",
-      "Inference",
-      "Max Inference Engine"
+      "Fine-tuning",
+      "Template-free axolotl"
     ]
   },
   {
-    "objectID": "notes/llm/inference/04_max_engine.html#attempting-to-load-mistral-in-the-max-engine",
-    "href": "notes/llm/inference/04_max_engine.html#attempting-to-load-mistral-in-the-max-engine",
-    "title": "Max Inference Engine",
-    "section": "Attempting To Load Mistral In The Max Engine",
-    "text": "Attempting To Load Mistral In The Max Engine\nToday, the Modular team released the Max Inference Engine:\n\nMAX Engine is a next-generation compiler and runtime system for neural network graphs. It supercharges the execution of AI models in any format (including TensorFlow, PyTorch, and ONNX), on a wide variety of hardware. MAX Engine also allows you to extend these models with custom ops that MAX Engine can analyze and optimize with other ops in the graph.\n\nThese docs show how to load a TensorFlow model, but I want to load a pytorch LLM like Mistral-7b. I documented my attempt at doing so here.\n\n1. Serialize Model as Torchscript\nIn order to load your model in the Max engine we must serialize the model as torchscript. We can do this by tracing the model graph and then using torch.jit.save to save the model.\n\nimport time\nfrom functools import partial\nfrom transformers import AutoTokenizer, AutoModelForCausalLM\nimport torch\n\n# load model artifacts from the hub\nhf_path=\"mistralai/Mistral-7B-v0.1\"\nmodel = AutoModelForCausalLM.from_pretrained(hf_path,torchscript=True)\ntokenizer = AutoTokenizer.from_pretrained(hf_path)\ntokenizer.pad_token = tokenizer.eos_token\n\n# trace the model and save it with torchscript\nmax_seq_len=128\nmodel_path=\"mistral.pt\"\ntext = \"This is text to be used for tracing\"\n# I'm setting the arguments for tokenizer once so I can reuse it later (they need to be consistent)\nmax_tokenizer = partial(tokenizer, return_tensors=\"pt\",padding=\"max_length\", max_length=max_seq_len)\ninputs = max_tokenizer(text)\ntraced_model = torch.jit.trace(model, [inputs['input_ids'], inputs['attention_mask']])\ntorch.jit.save(traced_model, model_path)\n\n\n\n\n\n\n2. Specify Input Shape\nHaving a set input shape is required for compilation.\nThis next bit is from This code. Apparently there is a way to specify dynamic values for the sequence len and batch size, but we couldn’t figure that out easily from the docs.\n\nfrom max import engine\ninput_spec_list = [\n    engine.TorchInputSpec(shape=tensor.size(), dtype=engine.DType.int64)\n    for tensor in inputs.values()\n]\noptions = engine.TorchLoadOptions(input_spec_list)\n\n\n\n3. Compile and Load Model\n\nstart_time = time.time()\nsession = engine.InferenceSession()\nmodel = session.load(model_path, options)\n\nend_time = time.time()\n\nWow! The model takes ~5 minutes to compile and load. Subsequent compilations are faster, but NOT if I restart the Jupyter Kernel.\n\nelapsed_time = end_time - start_time\nprint(f\"Elapsed time: {elapsed_time} seconds\")\n\nElapsed time: 371.86387610435486 seconds\n\n\n\n\n4. Inference\n\n\n\n\n\n\nWe failed to get this to work\n\n\n\nEven though we could call model.execute the outputs we got didn’t make much sense to us, even after some investigation. Our hypothesis is that execute is not calling model.generate. But this is where we gave up.\n\n\nBe sure to set return_token_type_ids=False, note that I’m using the same arguments for padding and max_length that I used for tracing the model (because I’m using the max_tokenizer which I defined) so the shape is consistent.\n\nINPUT=\"Why did the chicken cross the road?\"\ninp = max_tokenizer(INPUT, return_token_type_ids=False)\nout = model.execute(**inp)\n\nGet the token ids (predictions) and decode them:\n\npreds = out['result0'].argmax(axis=-1)\n\nWe tried to debug this but could not figure out what was wrong, so we gave up here. We aren’t sure why the output looks like this. See what the output is supposed to look like in this section.\n(Scroll to the right to see the full output)\n\n' '.join(tokenizer.batch_decode(preds, skip_special_tokens=False))\n\n'ммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм # do you chicken cross the road?\\n'\n\n\nWe were intrigued by the M and Mark joked that it is some interesting illuminati secret code injected into the model for (i.e. M for Modular) which I thought was funny :)\nOur theory is that torchscript is not the right way to serialize this model and this is some kind of silent failure, but it is hard to know.",
+    "objectID": "notes/llm/finetuning/09_template_free.html#resources",
+    "href": "notes/llm/finetuning/09_template_free.html#resources",
+    "title": "Template-free axolotl",
+    "section": "Resources",
+    "text": "Resources\n\nPull request that added this feature.\nAxolotl debugging guide.\nAxolotl prompt construction notes.",
     "crumbs": [
       "LLMs",
-      "Inference",
-      "Max Inference Engine"
+      "Fine-tuning",
+      "Template-free axolotl"
     ]
   },
   {
-    "objectID": "notes/llm/inference/04_max_engine.html#huggingface-comparison",
-    "href": "notes/llm/inference/04_max_engine.html#huggingface-comparison",
-    "title": "Max Inference Engine",
-    "section": "HuggingFace Comparison",
-    "text": "HuggingFace Comparison\nBecause the outputs of the Max model seemed wonky, we did a sanity check to see what the outputs look like when using HuggingFace transformers.\n\n\n\n\n\n\nNote\n\n\n\nThe below code loads model onto the GPU to quickly generate predictions for comparison. (Max doesn’t work with GPUs yet).\n\n\n\nfrom transformers import AutoTokenizer, AutoModelForCausalLM\nhf_path=\"mistralai/Mistral-7B-v0.1\"\nhfmodel = AutoModelForCausalLM.from_pretrained(hf_path,torchscript=True).cuda()\nhftokenizer = AutoTokenizer.from_pretrained(hf_path)\nhftokenizer.pad_token = hftokenizer.eos_token\n\n_p=\"Why did the chicken cross the road?\"\ninput_ids = hftokenizer(_p, return_tensors=\"pt\", \n                      padding=\"max_length\",\n                      truncation=True).input_ids.cuda()\nout_ids = hfmodel.generate(input_ids=input_ids, max_new_tokens=15, \n                          do_sample=False)\n\n\nout = hftokenizer.batch_decode(out_ids.detach().cpu().numpy(), \n                                  skip_special_tokens=True)[0][len(_p):]\nprint(out)\n\n\n\nTo get to the other side.\n\nWhy did the chicken",
+    "objectID": "notes/llm/inference/03_inference.html",
+    "href": "notes/llm/inference/03_inference.html",
+    "title": "Optimizing latency",
+    "section": "",
+    "text": "Below is a summary of my findings:\n\n🏁 mlc is the fastest. This is so fast that I’m skeptical and am now motivated to measure quality (if I have time). When checking the outputs manually, they didn’t seem that different than other approaches.\n❤️ CTranslate2 is my favorite tool, which is among the fastest but is also the easiest to use. The documentation is the best out of all of the solutions I tried. Furthermore, I think that the ergonomics are excellent for the models that they support. Unlike vLLM, CTranslate doesn’t seem to support distributed inference just yet.\n🛠️ vLLM is really fast, but CTranslate can be much faster. On other hand, vLLM supports distributed inference, which is something you will need for larger models. vLLM might be the sweet spot for serving very large models.\n😐 Text Generation Inference is an ok option (but nowhere near as fast as vLLM) if you want to deploy HuggingFace LLMs in a standard way. TGI has some nice features like telemetry baked in (via OpenTelemetry) and integration with the HF ecosystem like inference endpoints. One thing to note that as of 7/28/2023, the license for TGI was changed to be more restrictive that may interfere with certain commercial uses. I am personally not a fan of the license.\n\n\n\nThis study focuses on various approaches to optimizing latency. Specifically, I want to know which tools are the most effective at optimizing latency for open source LLMs. In order to focus on latency, I hold the following variables constant:\n\nbatch size of n = 1 for all prediction requests (holding throughput constant).1\n\nAll experiments were conducted on a Nvidia A6000 GPU, unless otherwise noted.\nMax output tokens were always set to 200.\nAll numbers are calculated as an average over a fixed set of 9 prompts.\nThe model used is meta-llama/Llama-2-7b-hf on the HuggingFace Hub 2.\n\nIn addition to batch size of n = 1 and using a A6000 GPU (unless noted otherwise), I also made sure I warmed up the model by sending an initial inference request before measuring latency.\n\nLlama-v2-7b benchmark: batch size = 1, max output tokens = 200\n\n\n\n\n\n\n\n\n\n\n\n\navg tok/sec\navg time (seconds)\navg output token count\n\n\nplatform\noptions\ngpu\n\n\n\n\n\n\n\nCTranslate2\nfloat16 quantization\nA6000\n44.8\n4.5\n200.0\n\n\nint8 quantization\nA6000\n62.6\n3.2\n200.0\n\n\nHF Hosted Inference Endpoint\n-\nA10G\n30.4\n6.6\n202.0\n\n\nHuggingFace Transformers (no server)\n-\nA6000\n24.6\n7.5\n181.4\n\n\nnf4 4bit quantization bitsandbytes\nA6000\n24.3\n7.6\n181.4\n\n\nTGI\n-\nA6000\n21.1\n9.5\n200.0\n\n\nquantized w/ GPTQ\nA6000\n23.6\n8.8\n200.0\n\n\nquantized w/ bitsandbytes\nA6000\n1.9\n103.0\n200.0\n\n\nmlc\nq4f16\nA6000\n117.1\n1.3\n153.9\n\n\ntext-generation-webui\nexllama\nA6000\n77.0\n1.7\n134.0\n\n\nvllm\n-\nA100 (on Modal Labs)\n41.5\n3.4\n143.1\n\n\nA6000\n46.4\n3.8\n178.0\n\n\n\n\n\n\n\nIn some cases I did not use an A6000 b/c the platform didn’t have that particular GPU available. You can ignore these rows if you like, but I still think it is valuable information. I had access to a A6000, so I just used what I had.\nI noticed that the output of the LLM was quite different (less tokens) when using vLLM. I am not sure if I did something wrong here, or it changes the behavior of the LLM.\nFurthermore, the goal was not to be super precise on these benchmarks but rather to get a general sense of how things work and how they might compare to each other out of the box. Some of the tools above are inference servers which perform logging, tracing etc. in addition to optimizing models which effect latency. The idea is to see where there are significant differences between tools. I discussed this more here.",
     "crumbs": [
       "LLMs",
       "Inference",
-      "Max Inference Engine"
+      "Optimizing latency"
     ]
   },
   {
-    "objectID": "notes/llm/inference/04_max_engine.html#footnotes",
-    "href": "notes/llm/inference/04_max_engine.html#footnotes",
-    "title": "Max Inference Engine",
+    "objectID": "notes/llm/inference/03_inference.html#summary",
+    "href": "notes/llm/inference/03_inference.html#summary",
+    "title": "Optimizing latency",
+    "section": "",
+    "text": "Below is a summary of my findings:\n\n🏁 mlc is the fastest. This is so fast that I’m skeptical and am now motivated to measure quality (if I have time). When checking the outputs manually, they didn’t seem that different than other approaches.\n❤️ CTranslate2 is my favorite tool, which is among the fastest but is also the easiest to use. The documentation is the best out of all of the solutions I tried. Furthermore, I think that the ergonomics are excellent for the models that they support. Unlike vLLM, CTranslate doesn’t seem to support distributed inference just yet.\n🛠️ vLLM is really fast, but CTranslate can be much faster. On other hand, vLLM supports distributed inference, which is something you will need for larger models. vLLM might be the sweet spot for serving very large models.\n😐 Text Generation Inference is an ok option (but nowhere near as fast as vLLM) if you want to deploy HuggingFace LLMs in a standard way. TGI has some nice features like telemetry baked in (via OpenTelemetry) and integration with the HF ecosystem like inference endpoints. One thing to note that as of 7/28/2023, the license for TGI was changed to be more restrictive that may interfere with certain commercial uses. I am personally not a fan of the license.\n\n\n\nThis study focuses on various approaches to optimizing latency. Specifically, I want to know which tools are the most effective at optimizing latency for open source LLMs. In order to focus on latency, I hold the following variables constant:\n\nbatch size of n = 1 for all prediction requests (holding throughput constant).1\n\nAll experiments were conducted on a Nvidia A6000 GPU, unless otherwise noted.\nMax output tokens were always set to 200.\nAll numbers are calculated as an average over a fixed set of 9 prompts.\nThe model used is meta-llama/Llama-2-7b-hf on the HuggingFace Hub 2.\n\nIn addition to batch size of n = 1 and using a A6000 GPU (unless noted otherwise), I also made sure I warmed up the model by sending an initial inference request before measuring latency.\n\nLlama-v2-7b benchmark: batch size = 1, max output tokens = 200\n\n\n\n\n\n\n\n\n\n\n\n\navg tok/sec\navg time (seconds)\navg output token count\n\n\nplatform\noptions\ngpu\n\n\n\n\n\n\n\nCTranslate2\nfloat16 quantization\nA6000\n44.8\n4.5\n200.0\n\n\nint8 quantization\nA6000\n62.6\n3.2\n200.0\n\n\nHF Hosted Inference Endpoint\n-\nA10G\n30.4\n6.6\n202.0\n\n\nHuggingFace Transformers (no server)\n-\nA6000\n24.6\n7.5\n181.4\n\n\nnf4 4bit quantization bitsandbytes\nA6000\n24.3\n7.6\n181.4\n\n\nTGI\n-\nA6000\n21.1\n9.5\n200.0\n\n\nquantized w/ GPTQ\nA6000\n23.6\n8.8\n200.0\n\n\nquantized w/ bitsandbytes\nA6000\n1.9\n103.0\n200.0\n\n\nmlc\nq4f16\nA6000\n117.1\n1.3\n153.9\n\n\ntext-generation-webui\nexllama\nA6000\n77.0\n1.7\n134.0\n\n\nvllm\n-\nA100 (on Modal Labs)\n41.5\n3.4\n143.1\n\n\nA6000\n46.4\n3.8\n178.0\n\n\n\n\n\n\n\nIn some cases I did not use an A6000 b/c the platform didn’t have that particular GPU available. You can ignore these rows if you like, but I still think it is valuable information. I had access to a A6000, so I just used what I had.\nI noticed that the output of the LLM was quite different (less tokens) when using vLLM. I am not sure if I did something wrong here, or it changes the behavior of the LLM.\nFurthermore, the goal was not to be super precise on these benchmarks but rather to get a general sense of how things work and how they might compare to each other out of the box. Some of the tools above are inference servers which perform logging, tracing etc. in addition to optimizing models which effect latency. The idea is to see where there are significant differences between tools. I discussed this more here.",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "Optimizing latency"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/03_inference.html#background",
+    "href": "notes/llm/inference/03_inference.html#background",
+    "title": "Optimizing latency",
+    "section": "Background",
+    "text": "Background\nOne capability you need to be successful with open source LLMs is the ability to serve models efficiently. There are two categories of tools for model inference:\n\nInference servers: these help with providing a web server that can provide a REST/grpc or other interface to interact with your model as a service. These inference servers usually have parameters to help you make trade-offs between throughput and latency. Additionally, some inference servers come with additional features like telemetry, model versioning and more. You can learn more about this topic the serving section of these notes. For LLMs, popular inference servers are the Text Generation Inference (TGI) and vLLM.\nModel Optimization: These modify your model to make them faster for inference. Examples include quantization, Paged Attention, Exllama and more.\n\nIt is common to use both Inference servers and Model Optimization techniques in conjunction. Some inference servers like TGIand vLLM even help you apply optimization techniques.3",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "Optimizing latency"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/03_inference.html#mlc",
+    "href": "notes/llm/inference/03_inference.html#mlc",
+    "title": "Optimizing latency",
+    "section": "mlc",
+    "text": "mlc\nStart with compiling the model as shown in these docs\nAfter installing MLC, you can compile meta-llama/Llama-2-7b-chat-hf like so:\npython3 -m mlc_llm.build \\\n--hf-path meta-llama/Llama-2-7b-chat-hf \\\n--target cuda --quantization q4f16_1\nThe arguments for the compliation are documented here. This puts the model in the ./dist/ folder with the name Llama-2-7b-chat-hf-q4f16_1.\nYou can use their python client to interact with the compiled model:\nfrom mlc_chat import ChatModule, ChatConfig\ncfg = ChatConfig(max_gen_len=200)\ncm = ChatModule(model=\"Llama-2-7b-chat-hf-q4f16_1\", chat_config=cfg)\noutput = cm.generate(prompt=prompt)\nYou can see the full benchmarking code here.\n\n\n\n\n\n\nWarning\n\n\n\nI wasn’t able to get meta-llama/Llama-2-7b-hf to run correctly with the supplied python client so I am using the chat variant (Llama-2-7b-chat-hf) as a proxy. I asked the kind folks who work on the mlc project and they said the python client is currently designed for chat, such that they have this system prompt that is hard coded for llama models:\n  conv.system =\n      (\"[INST] &lt;&lt;SYS&gt;&gt;\\n\\nYou are a helpful, respectful and honest assistant. \"\n       \"Always answer as helpfully as possible, while being safe. \"\n       \"Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, \"\n       \"or illegal content. \"\n       \"Please ensure that your responses are socially unbiased and positive in nature.\\n\\n\"\n       \"If a question does not make any sense, or is not factually coherent, explain why instead \"\n       \"of answering something not correct. \"\n       \"If you don't know the answer to a question, please don't share false \"\n       \"information.\\n&lt;&lt;/SYS&gt;&gt;\\n\\n \");\nIf you want to fix this, you must edit mlc-chat-config.json, changing conv_template to LM. These docs say more about the config.json.\nThe config file is located in ./dist/&lt;model-name&gt;/params/mlc-chat-config.json. For example:\n&gt; cat ./dist/Llama-2-7b-hf-q4f16_1/params/mlc-chat-config.json\n\n{\n    \"model_lib\": \"Llama-2-7b-hf-q4f16_1\",\n    \"local_id\": \"Llama-2-7b-hf-q4f16_1\",\n    \"conv_template\": \"llama-2\",\n    \"temperature\": 0.7,\n    \"repetition_penalty\": 1.0,\n    \"top_p\": 0.95,\n    \"mean_gen_len\": 128,\n    \"max_gen_len\": 512,\n    \"shift_fill_factor\": 0.3,\n    \"tokenizer_files\": [\n        \"tokenizer.json\",\n        \"tokenizer.model\"\n    ],\n    \"model_category\": \"llama\",\n    \"model_name\": \"Llama-2-7b-hf\"\n}",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "Optimizing latency"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/03_inference.html#ctranslate2",
+    "href": "notes/llm/inference/03_inference.html#ctranslate2",
+    "title": "Optimizing latency",
+    "section": "CTranslate2",
+    "text": "CTranslate2\nCTranslate2 is an optimization tool that can make models ridiculously fast. h/t to Anton. The documentation for CTranslate2 contains specific instructions for llama models.\nTo optimize llama v2, we first need to quantize the model. This can be done like so:\nct2-transformers-converter --model meta-llama/Llama-2-7b-hf --quantization int8 --output_dir llama-2-7b-ct2 --force\nmeta-llama/Llama-2-7b-hf refers to the HuggingFace repo for this model. The benchmarking code is as follows (can also be found here):\nimport time\nimport ctranslate2\nimport transformers\nimport sys\nsys.path.append('../common/')\nfrom questions import questions\nimport pandas as pd\n\ngenerator = ctranslate2.Generator(\"llama-2-7b-ct2\", device=\"cuda\")\ntokenizer = transformers.AutoTokenizer.from_pretrained(\"meta-llama/Llama-2-7b-hf\")\n\ndef predict(prompt:str):\n    \"Generate text give a prompt\"\n    start = time.perf_counter()\n    tokens = tokenizer.convert_ids_to_tokens(tokenizer.encode(prompt))\n    results = generator.generate_batch([tokens], sampling_topk=1, max_length=200, include_prompt_in_result=False)\n    tokens = results[0].sequences_ids[0]\n    output = tokenizer.decode(tokens)\n    request_time = time.perf_counter() - start\n    return {'tok_count': len(tokens),\n            'time': request_time,\n            'question': prompt,\n            'answer': output,\n            'note': 'CTranslate2 int8 quantization'}\n\nif __name__ == '__main__':\n    counter = 1\n    responses = []\n\n    for q in questions:\n        if counter &gt;= 2: responses.append(predict(q))\n        counter += 1\n\n    df = pd.DataFrame(responses)\n    df.to_csv('bench-ctranslate-int8.csv', index=False)",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "Optimizing latency"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/03_inference.html#text-generation-inference-tgi",
+    "href": "notes/llm/inference/03_inference.html#text-generation-inference-tgi",
+    "title": "Optimizing latency",
+    "section": "Text Generation Inference (TGI)",
+    "text": "Text Generation Inference (TGI)\n\n\n\n\n\n\nLicense Restrictions\n\n\n\nThe license for TGI was recently changed away from Apache 2.0 to be more restrictive. Be careful when using TGI in commercial applications.\n\n\nText generation inference which is often referred to as “TGI” was easy to use without any optimization. You can run it like this:\n\n\n“start_server.sh”\n\n#!/bin/bash\n\nif [ -z \"$HUGGING_FACE_HUB_TOKEN\" ]\nthen\n  echo \"HUGGING_FACE_HUB_TOKEN is not set. Please set it before running this script.\"\n  exit 1\nfi\n\nmodel=\"TheBloke/Llama-2-7B-GPTQ\"\nvolume=$PWD/data\n\ndocker run --gpus all \\\n -e HUGGING_FACE_HUB_TOKEN=$HUGGING_FACE_HUB_TOKEN \\\n -e GPTQ_BITS=4 -e GPTQ_GROUPSIZE=128 \\\n --shm-size 5g -p 8081:80 \\\n -v $volume:/data ghcr.io/huggingface/text-generation-inference \\\n --max-best-of 1 \"$@\"\n\nWe can then run the server with this command:\nbash start_server.sh --model-id \"meta-llama/Llama-2-7b-hf\"\n\n\n\n\n\n\nHelp\n\n\n\nYou can see all the options for the TGI container with the help flag like so:\ndocker run ghcr.io/huggingface/text-generation-inference --help | less\n\n\n\nQuantization\nQuantization was very difficult to get working. There is a —quantize flag with accepts bitsandbytes and gptq. The bitsandbytes approach makes inference much slower, which others have reported.\nTo make gptq work for llama v2 models requires a bunch of work, you have to install the text-generation-server which can take a while and is very brittle to get right. I had to step through the Makefile carefully. After that you have to download the weights with:\ntext-generation-server download-weights meta-llama/Llama-2-7b-hf\nYou can run the following command to perform the quantization (the last argument is the destination directory where the weights are stored).\ntext-generation-server quantize \"meta-llama/Llama-2-7b-hf\" data/quantized/\nHowever, this step is not needed for the most popular models, as someone will likely already have quantized and uploaded them to the Hub.\n\nPre-Quantized Models\nAlternatively, you can use a pre-quantized model that has been uploaded to the Hub. TheBloke/Llama-2-7B-GPTQ is a good example of one. To get this to work, you have to be careful to set the GPTQ_BITS and GPTQ_GROUPSIZE environment variables to match the config. For example This config necessitates setting GPTQ_BITS=4 and GPTQ_GROUPSIZE=128 These are already set in start_server.sh shown above. This PR will eventually fix that.\nTo use the TheBloke/Llama-2-7B-GPTQ with TGI, I can use the same bash script with the following arguments:\nbash start_server.sh --model-id TheBloke/Llama-2-7B-GPTQ --quantize gptq\n\n\n\nComparison Without TGI Server\nWhen I first drafted this study I got the following response on twitter:\n\n\nBased on your code (https://t.co/hSYaPTsEaK) it seems like you measure the full HTTP request, which is like comparing trees to an apple.\n\n— Philipp Schmid (@_philschmid) July 29, 2023\n\n\nPhillip certainly has a point! I am indeed testing both! I’m looking for big differences in tools here, and since some inference servers have optimization tools, and some optimization tools do not have an inference server I cannot do a true apples to apples comparison. However, I think its still useful to try different things as advertised to see what is possible, and also take note of really significant gaps in latency between tools.\nTherefore, I ran the following tests to perform the similar optimizations as TGI, but without the server to see what happened:\n\nHuggingFace Transformers\nI was able to get slightly better performance without the TGI server as predicted by Phillip, but it did not account for the the massive gap between some tools (which is exactly the kind of thing I was looking for).\nTo benchmark quantization with bitsandbytes, I followed this blog post and wrote this benchmarking code. I quantized the model by loading it like this:\nmodel_id = \"meta-llama/Llama-2-7b-hf\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nnf4_config = BitsAndBytesConfig(\n   load_in_4bit=True,\n   bnb_4bit_quant_type=\"nf4\",\n   bnb_4bit_compute_dtype=torch.bfloat16\n)\nmodel_nf4 = AutoModelForCausalLM.from_pretrained(model_id, quantization_config=nf4_config)\nUnlike TGI, I was able to get bitsandbytes to work properly here, but just like TGI it didn’t speed anything up for me with respect to inference latency. As reflected in the benchmark table, I got nearly the same results with transformers without any optimizations.\n\n\nGPTQ\nI also quantized the model using AutoGPTQ without an inference server to compare against TGI. The code for that is here.\nThe results were so bad ~ 5 tok/sec that I decided not to put this in the table, because it seemed quite off to me.",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "Optimizing latency"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/03_inference.html#text-generation-webui",
+    "href": "notes/llm/inference/03_inference.html#text-generation-webui",
+    "title": "Optimizing latency",
+    "section": "Text Generation WebUI",
+    "text": "Text Generation WebUI\nAman let me know about text-generation-web-ui, and also these instructions for quickly experimenting with ExLlama and ggml. I wasn’t able to get the ggml variant to work properly, unfortunately. If you are really serious about using exllama, I recommend trying to use it without the text generation UI and look at the exllama repo, specifically at test_benchmark_inference.py. (I didn’t have time for this, but if I was going to use exllama for anything serious I would go this route).\nFrom the root of the text-generation-web-ui repo, you can run the following commands to start an inference server optimized with ExLlama:\npython3 download-model.py TheBloke/Llama-2-7B-GPTQ\npython3 server.py --listen --extensions openai --loader exllama_hf --model TheBloke_Llama-2-7B-GPTQ\nAfter the server was started, I used this code to conduct the benchmark.\nOverall, I didn’t like this particular piece of software much. It’s bit bloated because its trying to do too many things at once (An inference server, Web UIs, and other optimizations). That being said, the documentation is good and it is easy to use.\nI don’t think there is any particular reason to use this unless you want an end-to-end solution that also comes with a web user-interface (which many people want!).",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "Optimizing latency"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/03_inference.html#vllm",
+    "href": "notes/llm/inference/03_inference.html#vllm",
+    "title": "Optimizing latency",
+    "section": "vLLM",
+    "text": "vLLM\nvLLM only works with CUDA 11.8, which I configured using this approach. After configuring CUDA and installing the right version of PyTorch, you need to install the bleeding edge from git:\npip install -U git+https://github.com/vllm-project/vllm.git\nA good recipe to use for vLLM can be find on these Modal docs. Surprisingly, I had much lower latency when running on a local A6000 vs. a hosted A100 on Modal Labs. It’s possible that I did something wrong here. Currently, vLLM is the fastest solution for when you need distributed inference (i.e. when your model doesn’t fit on a single GPU)..\nvLLM offers a server, but I benchmarked the model locally using their tools instead. The code for the benchmarking can be found here:\nfrom vllm import SamplingParams, LLM\n\n#from https://modal.com/docs/guide/ex/vllm_inference\n\nquestions = [\n    # Coding questions\n    \"Implement a Python function to compute the Fibonacci numbers.\",\n    \"Write a Rust function that performs binary exponentiation.\",\n    \"What are the differences between Javascript and Python?\",\n    # Literature\n    \"Write a story in the style of James Joyce about a trip to the Australian outback in 2083, to see robots in the beautiful desert.\",\n    \"Who does Harry turn into a balloon?\",\n    \"Write a tale about a time-traveling historian who's determined to witness the most significant events in human history.\",\n    # Math\n    \"What is the product of 9 and 8?\",\n    \"If a train travels 120 kilometers in 2 hours, what is its average speed?\",\n    \"Think through this step by step. If the sequence a_n is defined by a_1 = 3, a_2 = 5, and a_n = a_(n-1) + a_(n-2) for n &gt; 2, find a_6.\",\n]\n\nMODEL_DIR = \"/home/ubuntu/hamel-drive/vllm-models\"\n\ndef download_model_to_folder():\n    from huggingface_hub import snapshot_download\n    import os\n\n    snapshot_download(\n        \"meta-llama/Llama-2-7b-hf\",\n        local_dir=MODEL_DIR,\n        token=os.environ[\"HUGGING_FACE_HUB_TOKEN\"],\n    )\n    return LLM(MODEL_DIR)\n\n\ndef generate(question, llm, note=None):\n    response = {'question': question, 'note': note}\n    sampling_params = SamplingParams(\n        temperature=1.0,\n        top_p=1,\n        max_tokens=200,\n    )\n    \n    start = time.perf_counter()\n    result = llm.generate(question, sampling_params)\n    request_time = time.perf_counter() - start\n\n    for output in result:\n        response['tok_count'] = len(output.outputs[0].token_ids)\n        response['time'] = request_time\n        response['answer'] = output.outputs[0].text\n    \n    return response\n\nif __name__ == '__main__':\n    llm = download_model_to_folder()\n    counter = 1\n    responses = []\n\n    for q in questions:\n        response = generate(question=q, llm=llm, note='vLLM')\n        if counter &gt;= 2:\n            responses.append(response)\n        counter += 1\n    \n    df = pd.DataFrame(responses)\n    df.to_csv('bench-vllm.csv', index=False)",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "Optimizing latency"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/03_inference.html#huggingface-inference-endpoint",
+    "href": "notes/llm/inference/03_inference.html#huggingface-inference-endpoint",
+    "title": "Optimizing latency",
+    "section": "HuggingFace Inference Endpoint",
+    "text": "HuggingFace Inference Endpoint\nI deployed an inference endpoint on HuggingFace for meta-llama/Llama-2-7b-hf, on a Nvidia A10G GPU. I didn’t try to turn on any optimizations like quantization and wanted to see what the default performance would be like.\nThe documentation for these interfaces can be found here. There is also a python client.\nTheir documentation says they are using TGI under the hood. However, my latency was significantly faster on their hosted inference platform than using TGI locally. This could be due to the fact that I used a A10G with them but only a A6000 locally. It’s worth looking into why this discrepancy exists further.\nThe code for this benchmark can be found here.",
+    "crumbs": [
+      "LLMs",
+      "Inference",
+      "Optimizing latency"
+    ]
+  },
+  {
+    "objectID": "notes/llm/inference/03_inference.html#footnotes",
+    "href": "notes/llm/inference/03_inference.html#footnotes",
+    "title": "Optimizing latency",
     "section": "Footnotes",
-    "text": "Footnotes\n\n\nThe documentation states: “This example uses is a TensorFlow model (which must be converted to SavedModel format), and it’s just as easy to load a model from PyTorch (which must be converted to TorchScript format).” The just as easy part raised my expectations a bit too high as the Pytorch path is not as seamless.↩︎",
+    "text": "Footnotes\n\n\nIt is common to explore the inference vs throughput frontier when conducting inference benchmarks. I did not do this, since I was most interested in latency. Here is an example of how to conduct inference benchmarks that consider both throughput and latency.↩︎\nFor Llama v2 models, you must be careful to use the models ending in -hf as those are the ones that are compatible with the transformers library.↩︎\nThe Modular Inference Engine is another example of an inference server that also applies optimization techniques. At the time of this writing, this is proprietary technology, but its worth keeping an eye on this in the future.↩︎",
     "crumbs": [
       "LLMs",
       "Inference",
-      "Max Inference Engine"
+      "Optimizing latency"
     ]
   },
   {
