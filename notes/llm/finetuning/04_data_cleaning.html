@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.533">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2024-03-06">
+<meta name="description" content="A review of tools">
+
+<title>Hamel’s Blog - Curating LLM data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark.min.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<meta name="shinylive:serviceworker_dir" content="../../..">
+<script src="../../../site_libs/quarto-contrib/shinylive-0.2.1/shinylive/load-shinylive-sw.js" type="module"></script>
+<script src="../../../site_libs/quarto-contrib/shinylive-0.2.1/shinylive/run-python-blocks.js" type="module"></script>
+<link href="../../../site_libs/quarto-contrib/shinylive-0.2.1/shinylive/shinylive.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-contrib/shinylive-quarto-css/shinylive-quarto.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../../styles.css">
+<meta property="og:title" content="Hamel’s Blog - Curating LLM data">
+<meta property="og:description" content="A review of tools">
+<meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
+<meta property="og:site_name" content="Hamel's Blog">
+<meta name="twitter:title" content="Hamel’s Blog - Curating LLM data">
+<meta name="twitter:description" content="A review of tools">
+<meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
+<meta name="twitter:creator" content="@HamelHusain">
+<meta name="twitter:site" content="@HamelHusain">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+          <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../index.html"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../oss/opensource.html"> 
+<span class="menu-text">Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../talks.html"> 
+<span class="menu-text">Talks</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../notes/index.html"> 
+<span class="menu-text">Notes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../hire.html"> 
+<span class="menu-text">Hiring</span></a>
+  </li>  
+</ul>
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../../index.xml"> <i class="bi bi-rss" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/finetuning/index.html">Fine-tuning</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/finetuning/04_data_cleaning.html">Curating LLM data</a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/concurrency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Python Concurrency</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/cuda.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CUDA Version Management</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/how-to-learn/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">How to learn</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/pandoc/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">pandoc filters</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/docker/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Docker</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/dbt/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">dbt</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/programming-languages/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">programming languages</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/video_editing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Video Editing</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/llm/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LLMs</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/llm/inference/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inference</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/inference/03_inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Optimizing latency</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/inference/04_max_engine.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Max Inference Engine</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/inference/big_inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">vLLM &amp; large models</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/llm/openai/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">OpenAI</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/openai/func_template.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Function prompts</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/llm/finetuning/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fine-tuning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/finetuning/01_datasets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Dataset Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/finetuning/02_langchain_connectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LangChain <code>DocumentLoaders</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/finetuning/03_estimating_vram.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Estimating vRAM</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/finetuning/04_data_cleaning.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Curating LLM data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/finetuning/05_tokenizer_gotchas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tokenization Gotchas</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/finetuning/09_template_free.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Template-free axolotl</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/serving/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ML Serving</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/serving/tfserving/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TF Serving</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/serving/tfserving/tf-serving-basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/serving/tfserving/gpu.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GPUs &amp; Batching</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/serving/torchserve/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TorchServe</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/serving/torchserve/basic-torchserve.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/serving/torchserve/hf.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Serving Your Own Model</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/serving/fastapi/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FastAPI</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/k8s/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">K8s</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/02-Basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/03-Secrets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Secrets</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/k8s/storage/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Storage</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/storage/04-Basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Storage Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/storage/05-Dynamic Provisioning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Dynamic Provisioning</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/k8s/scaling/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scaling</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/scaling/06-ReplicaSets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ReplicaSets</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/scaling/07- Scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scaling</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/12-StatefulSet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">StatefulSet</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/13-JobsCron.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Jobs &amp; CronJobs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/14-RolloutsRollbacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Rollouts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/k8s/multi_container_pods/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multi-Container Pods</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/multi_container_pods/08-Multi-Container-Pods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multi-Container Pods</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/multi_container_pods/09-Ambassador Sidecars.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Ambassador Sidecars</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/multi_container_pods/10-Downsides of MC Pods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Restart Conditions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/multi_container_pods/11-Sharing Processes in MC Pods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sharing Processes in MC Pods</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/k8s/helm/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Helm</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/helm/15-Helm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Helm Intro</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/helm/16-Creating Your Own Helm Charts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Creating Helm Charts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/helm/17-Helm Upgrade &amp; Rollbacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Helm Upgrades &amp; Rollbacks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/helm/21-Testing-With-Helm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Testing With Helm</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/18-Developer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Developer tips</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/19-Pod-Lifecycle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pod restart vs.&nbsp;replacement</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/20-Health-Check.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Probes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/22-Resource-Limits.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Resource Limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/22a-Resource-Requests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Requesting resources</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/23-Logging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Logging</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/24-monitoring.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Monitoring</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/25-Ingress.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Ingress</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/26-cluster.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Cluster Components</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/k8s/security/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Security</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/security/26-network-security.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Network Security</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/security/27-container-security.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Securing Containers</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/security/28-workloads.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Webhooks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/security/29-cluster-updates.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Updating a K8s Cluster</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/security/30-rbac.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">RBAC</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/27-workload-placement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Workload Placement</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/28-auto-scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Auto Scaling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/29-preemption.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preemption</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/99-Random.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Random TILs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/Open Questions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Open Questions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/fastai/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">fastai</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/fastai/01_fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fundamentals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/fastai/02_cv.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Image Classification</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/fastai/03_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/fastai/batch_predicitions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Batch Predictions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/linux/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Linux</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/linux/bash_scripting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Cheatsheet</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/linux/cookbook.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Cookbook</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/linux/misc_utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Misc Utilities</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/linux/osx.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">OSX Shell Tips</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/linux/permprocdata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Processes, Permissions and Moving Data</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/actions/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GitHub Actions</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/actions/ocotkit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ocotokit.js</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/actions/resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Resources</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/prompt-eng/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prompt engineering</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/prompt-eng/course/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/01_guidelines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Guidelines for Prompting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/02_iterative.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Iterative Prompt Development</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/03_summarizing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Summarizing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/04_inferring.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inferring</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/05_transforming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Transforming</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/06_expanding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Expanding</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/07_chatbot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">The Chat Format</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/web-scraping/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Web Scraping</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-19" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/web-scraping/browser-to-python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Browser requests to code</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/web-scraping/transcribe-diarize.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Transcribe &amp; Diarize Videos</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/quarto/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quarto</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-20" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-20" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/quarto/highlighting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Syntax Highlighting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/quarto/listings-from-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Listings from data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/quarto/merging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Merge listings</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/jupyter/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Jupyter</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-21" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-21" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/jupyter/Best Way To Launch Jupyter On A Remote Server.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Launch Jupyter on a remote server</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/jupyter/Fix Jupyter CUDA cache.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fix Jupyter CUDA cache</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/jupyter/remote_browser.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Remote Browser For Jupyter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/jupyter/shortcuts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">My Jupyter Shortcuts</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#tldr" id="toc-tldr" class="nav-link active" data-scroll-target="#tldr">TLDR</a></li>
+  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
+  <li><a href="#things-i-tried" id="toc-things-i-tried" class="nav-link" data-scroll-target="#things-i-tried">Things I tried</a>
+  <ul class="collapse">
+  <li><a href="#vendors" id="toc-vendors" class="nav-link" data-scroll-target="#vendors">Vendors</a></li>
+  <li><a href="#general-purpose-frameworks" id="toc-general-purpose-frameworks" class="nav-link" data-scroll-target="#general-purpose-frameworks">General Purpose Frameworks</a></li>
+  </ul></li>
+  <li><a href="#live-demo-with-wasm" id="toc-live-demo-with-wasm" class="nav-link" data-scroll-target="#live-demo-with-wasm">Live Demo (With WASM)</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/llm/finetuning/04_data_cleaning.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/finetuning/index.html">Fine-tuning</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/finetuning/04_data_cleaning.html">Curating LLM data</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Curating LLM data</h1>
+</div>
+
+<div>
+  <div class="description">
+    A review of tools
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 6, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="tldr" class="level2">
+<h2 class="anchored" data-anchor-id="tldr">TLDR</h2>
+<p>I think many people should build their own data annotation/curation tools for LLMs. The benefits far outweigh costs in many situations, especially when using general-purpose front-end frameworks. It’s too critical of a task to outsource without careful consideration. Furthermore, you don’t want to get constrained by the limitations of a vendor’s tool early on.</p>
+<p>I recommend using <a href="https://shiny.posit.co/py/">Shiny For Python</a> for reasons <a href="#general-purpose-frameworks">discussed here</a>. I wouldn’t recommend <a href="https://streamlit.io/">Streamlit</a> for reasons <a href="https://shiny.posit.co/py/docs/comp-streamlit.html">discussed here</a>.</p>
+</section>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<blockquote class="blockquote">
+<p>One pattern I noticed is that great AI researchers are willing to manually inspect lots of data. And more than that, <strong>they build infrastructure that allows them to manually inspect data quickly.</strong> Though not glamorous, manually examining data gives valuable intuitions about the problem. The canonical example here is Andrej Karpathy doing the ImageNet 2000-way classification task himself.</p>
+<p>– <a href="https://x.com/_jasonwei/status/1708921475829481683?s=20">Jason Wei, AI Researcher at OpenAI</a></p>
+</blockquote>
+<p>I couldn’t agree with Jason more. I don’t think people look at their data enough. Building your own tools so you can quickly sort through and curate your data is one of the highest-impact activities you can do when working with LLMs. Looking at and curating your own data is critical for both evaluation and fine-tuning.</p>
+</section>
+<section id="things-i-tried" class="level2">
+<h2 class="anchored" data-anchor-id="things-i-tried">Things I tried</h2>
+<p>At the outset, I tried to avoid building something myself. I tried the following vendors who provide tools for data curation/review:</p>
+<section id="vendors" class="level3">
+<h3 class="anchored" data-anchor-id="vendors">Vendors</h3>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>These tools are at varying levels of maturity. I interacted with the developers on all these products, and they were super responsive, kind and aware of these limitations. I expect that these tools will improve significantly over time.</p>
+</div>
+</div>
+<ul>
+<li><a href="https://prodi.gy/">Spacy Prodigy</a>: This was my favorite “pre-packaged” tool/framework. They have the cleanest UI. However, I found it a bit difficult to quickly hack it for my specific needs. They have excellent features for lots of different NLP tasks. In the end, I ended up drawing inspiration from their UI and building my own tool.</li>
+<li><a href="https://argilla.io/">Argilla</a>: This platform has lots of functionality, however the LLM functionality fell short for me. I couldn’t do simple things like sorting, filtering, and labeling. Their LLM vs non-LLM functionality has very different APIs, which makes things quite fragmented at the moment. I think it could have potential once it matures.</li>
+<li><a href="https://lilacml.com/">Lilac</a>: I found that this was more of a dataset viewer rather than something that allowed me to label data and curate it. So it didn’t really fit my needs. The user interface did not seem that hackable/extendable.</li>
+</ul>
+<p>One thing that became clear to me while trying these vendors is the importance of being able to hack these tools to fit your specific needs. Every company you work with will have an idiosyncratic tech stack and tools that you might want to integrate into this data annotation tool. This led me to build my own tools using general-purpose frameworks.</p>
+</section>
+<section id="general-purpose-frameworks" class="level3">
+<h3 class="anchored" data-anchor-id="general-purpose-frameworks">General Purpose Frameworks</h3>
+<p>Python has really great front-end frameworks that are easy to use like <a href="https://www.gradio.app/">Gradio</a> or <a href="https://panel.holoviz.org/">Panel</a> and <a href="https://streamlit.io/">Streamlit</a>. <strong>There is a new kid on the block, <a href="https://shiny.posit.co/py/">Shiny For Python</a>, was my favorite after evaluating all of them.</strong></p>
+<p>Reasons I liked Shiny the most:</p>
+<ul>
+<li>Native integration with <a href="https://quarto.org/">Quarto</a>.</li>
+<li>A powerful reactive model that is snappy.</li>
+<li>A small API that is easy to learn and keep in your head.</li>
+<li>Amazing <a href="https://shiny.posit.co/py/docs/shinylive.html">WASM support</a>, for example I have embedded a version of the app in this blog post!</li>
+</ul>
+<p>I found that Shiny apps always required much less code and were easier to understand than the other frameworks.</p>
+</section>
+</section>
+<section id="live-demo-with-wasm" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="live-demo-with-wasm">Live Demo (With WASM)</h2>
+<p>I ended up building a small application to help me annotate and curate LLM data for a client I’m working with. I wanted the ability to correct the final output, and also mark examples as “Accepted” or “Rejected”. Below is a simplified version of the app that is hosted in the browser for demo purposes. In real life, you would want to host this on a server and write the data to a database (I’m actually using <a href="https://airtable.com/">Airtable</a> for this purpose).</p>
+<p>The version of Shiny that is WASM compatible is called <a href="https://shiny.posit.co/py/docs/shinylive.html">Shinylive</a>. The source code is <a href="https://github.com/parlance-labs/langfree/blob/main/nbs/tutorials/app.py">here</a>. If you want to see the source code for this blog post (which makes some Shinylive specific changes), that is available <a href="https://github.com/hamelsmu/hamel-site/blob/master/notes/llm/04_data_cleaning.qmd">here</a>.</p>
+<p>If you want to use Shinylive, here are important resources:</p>
+<ul>
+<li>The <a href="https://github.com/quarto-ext/shinylive">Shiny Live Quarto extension</a></li>
+<li>The <a href="https://shiny.posit.co/py/docs/shinylive.html.">docs</a></li>
+<li><a href="https://shinylive.io/py/examples/">Examples</a>, which are all in Shiny Live.</li>
+</ul>
+<p><em>By the way, if you are viewing this on mobile, it’s not going to look great. I haven’t optimized the layout for mobile yet.</em></p>
+<div class="column-screen-inset">
+<pre class="shinylive-python" data-engine="python"><code>#| viewerHeight: 1400
+#| standalone: true
+## file: app.py
+import os, json
+from pathlib import Path
+from shiny import App, ui, reactive, render
+import shiny.experimental as x
+from utils import render_input_chat, render_llm_output, RunData
+import pandas as pd
+
+
+FILENAME =  Path(__file__).parent / "sample_data.json"
+df = pd.read_json(FILENAME)
+df['child_run'] = df['child_run'].apply(lambda x: RunData(**x))
+
+n_rows = len(df)
+def save(df): df.to_json(FILENAME)
+
+status_styles = {'Accepted': 'bg-success', 'Rejected': 'bg-danger','Pending': 'bg-warning'}
+status_icons = {'Accepted': ui.HTML('&lt;svg xmlns="http://www.w3.org/2000/svg" class="bi bi-check-lg" viewBox="0 0 16 16" style="height:auto;width:100%;fill:currentColor;" aria-hidden="true" role="img"&gt;&lt;path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z"/&gt;&lt;/svg&gt;'), 
+                'Rejected': ui.HTML('&lt;svg xmlns="http://www.w3.org/2000/svg" class="bi bi-x-lg" viewBox="0 0 16 16" style="height:auto;width:100%;fill:currentColor;" aria-hidden="true" role="img"&gt;&lt;path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/&gt;&lt;/svg&gt;'),
+                'Pending': ui.HTML('&lt;svg xmlns="http://www.w3.org/2000/svg" class="bi bi-clock" viewBox="0 0 16 16" style="height:auto;width:100%;fill:currentColor;" aria-hidden="true" role="img"&gt;&lt;path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/&gt;&lt;path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/&gt;&lt;/svg&gt;')
+              }
+
+app_ui = ui.page_fluid(
+    ui.panel_title("LLM Data Review"),
+    ui.div(
+        {"style": "position: absolute; top: 10px; right: 10px; font-size: 0.8em;"},
+    ),
+    x.ui.card(
+        ui.layout_sidebar(
+            ui.panel_sidebar(
+                ui.output_ui("status_card"),
+                ui.output_data_frame("stats"),
+            ),
+            ui.panel_main(
+                ui.output_ui("llm_input"),
+            ),
+        ),
+        max_height="900px",
+    ),
+    x.ui.card(
+        x.ui.card_body(
+            ui.output_ui("llm_output"),
+        ),
+        ui.div(
+            {"style": "display: flex; justify-content:center;"},
+            ui.input_action_button("accept", label="Accept", class_='btn-success', width="10%",  style="margin-right: 10px;"),
+            ui.input_action_button("reject", label="Reject", class_='btn-danger', width="10%",  style="margin-right: 50px;"),
+            ui.input_action_button("back", label="Back", class_='btn-secondary', width="10%", style="margin-right: 10px;"),
+            ui.input_action_button("reset", label="Reset", class_='btn-warning', width="10%", style="margin-right: 10px;"),
+            ui.input_action_button("next", label="Next", class_='btn-secondary', width="10%", style="margin-right: 10px;"),
+        )
+    ),
+)
+
+def server(input, output, session):
+    cursor = reactive.Value(0)
+    status_trigger = reactive.Value(True)
+
+    @reactive.Calc
+    def current_run():
+        _ = status_trigger()
+        return df.loc[cursor(), 'child_run']
+
+    @reactive.Calc
+    def current_row(): 
+        _ = status_trigger()
+        return df.loc[cursor()]
+
+    @reactive.Calc
+    def progress(): return f"Record {cursor()+1} of {n_rows:,}"
+
+    @output
+    @render.ui
+    def llm_input(): return render_input_chat(current_run())
+    
+    @output
+    @render.ui
+    def llm_output(): return render_llm_output(current_run())
+
+    @output
+    @render.data_frame
+    def stats():
+        _ = status_trigger()
+        return df.groupby('status').count().reset_index().rename(columns={'child_run': 'Count', 'status': 'Status'})[['Status', 'Count']]
+
+    @output
+    @render.ui
+    def status_card():
+        status = current_row().status
+        return x.ui.value_box(title=ui.h1(f'Status: {status}'), 
+                              value=ui.h2(progress()), 
+                              showcase=status_icons[status], 
+                              class_=status_styles[status])
+    
+    @reactive.Effect
+    @reactive.event(input.reset)
+    def reset():
+        update_status('Pending')
+        save(df)
+
+    @reactive.Effect
+    @reactive.event(input.reject)
+    def reject():
+        update_status('Rejected')
+        go_next()
+
+    @reactive.Effect
+    @reactive.event(input.accept)
+    def accept():
+        update_status('Accepted')
+        current_row().child_run.output['content'] = input.llm_output()
+        go_next()
+
+    @reactive.Effect
+    @reactive.event(input.back)
+    def back(): 
+        if cursor() &gt; 0: cursor.set(cursor()-1)
+
+    @reactive.Effect
+    @reactive.event(input.next)
+    def next(): go_next()
+
+    def modal():
+        m = ui.modal("You are done!", title="Done",easy_close=True,footer=None)
+        ui.modal_show(m)
+
+    def go_next():
+        save(df)
+        if cursor() + 1 &lt; n_rows: cursor.set(cursor()+1)
+        else: modal()
+
+    def update_status(status):
+        df.loc[cursor(), 'status'] = status
+        status_trigger.set(not status_trigger())
+
+app = App(app_ui, server)
+
+## file: utils.py
+import os, json
+from pydantic import BaseModel
+from typing import List
+from shiny import module, ui, render, reactive
+import shiny.experimental as x
+from pprint import pprint
+
+def _get_role(m):
+    role = m['role'].upper()
+    if 'function_call' in m: return f"{role} - Function Call"
+    if role == 'FUNCTION': return 'FUNCTION RESULTS'
+    else: return role
+
+def _get_content(m):
+    if 'function_call' in m:
+        func = m['function_call']
+        return f"{func['name']}({func['arguments']})"
+    else: return m['content']
+
+def render_input_chat(run, markdown=True):
+    "Render the chat history, except for the last output as a group of cards."
+    cards = []
+    num_inputs = len(run.inputs)
+    for i,m in enumerate(run.inputs):
+        content = str(_get_content(m)).replace('#', '') # just for the demo
+        cards.append(
+            x.ui.card(
+                x.ui.card_header(ui.div({"style": "display: flex; justify-content: space-between;"},
+                                    ui.span(
+                                        {"style": "font-weight: bold;"}, 
+                                        _get_role(m),
+                                    ),
+                                    ui.span(f'({i+1}/{num_inputs})'),
+                                )       
+                ),
+                x.ui.card_body(ui.markdown(content) if markdown else content),
+                class_= "card border-dark mb-3"
+            )
+        )
+    return ui.div(*cards)
+
+def render_llm_output(run, width="100%", height="250px"):
+    "Render the LLM output as an editable text box."
+    o = run.output
+    return ui.input_text_area('llm_output', label=ui.h3('LLM Output (Editable)'), 
+                              value=o['content'], width=width, height=height)
+
+class RunData(BaseModel):
+    "Key components of a run from LangSmith"
+    inputs:List[dict]
+    output:dict
+    funcs:List[dict] 
+    run_id:str
+
+## file: sample_data.json
+{"child_run":{"0":{"funcs":[],"inputs":[{"role":"system","content":"You are a helpful documentation Q&amp;A assistant, trained to answer questions from LangSmith's documentation. LangChain is a framework for building applications using large language models.\nThe current time is 2023-09-05 16:49:07.308007.\n\nRelevant documents will be retrieved in the following messages."},{"role":"system","content":"!\")  \n    \n    \n    \n    import { Client } from \"langsmith\";  \n    import { LangChainTracer } from \"langchain\/callbacks\";  \n    import { ChatOpenAI } from \"langchain\/chat_models\/openai\";  \n      \n    const llm = new ChatOpenAI({  \n      callbacks: [  \n        new LangChainTracer({  \n          projectName: \"YOUR_PROJECT_NAME_HERE\",  \n          client: new Client({  \n            apiUrl: \"https:\/\/api.smith.langchain.com\",  \n            apiKey: \"YOUR_API_KEY_HERE\",  \n          }),  \n        }),  \n      ],  \n    });  \n    await llm.invoke(\"Hello, world!\");  \n    \n\nThis tactic is also useful for when you have multiple chains running in a\nshared environment but want to log their run traces to different projects.\n\n### How do I turn tracing off?\u200b\n\nIf you've decided you no longer want to trace your runs, you can remove the\nenvironment variables configured to start tracing in the first place. By\nunsetting the `LANGCHAIN_TRACING_V2` environment variable, traces will no\nlonger be logged to LangSmith.\n\n    \n    \n    unset LANGCHAIN_TRACING_V2  \n    \n\nUnsetting an environment variable while a program is in the middle of\nexecution is not guaranteed to terminate logging. If you want to selectively\nlog runs or stop tracing mid-execution, you must not start tracing using the\n`LANGCHAIN_TRACING_V2` environment variable and instead selectively log runs\nby passing the `LangChainTracer` callback to the LangChain object (or by using\nthe context manager in python).\n\n### How do I export runs?\u200b\n\nWe are working to add better data connectors and export options. For now, you\ncan use the LangSmith API directly to export runs. Below are a couple\nexamples:\n\n  * Python\n  * Typescript\n\n    \n    \n    from datetime import datetime, timedelta  \n    from langsmith import Client  \n      \n    client = Client()  \n    # Download all runs in a project  \n    project_runs = client.list_runs(project_name=\"&lt;your_project&gt;\")  \n      \n    # List only LLM runs in the last 24 hours  \n    todays_runs = client.list_runs(  \n        start_time=datetime.now() - timedelta(days=1),  \n        run_type=\"llm\",  \n    )  \n      \n    # You can build complex filters and queries if needed.  \n    # Filter by runs that have a feedback key of \"Correctness==1.0\"  \n    # living in the specified project.  \n    correct_runs = client.list_runs(  \n        project_name=\"&lt;your_project&gt;\",  \n        # More complex filters can be specified  \n        filter='and(eq(feedback_key, \"Correctness\"), eq(feedback_score, 1.0))',  \n    )  \n    \n    \n    \n    import { Client, Run } from \"langsmith\";  \n      \n    const client = new Client();  \n      \n    \/\/ Download runs in a project  \n    const todaysRuns: Run[] = [];  \n    for await (const run of client.listRuns({  \n      projectName: \"&lt;your_project&gt;\",  \n      startTime: new Date(Date.now() - 1000 * 60 * 60 * 24),  \n      runType: \"llm\",  \n    })) {  \n      todaysRuns.push(run);  \n    }  \n      \n    \/\/ You can use a number of filters for feedback, tags, and other fields  \n    \/\/ filter by runs that have a feedback key of \"Correctness==1.0\"  \n    const correctRuns: Run[] = [];  \n    for await (const run of  client.listRuns({  \n      projectName: \"&lt;your_project&gt;\",  \n      \/\/ More complex filters can be specified  \n      filter: 'and(eq(feedback_key, \"Correctness\"), eq(feedback_score, 1.0))',  \n    })) {  \n      correctRuns.push(run);  \n    }  \n    \n\nCheck out the exporting runs directory for more examples of how to export\nruns, or the local run filtering documentation on how to construct more\ncomplex filters.\n\n### How do I ensure logging is completed before exiting my application?\u200b\n\nIn LangChain.py, LangSmith's tracing is done in a background thread to avoid\nobstructing your production application. This means that if you're process may\nend before all traces are successfully posted to LangSmith. This is especially\nprevelant in a serverless environment, where your VM may be terminated\nimmediately once your chain or agent completes.\n\nIn LangChain.js, the default is to block for a short period of time for the\ntrace to finish due to the greater popularity of serverless environments. You\ncan make callbacks asynchronous by setting the\n`LANGCHAIN_CALLBACKS_BACKGROUND` environment variable to `\"true\"`.\n\nFor both languages, LangChain exposes methods to wait for traces to be\nsubmitted before exiting your application.\n\nBelow is an example:\n\n  * Python\n  * Typescript\n\n    \n    \n    from langchain.chat_models import ChatOpenAI  \n    from langchain.callbacks.tracers.langchain import wait_for_all_tracers  \n      \n    llm = ChatOpenAI()  \n    try:  \n        llm.invoke(\"Hello, World!\")  \n    finally:  \n        wait_for_all_tracers()  \n    \n    \n    \n    import { ChatOpenAI } from \"langchain\/chat_models\/openai\";  \n    import { awaitAllCallbacks } from \"langchain\/callbacks\";  \n      \n    try {  \n      const llm = new ChatOpenAI();  \n      const response = await llm.invoke(\"Hello, World!\");  \n    } catch (e) {  \n      \/\/ handle error  \n    } finally {  \n      await awaitAllCallbacks();  \n    }  \n    \n\n### How do I log to LangSmith if I am not using LangChain?\u200b\n\nThe most reliable way to log run trees to LangSmith is by using the `RunTree`\nobject. Below is an example:\n\n  * Python\n  * Python (Run Tree)\n  * Typescript\n\n    \n    \n    import datetime  \n    from typing import Any  \n      \n    import openai  \n    from langsmith.run_helpers import traceable  \n      \n      \n    @traceable(run_type=\"llm\", name=\"openai.ChatCompletion.create\")  \n    def my_llm(*args: Any, **kwargs: Any) -&gt; dict:  \n        return openai.ChatCompletion.create(*args, **kwargs)  \n      \n      \n    @traceable(run_type=\"tool\")  \n    def my_tool(tool_input: str) -&gt; str:  \n        return tool_input.upper()  \n      \n      \n    @traceable(run_type=\"chain\")  \n    def my_chain(prompt: str) -&gt; str:  \n        messages = [  \n            {  \n                \"role\": \"system\",  \n                \"content\": \"You are an AI Assistant. The time is \"  \n                + str(datetime.datetime.now()),  \n            },  \n            {\"role\": \"user\", \"content\": prompt},  \n        ]  \n        return my_llm(model=\"gpt-3.5-turbo\", messages=messages)  \n      \n      \n    @traceable(run_type=\"chain\")  \n    def my_chat_bot(text: str) -&gt; str:  \n        generated = my_chain(text)  \n      \n        if \"meeting\" in generated:  \n            return my_tool(generated)  \n        else:  \n            return generated  \n      \n      \n    my_chat_bot(\"Summarize this morning's meetings.\")  \n    # See an example run at: https:\/\/smith.langchain.com\/public\/b5e2666d-f570-4b83-a611-86a2503ed91b\/r  \n    \n    \n    \n    from langsmith.run_trees import RunTree  \n      \n    parent_run = RunTree(  \n        name=\"My Chat Bot\",  \n        run_type=\"chain\",  \n        inputs={\"text\": \"Summarize this morning's meetings.\"},  \n        serialized={}  \n    )  \n      \n    child_llm_run = parent_run.create_child(  \n        name=\"My Proprietary LLM\",  \n        run_type=\"llm\",  \n        inputs={  \n            \"prompts\": [  \n                \"You are an AI Assistant. Summarize this morning's meetings.\"  \n            ]  \n        },  \n    )  \n      \n    child_llm_run.end(outputs={\"generations\": [\"Summary of the meeting...\"]})  \n    parent_run.end(outputs={\"output\": [\"The meeting notes are as follows:...\"]})  \n      \n    res = parent_run.post(exclude_child_runs=False)  \n    res.result()  \n    \n    \n    \n    import { RunTree, RunTreeConfig } from \"langsmith\";  \n      \n    const parentRunConfig: RunTreeConfig = {  \n        name: \"My Chat Bot\",  \n        run_type: \"chain\",  \n        inputs: {  \n            text: \"Summarize this morning's meetings.\",  \n        },  \n        serialized: {}  \n    };  \n      \n    const parentRun = new RunTree(parentRunConfig);  \n      \n    const childLlmRun = await parentRun.createChild({  \n        name: \"My Proprietary LLM\",  \n        run_type: \"llm\",  \n        inputs: {  \n            prompts: [  \n            \"You are an AI Assistant. Summarize this morning's meetings.\",  \n            ],  \n        },  \n    });  \n      \n    await childLlmRun.end({  \n    outputs: {  \n        generations: [  \n        \"Summary of the meeting...\",  \n        ],  \n    },  \n    });  \n      \n    await parentRun.end({  \n    outputs: {  \n        output: [\"The meeting notes are as follows:...\"],  \n    },  \n    });  \n      \n    \/\/ False means post all nested runs as a batch  \n    \/\/ (don't exclude child runs)  \n    await parent\nize this morning's meetings.\",  \n        },  \n        serialized: {}  \n    };  \n      \n    const parentRun = new RunTree(parentRunConfig);  \n      \n    const childLlmRun = await parentRun.createChild({  \n        name: \"My Proprietary LLM\",  \n        run_type: \"llm\",  \n        inputs: {  \n            prompts: [  \n            \"You are an AI Assistant. Summarize this morning's meetings.\",  \n            ],  \n        },  \n    });  \n      \n    await childLlmRun.end({  \n    outputs: {  \n        generations: [  \n        \"Summary of the meeting...\",  \n        ],  \n    },  \n    });  \n      \n    await parentRun.end({  \n    outputs: {  \n        output: [\"The meeting notes are as follows:...\"],  \n    },  \n    });  \n      \n    \/\/ False means post all nested runs as a batch  \n    \/\/ (don't exclude child runs)  \n    await parentRun.postRun(false);  \n      \n        \n    \n\n`traceable` functions work out of the box for synchronous and async calls. If\nyou want to call sub-chains\/functions on separate threads, you will have to\nmanually pass the run tree to the child functions. To do so, you should update\nthe parent function to accept a `run_tree` argument (which is injected by the\ndecorator) and pass it to the child functions through the `langsmith_extra`\nkeyword argument. Below is an example:\n\n    \n    \n    import asyncio  \n    import datetime  \n    from concurrent.futures import ThreadPoolExecutor  \n    from typing import Any  \n      \n    import openai  \n    from langsmith.run_helpers import traceable  \n    from langsmith.run_trees import RunTree  \n      \n      \n    @traceable(run_type=\"llm\")  \n    def my_llm(prompt: str, temperature: float = 0.0, **kwargs: Any) -&gt; str:  \n        messages = [  \n            {  \n                \"role\": \"system\",  \n                \"content\": \"You are an AI Assistant. The time is \"  \n                + str(datetime.datetime.now()),  \n            },  \n            {\"role\": \"user\", \"content\": prompt},  \n        ]  \n        return (  \n            openai.ChatCompletion.create(  \n                model=\"gpt-3.5-turbo\", messages=messages, temperature=temperature, **kwargs  \n            )  \n            .choices[0]  \n            .message.content  \n        )  \n      \n      \n    @traceable(run_type=\"chain\")  \n    async def nested_chain(text: str, run_tree: RunTree, **kwargs: Any) -&gt; str:  \n        thread_pool = ThreadPoolExecutor(max_workers=1)  \n        futures = []  \n        for i in range(2):  \n            futures.append(  \n                thread_pool.submit(  \n                    my_llm,  \n                    f\"Gather {i}: {text}\",  \n                    langsmith_extra={\"run_tree\": run_tree},  \n                    **kwargs,  \n                )  \n            )  \n        thread_pool.shutdown(wait=True)  \n        results = [future.result() for future in futures]  \n        return \"\\n\".join(results)  \n      \n      \n        await nested_chain(\"Summarize meeting\")  \n    \n\nFor more information, check out the [traceable\nnotebook](https:\/\/github.com\/langchain-ai\/langsmith-\ncookbook\/blob\/main\/tracing-examples\/traceable\/tracing_without_langchain.ipynb\nin the LangSmith cookbook.\n\n### When logging with the SDK, which fields can I update when I patch?\u200b\n\nThe following fields can be updated when patching a run:\n\n  * end_time: `datetime.datetime`\n  * error: `str | None`\n  * outputs: `Dict | None`\n  * events: `list[dict] | None`\n\nOnce an `end_time` is set on a run, it is marked as \"closed\" and can no longer\nbe updated. This is the case if you include an end time in the initial run\ncreation `post` request or if you do so in a later `patch` request.\n\n### How do I search and filter runs?\u200b\n\nYou can flexibly search and filter for runs directly in the web app or via the\nSDK. See exporting runs locally guide for more examples.\n\nIn the web app, you can search through 'traces' (the top level runs) or\nthrough all runs using the search bar in the runs table. This uses the run\nfiltering query syntax.\n\n### How do I use the playground for runs logged using the SDK?\u200b\n\nThe LangSmith playground doesn't yet support re-running arbitrary runs logged\nusing the SDK. We are working to extend logging and playground support for\nusers not using LangChain components in their app.\n\nPrevious\n\nOverview\n\nNext\n\nUse Cases\n\n  * How do I group traces into a project?\n  * How do I change the tracer project?\n  * How do I add tags to runs?\n  * How do I add metadata to runs?\n  * How do I customize the name of a run?\n  * How do I use LangSmith in my AB Testing framework?\n  * How do I group runs from multi-turn interactions?\n  * How do I get the run ID from a call?\n  * How do I get the URL of the run?\n  * How do I log traces without environment variables?\n  * How do I turn tracing off?\n  * How do I export runs?\n  * How do I ensure logging is completed before exiting my application?\n  * How do I log to LangSmith if I am not using LangChain?\n  * When logging with the SDK, which fields can I update when I patch?\n  * How do I search and filter runs?\n  * How do I use the playground for runs logged using the SDK?\n\nCommunity\n\n  * Discord\n  * Twitter\n\nGitHub\n\n  * Docs Code\n  * LangSmith SDK\n  * Python\n  * JS\/TS\n\nMore\n\n  * Homepage\n  * Blog\n\nCopyright \u00a9 2023 LangChain, Inc.\n\n\n\n\nSkip to main content\n\n **\ud83e\udd9c\ufe0f\ud83d\udee0\ufe0f LangSmith Docs**Python DocsJS\/TS Docs\n\nSearch\n\nGo to App\n\n  * LangSmith\n  * Overview\n  * Tracing\n\n    * Overview\n    * FAQs\n    * Use Cases\n\n  * Testing &amp; Evaluation\n\n    * Overview\n    * Quick Start\n    * Datasets\n    * LangChain Evaluators\n    * Custom Evaluators\n    * Feedback\n    * Additional Resources\n\n  * Organizations\n\n    * Overview\n  * Hub\n\n    * Quick Start\n    * Developer Setup\n    * FAQs\n\n  *   * Tracing\n\n# Tracing\n\n## \ud83d\udcc4\ufe0f Overview\n\nLangSmith helps you visualize, debug, and improve your LLM apps. This section\nreviews some functionality LangSmith provides around logging and tracing.\n\n## \ud83d\udcc4\ufe0f FAQs\n\nThe following are some frequently asked questions about logging runs to\nLangSmith:\n\n## \ud83d\uddc3\ufe0f Use Cases\n\n4 items\n\nPrevious\n\nOverview\n\nNext\n\nOverview\n\nCommunity\n\n  * Discord\n  * Twitter\n\nGitHub\n\n  * Docs Code\n  * LangSmith SDK\n  * Python\n  * JS\/TS\n\nMore\n\n  * Homepage\n  * Blog\n\nCopyright \u00a9 2023 LangChain, Inc.\n\n\n?\u200b\n\nMany application experiences involve multiple interactions outside a single\ncall to an agent or chain. By default, these are saved as separate runs\n(though the memory and chat history is logged where appropriate).\n\nTo group these runs together, we offer convenience methods in both Python and\nJS that save all runs within a defined context beneath a virtual parent run.\n\n  * Python\n  * Typescript\n\n    \n    \n    from langchain.callbacks.manager import (  \n        trace_as_chain_group,  \n        atrace_as_chain_group,  \n    )  \n      \n    with trace_as_chain_group(\"my_group_name\") as group_manager:  \n        \"\"\"Pass the group_manager as a callback to group all runs  \n        within this context\"\"\"  \n      \n    # Or for async code  \n    async with atrace_as_chain_group(\"my_group_name\") as async_group_manager:  \n        \"\"\"Async applications are better suited with the async callback manager\"\"\"  \n      \n    # Example usage:  \n    from langchain.chat_models import ChatOpenAI  \n    from langchain.chains import LLMChain  \n    from langchain.prompts import PromptTemplate  \n      \n    llm = ChatOpenAI(temperature=0.9)  \n    prompt = PromptTemplate(  \n        input_variables=[\"question\"],  \n        template=\"What is the answer to {question}?\",  \n    )  \n    chain = LLMChain(llm=llm, prompt=prompt)  \n    with trace_as_chain_group(\"my_group\") as group_manager:  \n        chain.invoke({\"question\": \"What is your name?\"}, config={\"callbacks\": group_manager})  \n        chain.invoke({\"question\": \"What is your quest?\"}, config={\"callbacks\": group_manager})  \n        chain.invoke({\"question\": \"What is your favorite color?\"}, config={\"callbacks\": group_manager})  \n    \n    \n    \n    import { CallbackManager, traceAsGroup, TraceGroup } from \"langchain\/callbacks\";  \n    import { LLMChain } from \"langchain\/chains\";  \n    import { ChatOpenAI } from \"langchain\/chat_models\/openai\";  \n    import { PromptTemplate } from \"langchain\/prompts\";  \n      \n    \/\/ Initialize the LLMChain  \n    const llm = new ChatOpenAI({ temperature: 0.9 });  \n    const prompt = new PromptTemplate({  \n      inputVariables: [\"question\"],  \n      template: \"What is the answer to {question}?\",  \n    });  \n    const chain = new LLMChain({ llm, prompt });  \n    \/\/ You can group runs together using the traceAsGroup function  \n    const blockResult = await traceAsGroup(  \n      { name: \"my_group_name\" },  \n      async (manager: CallbackManager, questions: string[]) =&gt; {  \n        await chain.invoke({ question: questions[0] }, { callbacks: manager });  \n        await chain.invoke({ question: questions[1] }, { callbacks: manager });  \n        const finalResult = await chain.invoke(  \n          { question: questions[2] },  \n          { callbacks: manager }  \n        );  \n        return finalResult;  \n      },  \n      [\"What is your name?\", \"What is your quest?\", \"What is your favorite color?\"]  \n    );  \n    console.log(blockResult);  \n      \n    \/\/ Or you can manually control the start and end of the grouped run  \n    const traceGroup = new TraceGroup(\"my_group_name\");  \n    const groupManager = await traceGroup.start();  \n    try {  \n      await chain.invoke({ question: \"What is your name?\" }, { callbacks: groupManager });  \n      await chain.invoke({ question: \"What is your quest?\" }, { callbacks: groupManager });  \n      await chain.invoke(  \n        { question: \"What is the airspeed velocity of an unladen swallow?\" },  \n        { callbacks: groupManager }  \n      );  \n    } finally {  \n      \/\/ Code goes here  \n      await traceGroup.end();  \n    }  \n    \n\n### How do I get the run ID from a call?\u200b\n\nIn Typescript, the run ID is returned in the call response under the `__run`\nkey. In python, we recommend using the run collector callback. Below is an\nexample:\n\n  * Python\n  * TypeScript\n\n    \n    \n    from langchain import chat_models, prompts, callbacks  \n    chain = (  \n        prompts.ChatPromptTemplate.from_template(\"Say hi to {name}\")  \n        | chat_models.ChatOpenAI()  \n    )  \n    with callbacks.collect_runs() as cb:  \n      result = chain.invoke({\"name\": \"Clara\"})  \n      run_id = id.traced_runs[0].id  \n    print(run_id)  \n    \n\nFor older versions of LangChain (&lt;0.0.276), you can instruct the chain to\nreturn the run ID by specifying the `include_run_info=True` parameter to the\ncall function:\n\n    \n    \n    from langchain.chat_models import ChatOpenAI  \n    from langchain.chains import LLMChain  \n      \n    chain = LLMChain.from_string(ChatOpenAI(), \"Say hi to {name}\")  \n    response = chain(\"Clara\", include_run_info=True)  \n    run_id = response[\"__run\"].run_id  \n    print(run_id)  \n    \n\nFor python LLMs\/chat models, the run information is returned automatically\nwhen calling the `generate()` method. Example:\n\n    \n    \n    from langchain.chat_models import ChatOpenAI  \n     from langchain.prompts import ChatPromptTemplate  \n       \n     chat_model = ChatOpenAI()  \n       \n     prompt = ChatPromptTemplate.from_messages(  \n         [  \n             (\"system\", \"You are a cat\"),  \n             (\"human\", \"Hi\"),  \n         ]  \n     )  \n     res = chat_model.generate(messages=[prompt.format_messages()])  \n     res.run[0].run_id  \n    \n\nor for LLMs\n\n    \n    \n    python  \n     from langchain.llms import OpenAI  \n      \n    openai = OpenAI()  \n    res = openai.generate([\"You are a good bot\"])  \n    print(res.run[0].run_id)  \n    \n    \n    \n    import { ChatOpenAI } from \"langchain\/chat_models\/openai\";  \n    import { LLMChain } from \"langchain\/chains\";  \n    import { PromptTemplate } from \"langchain\/prompts\";  \n      \n    const prompt = PromptTemplate.fromTemplate(\"Say hi to {name}\");  \n    const chain = new LLMChain({  \n      llm: new ChatOpenAI(),  \n      prompt: prompt,  \n    });  \n      \n    const response = await chain.invoke({ name: \"Clara\" });  \n    console.log(response.__run);  \n    \n\n### How do I get the URL of the run?\u200b\n\nRuns are streamed to whichever project you have configured (\"default\" if none\nis set), and you can view them by opening the project page. To\nprogrammatically access the run's URL, you can use the LangSmith client. This\ncan be conveniently used in conjunction with the above method to get the run\nID from a call. Below is an example.\n\n _Note: This requires_ `langsmith&gt;=0.0.11`\n\n  * Python\n  * Typescript\n\n    \n    \n    from langsmith import Client  \n      \n    client = Client()  \n    run = client.read_run(\"&lt;run_id&gt;\")  \n    print(run.url)  \n    \n    \n    \n    import { Client } from \"langsmith\";  \n      \n    const client = new Client();  \n    const runUrl = await client.getRunUrl({runId: \"&lt;run_id&gt;\"});  \n    console.log(runUrl);  \n    \n\n### How do I log traces without environment variables?\u200b\n\nSome situations don't permit the use of environment variables or don't expose\n`process.env`. This is mostly pertinent when running LangChain apps in certain\nJavaScript runtime environments. To add tracing in these situations, you can\nmanually create the `LangChainTracer` callback and pass it to the chain, LLM,\nor other LangChain component, either when initializing or in the call itself.\nThis is the same tactic used for changing the tracer project within a program.\n\nExample:\n\n  * Python\n  * Typescript\n\n    \n    \n    from langchain.callbacks import LangChainTracer  \n    from langchain.chat_models import ChatOpenAI  \n    from langsmith import Client  \n      \n    callbacks = [  \n      LangChainTracer(  \n        project_name=\"YOUR_PROJECT_NAME_HERE\",  \n        client=Client(  \n          api_url=\"https:\/\/api.smith.langchain.com\",  \n          api_key=\"YOUR_API_KEY_HERE\"  \n        )  \n      )  \n    ]  \n      \n    llm = ChatOpenAI(callbacks=callbacks)  \n    llm.invoke(\"Hello, world!\")  \n    \n    \n    \n    import { Client } from \"langsmith\";  \n    import { LangChainTracer } from \"langchain\/callbacks\";  \n    import { ChatOpenAI } from \"langchain\/chat_models\/openai\";  \n      \n    const llm = new ChatOpenAI({  \n      callbacks: [  \n        new LangChainTracer({  \n          projectName: \"YOUR_PROJECT_NAME_HERE\",  \n          client: new Client({  \n            apiUrl: \"https:\/\/api.smith.langchain.com\",  \n            apiKey: \"YOUR_API_KEY_HERE\",  \n          }),  \n        }),  \n      ],  \n    });  \n    await llm.invoke(\"Hello, world!\");  \n    \n\nThis tactic is also useful for when you have multiple chains running in a\nshared environment but want to log their run traces to different projects.\n\n### How do I turn tracing off?\u200b\n\nIf you've decided you no longer want to trace your runs, you can remove the\nenvironment variables configured to start tracing in the"},{"role":"user","content":"How do I use a traceable decorator?"}],"output":{"role":"assistant","content":"The `traceable` decorator is a convenient way to log the execution of a function as a run in LangSmith. It can be used in Python to trace function calls and log them to LangSmith. Here's an example of how to use the `traceable` decorator:\n\n```python\nfrom langsmith import traceable\n\n@traceable(run_type=\"llm\", name=\"my_function\")\ndef my_function(arg1, arg2):\n    # Function logic goes here\n    return result\n```\n\nIn this example, the `traceable` decorator is applied to the `my_function` function. The `run_type` parameter specifies the type of the run (e.g., \"llm\", \"chain\", \"tool\"), and the `name` parameter specifies the name of the run. You can customize these parameters according to your needs.\n\nWhen the `my_function` is called, it will be logged as a run in LangSmith. The run will include information such as the function name, input arguments, and output result.\n\nNote that the `traceable` decorator requires the LangSmith SDK to be installed and configured properly. Make sure you have the SDK installed and your API key set up before using the decorator."},"run_id":"a05e1668-57b4-4e4d-99d9-1f8578ddba5d"},"1":{"funcs":[],"inputs":[{"role":"system","content":"You are a helpful documentation Q&amp;A assistant, trained to answer questions from LangSmith's documentation. LangChain is a framework for building applications using large language models.\nThe current time is 2023-09-05 16:49:07.308007.\n\nRelevant documents will be retrieved in the following messages."},{"role":"system","content":"\ud83e\udd9c\ufe0f\ud83d\udee0\ufe0f LangSmith Search \ud83e\udd9c\ufe0f\ud83d\udee0\ufe0f LangSmith UTF-8\nhttps:\/\/smith.langchain.com\/img\/favicon.ico https:\/\/smith.langchain.com\/\n\n\n\n\nSkip to main content\n\n **\ud83e\udd9c\ufe0f\ud83d\udee0\ufe0f LangSmith Docs**Python DocsJS\/TS Docs\n\nSearch\n\nGo to App\n\n  * LangSmith\n  * Overview\n  * Tracing\n\n    * Overview\n    * FAQs\n    * Use Cases\n\n  * Testing &amp; Evaluation\n\n    * Overview\n    * Quick Start\n    * Datasets\n    * LangChain Evaluators\n    * Custom Evaluators\n    * Feedback\n    * Additional Resources\n\n  * Organizations\n\n    * Overview\n  * Hub\n\n    * Quick Start\n    * Developer Setup\n    * FAQs\n\n  *   * Testing &amp; Evaluation\n  * Datasets\n\nOn this page\n\n# Datasets\n\nDatasets are a collections of examples that can be used to evaluate or\notherwise improve a chain, agent, or model. Examples are rows in the dataset,\ncontaining the inputs and (optionally) expected outputs for a given\ninteraction. Below we will go over the current types of datasets as well as\ndifferent ways to create them.\n\n## Dataset types\u200b\n\nThere are currently three types of datasets.\n\n  * `kv` datasets are the default type, where inputs and outputs can be any dictionary. These are useful for more custom workflows, but when there are more than one key-value pair, additional configuration may be required to use for evaluation.\n  * `llm` datasets have an `\"inputs\"` dictionary which contains a single `\"input\"` key mapped to a single prompt string. Similarly, the `\"outputs\"` dictionary contains a single `\"output\"` key mapped to a single response string.\n  * `chat` dataset have and `\"inputs\"` dictionary contains a single `\"input\"` key mapped to a single list of serialized chat messages. The `\"outputs\"` dictionary contains a single `\"output\"` key mapped to a single list of serialized chat messages.\n\n## Managing datasets in the web app\u200b\n\n### From Existing Runs\u200b\n\nWe typically construct datasets over time by collecting representative\nexamples from debugging or other runs. To do this, we first filter the runs to\nfind the ones we want to add to the dataset. Then, we create a dataset and add\nthe runs as examples.\n\nYou can do this from any 'run' details page by clicking the 'Add to Dataset'\nbutton in the top right-hand corner.\n\nFrom there, we select the dataset to organize it in and update the ground\ntruth output values if necessary.\n\n### Upload a CSV\u200b\n\nThe easiest way to create a dataset from your own data is by clicking the\n'upload a CSV dataset' button on the home page or in the top right-hand corner\nof the 'Datasets &amp; Testing' page.\n\nSelect a name and description for the dataset, and then confirm that the\ninferred input and output columns are correct.\n\n### Exporting datasets to other formats\u200b\n\nYou can export your LangSmith dataset to CSV or OpenAI evals format directly\nfrom the web application.\n\nTo do so, click \"Export Dataset\" from the homepage. To do so, select a\ndataset, click on \"Examples\", and then click the \"Export Dataset\" button at\nthe top of the examples table.\n\nThis will open a modal where you can select the format you want to export to.\n\n## Creating datasets using the client\u200b\n\nYou can create a dataset from existing runs or upload a CSV file (or pandas\ndataframe in python).\n\nOnce you have a dataset created, you can continue to add new runs to it as\nexamples. We recommend that you organize datasets to target a single \"task\",\nusually served by a single chain or LLM. For more discussions on datasets and\nevaluations, check out the recommendations.\n\n### Create from list of examples\u200b\n\nThe most flexible way to make a dataset using the client is by creating\nexamples from a list of inputs and optional outputs. Below is an example.\n\n  * Python\n  * Typescript\n\n    \n    \n    from langsmith import Client  \n      \n    example_inputs = [  \n      (\"What is the largest mammal?\", \"The blue whale\"),  \n      (\"What do mammals and birds have in common?\", \"They are both warm-blooded\"),  \n      (\"What are reptiles known for?\", \"Having scales\"),  \n      (\"What's the main characteristic of amphibians?\", \"They live both in water and on land\"),  \n    ]  \n      \n    client = Client()  \n    dataset_name = \"Elementary Animal Questions\"  \n      \n    # Storing inputs in a dataset lets us  \n    # run chains and LLMs over a shared set of examples.  \n    dataset = client.create_dataset(  \n        dataset_name=dataset_name, description=\"Questions and answers about animal phylogenetics.\",  \n    )  \n    for input_prompt, output_answer in example_inputs:  \n        client.create_example(  \n            inputs={\"question\": input_prompt},  \n            outputs={\"answer\": output_answer},  \n            dataset_id=dataset.id,  \n        )  \n    \n    \n    \n    import { Client } from \"langsmith\";  \n      \n    const client = new Client({  \n      \/\/ apiUrl: \"https:\/\/api.langchain.com\", \/\/ Defaults to the LANGCHAIN_ENDPOINT env var  \n      \/\/ apiKey: \"my_api_key\", \/\/ Defaults to the LANGCHAIN_API_KEY env var  \n      \/* callerOptions: {  \n             maxConcurrency?: Infinity; \/\/ Maximum number of concurrent requests to make  \n             maxRetries?: 6; \/\/ Maximum number of retries to make  \n      }*\/  \n    });  \n      \n    const exampleInputs: [string, string][] = [  \n      [\"What is the largest mammal?\", \"The blue whale\"],  \n      [\"What do mammals and birds have in common?\", \"They are both warm-blooded\"],  \n      [\"What are reptiles known for?\", \"Having scales\"],  \n      [\"What's the main characteristic of amphibians?\", \"They live both in water and on land\"],  \n    ];  \n      \n    const datasetName = \"Elementary Animal Questions\";  \n      \n    \/\/ Storing inputs in a dataset lets us  \n    \/\/ run chains and LLMs over a shared set of examples.  \n    const dataset = await client.createDataset(datasetName, {  \n      description: \"Questions and answers about animal phylogenetics\",  \n    });  \n      \n    for (const [inputPrompt, outputAnswer] of exampleInputs) {  \n      await client.createExample(  \n        { question: inputPrompt },  \n        { answer: outputAnswer },  \n        {  \n          datasetId: dataset.id,  \n        }  \n      );  \n    }  \n    \n\n### Create from existing runs\u200b\n\nTo create datasets from existing runs, you can use the same approach. Below is\nan example:\n\n  * Python\n  * Typescript\n\n    \n    \n    from langsmith import Client  \n      \n    os.environ[\"LANGCHAIN_ENDPOINT\"] = \"https:\/\/api.smith.langchain.com\"  \n    os.environ[\"LANGCHAIN_API_KEY\"] = \"&lt;YOUR-LANGSMITH-API-KEY&gt;\"   \n    client = Client()  \n    dataset_name = \"Example Dataset\"  \n      \n    # Filter runs to add to the dataset  \n    runs = client.list_runs(  \n        project_name=\"my_project\",  \n        execution_order=1,  \n        error=False,  \n    )  \n      \n    dataset = client.create_dataset(dataset_name, description=\"An example dataset\")  \n    for run in runs:  \n        client.create_example(  \n            inputs=run.inputs,  \n            outputs=run.outputs,  \n            dataset_id=dataset.id,  \n        )  \n    \n    \n    \n    import { Client, Run } from \"langsmith\";  \n    const client = new Client({  \n      \/\/ apiUrl: \"https:\/\/api.langchain.com\", \/\/ Defaults to the LANGCHAIN_ENDPOINT env var  \n      \/\/ apiKey: \"my_api_key\", \/\/ Defaults to the LANGCHAIN_API_KEY env var  \n      \/* callerOptions: {  \n             maxConcurrency?: Infinity; \/\/ Maximum number of concurrent requests to make  \n             maxRetries?: 6; \/\/ Maximum number of retries to make  \n      }*\/  \n    });  \n      \n    const datasetName = \"Example Dataset\";  \n    \/\/ Filter runs to add to the dataset  \n    const runs: Run[] = [];  \n    for await (const run of client.listRuns({  \n      projectName: \"my_project\",  \n      executionOrder: 1,  \n      error: false,  \n    })) {  \n      runs.push(run);  \n    }  \n      \n    const dataset = await client.createDataset(datasetName, {  \n      description: \"An example dataset\",  \n      dataType: \"kv\",  \n    });  \n      \n    for (const run of runs) {  \n      await client.createExample(run.inputs, run.outputs ?? {}, {  \n        datasetId: dataset.id,  \n      });  \n    }  \n    \n\n### Create dataset from CSV\u200b\n\nIn this section, we will demonstrate how you can create a dataset by uploading\na CSV file.\n\nFirst, ensure your CSV file is properly formatted with columns that represent\nyour input and output keys. These keys will be utilized to map your data\nproperly during the upload. You can specify an optional name and description\nfor your dataset. Otherwise, the file name will be used as the dataset name\nand no description will be provided.\n\n  * Python\n  * Typescript\n\n    \n    \n    from langsmith import Client  \n    import os  \n      \n    os.environ[\"LANGCHAIN_ENDPOINT\"] = \"https:\/\/api.smith.langchain.com\"  \n    os.environ[\"LANGCHAIN_API_KEY\"] = \"&lt;YOUR-LANGSMITH-API-KEY&gt;\"  \n      \n    client = Client()  \n      \n    csv_file = 'path\/to\/your\/csvfile.csv'   \n    input_keys = ['column1', 'column2'] # replace with your input column names  \n    output_keys = ['output1', 'output2\n\n\nSkip to main content\n\n **\ud83e\udd9c\ufe0f\ud83d\udee0\ufe0f LangSmith Docs**Python DocsJS\/TS Docs\n\nSearch\n\nGo to App\n\n  * LangSmith\n  * Overview\n  * Tracing\n\n    * Overview\n    * FAQs\n    * Use Cases\n\n  * Testing &amp; Evaluation\n\n    * Overview\n    * Quick Start\n    * Datasets\n    * LangChain Evaluators\n    * Custom Evaluators\n    * Feedback\n    * Additional Resources\n\n  * Organizations\n\n    * Overview\n  * Hub\n\n    * Quick Start\n    * Developer Setup\n    * FAQs\n\n  *   * Overview\n\nOn this page\n\n# LangSmith Overview and User Guide\n\nBuilding reliable LLM applications can be challenging. LangChain simplifies\nthe initial setup, but there is still work needed to bring the performance of\nprompts, chains and agents up the level where they are reliable enough to be\nused in production.\n\nOver the past two months, we at LangChain have been building and using\nLangSmith with the goal of bridging this gap. This is our tactical user guide\nto outline effective ways to use LangSmith and maximize its benefits.\n\n## On by default\u200b\n\nAt LangChain, all of us have LangSmith\u2019s tracing running in the background by\ndefault. On the Python side, this is achieved by setting environment\nvariables, which we establish whenever we launch a virtual environment or open\nour bash shell and leave them set. The same principle applies to most\nJavaScript environments through `process.env`1.\n\nThe benefit here is that all calls to LLMs, chains, agents, tools, and\nretrievers are logged to LangSmith. Around 90% of the time we don\u2019t even look\nat the traces, but the 10% of the time that we do\u2026 it\u2019s so helpful. We can use\nLangSmith to debug:\n\n  * An unexpected end result\n  * Why an agent is looping\n  * Why a chain was slower than expected\n  * How many tokens an agent used\n\n## Debugging\u200b\n\nDebugging LLMs, chains, and agents can be tough. LangSmith helps solve the\nfollowing pain points:\n\n### What was the exact input to the LLM?\u200b\n\nLLM calls are often tricky and non-deterministic. The inputs\/outputs may seem\nstraightforward, given they are technically `string` \u2192 `string` (or `chat\nmessages` \u2192 `chat message`), but this can be misleading as the input string is\nusually constructed from a combination of user input and auxiliary functions.\n\nMost inputs to an LLM call are a combination of some type of fixed template\nalong with input variables. These input variables could come directly from\nuser input or from an auxiliary function (like retrieval). By the time these\ninput variables go into the LLM they will have been converted to a string\nformat, but often times they are not naturally represented as a string (they\ncould be a list, or a Document object). Therefore, it is important to have\nvisibility into what _exactly_ the final string going into the LLM is. This\nhas helped us debug bugs in formatting logic, unexpected transformations to\nuser input, and straight up missing user input.\n\nTo a much lesser extent, this is also true of the output of an LLM. Oftentimes\nthe output of an LLM is technically a string but that string may contain some\nstructure (json, yaml) that is intended to be parsed into a structured\nrepresentation. Understanding what the exact output is can help determine if\nthere may be a need for different parsing.\n\nLangSmith provides a straightforward visualization of the exact inputs\/outputs\nto all LLM calls, so you can easily understand them.\n\n### If I edit the prompt, how does that affect the output?\u200b\n\nSo you notice a bad output, and you go into LangSmith to see what's going on.\nYou find the faulty LLM call and are now looking at the exact input. You want\nto try changing a word or a phrase to see what happens -- what do you do?\n\nWe constantly ran into this issue. Initially, we copied the prompt to a\nplayground of sorts. But this got annoying, so we built a playground of our\nown! When examining an LLM call, you can click the `Open in Playground` button\nto access this playground. Here, you can modify the prompt and re-run it to\nobserve the resulting changes to the output - as many times as needed!\n\nCurrently, this feature supports only OpenAI and Anthropic models and works\nfor LLM and Chat Model calls. We plan to extend its functionality to more LLM\ntypes, chains, agents, and retrievers in the future.\n\n### What is the exact sequence of events?\u200b\n\nIn complicated chains and agents, it can often be hard to understand what is\ngoing on under the hood. What calls are being made? In what order? What are\nthe inputs and outputs of each call?\n\nLangSmith's built-in tracing feature offers a visualization to clarify these\nsequences. This tool is invaluable for understanding intricate and lengthy\nchains and agents. For chains, it can shed light on the sequence of calls and\nhow they interact. For agents, where the sequence of calls is non-\ndeterministic, it helps visualize the specific sequence for a given run --\nsomething that is impossible to know ahead of time.\n\n### Why did my chain take much longer than expected?\u200b\n\nIf a chain takes longer than expected, you need to identify the cause. By\ntracking the latency of each step, LangSmith lets you identify and possibly\neliminate the slowest components.\n\n### How many tokens were used?\u200b\n\nBuilding and prototyping LLM applications can be expensive. LangSmith tracks\nthe total token usage for a chain and the token usage of each step. This makes\nit easy to identify potentially costly parts of the chain.\n\n### Collaborative debugging\u200b\n\nIn the past, sharing a faulty chain with a colleague for debugging was\nchallenging when performed locally. With LangSmith, we've added a \u201cShare\u201d\nbutton that makes the chain and LLM runs accessible to anyone with the shared\nlink.\n\n## Collecting examples\u200b\n\nMost of the time we go to debug, it's because something bad or unexpected\noutcome has happened in our application. These failures are valuable data\npoints! By identifying how our chain can fail and monitoring these failures,\nwe can test future chain versions against these known issues.\n\nWhy is this so impactful? When building LLM applications, it\u2019s often common to\nstart without a dataset of any kind. This is part of the power of LLMs! They\nare amazing zero-shot learners, making it possible to get started as easily as\npossible. But this can also be a curse -- as you adjust the prompt, you're\nwandering blind. You don\u2019t have any examples to benchmark your changes\nagainst.\n\nLangSmith addresses this problem by including an \u201cAdd to Dataset\u201d button for\neach run, making it easy to add the input\/output examples a chosen dataset.\nYou can edit the example before adding them to the dataset to include the\nexpected result, which is particularly useful for bad examples.\n\nThis feature is available at every step of a nested chain, enabling you to add\nexamples for an end-to-end chain, an intermediary chain (such as a LLM Chain),\nor simply the LLM or Chat Model.\n\nEnd-to-end chain examples are excellent for testing the overall flow, while\nsingle, modular LLM Chain or LLM\/Chat Model examples can be beneficial for\ntesting the simplest and most directly modifiable components.\n\n## Testing &amp; evaluation\u200b\n\nInitially, we do most of our evaluation manually and ad hoc. We pass in\ndifferent inputs, and see what happens. At some point though, our application\nis performing well and we want to be more rigorous about testing changes. We\ncan use a dataset that we\u2019ve constructed along the way (see above).\nAlternatively, we could spend some time constructing a small dataset by hand.\nFor these situations, LangSmith simplifies dataset uploading.\n\nOnce we have a dataset, how can we use it to test changes to a prompt or\nchain? The most basic approach is to run the chain over the data points and\nvisualize the outputs. Despite technological advancements, there still is no\nsubstitute for looking at outputs by eye. Currently, running the chain over\nthe data points needs to be done client-side. The LangSmith client makes it\neasy to pull down a dataset and then run a chain over them, logging the\nresults to a new project associated with the dataset. From there, you can\nreview them. We've made it easy to assign feedback to runs and mark them as\ncorrect or incorrect directly in the web app, displaying aggregate statistics\nfor each test project.\n\nWe also make it easier to evaluate these runs. To that end, we've added a set\nof evaluators to the open-source LangChain library. These evaluators can be\nspecified when initiating a test run and will evaluate the results once the\ntest run completes. If we\u2019re being honest, most of these evaluators aren't\nperfect. We would not recommend that you trust them blindly. However, we do\nthink they are useful for guiding your eye to examples you should look at.\nThis becomes especially valuable as the number of data points increases and it\nbecomes infeasible to look at each one manually.\n\n### Monitoring\u200b\n\nAfter all this, your app might finally ready to go in production. LangSmith\ncan also be used to monitor your application in much the same way that you\nused for debugging. You can log all traces, visualize latency and token usage\nstatistics, and\ncorrect or incorrect directly in the web app, displaying aggregate statistics\nfor each test project.\n\nWe also make it easier to evaluate these runs. To that end, we've added a set\nof evaluators to the open-source LangChain library. These evaluators can be\nspecified when initiating a test run and will evaluate the results once the\ntest run completes. If we\u2019re being honest, most of these evaluators aren't\nperfect. We would not recommend that you trust them blindly. However, we do\nthink they are useful for guiding your eye to examples you should look at.\nThis becomes especially valuable as the number of data points increases and it\nbecomes infeasible to look at each one manually.\n\n### Monitoring\u200b\n\nAfter all this, your app might finally ready to go in production. LangSmith\ncan also be used to monitor your application in much the same way that you\nused for debugging. You can log all traces, visualize latency and token usage\nstatistics, and troubleshoot specific issues as they arise. Each run can also\nbe assigned string tags or key-value metadata, allowing you to attach\ncorrelation ids or AB test variants, and filter runs accordingly.\n\nWe\u2019ve also made it possible to associate feedback programmatically with runs.\nThis means that if your application has a thumbs up\/down button on it, you can\nuse that to log feedback back to LangSmith. This can be used to track\nperformance over time and pinpoint under performing data points, which you can\nsubsequently add to a dataset for future testing \u2014 mirroring the debug mode\napproach.\n\nWe\u2019ve provided several examples in the LangSmith documentation for extracting\ninsights from logged runs. In addition to guiding you on performing this task\nyourself, we also provide examples of integrating with third parties for this\npurpose. We're eager to expand this area in the coming months! If you have\nideas for either -- an open-source way to evaluate, or are building a company\nthat wants to do analytics over these runs, please reach out.\n\n## Exporting datasets\u200b\n\nLangSmith makes it easy to curate datasets. However, these aren\u2019t just useful\ninside LangSmith; they can be exported for use in other contexts. Notable\napplications include exporting for use in OpenAI Evals or fine-tuning, such as\nwith FireworksAI.\n\n* * *\n\n  1.  _To set up tracing in Deno, web browsers, or other runtime environments without access to the environment, check out theFAQs._\u21a9\n\nPrevious\n\nLangSmith\n\nNext\n\nTracing\n\n  * On by default\n  * Debugging\n    * What was the exact input to the LLM?\n    * If I edit the prompt, how does that affect the output?\n    * What is the exact sequence of events?\n    * Why did my chain take much longer than expected?\n    * How many tokens were used?\n    * Collaborative debugging\n  * Collecting examples\n  * Testing &amp; evaluation\n    * Monitoring\n  * Exporting datasets\n\nCommunity\n\n  * Discord\n  * Twitter\n\nGitHub\n\n  * Docs Code\n  * LangSmith SDK\n  * Python\n  * JS\/TS\n\nMore\n\n  * Homepage\n  * Blog\n\nCopyright \u00a9 2023 LangChain, Inc.\n\n"},{"role":"user","content":"What's a langsmith dataset?"}],"output":{"role":"assistant","content":"A LangSmith dataset is a collection of examples that can be used to evaluate or improve a chain, agent, or model built using the LangSmith framework. Examples in a dataset consist of inputs and (optionally) expected outputs for a given interaction. There are three types of datasets in LangSmith:\n\n1. `kv` datasets: These are the default type where inputs and outputs can be any dictionary. They are useful for custom workflows, but additional configuration may be required when there are multiple key-value pairs.\n\n2. `llm` datasets: These datasets have an `\"inputs\"` dictionary containing a single `\"input\"` key mapped to a single prompt string. The `\"outputs\"` dictionary contains a single `\"output\"` key mapped to a single response string.\n\n3. `chat` datasets: These datasets have an `\"inputs\"` dictionary containing a single `\"input\"` key mapped to a list of serialized chat messages. The `\"outputs\"` dictionary contains a single `\"output\"` key mapped to a list of serialized chat messages.\n\nYou can manage datasets in the LangSmith web app by creating them from existing runs, uploading a CSV file, or exporting them to other formats like CSV or OpenAI evals format. Datasets are valuable for testing, evaluation, and monitoring the performance of your language models and applications."},"run_id":"6b9f6c78-dbef-4352-8e4e-0b1777b59cf0"},"2":{"funcs":[],"inputs":[{"role":"system","content":"You are a helpful documentation Q&amp;A assistant, trained to answer questions from LangSmith's documentation. LangChain is a framework for building applications using large language models.\nThe current time is 2023-09-05 16:49:07.308007.\n\nRelevant documents will be retrieved in the following messages."},{"role":"system","content":"\n\nSkip to main content\n\n **\ud83e\udd9c\ufe0f\ud83d\udee0\ufe0f LangSmith Docs**Python DocsJS\/TS Docs\n\nSearch\n\nGo to App\n\n  * LangSmith\n  * Overview\n  * Tracing\n\n    * Overview\n    * FAQs\n    * Use Cases\n\n  * Testing &amp; Evaluation\n\n    * Overview\n    * Quick Start\n    * Datasets\n    * LangChain Evaluators\n    * Custom Evaluators\n    * Feedback\n    * Additional Resources\n\n  * Organizations\n\n    * Overview\n  * Hub\n\n    * Quick Start\n    * Developer Setup\n    * FAQs\n\n  *   * Organizations\n  * Overview\n\nOn this page\n\n# Organizations\n\nOrganizations let you collaborate with your teammates in LangSmith by creating\nshared projects, datasets, and more. Below, we will walk through setting up\nyour first organization and respond to some frequently asked questions.\n\nEnterprise Support\n\nOrganization support in LangSmith is still in early beta. We currently allow\nup to 5 people per organization. If you want to collaborate in larger teams,\nor for more dedicated support, please contact us at support@langchain.dev, and\nwe will reach out to you shortly.\n\nWe are actively rolling out more functionality to improve your collaboration\nexperience. If you face issues or have additional feature requests, please\ndon't hesitate to let us know.\n\nThank you!\n\n## Create an organization\u200b\n\nTo start, log in to LangSmith, navigate to the Organizations page and select\n\"Create Organization\". You can also find this page by clicking on the key icon\nin the left sidebar. All that's required is a team name.\n\n#### Invite teammates\u200b\n\nWhile creating your organization, you can add email addresses for up to four\ncollaborators by typing them in the \"invites\" field of the creation form.\nThese team members will receive an invitation email once they're added.\n\nYou can later invite team members at any time by navigating to the\nOrganizations page, selecting the desired organization, and clicking \"Invite\nMembers\".\n\n#### Accept invitation\u200b\n\nIf your team member already has a LangSmith account, they can join your\norganization from the LangSmith homepage by clicking \"Accept\" on the\ninvitation dialog. If they do not have a LangSmith account, they will be\nprompted to create one.\n\nWaitlist\n\nInviting a teammate does not let them bypass the LangSmith waitlist. If you\nhave immediate need for additional team members, please reach out to us at\nsupport@langchain.dev.\n\nOnce your teammates have joined you can start collaborating!\n\n#### Logging traces to your organization\u200b\n\nTo start using your organization, navigate to the Organizations page, select\nthe desired organization, and create a new API key. Use the API key by\nconfiguring the environment variables in your application environment or by\ndirectly passing it to the LangSmith SDK.\n\n    \n    \n    export LANGCHAIN_TRACING_V2=true  \n    export LANGCHAIN_API_KEY=&lt;your-organizations-api-key&gt;  \n    \n\nNow all traces will be logged to a project within your new organization.\n\nAPI keys\n\nEach API key is scoped to an organization. Logging or reading from a project\nin a different organization is as easy as changing the API key used to connect\nto the LangSmith endpoint.\n\n## FAQs\u200b\n\nBelow are some common questions:\n\n### How do I migrate projects between organizations?\u200b\n\nCurrently we do not support project migration betwen organizations. While you\ncan manually imitate this by reading and writing runs and datasets using the\nSDK (see the exporting runs examples here), it will be fastest to create a new\nproject within your organization and go from there.\n\n### Why aren't my runs aren't showing up in my project?\u200b\n\nIf you aren't seeing any warnings when running your application, it may be\nthat you are still using an API key from your \"personal\" organization. Check\nyour most recent runs there to confirm by selecting your \"Personal\"\norganization in the Organizations page and then viewing your projects.\n\nIf you still running into issues, please reach out to us at\nsupport@langchain.dev.\n\n### My team deals with sensitive data that cannot be logged. How can I ensure\nthat only my team can access it?\u200b\n\nIf you are interested in a private deployment of LangSmith or if you need to\nself-host, please reach out to us at support@langchain.dev, and we will do our\nbest to unblock you promptly.\n\nPrevious\n\nOrganizations\n\nNext\n\nHub\n\n  * Create an organization\n  * FAQs\n    * How do I migrate projects between organizations?\n    * Why aren't my runs aren't showing up in my project?\n    * My team deals with sensitive data that cannot be logged. How can I ensure that only my team can access it?\n\nCommunity\n\n  * Discord\n  * Twitter\n\nGitHub\n\n  * Docs Code\n  * LangSmith SDK\n  * Python\n  * JS\/TS\n\nMore\n\n  * Homepage\n  * Blog\n\nCopyright \u00a9 2023 LangChain, Inc.\n\n\n\n\nSkip to main content\n\n **\ud83e\udd9c\ufe0f\ud83d\udee0\ufe0f LangSmith Docs**Python DocsJS\/TS Docs\n\nSearch\n\nGo to App\n\n  * LangSmith\n  * Overview\n  * Tracing\n\n    * Overview\n    * FAQs\n    * Use Cases\n\n  * Testing &amp; Evaluation\n\n    * Overview\n    * Quick Start\n    * Datasets\n    * LangChain Evaluators\n    * Custom Evaluators\n    * Feedback\n    * Additional Resources\n\n  * Organizations\n\n    * Overview\n  * Hub\n\n    * Quick Start\n    * Developer Setup\n    * FAQs\n\n  *   * Organizations\n\n# Organizations\n\nUse LangSmith to collaborate with your team on all your LLM applications.\nCheck out the guides below for more information.\n\n## \ud83d\udcc4\ufe0f Overview\n\nOrganizations let you collaborate with your teammates in LangSmith by creating\nshared projects, datasets, and more. Below, we will walk through setting up\nyour first organization and respond to some frequently asked questions.\n\nPrevious\n\nRecommendations\n\nNext\n\nOverview\n\nCommunity\n\n  * Discord\n  * Twitter\n\nGitHub\n\n  * Docs Code\n  * LangSmith SDK\n  * Python\n  * JS\/TS\n\nMore\n\n  * Homepage\n  * Blog\n\nCopyright \u00a9 2023 LangChain, Inc.\n\n\n\n\nSkip to main content\n\n **\ud83e\udd9c\ufe0f\ud83d\udee0\ufe0f LangSmith Docs**Python DocsJS\/TS Docs\n\nSearch\n\nGo to App\n\n  * LangSmith\n  * Overview\n  * Tracing\n\n    * Overview\n    * FAQs\n    * Use Cases\n\n  * Testing &amp; Evaluation\n\n    * Overview\n    * Quick Start\n    * Datasets\n    * LangChain Evaluators\n    * Custom Evaluators\n    * Feedback\n    * Additional Resources\n\n  * Organizations\n\n    * Overview\n  * Hub\n\n    * Quick Start\n    * Developer Setup\n    * FAQs\n\n  *   * Hub\n  * FAQs\n\nOn this page\n\n# Frequently Asked Questions\n\n### Why can't I use my organization with hub?\u200b\n\nHub is currently only available for \"Personal\" organizations! We are working\non adding support for other organizations.\n\n### Why can't I push anything other than prompts?\u200b\n\nHub currently only supports LangChain prompt objects. We are working on adding\nsupport for more!\n\nIf you have a specific request, please join the `hub-feedback` discord channel\nand let us know!\n\n### Can I upload a prompt to the hub from a LangSmith Trace?\u200b\n\nComing soon!\n\n### Can LangChain Hub do ____?\u200b\n\nMaybe, and we'd love to hear from you! Please join the `hub-feedback` discord\nchannel\n\nPrevious\n\nDeveloper Setup\n\n  * Why can't I use my organization with hub?\n  * Why can't I push anything other than prompts?\n  * Can I upload a prompt to the hub from a LangSmith Trace?\n  * Can LangChain Hub do ____?\n\nCommunity\n\n  * Discord\n  * Twitter\n\nGitHub\n\n  * Docs Code\n  * LangSmith SDK\n  * Python\n  * JS\/TS\n\nMore\n\n  * Homepage\n  * Blog\n\nCopyright \u00a9 2023 LangChain, Inc.\n\n\n\n\nSkip to main content\n\n **\ud83e\udd9c\ufe0f\ud83d\udee0\ufe0f LangSmith Docs**Python DocsJS\/TS Docs\n\nSearch\n\nGo to App\n\n  * LangSmith\n  * Overview\n  * Tracing\n\n    * Overview\n    * FAQs\n    * Use Cases\n\n  * Testing &amp; Evaluation\n\n    * Overview\n    * Quick Start\n    * Datasets\n    * LangChain Evaluators\n    * Custom Evaluators\n    * Feedback\n    * Additional Resources\n\n  * Organizations\n\n    * Overview\n  * Hub\n\n    * Quick Start\n    * Developer Setup\n    * FAQs\n\n  *   * Hub\n  * Developer Setup\n\nOn this page\n\n# Developer Setup\n\nThis guide will continue from the hub quickstart, using the Python or\nTypeScript SDK to interact with the hub instead of the Playground UI.\n\nThis guide assumes you've gone through the Hub Quick Start including login-\nrequired steps.\n\nIf you don't yet have an account, you'll only be able to pull public objects.\n\n## 1\\. Install\/upgrade packages\u200b\n\n **Note:** You likely need to upgrade even if they're already installed!\n\n  * pip\n  * yarn\n  * npm\n  * pnpm\n\n    \n    \n    pip install -U langchain langchainhub  \n    \n    \n    \n    yarn add langchain  \n    \n    \n    \n    npm install -S langchain  \n    \n    \n    \n    pnpm add langchain  \n    \n\n## 2\\. Configuring environment variables\u200b\n\nGet an API key for your **Personal** organization if you have not yet. The hub\nwill not work with your non-personal organization's api key!\n\n    \n    \n    export LANGCHAIN_HUB_API_KEY=\"ls_...\"  \n    \n\nIf you already have `LANGCHAIN_API_KEY` set to a personal organization\u2019s api\nkey from LangSmith, you can skip this.\n\n## 3\\. Pull an object from the hub and use it\u200b\n\n  * Python\n  * TypeScript\n\n    \n    \n    from langchain import hub  \n      \n    # pull a chat prompt  \n    prompt = hub.pull(\"efriis\/my-first-prompt\")  \n      \n    # create a model to use it with  \n    from langchain.chat_models import ChatOpenAI  \n    model = ChatOpenAI()  \n      \n    # use it in a runnable  \n    runnable = prompt | model  \n    runnable.invoke({  \n    \t\"profession\": \"biologist\",  \n    \t\"question\": \"What is special about parrots?\",  \n    })  \n    \n    \n    \n    \/\/ import  \n    import * as hub from \"langchain\/hub\";  \n    import { ChatOpenAI } from \"langchain\/chat_models\/openai\";  \n      \n    \/\/ pull a chat prompt  \n    const prompt = await hub.pull(\"efriis\/my-first-prompt\");  \n      \n    \/\/ create a model to use it with  \n    const model = new ChatOpenAI();  \n      \n    \/\/ use it in a runnable  \n    const runnable = prompt.pipe(model);  \n    const result = await runnable.invoke({  \n      \"profession\": \"biologist\",  \n      \"question\": \"What is special about parrots?\",  \n    });  \n      \n    console.log(result);  \n    \n\n## 4\\. Push a prompt to your personal organization\u200b\n\nFor this step, you'll need the `handle` for your account!\n\n  * Python\n  * TypeScript\n\n    \n    \n    from langchain import hub  \n    from langchain.prompts.chat import ChatPromptTemplate  \n      \n    prompt = ChatPromptTemplate.from_template(\"tell me a joke about {topic}\")  \n      \n    hub.push(\"&lt;handle&gt;\/topic-joke-generator\", prompt)  \n    \n    \n    \n    import * as hub from \"langchain\/hub\";  \n    import {  \n      ChatPromptTemplate,  \n      HumanMessagePromptTemplate,  \n    } from 'langchain\/prompts';  \n      \n    const message = HumanMessagePromptTemplate.fromTemplate(  \n      'tell me a joke about {topic}'  \n    );  \n    const prompt = ChatPromptTemplate.fromPromptMessages([message]);  \n      \n    await hub.push(\"&lt;handle&gt;\/my-first-prompt\", prompt);  \n    \n\nPrevious\n\nQuick Start\n\nNext\n\nFAQs\n\n  * 1\\. Install\/upgrade packages\n  * 2\\. Configuring environment variables\n  * 3\\. Pull an object from the hub and use it\n  * 4\\. Push a prompt to your personal organization\n\nCommunity\n\n  * Discord\n  * Twitter\n\nGitHub\n\n  * Docs Code\n  * LangSmith SDK\n  * Python\n  * JS\/TS\n\nMore\n\n  * Homepage\n  * Blog\n\nCopyright \u00a9 2023 LangChain, Inc.\n\n"},{"role":"user","content":"How do I move my project between organizations?"}],"output":{"role":"assistant","content":"Currently, LangSmith does not support project migration between organizations. However, you can manually imitate this process by reading and writing runs and datasets using the SDK. Here's an example of exporting runs:\n\n1. Read the runs from the source organization using the SDK.\n2. Write the runs to the destination organization using the SDK.\n\nBy following this process, you can transfer your runs from one organization to another. However, it may be faster to create a new project within your destination organization and start fresh.\n\nIf you have any further questions or need assistance, please reach out to us at support@langchain.dev."},"run_id":"cebad2c1-a00b-43ee-86d0-1d42310e744a"}},"status":{"0":"Pending","1":"Pending","2":"Pending"}}</code></pre>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = true;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/hamelhusain/">
+      <i class="bi bi-linkedin" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/HamelHusain">
+      <i class="bi bi-twitter" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/hamelsmu">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="../../../index.xml">
+      <i class="bi bi-rss" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/llm/finetuning/04_data_cleaning.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
