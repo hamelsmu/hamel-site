@@ -17,7 +17,434 @@
 <width>144</width>
 </image>
 <generator>quarto-1.4.533</generator>
-<lastBuildDate>Wed, 27 Mar 2024 07:00:00 GMT</lastBuildDate>
+<lastBuildDate>Fri, 29 Mar 2024 07:00:00 GMT</lastBuildDate>
+<item>
+  <title>Your AI Product Needs Evals</title>
+  <dc:creator>Hamel Husain</dc:creator>
+  <link>https://hamel.dev/blog/posts/evals/</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="motivation" class="level2">
+<h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
+<p>I started working with language models five years ago when I led the team that created <a href="https://github.com/github/CodeSearchNet">CodeSearchNet</a>, a precursor to GitHub CoPilot. Since then, I’ve seen many successful and unsuccessful approaches to building LLM products. I’ve found that unsuccessful products almost always share a common root cause: <strong>a failure to create robust evaluation systems.</strong></p>
+<p>I’m currently an independent consultant who helps companies build domain-specific AI products. I hope companies can save thousands of dollars in consulting fees by reading this post carefully. As much as I love making money, I hate seeing folks make the same mistake repeatedly.</p>
+<p>This post outlines my thoughts on building evaluation systems for LLMs-powered AI products.</p>
+</section>
+<section id="iterating-quickly-success" class="level1">
+<h1>Iterating Quickly == Success</h1>
+<p>Like software engineering, success with AI hinges on how fast you can iterate. You must have processes and tools for:</p>
+<ol type="1">
+<li>Evaluating quality (ex: tests).</li>
+<li>Debugging issues (ex: logging &amp; inspecting data).</li>
+<li>Changing the behavior or the system (prompt eng, fine-tuning, writing code)</li>
+</ol>
+<p><strong>Many people focus exclusively on #3 above, which prevents them from improving their LLM products beyond a demo.</strong><sup>1</sup> Doing all three activities well creates a virtuous cycle differentiating great from mediocre AI products (see the diagram below for a visualization of this cycle).</p>
+<p>If you streamline your evaluation process, all other activities become easy. This is very similar to how tests in software engineering pay massive dividends in the long term despite requiring up-front investment.</p>
+<p>To ground this post in a real-world situation, I’ll walk through a case study in which we built a system for rapid improvement. I’ll primarily focus on evaluation as that is the most critical component.</p>
+</section>
+<section id="case-study-lucy-a-real-estate-ai-assistant" class="level1">
+<h1>Case Study: Lucy, A Real Estate AI Assistant</h1>
+<p><a href="https://Rechat.com/">Rechat</a> is a SaaS application that allows real estate professionals to perform various tasks, such as managing contracts, searching for listings, building creative assets, managing appointments, and more. The thesis of Rechat is that you can do everything in one place rather than having to context switch between many different tools.</p>
+<p><a href="https://Rechat.com/ai/">Rechat’s AI assistant, Lucy</a>, is a canonical AI product: a conversational interface that obviates the need to click, type, and navigate the software. During Lucy’s beginning stages, rapid progress was made with prompt engineering. However, as Lucy’s surface area expanded, the performance of the AI plateaued. Symptoms of this were:</p>
+<ol type="1">
+<li>Addressing one failure mode led to the emergence of others, resembling a game of whack-a-mole.</li>
+<li>There was limited visibility into the AI system’s effectiveness across tasks beyond vibe checks.</li>
+<li>Prompts expanded into long and unwieldy forms, attempting to cover numerous edge cases and examples.</li>
+</ol>
+<section id="problem-how-to-systematically-improve-the-ai" class="level2">
+<h2 class="anchored" data-anchor-id="problem-how-to-systematically-improve-the-ai">Problem: How To Systematically Improve The AI?</h2>
+<p>To break through this plateau, we created a systematic approach to improving Lucy <strong>centered on evaluation.</strong> Our approach is illustrated by the diagram below.</p>
+<p><img src="https://hamel.dev/blog/posts/evals/images/diagram-cover.png" class="img-fluid"></p>
+<div class="{callout-note}">
+<p>This diagram is a best-faith effort to illustrate my mental model for improving AI systems. In reality, the process is non-linear and can take on many different forms that may or may not look like this diagram.</p>
+</div>
+<p>I discuss the various components of this system in the context of evaluation below.</p>
+</section>
+</section>
+<section id="the-types-of-evaluation" class="level1">
+<h1>The Types Of Evaluation</h1>
+<p>Rigorous and systematic evaluation is the most important part of the whole system. That is why “Eval and Curation” is highlighted in yellow at the center of the diagram. You should spend most of your time making your evaluation more robust and streamlined.</p>
+<p>There are three levels of evaluation to consider:</p>
+<ul>
+<li>Level 1: Unit Tests</li>
+<li>Level 2: Model &amp; Human Eval (this includes debugging)</li>
+<li>Level 3: A/B testing</li>
+</ul>
+<p>The cost of Level 3 &gt; Level 2 &gt; Level 1. This dictates the cadence and manner you execute them. For example, I often run Level 1 evals on every code change, Level 2 on a set cadence and Level 3 only after significant product changes. It’s also helpful to conquer a good portion of your Level 1 tests before you move into model-based tests, as they require more work and time to execute.</p>
+<p>There isn’t a strict formula as to when to introduce each level of testing. You want to balance getting user feedback quickly, managing user perception, and the goals of your AI product. This isn’t too dissimilar from the balancing act you must do for products more generally.</p>
+<section id="level-1-unit-tests" class="level2">
+<h2 class="anchored" data-anchor-id="level-1-unit-tests">Level 1: Unit Tests</h2>
+<p>Unit tests for LLMs are assertions (like you would write in <a href="https://docs.pytest.org/en/8.0.x/">pytest</a>). Unlike typical unit tests, you want to organize these assertions for use in places beyond unit tests, such as data cleaning and automatic retries (using the assertion error to course-correct) during model inference. The important part is that these assertions should run fast and cheaply as you develop your application so that you can run them every time your code changes. If you have trouble thinking of assertions, you should critically examine your traces and failure modes. Also, do not shy away from using an LLM to help you brainstorm assertions!</p>
+<section id="step-1-write-scoped-tests" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-write-scoped-tests">Step 1: Write Scoped Tests</h3>
+<p>The most effective way to think about unit tests is to break down the scope of your LLM into features and scenarios. For example, one feature of Lucy is the ability to find real estate listings, which we can break down into scenarios like so:</p>
+<p><strong>Feature: Listing Finder</strong></p>
+<p>This feature to be tested is a function call that responds to a user request to find a real estate listing. For example, “Please find listings with more than 3 bedrooms less than $2M in San Jose, CA”</p>
+<p>The LLM converts this into a query that gets run against the CRM. The assertion then verifies that the expected number of results is returned. In our test suite, we have three user inputs that trigger each of the scenarios below, which then execute corresponding assertions (this is an oversimplified example for illustrative purposes):</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Scenario</th>
+<th>Assertions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Only one listing matches user query</td>
+<td>len(listing_array) == 1</td>
+</tr>
+<tr class="even">
+<td>Multiple listings match user query</td>
+<td>len(listing_array) &gt; 1</td>
+</tr>
+<tr class="odd">
+<td>No listings match user query</td>
+<td>len(listing_array) == 0</td>
+</tr>
+</tbody>
+</table>
+<p><br> There are also generic tests that aren’t specific to any one feature. For example, here is the code for one such generic test that ensures the UUID is not mentioned in the output:</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb1-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">const</span> noExposedUUID <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> message <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=&gt;</span> {</span>
+<span id="cb1-2">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Remove all text within double curly braces</span></span>
+<span id="cb1-3">  <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">const</span> sanitizedComment <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> message<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">comment</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">replace</span>(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\{\{</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*?\}\}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/g</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">''</span>)</span>
+<span id="cb1-4"></span>
+<span id="cb1-5">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// Search for exposed UUIDs</span></span>
+<span id="cb1-6">  <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">const</span> regexp <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[0-9a-f]{8}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">-</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[0-9a-f]{4}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">-</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[0-9a-f]{4}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">-</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[0-9a-f]{4}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">-</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[0-9a-f]{12}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/ig</span></span>
+<span id="cb1-7">  <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">const</span> matches <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">Array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">from</span>(sanitizedComment<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matchAll</span>(regexp))</span>
+<span id="cb1-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">expect</span>(matches<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Exposed UUIDs'</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">to</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">equal</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">,</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Exposed UUIDs found'</span>)</span>
+<span id="cb1-9">}</span></code></pre></div>
+<div class="acknowledgments">
+<p>CRM results returned to the LLM contain fields that shouldn’t be surfaced to the user; such as the UUID associated with an entry. Our LLM prompt tells the LLM to not include UUIDs. We use a simple regex to assert that the LLM response doesn’t include UUIDs.</p>
+</div>
+<p><strong>Rechat has hundreds of these unit tests. We continuously update them based on new failures we observe in the data as users challenge the AI or the product evolves.</strong> These unit tests are crucial to getting feedback quickly when iterating on your AI system (prompt engineering, improving RAG, etc.). Many people eventually outgrow their unit tests and move on to other levels of evaluation as their product matures, but it is essential not to skip this step!</p>
+</section>
+<section id="step-2-create-test-cases" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-create-test-cases">Step 2: Create Test Cases</h3>
+<p>To test these assertions, you must generate test cases or inputs that will trigger all scenarios you wish to test. I often utilize an LLM to generate these inputs synthetically; for example, here is one such prompt Rechat uses to generate synthetic inputs for a feature that creates and retrieves contacts:</p>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode md code-overflow-wrap code-with-copy"><code class="sourceCode markdown"><span id="cb2-1">Write 50 different instructions that a real estate agent can give to his assistant to create contacts on his CRM. The contact details can include name, phone, email, partner name, birthday, tags, company, address and job.</span>
+<span id="cb2-2"></span>
+<span id="cb2-3">For each of the instructions, you need to generate a second instruction which can be used to look up the created contact.</span>
+<span id="cb2-4"></span>
+<span id="cb2-5">. The results should be a JSON code block with only one string as the instruction like the following:</span>
+<span id="cb2-6"></span>
+<span id="cb2-7"></span>
+<span id="cb2-8">[</span>
+<span id="cb2-9">  ["Create a contact for John (johndoe@apple.com)", </span>
+<span id="cb2-10">  "What's the email address of John Smith?"]</span>
+<span id="cb2-11">]</span></code></pre></div>
+<p>Using the above prompt, we generate test cases like below:</p>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-overflow-wrap code-with-copy"><code class="sourceCode python"><span id="cb3-1">[ </span>
+<span id="cb3-2">    [</span>
+<span id="cb3-3">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Create a contact for John Smith (johndoe@apple.com) with phone number 123-456-7890 and address 123 Apple St.'</span>, </span>
+<span id="cb3-4">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'What</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\'</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">s the email address of John Smith?'</span></span>
+<span id="cb3-5">    ],</span>
+<span id="cb3-6">    [</span>
+<span id="cb3-7">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Add Emily Johnson with phone 987-654-3210, email emilyj@email.com, and company ABC Inc.'</span>, </span>
+<span id="cb3-8">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'What</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\'</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">s the phone number for Emily Johnson?'</span></span>
+<span id="cb3-9">    ],</span>
+<span id="cb3-10">    [</span>
+<span id="cb3-11">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Create a contact for Tom Williams with birthday 10/20/1985, company XYZ Ltd, and job title Manager.'</span>, </span>
+<span id="cb3-12">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'What</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\'</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">s Tom Williams</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\'</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> job title?'</span></span>
+<span id="cb3-13">    ],</span>
+<span id="cb3-14">    [</span>
+<span id="cb3-15">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Add a contact for Susan Brown with partner name James Brown, and email susanb@email.com.'</span>, </span>
+<span id="cb3-16">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'What</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\'</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">s the partner name of Susan Brown?'</span></span>
+<span id="cb3-17">    ],</span>
+<span id="cb3-18">…</span>
+<span id="cb3-19">]</span></code></pre></div>
+<p>For each of these test cases, we execute the first user input to create the contact. We then execute the second query to fetch that contact. If the CRM doesn’t return exactly 1 result then we know there was a problem either creating or fetching the contact. We can also run generic assertions like the one to verify UUIDs are not in the response. You must constantly update these tests as you observe data through human evaluation and debugging. The key is to make these as challenging as possible while representing users’ interactions with the system.</p>
+<p>You don’t need to wait for production data to test your system. You can make educated guesses about how users will use your product and generate synthetic data. You can also let a small set of users use your product and let their usage refine your synthetic data generation strategy. One signal you are writing good tests and assertions is when the model struggles to pass them - these failure modes become problems you can solve with techniques like fine-tuning later on.</p>
+<p>On a related note, unlike traditional unit tests, you don’t necessarily need a 100% pass rate. Your pass rate is a product decision, depending on the failures you are willing to tolerate.</p>
+</section>
+<section id="step-3-run-track-your-tests-regularly" class="level3">
+<h3 class="anchored" data-anchor-id="step-3-run-track-your-tests-regularly">Step 3: Run &amp; Track Your Tests Regularly</h3>
+<p>There are many ways to orchestrate Level 1 tests. Rechat has been leveraging CI infrastructure (e.g., GitHub Actions, GitLab Pipelines, etc.) to execute these tests. However, the tooling for this part of the workflow is nascent and evolving rapidly.</p>
+<p>My advice is to orchestrate tests that involve the least friction in your tech stack. In addition to tracking tests, you need to track the results of your tests over time so you can see if you are making progress. If you use CI, you should collect metrics along with versions of your tests/prompts outside your CI system for easy analysis and tracking.</p>
+<p>I recommend starting simple and leveraging your existing analytics system to visualize your test results. For example, Rechat uses Metabase to track their LLM test results over time. Below is a screenshot of a dashboard Rechat built with <a href="https://www.metabase.com/">Metabase</a>:</p>
+<p><img src="https://hamel.dev/blog/posts/evals/images/metabase.png" class="img-fluid"></p>
+<p>This screenshot shows the prevalence of a particular error (shown in yellow) in Lucy before (left) vs after (right) we addressed it.</p>
+</section>
+</section>
+<section id="level-2-human-model-eval" class="level2">
+<h2 class="anchored" data-anchor-id="level-2-human-model-eval">Level 2: Human &amp; Model Eval</h2>
+<p>After you have built a solid foundation of Level 1 tests, you can move on to other forms of validation that cannot be tested by assertions alone. A prerequisite to performing human and model-based eval is to log your traces.</p>
+<section id="logging-traces" class="level3">
+<h3 class="anchored" data-anchor-id="logging-traces">Logging Traces</h3>
+<p>A trace is a concept that has been around for a while in software engineering and is a log of a sequence of events such as user sessions or a request flow through a distributed system. In other words, tracing is a logical grouping of logs. In the context of LLMs, traces often refer to conversations you have with a LLM. For example, a user message, followed by an AI response, followed by another user message, would be an example of a trace.</p>
+<p>There are a growing number of solutions for logging LLM traces.<sup>2</sup> Rechat uses <a href="https://www.langchain.com/langsmith">LangSmith</a>, which logs traces and allows you to view them in a human-readable way with an interactive playground to iterate on prompts. Sometimes, logging your traces requires you to instrument your code. In this case, Rechat was using <a href="https://www.langchain.com/">LangChain</a> which automatically logs trace events to LangSmith for you. Here is a screenshot of what this looks like:</p>
+<p><img src="https://hamel.dev/blog/posts/evals/images/langsmith.png" class="img-fluid"></p>
+<p>I like LangSmith - it doesn’t require that you use LangChain and is intuitive and easy to use. Searching, filtering, and reading traces are essential features for whatever solution you pick. I’ve found that some tools do not implement these basic functions correctly!</p>
+</section>
+<section id="looking-at-your-traces" class="level3">
+<h3 class="anchored" data-anchor-id="looking-at-your-traces">Looking At Your Traces</h3>
+<p><strong>You must remove all friction from the process of looking at data.</strong> This means rendering your traces in domain-specific ways. I’ve often found that it’s <a href="https://hamel.dev/notes/llm/finetuning/04_data_cleaning.html">better to build my own data viewing &amp; labeling tool</a> so I can gather all the information I need onto one screen. In Lucy’s case, we needed to look at many sources of information (trace log, the CRM, etc) to understand what the AI did. This is precisely the type of friction that needs to be eliminated. In Rechat’s case, this meant adding information like:</p>
+<ol type="1">
+<li>What tool (feature) &amp; scenario was being evaluated.</li>
+<li>Whether the trace resulted from a synthetic input or a real user input.</li>
+<li>Filters to navigate between different tools and scenario combinations.</li>
+<li>Links to the CRM and trace logging system for the current record.</li>
+</ol>
+<p>I’ve built different variations of this tool for each problem I’ve worked on. Sometimes, I even need to embed another application to see what the user interaction looks like. Below is a screenshot of the tool we built to evaluate Rechat’s traces:</p>
+<p><img src="https://hamel.dev/blog/posts/evals/images/langfree.png" class="img-fluid"></p>
+<p>Another design choice specific to Lucy is that we noticed that many failures involved small mistakes in the final output of the LLM (format, content, etc). We decided to make the final output editable by a human so that we could curate &amp; fix data for fine-tuning.</p>
+<p>These tools can be built with lightweight front-end frameworks like Gradio, Streamlit, Panel, or Shiny in less than a day. The tool shown above was built with Shiny for Python. Furthermore, there are tools like <a href="https://www.lilacml.com/">Lilac</a> which uses AI to search and filter data semantically, which is incredibly handy for finding a set of similar data points while debugging an issue.</p>
+<p>I often start by labeling examples as good or bad. I’ve found that assigning scores or more granular ratings is more onerous to manage than binary ratings. There are advanced techniques you can use to make human evaluation more efficient or accurate (e.g., <a href="https://en.wikipedia.org/wiki/Active_learning_(machine_learning)">active learning</a>, <a href="https://supervisely.com/blog/labeling-consensus/">consensus voting</a>, etc.), but I recommend starting with something simple. Finally, like unit tests, you should organize and analyze your human-eval results to assess if you are progressing over time.</p>
+<p>As discussed later, these labeled examples measure the quality of your system, validate automated evaluation, and curate high-quality synthetic data for fine-tuning.</p>
+<section id="how-much-data-should-you-look-at" class="level4">
+<h4 class="anchored" data-anchor-id="how-much-data-should-you-look-at">How much data should you look at?</h4>
+<p>I often get asked how much data to examine. When starting, you should examine as much data as possible. I usually read traces generated from ALL test cases and user-generated traces at a minimum. <strong>You can never stop looking at data—no free lunch exists.</strong> However, you can sample your data more over time, lessening the burden. <sup>3</sup></p>
+</section>
+</section>
+<section id="automated-evaluation-w-llms" class="level3">
+<h3 class="anchored" data-anchor-id="automated-evaluation-w-llms">Automated Evaluation w/ LLMs</h3>
+<p>Many vendors want to sell you tools that claim to eliminate the need for a human to look at the data. Having humans periodically evaluate at least a sample of traces is a good idea. I often find that “correctness” is somewhat subjective, and you must align the model with a human.</p>
+<p>You should track the correlation between model-based and human evaluation to decide how much you can rely on automatic evaluation. Furthermore, by collecting critiques from labelers explaining why they are making a decision, you can iterate on the evaluator model to align it with humans through prompt engineering or fine-tuning. However, I tend to favor prompt engineering for evaluator model alignment.</p>
+<p>I love using low-tech solutions like Excel to iterate on aligning model-based eval with humans. For example, I sent my colleague Phillip the following spreadsheet every few days to grade for a different use-case involving a <a href="https://www.honeycomb.io/blog/introducing-query-assistant">natural language query generator</a>. This spreadsheet would contain the following information:</p>
+<ol type="1">
+<li><strong>model response</strong>: this is the prediction made by the LLM.</li>
+<li><strong>model critique</strong>: this is a critique written by a (usually more powerful) LLM about your original LLM’s prediction.</li>
+<li><strong>model outcome</strong>: this is a binary label the critique model assigns to the <code>model response</code> as being “good” or “bad.”</li>
+</ol>
+<p>Phillip then fills out his version of the same information - meaning his critique, outcome, and desired response for 25-50 examples at a time (these are the columns prefixed with “phillip_” below):</p>
+<p><img src="https://hamel.dev/blog/posts/evals/images/spreadsheet.png" class="img-fluid"></p>
+<p>This information allowed me to iterate on the prompt of the critique model to make it sufficiently aligned with Phillip over time. This is also easy to track in a low-tech way in a spreadsheet:</p>
+<p><img src="https://hamel.dev/blog/posts/evals/images/score.png" class="img-fluid"></p>
+<p>This is a screenshot of a spreadsheet where we recorded our attempts to align model-based eval with a human evaluator.</p>
+<p>General tips on model-based eval:</p>
+<ul>
+<li>Use the most powerful model you can afford. It often takes advanced reasoning capabilities to critique something well. You can often get away with a slower, more powerful model for critiquing outputs relative to what you use in production.</li>
+<li>Model-based evaluation is a meta-problem within your larger problem. You must maintain a mini-evaluation system to track its quality. I have sometimes fine-tuned a model at this stage (but I try not to).</li>
+<li>After bringing the model-based evaluator in line with the human, you must continue doing periodic exercises to monitor the model and human agreement.</li>
+</ul>
+<p>My favorite aspect about creating a good evaluator model is that its critiques can be used to curate high-quality synthetic data, which I will touch upon later.</p>
+</section>
+</section>
+<section id="level-3-ab-testing" class="level2">
+<h2 class="anchored" data-anchor-id="level-3-ab-testing">Level 3: A/B Testing</h2>
+<p>Finally, it is always good to perform A/B tests to ensure your AI product is driving user behaviors or outcomes you desire. A/B testing for LLMs compared to other types of products isn’t too different. If you want to learn more about A/B testing, I recommend reading the <a href="https://www.geteppo.com/blog">Eppo blog</a> (which was created by colleagues I used to work with who are rock stars in A/B testing).</p>
+<p>It’s okay to put this stage off until you are sufficiently ready and convinced that your AI product is suitable for showing to real users. This level of evaluation is usually only appropriate for more mature products.</p>
+</section>
+<section id="evaluating-rag" class="level2">
+<h2 class="anchored" data-anchor-id="evaluating-rag">Evaluating RAG</h2>
+<p>Aside from evaluating your system as a whole, you can evaluate sub-components of your AI, like RAG. Evaluating RAG is beyond the scope of this post, but you can learn more about this subject <a href="https://jxnl.github.io/blog/writing/2024/02/28/levels-of-complexity-rag-applications/">in a post by Jason Liu</a>.</p>
+</section>
+</section>
+<section id="eval-systems-unlock-superpowers-for-free" class="level1">
+<h1>Eval Systems Unlock Superpowers For Free</h1>
+<p>In addition to iterating fast, eval systems unlock the ability to fine-tune and debug, which can take your AI product to the next level.</p>
+<section id="fine-tuning" class="level2">
+<h2 class="anchored" data-anchor-id="fine-tuning">Fine-Tuning</h2>
+<p>Rechat resolved many failure modes through fine-tuning that were not possible with prompt engineering alone. <strong>Fine-tuning is best for learning syntax, style, and rules, whereas techniques like RAG supply the model with context or up-to-date facts.</strong></p>
+<p>99% of the labor involved with fine-tuning is assembling high-quality data that covers your AI product’s surface area. However, if you have a solid evaluation system like Rechat’s, you already have a robust data generation and curation engine! I will expand more on the process of fine-tuning in a future post.<sup>4</sup></p>
+<section id="data-synthesis-curation" class="level3">
+<h3 class="anchored" data-anchor-id="data-synthesis-curation">Data Synthesis &amp; Curation</h3>
+<p>To illustrate why data curation and synthesis come nearly for free once you have an evaluation system, consider the case where you want to create additional fine-tuning data for the listing finder mentioned earlier. First, you can use LLMs to generate synthetic data with a prompt like this:</p>
+<pre class="text code-overflow-wrap"><code>Imagine if Zillow was able to parse natural language. Come up with 50 different ways users would be able to search listings there. Use real names for cities and neighborhoods.
+
+You can use the following parameters:
+
+&lt;ommitted for confidentiality&gt;
+
+Output should be a JSON code block array. Example:
+
+[
+"Homes under $500k in New York"
+]</code></pre>
+<p>This is almost identical to the exercise for producing test cases! You can then use your Level 1 &amp; Level 2 tests to filter out undesirable data that fails assertions or that the critique model thinks are wrong. You can also use your existing human evaluation tools to look at traces to curate traces for a fine-tuning dataset.</p>
+</section>
+</section>
+<section id="debugging" class="level2">
+<h2 class="anchored" data-anchor-id="debugging">Debugging</h2>
+<p>When you get a complaint or see an error related to your AI product, you should be able to debug this quickly. If you have a robust evaluation system, you already have:</p>
+<ul>
+<li>A database of traces that you can search and filter.</li>
+<li>A set of mechanisms (assertions, tests, etc) that can help you flag errors and bad behaviors.</li>
+<li>Log searching &amp; navigation tools that can help you find the root cause of the error. For example, the error could be RAG, a bug in the code, or a model performing poorly.</li>
+<li>The ability to make changes in response to the error and quickly test its efficacy.</li>
+</ul>
+<p>In short, there is an incredibly large overlap between the infrastructure needed for evaluation and that for debugging.</p>
+</section>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>Evaluation systems create a flywheel that allows you to iterate very quickly. It’s almost always where people get stuck when building AI products. I hope this post gives you an intuition on how to go about building your evaluation systems. Some key takeaways to keep in mind:</p>
+<ul>
+<li>Remove ALL friction from looking at data.</li>
+<li>Keep it simple. Don’t buy fancy LLM tools. Use what you have first.</li>
+<li>You are doing it wrong if you aren’t looking at lots of data.</li>
+<li>Don’t rely on generic evaluation frameworks to measure the quality of your AI. Instead, create an evaluation system specific to your problem.</li>
+<li>Write lots of tests and frequently update them.</li>
+<li>LLMs can be used to unblock the creation of an eval system. Examples include using a LLM to:
+<ul>
+<li>Generate test cases and write assertions</li>
+<li>Generate synthetic data</li>
+<li>Critique and label data etc.</li>
+</ul></li>
+<li>Re-use your eval infrastructure for debugging and fine-tuning.</li>
+</ul>
+<p>I’d love to hear from you if you found this post helpful or have any questions. My email is <code>hamel@parlance-labs.com</code>.</p>
+<p><br></p>
+<div class="acknowledgments">
+<p><em>This article is an adaptation of <a href="https://www.youtube.com/watch?v=B_DMMlDuJB0">this conversation</a> I had with Emil Sedgh and Hugo Browne-Anderson on the <a href="https://vanishinggradients.fireside.fm/">Vanishing Gradients podcast</a>. Thanks to Jeremy Howard, Eugene Yan, Shreya Shankar, Jeremy Lewi, and Joseph Gleasure for reviewing this article.</em></p>
+</div>
+
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>This is not to suggest that people are lazy. Many don’t know how to set up eval systems and skip these steps.↩︎</p></li>
+<li id="fn2"><p>Some examples include <a href="https://arize.com/">arize</a>, <a href="https://humanloop.com/">human loop</a>, <a href="https://github.com/traceloop/openllmetry">openllmetry</a> and <a href="https://www.honeyhive.ai/">honeyhive</a>.↩︎</p></li>
+<li id="fn3"><p>A reasonable heuristic is to keep reading logs until you feel like you aren’t learning anything new.↩︎</p></li>
+<li id="fn4"><p>If you cannot wait, I’ll be teaching <a href="https://maven.com/parlance-labs/fine-tuning">this course</a> on fine-tuning soon.↩︎</p></li>
+</ol>
+</section></div> ]]></description>
+  <category>LLMs</category>
+  <guid>https://hamel.dev/blog/posts/evals/</guid>
+  <pubDate>Fri, 29 Mar 2024 07:00:00 GMT</pubDate>
+  <media:content url="https://hamel.dev/blog/posts/evals/images/diagram.png" medium="image" type="image/png" height="56" width="144"/>
+</item>
 <item>
   <title>Is Fine-Tuning Still Valuable?</title>
   <dc:creator>Hamel Husain</dc:creator>
@@ -3421,16 +3848,6 @@ K8s For Data Scientists Course
   <category>python</category>
   <guid>https://hamel.dev/</guid>
   <pubDate>Wed, 05 Feb 2020 08:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>CodeSearchNet Challenge: Evaluating the State of Semantic Code Search</title>
-  <link>https://hamel.dev/</link>
-  <description>by Miltiadis Allamanis, Marc Brockschmidt, Hamel Husain, Ho-Hsiang Wu, Tiferet Gazit
-</description>
-  <category>ML-On-Code</category>
-  <category>NLP</category>
-  <guid>https://hamel.dev/</guid>
-  <pubDate>Fri, 20 Sep 2019 07:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
