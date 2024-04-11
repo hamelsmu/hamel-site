@@ -1,0 +1,69 @@
+---
+title: Debugging AI With Adversarial Validation
+description: Quickly detect a large class of bugs using an automated technique.
+toc-location: right-body
+toc-title: Table Of Contents
+toc-expand: 2
+categories: [LLMs]
+author: Hamel Husain
+date: 2024-04-12
+image: images/diagram-cover.png
+website:
+  title: ""
+---
+
+For years, I've relied on a straightforward method to identify sudden changes in model inputs or training data, known as "drift." This method, Adversarial Validation[^1], is both simple and effective. The best part? **It requires no complex tools or infrastructure.**
+
+Examples where drift can cause bugs in your AI:
+
+1.  Your data for [evaluations](../evals/index.qmd) are materially different from the inputs your model receives in production, causing your evaluations to be misleading.
+2.  Updates to prompts, functions, RAG, and similar elements aren't incorporated into your fine-tuning or training data, leading to unexpected model behavior in production.
+
+No matter how careful you are, bugs can still slip through the cracks. A high-value activity is to audit all your existing AI/ML projects for drift.
+
+## How It Works
+
+:::{.callout-warning}
+#### Uncool Warning
+
+This method is so simple that it might seem uncool.  You aren't going to impress any data scientists.  Despite this, it's too valuable to ignore.
+:::
+
+This slide from [my talk on MLOps tools](https://www.youtube.com/watch?v=GHk5HMW4XMA) explains the technique behind Adversarial Validation[^2]:
+
+![Slide](images/drift_tfx.png)
+
+The process is as follows:
+
+1. Collect two datasets to compare.  For example:
+    -   Training data from two different fine-tuning runs
+    -   Training data vs. evaluation data
+    -   Training data vs. production data (organized into the same format)
+    -   Data from two different time-periods
+2.  Create features from the dataset.  A basic example that creates features from [tokens](https://platform.openai.com/tokenizer) is illustrated [here](https://github.com/hamelsmu/ft-drift/blob/main/ft_drift/model.py).[^3]
+4.  Give dataset #1 a label of 0 and dataset #2 a label of 1.
+5.  Fit a binary classifier (random forest, logistic regression, etc) to discriminate between the two datasets.
+6.  If the classifier demonstrates sufficient predictive power (ex: AUC >=0.60) then we know there is drift.
+7.  If you used an interpretable model (like logistic regression, random forest, etc.), you can inspect feature importance metrics to understand the root cause of the drift.  If you use a more complex model (like a neural network), you can use [SHAP values](https://shap.readthedocs.io/en/latest/) or other methods to understand what is causing the drift.  I recommend starting with a simple interpretable model.
+
+:::{.callout-warning}
+If this process doesn't detect drift, it doesn't mean there isn't drift.  It just means that we couldn't detect it with the model and features we used. 
+:::
+
+## Minimal Example: `ft_drift`
+
+I work with lots of folks who are fine-tuning models using the OpenAI API.  I've created a small CLI tool, [`ft_drift`](https://github.com/hamelsmu/ft-drift/), that detects drift between two [multi-turn chat formatted](https://platform.openai.com/docs/guides/fine-tuning/preparing-your-dataset) jsonl files. Currently, `ft_drift` only detects drift in prompt templates, schemas and other token-based drift (as opposed to semantic drift).  However, this is a good starting point to understand the general concept of adversarial validation.  Here is a demo of this tool at work:
+
+
+![](images/drift_cli.gif)
+
+The demo shows the tool detecting a difference between two datasets, `file_a.jsonl` and `file_b.jsonl`. Afterward, a table of important tokens that account for the drift are shown, such as `END-UI-FORMAT`, `UI-FORMAT`, etc.
+
+This demo is from a real-world example where an unintentional change in a prompt template caused unexpected behavior in a model.  We were able to apply the tool and quickly find the root cause of the issue. The modeling code is embarrassingly simple and located at [`ft_drift/model.py`](https://github.com/hamelsmu/ft-drift/blob/main/ft_drift/model.py).  The point is you don't need sophisticated techniques to get started.
+
+You can take this approach further by adding embeddings to your features to also detect semantic drift.  Similarly, you could add additional features by hand like the number of conversation turns, length of messages, etc.  
+
+
+[^1]: I first of this technique in 2016 from [this blog post](https://fastml.com/adversarial-validation-part-two/) by Zygmunt Zając.  Throughout the years, I've seen this technique used in a variety of contexts, sometimes with different names.
+[^2]: This slide uses the word "skew" which is interchangeable with "drift" in this context.
+[^3]: For classic ML, if you are already training a model on this data, you likely have a feature engineering pipeline that you can reuse.
