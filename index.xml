@@ -17,7 +17,99 @@
 <width>144</width>
 </image>
 <generator>quarto-1.4.533</generator>
-<lastBuildDate>Fri, 29 Mar 2024 07:00:00 GMT</lastBuildDate>
+<lastBuildDate>Fri, 12 Apr 2024 07:00:00 GMT</lastBuildDate>
+<item>
+  <title>Debugging AI With Adversarial Validation</title>
+  <dc:creator>Hamel Husain</dc:creator>
+  <link>https://hamel.dev/blog/posts/drift/</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>For years, I’ve relied on a straightforward method to identify sudden changes in model inputs or training data, known as “drift.” This method, Adversarial Validation<sup>1</sup>, is both simple and effective. The best part? <strong>It requires no complex tools or infrastructure.</strong></p>
+<p>Examples where drift can cause bugs in your AI:</p>
+<ol type="1">
+<li>Your data for <a href="../../../blog/posts/evals/index.html">evaluations</a> are materially different from the inputs your model receives in production, causing your evaluations to be misleading.</li>
+<li>Updates to prompts, functions, RAG, and similar elements aren’t incorporated into your fine-tuning or training data, leading to unexpected model behavior in production.</li>
+</ol>
+<p>No matter how careful you are, bugs can still slip through the cracks. A high-value activity is to routinely audit all your AI/ML projects for drift.</p>
+<section id="how-it-works" class="level2">
+<h2 class="anchored" data-anchor-id="how-it-works">How It Works</h2>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Uncool Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This method is so simple that it might seem uncool. You aren’t going to impress any data scientists. Despite this, it’s too valuable to ignore.</p>
+</div>
+</div>
+<p>This slide from <a href="https://www.youtube.com/watch?v=GHk5HMW4XMA">my talk on MLOps tools</a> explains the technique behind Adversarial Validation<sup>2</sup>:</p>
+<div class="img-fluid quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://hamel.dev/blog/posts/drift/images/drift_tfx.png" class="img-fluid figure-img"></p>
+<figcaption>Slide</figcaption>
+</figure>
+</div>
+<p>The process is as follows:</p>
+<ol type="1">
+<li>Collect two datasets to compare. For example:
+<ul>
+<li>Training data from two different fine-tuning runs</li>
+<li>Training data vs.&nbsp;evaluation data</li>
+<li>Training data vs.&nbsp;production data (organized into the same format)</li>
+<li>Data from two different time-periods</li>
+</ul></li>
+<li>Create features from the dataset. A basic example that creates features from <a href="https://platform.openai.com/tokenizer">tokens</a> is illustrated <a href="https://github.com/hamelsmu/ft-drift/blob/main/ft_drift/model.py">here</a>.<sup>3</sup></li>
+<li>Give dataset #1 a label of 0 and dataset #2 a label of 1.</li>
+<li>Fit a binary classifier (random forest, logistic regression, etc) to discriminate between the two datasets.</li>
+<li>If the classifier demonstrates sufficient predictive power (ex: AUC &gt;=0.60) then we know there is drift.</li>
+<li>If you used an interpretable model (like logistic regression, random forest, etc.), you can inspect feature importance metrics to understand the root cause of the drift. If you use a more complex model (like a neural network), you can use <a href="https://shap.readthedocs.io/en/latest/">SHAP values</a> or other methods to understand what is causing the drift. I recommend starting with a simple interpretable model.</li>
+</ol>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If this process doesn’t detect drift, it doesn’t mean there isn’t drift. It just means that we couldn’t detect it with the model and features we used.</p>
+</div>
+</div>
+</section>
+<section id="minimal-example-ft_drift" class="level2">
+<h2 class="anchored" data-anchor-id="minimal-example-ft_drift">Minimal Example: <code>ft_drift</code></h2>
+<p>I work with lots of folks who are fine-tuning models using the OpenAI API. I’ve created a small CLI tool, <a href="https://github.com/hamelsmu/ft-drift/"><code>ft_drift</code></a>, that detects drift between two <a href="https://platform.openai.com/docs/guides/fine-tuning/preparing-your-dataset">multi-turn chat formatted</a> jsonl files. Currently, <code>ft_drift</code> only detects drift in prompt templates, schemas and other token-based drift (as opposed to semantic drift). However, this is a good starting point to understand the general concept of adversarial validation. Here is a demo of this tool at work:</p>
+<p><img src="https://hamel.dev/blog/posts/drift/images/drift_cli.gif" class="img-fluid"></p>
+<p>The demo shows the tool detecting a difference between two datasets, <code>file_a.jsonl</code> and <code>file_b.jsonl</code>. Afterward, a table of important tokens that account for the drift are shown, such as <code>END-UI-FORMAT</code>, <code>UI-FORMAT</code>, etc.</p>
+<p>This demo is from a real-world example where an unintentional change in a prompt template caused unexpected behavior in a model. We were able to apply the tool and quickly find the root cause of the issue. The modeling code is embarrassingly simple and located at <a href="https://github.com/hamelsmu/ft-drift/blob/main/ft_drift/model.py"><code>ft_drift/model.py</code></a>. The point is you don’t need sophisticated techniques to get started.</p>
+<p>You can take this approach further by adding embeddings to your features to also detect semantic drift. Similarly, you could add additional features by hand like the number of conversation turns, length of messages, etc.</p>
+
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>I first learned of this technique in 2016 from <a href="https://fastml.com/adversarial-validation-part-two/">this blog post</a> by Zygmunt Zając. Throughout the years, I’ve seen this technique used in a variety of contexts, sometimes with different names.↩︎</p></li>
+<li id="fn2"><p>This slide uses the word “skew” which is interchangeable with “drift” in this context.↩︎</p></li>
+<li id="fn3"><p>For classic ML, if you are already training a model on this data, you likely have a feature engineering pipeline that you can reuse.↩︎</p></li>
+</ol>
+</section></div> ]]></description>
+  <category>LLMs</category>
+  <guid>https://hamel.dev/blog/posts/drift/</guid>
+  <pubDate>Fri, 12 Apr 2024 07:00:00 GMT</pubDate>
+  <media:content url="https://hamel.dev/blog/posts/drift/images/diagram-cover.png" medium="image" type="image/png"/>
+</item>
 <item>
   <title>Your AI Product Needs Evals</title>
   <dc:creator>Hamel Husain</dc:creator>
@@ -2956,7 +3048,7 @@ font-style: inherit;">dokku</span> ps:scale myapp web=2</span></code></pre></div
 <p><strong>On the Dokku host</strong>, create an app named <code>mysite</code> and set the <code>NGINX_ROOT</code> environment variable to <code>_site</code>:</p>
 <div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="ex" style="color: null;
 background-color: null;
-font-style: inherit;">dokku</span> apps:create mystite</span>
+font-style: inherit;">dokku</span> apps:create mysite</span>
 <span id="cb7-2"><span class="ex" style="color: null;
 background-color: null;
 font-style: inherit;">dokku</span> config:set static-site NGINX_ROOT=_site</span></code></pre></div>
@@ -3003,7 +3095,7 @@ font-style: inherit;">git</span> push dokku main</span></code></pre></div>
 <p>You can now add auth by running the following command on the Dokku host:</p>
 <div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><span class="ex" style="color: null;
 background-color: null;
-font-style: inherit;">dokku</span> http-auth:enable mystite <span class="op" style="color: #5E5E5E;
+font-style: inherit;">dokku</span> http-auth:enable mysite <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;</span>username<span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -3611,15 +3703,6 @@ K8s For Data Scientists Course
   <category>Jupyter</category>
   <guid>https://hamel.dev/</guid>
   <pubDate>Fri, 21 Feb 2020 08:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Python Concurrency: The Tricky Bits</title>
-  <link>https://hamel.dev/</link>
-  <description>An exploration of threads, processes, and coroutines in Python, with interesting examples that illuminate the differences between each.
-</description>
-  <category>python</category>
-  <guid>https://hamel.dev/</guid>
-  <pubDate>Wed, 05 Feb 2020 08:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>

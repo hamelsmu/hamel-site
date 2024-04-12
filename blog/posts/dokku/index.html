@@ -320,7 +320,7 @@ Tip
 <p>GitHub Pages is annoying in that you can’t easily deploy private static sites without paying for an expensive Enterprise account. With Dokku, you can easily deploy a static site from a private GitHub Repo and password-protect it.</p>
 <p>We will assume that you have a static site in a git repo in a folder named <code>_site</code>.</p>
 <p><strong>On the Dokku host</strong>, create an app named <code>mysite</code> and set the <code>NGINX_ROOT</code> environment variable to <code>_site</code>:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dokku</span> apps:create mystite</span>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dokku</span> apps:create mysite</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dokku</span> config:set static-site NGINX_ROOT=_site</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Also on the Dokku host, install <a href="https://github.com/dokku/dokku-http-auth">basic auth</a> and <a href="https://github.com/dokku/dokku-http-auth/issues/15#issuecomment-1637058437">set permissions</a> so the plugin can work properly.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># do setup for the auth plugin that we will use later</span></span>
@@ -347,7 +347,7 @@ Tip
 <p>Finally, deploy your application:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push dokku main</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>You can now add auth by running the following command on the Dokku host:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dokku</span> http-auth:enable mystite <span class="op">&lt;</span>username<span class="op">&gt;</span> <span class="op">&lt;</span>password<span class="op">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dokku</span> http-auth:enable mysite <span class="op">&lt;</span>username<span class="op">&gt;</span> <span class="op">&lt;</span>password<span class="op">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
