@@ -1,5 +1,5 @@
-// Shinylive 0.2.1
-// Copyright 2023 RStudio, PBC
+// Shinylive 0.2.8
+// Copyright 2024 RStudio, PBC
 
 // src/utils.ts
 function dirname(path) {

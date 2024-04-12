@@ -1,5 +1,5 @@
-// Shinylive 0.2.1
-// Copyright 2023 RStudio, PBC
+// Shinylive 0.2.8
+// Copyright 2024 RStudio, PBC
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -14,8 +14,15 @@ var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require
     return require.apply(this, arguments);
   throw Error('Dynamic require of "' + x + '" is not supported');
 });
+var __esm = (fn, res) => function __init() {
+  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+};
 var __commonJS = (cb, mod) => function __require2() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+};
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
 };
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
@@ -33,6 +40,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var __publicField = (obj, key, value) => {
   __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
@@ -3538,8 +3546,11 @@ function fileContentsToUrlString(fileContents, sort = true) {
 
 export {
   __require,
+  __esm,
   __commonJS,
+  __export,
   __toESM,
+  __toCommonJS,
   __publicField,
   __privateAdd,
   __privateMethod,
