@@ -19,7 +19,7 @@ Examples where drift can cause bugs in your AI:
 1.  Your data for [evaluations](../evals/index.qmd) are materially different from the inputs your model receives in production, causing your evaluations to be misleading.
 2.  Updates to prompts, functions, RAG, and similar elements aren't incorporated into your fine-tuning or training data, leading to unexpected model behavior in production.
 
-No matter how careful you are, bugs can still slip through the cracks. A high-value activity is to routinely audit all your AI/ML projects for drift.
+No matter how careful you are, bugs can still slip through the cracks. A a high ROI activity is to routinely audit all your AI/ML projects for drift.
 
 ## How It Works
 
@@ -57,12 +57,7 @@ I work with lots of folks who are fine-tuning models using the OpenAI API.  I've
 
 ![](images/drift_cli.gif)
 
-The demo shows the tool detecting a difference between two datasets, `file_a.jsonl` and `file_b.jsonl`. Afterward, a table of important tokens that account for the drift are shown, such as `END-UI-FORMAT`, `UI-FORMAT`, etc.
-
-This demo is from a real-world example where an unintentional change in a prompt template caused unexpected behavior in a model.  We were able to apply the tool and quickly find the root cause of the issue. The modeling code is embarrassingly simple and located at [`ft_drift/model.py`](https://github.com/hamelsmu/ft-drift/blob/main/ft_drift/model.py).  The point is you don't need sophisticated techniques to get started.
-
-You can take this approach further by adding embeddings to your features to also detect semantic drift.  Similarly, you could add additional features by hand like the number of conversation turns, length of messages, etc.  
-
+The demo is from a real-world example where an unintentional change in a prompt template caused unexpected behavior in a model. The demo shows the tool detecting a difference between two datasets, `file_a.jsonl` and `file_b.jsonl`. Afterward, a table of important tokens that account for the drift are shown, such as `END-UI-FORMAT`, `UI-FORMAT`, etc. We were able to apply the tool and quickly find the root cause of the issue. The modeling code is embarrassingly simple and located at [`ft_drift/model.py`](https://github.com/hamelsmu/ft-drift/blob/main/ft_drift/model.py).  The point is you don't need sophisticated techniques to get started. You can then take this approach further by adding embeddings to your features to also detect semantic drift.  Similarly, you could add additional features by hand like the number of conversation turns, length of messages, etc.  
 
 [^1]: I first learned of this technique in 2016 from [this blog post](https://fastml.com/adversarial-validation-part-two/) by Zygmunt Zając.  Throughout the years, I've seen this technique used in a variety of contexts, sometimes with different names.
 [^2]: This slide uses the word "skew" which is interchangeable with "drift" in this context.
