@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Notes from the course “Learning How To Learn”">
+<meta name="description" content="An example of how to use the Llama-3 model to call functions with prompting only.">
 
-<title>How to learn – Hamel's Blog</title>
+<title>Llama-3 Func Calling – Hamel's Blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,27 +21,61 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../../">
-<link href="../../favicon.ico" rel="icon">
-<script src="../../site_libs/quarto-html/quarto.js"></script>
-<script src="../../site_libs/quarto-html/popper.min.js"></script>
-<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark.min.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -80,13 +114,13 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </script>
 
 
-<link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Hamel’s Blog - How to learn">
-<meta property="og:description" content="Notes from the course “Learning How To Learn”">
+<link rel="stylesheet" href="../../../styles.css">
+<meta property="og:title" content="Hamel’s Blog - Llama-3 Func Calling">
+<meta property="og:description" content="An example of how to use the Llama-3 model to call functions with prompting only.">
 <meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta property="og:site_name" content="Hamel's Blog">
-<meta name="twitter:title" content="Hamel’s Blog - How to learn">
-<meta name="twitter:description" content="Notes from the course “Learning How To Learn”">
+<meta name="twitter:title" content="Hamel’s Blog - Llama-3 Func Calling">
+<meta name="twitter:description" content="An example of how to use the Llama-3 model to call functions with prompting only.">
 <meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta name="twitter:creator" content="@HamelHusain">
 <meta name="twitter:site" content="@HamelHusain">
@@ -101,23 +135,23 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <div class="navbar-container container-fluid">
           <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../index.html"> 
+    <a class="nav-link" href="../../../index.html"> 
 <span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../oss/opensource.html"> 
+    <a class="nav-link" href="../../../oss/opensource.html"> 
 <span class="menu-text">OSS</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../talks.html"> 
+    <a class="nav-link" href="../../../talks.html"> 
 <span class="menu-text">Talks</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../notes/index.html"> 
+    <a class="nav-link" href="../../../notes/index.html"> 
 <span class="menu-text">Notes</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../hire.html"> 
+    <a class="nav-link" href="../../../hire.html"> 
 <span class="menu-text">Hire Me</span></a>
   </li>  
 </ul>
@@ -132,7 +166,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../notes/how-to-learn/index.html">How to learn</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/tools/index.html">Function Calling</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/tools/llama3.html">Llama-3 Func Calling</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -146,64 +180,64 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/concurrency.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/concurrency.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Python Concurrency</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/cuda.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/cuda.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">CUDA Version Management</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/how-to-learn/index.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../../notes/how-to-learn/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">How to learn</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/pandoc/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/pandoc/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">pandoc filters</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/docker/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/docker/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Docker</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/dbt/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/dbt/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">dbt</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/programming-languages/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/programming-languages/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">programming languages</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/video_editing.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/video_editing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Video Editing</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/llm/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">LLMs</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/llm/inference/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/inference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Inference</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -212,19 +246,19 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/inference/03_inference.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/inference/03_inference.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Optimizing latency</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/inference/04_max_engine.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/inference/04_max_engine.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Max Inference Engine</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/inference/big_inference.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/inference/big_inference.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">vLLM &amp; large models</span></a>
   </div>
 </li>
@@ -232,7 +266,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/llm/openai/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/openai/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">OpenAI</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -241,7 +275,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/openai/func_template.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/openai/func_template.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Function prompts</span></a>
   </div>
 </li>
@@ -249,16 +283,16 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/llm/tools/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/tools/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Function Calling</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/tools/llama3.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/tools/llama3.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Llama-3 Func Calling</span></a>
   </div>
 </li>
@@ -266,7 +300,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/llm/finetuning/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/finetuning/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Fine-tuning</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -275,37 +309,37 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/finetuning/01_datasets.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/01_datasets.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Dataset Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/finetuning/02_langchain_connectors.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/02_langchain_connectors.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">LangChain <code>DocumentLoaders</code></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/finetuning/03_estimating_vram.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/03_estimating_vram.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Estimating vRAM</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/finetuning/04_data_cleaning.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/04_data_cleaning.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Curating LLM data</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/finetuning/05_tokenizer_gotchas.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/05_tokenizer_gotchas.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Tokenization Gotchas</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/finetuning/09_template_free.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/09_template_free.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Template-free axolotl</span></a>
   </div>
 </li>
@@ -315,7 +349,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/serving/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/serving/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">ML Serving</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -324,7 +358,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/serving/tfserving/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/serving/tfserving/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">TF Serving</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -333,13 +367,13 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/serving/tfserving/tf-serving-basics.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/serving/tfserving/tf-serving-basics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/serving/tfserving/gpu.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/serving/tfserving/gpu.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">GPUs &amp; Batching</span></a>
   </div>
 </li>
@@ -347,7 +381,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/serving/torchserve/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/serving/torchserve/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">TorchServe</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -356,13 +390,13 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/serving/torchserve/basic-torchserve.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/serving/torchserve/basic-torchserve.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/serving/torchserve/hf.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/serving/torchserve/hf.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Serving Your Own Model</span></a>
   </div>
 </li>
@@ -370,7 +404,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/serving/fastapi/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/serving/fastapi/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">FastAPI</span></a>
   </div>
 </li>
@@ -378,7 +412,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/k8s/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">K8s</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -387,19 +421,19 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/02-Basics.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/02-Basics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/03-Secrets.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/03-Secrets.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Secrets</span></a>
   </div>
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/k8s/storage/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/storage/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Storage</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -408,13 +442,13 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/storage/04-Basics.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/storage/04-Basics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Storage Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/storage/05-Dynamic Provisioning.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/storage/05-Dynamic Provisioning.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Dynamic Provisioning</span></a>
   </div>
 </li>
@@ -422,7 +456,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/k8s/scaling/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/scaling/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Scaling</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -431,13 +465,13 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/scaling/06-ReplicaSets.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/scaling/06-ReplicaSets.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">ReplicaSets</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/scaling/07- Scaling.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/scaling/07- Scaling.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Scaling</span></a>
   </div>
 </li>
@@ -445,25 +479,25 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/12-StatefulSet.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/12-StatefulSet.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">StatefulSet</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/13-JobsCron.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/13-JobsCron.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Jobs &amp; CronJobs</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/14-RolloutsRollbacks.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/14-RolloutsRollbacks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Rollouts</span></a>
   </div>
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/k8s/multi_container_pods/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/multi_container_pods/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Multi-Container Pods</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -472,25 +506,25 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/multi_container_pods/08-Multi-Container-Pods.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/multi_container_pods/08-Multi-Container-Pods.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Multi-Container Pods</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/multi_container_pods/09-Ambassador Sidecars.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/multi_container_pods/09-Ambassador Sidecars.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Ambassador Sidecars</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/multi_container_pods/10-Downsides of MC Pods.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/multi_container_pods/10-Downsides of MC Pods.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Restart Conditions</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/multi_container_pods/11-Sharing Processes in MC Pods.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/multi_container_pods/11-Sharing Processes in MC Pods.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Sharing Processes in MC Pods</span></a>
   </div>
 </li>
@@ -498,7 +532,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/k8s/helm/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/helm/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Helm</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -507,25 +541,25 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/helm/15-Helm.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/helm/15-Helm.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Helm Intro</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/helm/16-Creating Your Own Helm Charts.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/helm/16-Creating Your Own Helm Charts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Creating Helm Charts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/helm/17-Helm Upgrade &amp; Rollbacks.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/helm/17-Helm Upgrade &amp; Rollbacks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Helm Upgrades &amp; Rollbacks</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/helm/21-Testing-With-Helm.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/helm/21-Testing-With-Helm.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Testing With Helm</span></a>
   </div>
 </li>
@@ -533,61 +567,61 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/18-Developer.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/18-Developer.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Developer tips</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/19-Pod-Lifecycle.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/19-Pod-Lifecycle.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Pod restart vs.&nbsp;replacement</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/20-Health-Check.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/20-Health-Check.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Probes</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/22-Resource-Limits.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/22-Resource-Limits.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Resource Limits</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/22a-Resource-Requests.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/22a-Resource-Requests.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Requesting resources</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/23-Logging.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/23-Logging.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Logging</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/24-monitoring.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/24-monitoring.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Monitoring</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/25-Ingress.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/25-Ingress.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Ingress</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/26-cluster.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/26-cluster.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Cluster Components</span></a>
   </div>
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/k8s/security/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/security/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Security</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -596,31 +630,31 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/security/26-network-security.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/security/26-network-security.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Network Security</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/security/27-container-security.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/security/27-container-security.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Securing Containers</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/security/28-workloads.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/security/28-workloads.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Webhooks</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/security/29-cluster-updates.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/security/29-cluster-updates.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Updating a K8s Cluster</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/security/30-rbac.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/security/30-rbac.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">RBAC</span></a>
   </div>
 </li>
@@ -628,31 +662,31 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/27-workload-placement.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/27-workload-placement.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Workload Placement</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/28-auto-scaling.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/28-auto-scaling.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Auto Scaling</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/29-preemption.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/29-preemption.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preemption</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/99-Random.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/99-Random.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Random TILs</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/Open Questions.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/Open Questions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Open Questions</span></a>
   </div>
 </li>
@@ -660,7 +694,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/fastai/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/fastai/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">fastai</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -669,25 +703,25 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/fastai/01_fundamentals.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fastai/01_fundamentals.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Fundamentals</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/fastai/02_cv.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fastai/02_cv.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Image Classification</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/fastai/03_data.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fastai/03_data.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Data</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/fastai/batch_predicitions.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fastai/batch_predicitions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Batch Predictions</span></a>
   </div>
 </li>
@@ -695,7 +729,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/linux/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/linux/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Linux</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -704,31 +738,31 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/linux/bash_scripting.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/linux/bash_scripting.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Cheatsheet</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/linux/cookbook.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/linux/cookbook.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Cookbook</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/linux/misc_utils.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/linux/misc_utils.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Misc Utilities</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/linux/osx.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/linux/osx.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">OSX Shell Tips</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/linux/permprocdata.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/linux/permprocdata.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Processes, Permissions and Moving Data</span></a>
   </div>
 </li>
@@ -736,7 +770,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/actions/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/actions/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">GitHub Actions</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -745,13 +779,13 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/actions/ocotkit.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/actions/ocotkit.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">ocotokit.js</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/actions/resources.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/actions/resources.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Resources</span></a>
   </div>
 </li>
@@ -759,7 +793,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/prompt-eng/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/prompt-eng/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Prompt engineering</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -768,7 +802,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/prompt-eng/course/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/prompt-eng/course/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Course</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -777,43 +811,43 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-19" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/01_guidelines.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/01_guidelines.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Guidelines for Prompting</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/02_iterative.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/02_iterative.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Iterative Prompt Development</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/03_summarizing.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/03_summarizing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Summarizing</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/04_inferring.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/04_inferring.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Inferring</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/05_transforming.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/05_transforming.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Transforming</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/06_expanding.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/06_expanding.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Expanding</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/07_chatbot.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/07_chatbot.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">The Chat Format</span></a>
   </div>
 </li>
@@ -823,7 +857,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/web-scraping/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/web-scraping/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Web Scraping</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-20" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -832,13 +866,13 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-20" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/web-scraping/browser-to-python.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/web-scraping/browser-to-python.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Browser requests to code</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/web-scraping/transcribe-diarize.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/web-scraping/transcribe-diarize.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Transcribe &amp; Diarize Videos</span></a>
   </div>
 </li>
@@ -846,7 +880,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/quarto/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/quarto/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Quarto</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-21" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -855,19 +889,19 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-21" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/quarto/highlighting.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/quarto/highlighting.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Syntax Highlighting</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/quarto/listings-from-data.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/quarto/listings-from-data.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Listings from data</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/quarto/merging.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/quarto/merging.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Merge listings</span></a>
   </div>
 </li>
@@ -875,7 +909,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/jupyter/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/jupyter/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Jupyter</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-22" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -884,25 +918,25 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-22" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/jupyter/Best Way To Launch Jupyter On A Remote Server.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/jupyter/Best Way To Launch Jupyter On A Remote Server.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Launch Jupyter on a remote server</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/jupyter/Fix Jupyter CUDA cache.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/jupyter/Fix Jupyter CUDA cache.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Fix Jupyter CUDA cache</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/jupyter/remote_browser.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/jupyter/remote_browser.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Remote Browser For Jupyter</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/jupyter/shortcuts.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/jupyter/shortcuts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">My Jupyter Shortcuts</span></a>
   </div>
 </li>
@@ -918,16 +952,17 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#focused-vs-diffused-mode" id="toc-focused-vs-diffused-mode" class="nav-link active" data-scroll-target="#focused-vs-diffused-mode">Focused vs Diffused Mode</a></li>
-  <li><a href="#procrastination-memory-and-sleep" id="toc-procrastination-memory-and-sleep" class="nav-link" data-scroll-target="#procrastination-memory-and-sleep">Procrastination Memory and Sleep</a></li>
-  <li><a href="#writing-tips-diffuse-mode" id="toc-writing-tips-diffuse-mode" class="nav-link" data-scroll-target="#writing-tips-diffuse-mode">Writing Tips Diffuse Mode</a></li>
-  <li><a href="#chunking" id="toc-chunking" class="nav-link" data-scroll-target="#chunking">Chunking</a></li>
-  <li><a href="#illusions-of-competence" id="toc-illusions-of-competence" class="nav-link" data-scroll-target="#illusions-of-competence">Illusions of competence</a></li>
-  <li><a href="#deliberate-practice" id="toc-deliberate-practice" class="nav-link" data-scroll-target="#deliberate-practice">Deliberate Practice</a></li>
-  <li><a href="#procrastination-and-memory" id="toc-procrastination-and-memory" class="nav-link" data-scroll-target="#procrastination-and-memory">Procrastination and Memory</a></li>
-  <li><a href="#juggling-life-and-learning" id="toc-juggling-life-and-learning" class="nav-link" data-scroll-target="#juggling-life-and-learning">Juggling Life and Learning</a></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#the-demo" id="toc-the-demo" class="nav-link" data-scroll-target="#the-demo">The Demo</a>
+  <ul class="collapse">
+  <li><a href="#scenario-1a-no-tool-required-to-answer-question" id="toc-scenario-1a-no-tool-required-to-answer-question" class="nav-link" data-scroll-target="#scenario-1a-no-tool-required-to-answer-question">Scenario 1A: No tool required to answer question</a></li>
+  <li><a href="#scenario-1b-no-tool-required-to-answer-question" id="toc-scenario-1b-no-tool-required-to-answer-question" class="nav-link" data-scroll-target="#scenario-1b-no-tool-required-to-answer-question">Scenario 1B: No tool required to answer question</a></li>
+  <li><a href="#scenario-2-tool-is-reqiured-to-answer-question" id="toc-scenario-2-tool-is-reqiured-to-answer-question" class="nav-link" data-scroll-target="#scenario-2-tool-is-reqiured-to-answer-question">Scenario 2: Tool is reqiured to answer question</a></li>
+  <li><a href="#scenario-3a-tool-reqiured-but-not-enough-info-in-the-prompt-for-the-params" id="toc-scenario-3a-tool-reqiured-but-not-enough-info-in-the-prompt-for-the-params" class="nav-link" data-scroll-target="#scenario-3a-tool-reqiured-but-not-enough-info-in-the-prompt-for-the-params">Scenario 3A: Tool reqiured but not enough info in the prompt for the params</a></li>
+  <li><a href="#scenario-3b-tool-required-there-is-enough-info-in-the-prompt" id="toc-scenario-3b-tool-required-there-is-enough-info-in-the-prompt" class="nav-link" data-scroll-target="#scenario-3b-tool-required-there-is-enough-info-in-the-prompt">Scenario 3B: Tool required, there is enough info in the prompt</a></li>
+  </ul></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/how-to-learn/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.dev/hamelsmu/hamel-site/blob/master/notes/llm/tools/llama3.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     <div class="quarto-margin-footer"><div class="margin-footer-item">
 <div class="margin-subscribe">
 <p>
@@ -958,14 +993,14 @@ Subscribe for updates
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/tools/index.html">Function Calling</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/tools/llama3.html">Llama-3 Func Calling</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">How to learn</h1>
+<h1 class="title">Llama-3 Func Calling</h1>
 </div>
 
 <div>
   <div class="description">
-    Notes from the course “Learning How To Learn”
+    An example of how to use the Llama-3 model to call functions with prompting only.
   </div>
 </div>
 
@@ -982,52 +1017,163 @@ Subscribe for updates
 </header>
 
 
-<p>I read the book <a href="https://www.amazon.com/Mindshit-Obstacles-Learning-Discover-Potential/dp/1101982853">Mindshift</a> and it was unituitively so good that I decided to take this class. As a parent, I learned a bunch of things that I think will be beneficial to my children’s education.</p>
-<p>Notes from class <a href="https://www.coursera.org/learn/learning-how-to-learn">Learning how to learn</a>. These notes are for me and may not make sense for others.</p>
-<section id="focused-vs-diffused-mode" class="level2">
-<h2 class="anchored" data-anchor-id="focused-vs-diffused-mode">Focused vs Diffused Mode</h2>
-<p>You can not access focus and diffused mode simultaneously.</p>
-<p>People have tried to access diffuse mode of thinking by bringing themselves to the point of sleep and waking up just as they fall asleep. For example, Salvador Dali - holding keys in your hand, and let the sound of keys falling the ground wake you up.</p>
-<p>Exercise, going for a walk good way to access diffuse thinking. You must take notes right away b/c diffuse thoughts may evaporate very fast.</p>
+<p><strong>Inference <a href="https://github.com/hamelsmu/replicate-examples/blob/master/cog-vllm-tools/predict.py">code with prompt is located here</a>.</strong></p>
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<div id="4e99a4dc-002c-4cb1-9813-196ca6ced6c5" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> replicate</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pydantic <span class="im">import</span> create_model</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> inspect, json, re</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> inspect <span class="im">import</span> Parameter</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastcore.foundation <span class="im">import</span> L</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> functools <span class="im">import</span> partial</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pprint <span class="im">import</span> pprint</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The following collapsible element contains helper functions for <a href="https://replicate.com/hamelsmu/llama-3-70b-instruct-awq-with-tools">the Replicate inference API</a> and parsing the response:</p>
+<div id="e508409d-b643-4bdd-a2c2-b4f475fe7c80" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<details class="code-fold">
+<summary>Unhide to see code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> parse(text):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Use regular expressions to find content within the tags."""</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    function_call_search <span class="op">=</span> re.search(<span class="vs">r"&lt;function-call&gt;\s*(.*?)\s*&lt;/function-call&gt;"</span>, text, re.DOTALL)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    answer_search <span class="op">=</span> re.search(<span class="vs">r"&lt;answer&gt;\s*(.*?)\s*&lt;/answer&gt;"</span>, text, re.DOTALL)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    function_call <span class="op">=</span> function_call_search.group(<span class="dv">1</span>).strip() <span class="cf">if</span> function_call_search <span class="cf">else</span> <span class="va">None</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    answer <span class="op">=</span> answer_search.group(<span class="dv">1</span>).strip() <span class="cf">if</span> answer_search <span class="cf">else</span> <span class="va">None</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> function_call <span class="kw">and</span> function_call <span class="op">!=</span> <span class="st">"None"</span>: <span class="cf">return</span> {<span class="st">"type"</span>: <span class="st">"function-call"</span>, <span class="st">"content"</span>: function_call}</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> answer: <span class="cf">return</span> {<span class="st">"type"</span>: <span class="st">"text"</span>, <span class="st">"content"</span>: answer}</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>: <span class="cf">return</span> {<span class="st">"type"</span>: <span class="st">"text"</span>, <span class="st">"content"</span>: text}</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run(prompt:<span class="bu">str</span>, tools:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    inp <span class="op">=</span> {<span class="st">"prompt"</span>: <span class="ss">f"</span><span class="sc">{</span>prompt<span class="sc">}</span><span class="ss">"</span>, <span class="st">"temperature"</span>: <span class="dv">0</span>}</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> tools: inp[<span class="st">'tools'</span>] <span class="op">=</span> tools</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    output <span class="op">=</span> replicate.run(</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">"hamelsmu/llama-3-70b-instruct-awq-with-tools:b6042c085a7927a3d87e065a9f51fb7238ef6870c7a2ab7b03caa3c0e9413e19"</span>,</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>        <span class="bu">input</span><span class="op">=</span>inp</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    txt <span class="op">=</span> <span class="st">''</span>.join(output)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> parse(txt) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>A helper to help turn functions into a schema from <a href="https://github.com/fastai/lm-hackers/blob/main/lm-hackers.ipynb">fastai/llm-hackers</a></p>
+<div id="92074773-071c-468f-93c2-c043c3957257" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> schema(f):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    kw <span class="op">=</span> {n:(o.annotation, ... <span class="cf">if</span> o.default<span class="op">==</span>Parameter.empty <span class="cf">else</span> o.default)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>          <span class="cf">for</span> n,o <span class="kw">in</span> inspect.signature(f).parameters.items()}</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> create_model(<span class="ss">f'Input for `</span><span class="sc">{</span>f<span class="sc">.</span><span class="va">__name__</span><span class="sc">}</span><span class="ss">`'</span>, <span class="op">**</span>kw).schema()</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">dict</span>(name<span class="op">=</span>f.<span class="va">__name__</span>, description<span class="op">=</span>f.__doc__, parameters<span class="op">=</span>s)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Lets define two tools:</p>
+<div id="5eb4e691-f164-40c3-8c1e-d57d041a6f23" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_exchange_rate(base_currency:<span class="bu">str</span>, target_currency:<span class="bu">str</span>):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Get the exchange rate between two currencies.</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters:</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">    - base_currency (str): The currency to convert from.</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">    - target_currency (str): The currency to convert to.</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">    float: The exchange rate from base_currency to target_currency.</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_contact(name:<span class="bu">str</span>, email:<span class="bu">str</span>):</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">    Create a new contact.</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters:</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co">    - name (str): The name of the contact.</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">    - email (str): The email address of the contact.</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co">    dict: Confirmation of the created contact.</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>tools <span class="op">=</span> json.dumps(<span class="bu">list</span>(L([get_exchange_rate, create_contact]).<span class="bu">map</span>(schema)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
-<section id="procrastination-memory-and-sleep" class="level2">
-<h2 class="anchored" data-anchor-id="procrastination-memory-and-sleep">Procrastination Memory and Sleep</h2>
-<p>They advocate the Pomodoro technique to combating procrastination. Its like HITT.</p>
-<p>Periodic relaxation (every ~ 30 minutes) is important for accessing your diffuse mode. “Its important for the mortar to dry”.</p>
-<p>Spaced repetition (like Anki) is important for building memory. i</p>
-<p><strong>Go over what you want to learn about right before you go to sleep</strong>, this will substantially improve the chances you will dream about it and form new connections about the subject.</p>
-<p>Exercise can help create new neurons in your hippocampus (new neurons can be created there in adulthood) and help them survive longer.</p>
+<section id="the-demo" class="level2">
+<h2 class="anchored" data-anchor-id="the-demo">The Demo</h2>
+<section id="scenario-1a-no-tool-required-to-answer-question" class="level3">
+<h3 class="anchored" data-anchor-id="scenario-1a-no-tool-required-to-answer-question">Scenario 1A: No tool required to answer question</h3>
+<blockquote class="blockquote">
+<p>even though tool is provided</p>
+</blockquote>
+<div id="6c0144da-4255-4c88-a9b4-cc2ef7ad291b" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>o1a <span class="op">=</span> run(prompt<span class="op">=</span><span class="st">"Write a very short sentence about SEO."</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>          tools<span class="op">=</span>tools)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>pprint(o1a)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{'content': 'Search Engine Optimization (SEO) is crucial for online '
+            'visibility.',
+ 'type': 'text'}</code></pre>
+</div>
+</div>
 </section>
-<section id="writing-tips-diffuse-mode" class="level2">
-<h2 class="anchored" data-anchor-id="writing-tips-diffuse-mode">Writing Tips Diffuse Mode</h2>
-<p>Diffuse mode is very important for writing. Editing is like focus mode and creating ideas is diffuse mode. Some rules of thumb: - Do not outline, make a mind map - Do not edit while you are writing (this is really hard to do -&gt; turn off monitor and just write).https://writeordie.com - app that forces you to stay in diffuse mode. You really cannot look at the screen. - Repeating again, do not look at screen while you are writing! Only when editing.</p>
+<section id="scenario-1b-no-tool-required-to-answer-question" class="level3">
+<h3 class="anchored" data-anchor-id="scenario-1b-no-tool-required-to-answer-question">Scenario 1B: No tool required to answer question</h3>
+<blockquote class="blockquote">
+<p>no tools are provided</p>
+</blockquote>
+<div id="524e7710-9a9a-44c8-acf5-d9dce886ecb7" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>o1b <span class="op">=</span> run(prompt<span class="op">=</span><span class="st">"Write a very short sentence about SEO."</span>,</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>          tools<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>pprint(o1b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{'content': 'Here is a very short sentence about SEO:\n'
+            '\n'
+            '"Optimizing website content with relevant keywords improves '
+            'search engine rankings."',
+ 'type': 'text'}</code></pre>
+</div>
+</div>
 </section>
-<section id="chunking" class="level2">
-<h2 class="anchored" data-anchor-id="chunking">Chunking</h2>
-<p>“Tying your shoes”. Best chunks are subconscious. Spoken language is the best example of chunking. You have to practice to build chunks, you cannot just observe. You have to perform the task yourself.</p>
-<p>You should scan a chapter before you read it: section headings, pictures, etc. This can help you build chunks.</p>
+<section id="scenario-2-tool-is-reqiured-to-answer-question" class="level3">
+<h3 class="anchored" data-anchor-id="scenario-2-tool-is-reqiured-to-answer-question">Scenario 2: Tool is reqiured to answer question</h3>
+<div id="31dc7067-5275-4c27-8734-d1856b293d30" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>o2 <span class="op">=</span> run(prompt<span class="op">=</span><span class="st">"How many Japenese Yen are there in 1000 USD?"</span>,</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>        tools<span class="op">=</span>tools)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>pprint(o2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{'content': 'get_exchange_rate(base_currency="USD", target_currency="JPY")',
+ 'type': 'function-call'}</code></pre>
+</div>
+</div>
 </section>
-<section id="illusions-of-competence" class="level2">
-<h2 class="anchored" data-anchor-id="illusions-of-competence">Illusions of competence</h2>
-<p>Right after you read something, look away and repeat to yourself what you recall. You can also draw a concept map. The recall process actually improves memory.</p>
-<p>Recall is better than re-reading. Re-reading is effective when you let time pass so you get spaced repetition. You need to test yourself to make sure you are competent. Recall is a form of testing.</p>
-<p>Recall outside your place of study to strengthen your memory. This is because you can get queues from where you are studying.</p>
+<section id="scenario-3a-tool-reqiured-but-not-enough-info-in-the-prompt-for-the-params" class="level3">
+<h3 class="anchored" data-anchor-id="scenario-3a-tool-reqiured-but-not-enough-info-in-the-prompt-for-the-params">Scenario 3A: Tool reqiured but not enough info in the prompt for the params</h3>
+<div id="fe1bb18f-08b8-465c-ba88-d84845dcf129" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>o3a <span class="op">=</span> run(prompt<span class="op">=</span><span class="st">"Can you help me add a Hamel Husain to my address book?"</span>,</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>        tools<span class="op">=</span>tools)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>pprint(o3a)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{'content': "I'd be happy to help you add Hamel Husain to your address book! "
+            'However, I need more information from you. Could you please '
+            "provide Hamel's email address? Once I have that, I can assist you "
+            'in adding the contact.',
+ 'type': 'text'}</code></pre>
+</div>
+</div>
 </section>
-<section id="deliberate-practice" class="level2">
-<h2 class="anchored" data-anchor-id="deliberate-practice">Deliberate Practice</h2>
-<p>Focus on the bits that you find difficult. Interleaving is important, meaning learning different subjects or even sections within one subject at once. Thomas S. Khun discovered that two types of people tend to make scientific breakthroughs: (1) young people (2) those who are trained in another discipline.</p>
-</section>
-<section id="procrastination-and-memory" class="level2">
-<h2 class="anchored" data-anchor-id="procrastination-and-memory">Procrastination and Memory</h2>
-<p>You have already learned about the Pomodoro technique. There are other techniques.</p>
-<p>Focus on the process, not the product. Don’t focus on completing the homework, focus on the process that leads you to complete the homework. Process is the small chunks of time to chip away at the task. This is the idea behind the Pomodoro. Your only goal is to finish the Pomodoro, for example.</p>
-</section>
-<section id="juggling-life-and-learning" class="level2">
-<h2 class="anchored" data-anchor-id="juggling-life-and-learning">Juggling Life and Learning</h2>
-<p>You should make to-do list the night before for the next day and write it down. This will allow your subconscious to work on how it will conquer that task. Furthermore, writing it down will allow you to free it from working memory.</p>
-<p>Plan your quitting time is important.</p>
+<section id="scenario-3b-tool-required-there-is-enough-info-in-the-prompt" class="level3">
+<h3 class="anchored" data-anchor-id="scenario-3b-tool-required-there-is-enough-info-in-the-prompt">Scenario 3B: Tool required, there is enough info in the prompt</h3>
+<div id="e06a9072-7013-4918-ad91-3be3701ab8c2" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>o3b <span class="op">=</span> run(prompt<span class="op">=</span><span class="st">"Can you help me add a Hamel Husain to my address book?</span><span class="ch">\</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="st">                  His email address is h@fmail.com"</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>        tools<span class="op">=</span>tools)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>pprint(o3b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{'content': 'create_contact(name="Hamel Husain", email="h@fmail.com")',
+ 'type': 'function-call'}</code></pre>
+</div>
+</div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -1622,7 +1768,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </a>
   </li>  
 </ul>
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/how-to-learn/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.dev/hamelsmu/hamel-site/blob/master/notes/llm/tools/llama3.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>

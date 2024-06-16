@@ -16,7 +16,7 @@
 <height>86</height>
 <width>144</width>
 </image>
-<generator>quarto-1.4.533</generator>
+<generator>quarto-1.5.45</generator>
 <lastBuildDate>Sat, 01 Jun 2024 07:00:00 GMT</lastBuildDate>
 <item>
   <title>What We’ve Learned From A Year of Building with LLMs</title>
@@ -59,7 +59,7 @@ Uncool Warning
 </div>
 </div>
 <p>This slide from <a href="https://www.youtube.com/watch?v=GHk5HMW4XMA">my talk on MLOps tools</a> explains the technique behind Adversarial Validation<sup>2</sup>:</p>
-<div class="img-fluid quarto-figure quarto-figure-center">
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://hamel.dev/blog/posts/drift/images/drift_tfx.png" class="img-fluid figure-img"></p>
 <figcaption>Slide</figcaption>
@@ -185,7 +185,7 @@ Warning
 <p><strong>Feature: Listing Finder</strong></p>
 <p>This feature to be tested is a function call that responds to a user request to find a real estate listing. For example, “Please find listings with more than 3 bedrooms less than $2M in San Jose, CA”</p>
 <p>The LLM converts this into a query that gets run against the CRM. The assertion then verifies that the expected number of results is returned. In our test suite, we have three user inputs that trigger each of the scenarios below, which then execute corresponding assertions (this is an oversimplified example for illustrative purposes):</p>
-<table class="table">
+<table class="caption-top table">
 <thead>
 <tr class="header">
 <th>Scenario</th>
@@ -210,16 +210,19 @@ Warning
 <p><br> There are also generic tests that aren’t specific to any one feature. For example, here is the code for one such generic test that ensures the UUID is not mentioned in the output:</p>
 <div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb1-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">const</span> noExposedUUID <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> message <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">=&gt;</span> {</span>
 <span id="cb1-2">  <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">// Remove all text within double curly braces</span></span>
 <span id="cb1-3">  <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">const</span> sanitizedComment <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> message<span class="op" style="color: #5E5E5E;
@@ -251,6 +254,7 @@ background-color: null;
 font-style: inherit;">// Search for exposed UUIDs</span></span>
 <span id="cb1-6">  <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">const</span> regexp <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="ss" style="color: #20794D;
@@ -278,6 +282,7 @@ background-color: null;
 font-style: inherit;">/ig</span></span>
 <span id="cb1-7">  <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">const</span> matches <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="bu" style="color: null;
@@ -786,6 +791,7 @@ font-style: inherit;">import</span> openai</span>
 <span id="cb4-4"></span>
 <span id="cb4-5"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">class</span> Pet(BaseModel):</span>
 <span id="cb4-6">    pet_type: <span class="bu" style="color: null;
 background-color: null;
@@ -926,6 +932,7 @@ background-color: null;
 font-style: inherit;">@guidance</span></span>
 <span id="cb8-8"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> plan_for_goal(lm, goal: <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">str</span>):</span>
@@ -935,6 +942,7 @@ background-color: null;
 font-style: inherit;"># This is a helper function which we will use below</span></span>
 <span id="cb8-11">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> parse_best(prosandcons, options):</span>
 <span id="cb8-12">        best <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -943,8 +951,10 @@ background-color: null;
 font-style: inherit;">r'Best=(\d+)'</span>, prosandcons)</span>
 <span id="cb8-13">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">not</span> best:</span>
 <span id="cb8-14">            best <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -955,6 +965,7 @@ background-color: null;
 font-style: inherit;">'Best= option is 3'</span>)</span>
 <span id="cb8-15">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">if</span> best:</span>
 <span id="cb8-16">            best <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -965,6 +976,7 @@ background-color: null;
 font-style: inherit;">1</span>))</span>
 <span id="cb8-17">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">else</span>:</span>
 <span id="cb8-18">            best <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -973,6 +985,7 @@ background-color: null;
 font-style: inherit;">0</span></span>
 <span id="cb8-19">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> options[best]</span>
 <span id="cb8-20"></span>
 <span id="cb8-21">    <span class="co" style="color: #5E5E5E;
@@ -980,6 +993,7 @@ background-color: null;
 font-style: inherit;"># Some general instruction to the model</span></span>
 <span id="cb8-22">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">with</span> system():</span>
 <span id="cb8-23">        lm <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -995,6 +1009,7 @@ background-color: null;
 font-style: inherit;"># Note that we switch to using 'lm2' here, because these are intermediate steps (so we don't want to overwrite the current lm object)</span></span>
 <span id="cb8-27">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">with</span> user():</span>
 <span id="cb8-28">        lm2 <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1029,14 +1044,17 @@ background-color: null;
 font-style: inherit;">5</span></span>
 <span id="cb8-35">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">with</span> assistant():</span>
 <span id="cb8-36">        options <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> []</span>
 <span id="cb8-37">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">for</span> i <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">in</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">range</span>(n_options):</span>
@@ -1063,6 +1081,7 @@ background-color: null;
 font-style: inherit;"># Have the user request pros and cons</span></span>
 <span id="cb8-41">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">with</span> user():</span>
 <span id="cb8-42">        lm2 <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1089,8 +1108,10 @@ background-color: null;
 font-style: inherit;">        """</span></span>
 <span id="cb8-47">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">for</span> i, opt <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">in</span> <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">enumerate</span>(options):</span>
@@ -1132,6 +1153,7 @@ background-color: null;
 font-style: inherit;"># Get the pros and cons from the model</span></span>
 <span id="cb8-54">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">with</span> assistant():</span>
 <span id="cb8-55">        lm2 <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1173,6 +1195,7 @@ background-color: null;
 font-style: inherit;"># We switch back to 'lm' because this is the final result we want</span></span>
 <span id="cb8-59">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">with</span> user():</span>
 <span id="cb8-60">        lm <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1208,6 +1231,7 @@ background-color: null;
 font-style: inherit;"># The plan is generated</span></span>
 <span id="cb8-66">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">with</span> assistant():</span>
 <span id="cb8-67">        lm <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1223,6 +1247,7 @@ font-style: inherit;">500</span>)</span>
 <span id="cb8-68"></span>
 <span id="cb8-69">    <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> lm</span></code></pre></div>
 </div>
 <div id="7cbd50af-7689-426c-8779-1b0d5e9bfe7a" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
@@ -1418,6 +1443,7 @@ font-style: inherit;">=</span> instructor.patch(OpenAI())</span>
 <span id="cb15-6"></span>
 <span id="cb15-7"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">class</span> UserDetail(BaseModel):</span>
 <span id="cb15-8">    name: <span class="bu" style="color: null;
 background-color: null;
@@ -1773,6 +1799,7 @@ font-style: inherit;">"default"</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">:</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">null</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">,</span></span>
@@ -1808,6 +1835,7 @@ font-style: inherit;">"default"</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">:</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">true</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">,</span></span>
@@ -1892,6 +1920,7 @@ font-style: inherit;">"default"</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">:</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">null</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">,</span></span>
@@ -2089,9 +2118,11 @@ font-style: inherit;">=</span> gms8k.train, gms8k.dev</span></code></pre></div>
 <div id="fba9a01d-da36-43ba-a2be-2c6801f9154e" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">class</span> CoT(dspy.Module):</span>
 <span id="cb19-2">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">__init__</span>(<span class="va" style="color: #111111;
@@ -2112,11 +2143,13 @@ font-style: inherit;">"question -&gt; answer"</span>)</span>
 <span id="cb19-5">    </span>
 <span id="cb19-6">    <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">def</span> forward(<span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>, question):</span>
 <span id="cb19-7">        <span class="cf" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">return</span> <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">self</span>.prog(question<span class="op" style="color: #5E5E5E;
@@ -2282,6 +2315,7 @@ Note
 background-color: null;
 font-style: inherit;">dataset</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span></span>
 <span id="cb1-2"><span class="at" style="color: #657422;
 background-color: null;
@@ -2292,6 +2326,7 @@ font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">shards</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> </span><span class="dv" style="color: #AD0000;
@@ -2321,17 +2356,20 @@ font-style: inherit;">20</span></span></code></pre></div></li>
 background-color: null;
 font-style: inherit;">datasets</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span></span>
 <span id="cb2-2"><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">  </span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">-</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">path</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> &lt;path to your sharegpt formatted dataset&gt;</span><span class="co" style="color: #5E5E5E;
@@ -2343,6 +2381,7 @@ font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">type</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> sharegpt</span></span></code></pre></div>
@@ -2566,6 +2605,7 @@ font-style: inherit;">"justMyCode"</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">:</span> <span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">true</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">,</span>                   <span class="co" style="color: #5E5E5E;
@@ -2926,7 +2966,7 @@ font-style: inherit;">'.[flash-attn,deepspeed]'</span></span></code></pre></div>
 
 
 
-<div class="img-fluid quarto-figure quarto-figure-center">
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://hamel.dev/blog/posts/dokku/images/serverless.png" class="img-fluid figure-img"></p>
 <figcaption>With Dokku, you can turn a VPS into a powerful serverless platform</figcaption>
@@ -2960,13 +3000,16 @@ font-style: inherit;">'.[flash-attn,deepspeed]'</span></span></code></pre></div>
 </div>
 <div class="sourceCode" id="cb1" data-filename="Dockerfile" style="background: #f1f3f5;"><pre class="sourceCode dockerfile code-with-copy"><code class="sourceCode dockerfile"><span id="cb1-1"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">FROM</span> python:3.10</span>
 <span id="cb1-2"></span>
 <span id="cb1-3"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">COPY</span> . /app</span>
 <span id="cb1-4"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">WORKDIR</span> /app</span>
 <span id="cb1-5"></span>
 <span id="cb1-6"><span class="co" style="color: #5E5E5E;
@@ -2974,6 +3017,7 @@ background-color: null;
 font-style: inherit;"># Install the local package</span></span>
 <span id="cb1-7"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">RUN</span> <span class="ex" style="color: null;
 background-color: null;
 font-style: inherit;">pip</span> install .</span>
@@ -2983,10 +3027,12 @@ background-color: null;
 font-style: inherit;"># This directory contains app.py, a FastApi app</span></span>
 <span id="cb1-10"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">WORKDIR</span> /app/</span>
 <span id="cb1-11"></span>
 <span id="cb1-12"><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">ENTRYPOINT</span> [<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"./entrypoint.sh"</span>]</span></code></pre></div>
@@ -3153,6 +3199,7 @@ SSL / HTTPS
 background-color: null;
 font-style: inherit;">name</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> CI</span></span>
@@ -3160,6 +3207,7 @@ font-style: inherit;"> CI</span></span>
 background-color: null;
 font-style: inherit;">on</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span></span>
 <span id="cb11-3"><span class="at" style="color: #657422;
 background-color: null;
@@ -3167,6 +3215,7 @@ font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">workflow_dispatch</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span></span>
 <span id="cb11-4"><span class="at" style="color: #657422;
 background-color: null;
@@ -3174,6 +3223,7 @@ font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">push</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span></span>
 <span id="cb11-5"><span class="at" style="color: #657422;
 background-color: null;
@@ -3181,20 +3231,24 @@ font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">branches</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> </span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">[</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">main</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">]</span></span>
 <span id="cb11-6"></span>
 <span id="cb11-7"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">concurrency</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"> # Cancel previous jobs to avoid deploy locks on dokku</span></span>
@@ -3204,6 +3258,7 @@ font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">group</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> ${{ github.ref }}</span></span>
@@ -3213,6 +3268,7 @@ font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">cancel-in-progress</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> </span><span class="ch" style="color: #20794D;
@@ -3223,6 +3279,7 @@ font-style: inherit;">true</span></span>
 background-color: null;
 font-style: inherit;">jobs</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span></span>
 <span id="cb11-12"><span class="at" style="color: #657422;
 background-color: null;
@@ -3230,6 +3287,7 @@ font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">deploy-dokku</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span></span>
 <span id="cb11-13"><span class="at" style="color: #657422;
 background-color: null;
@@ -3237,6 +3295,7 @@ font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">runs-on</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> ubuntu-latest</span></span>
@@ -3246,17 +3305,20 @@ font-style: inherit;">    </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">steps</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span></span>
 <span id="cb11-15"><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">      </span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">-</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">name</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> Checkout code</span></span>
@@ -3266,6 +3328,7 @@ font-style: inherit;">        </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">uses</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> actions/checkout@v2</span></span>
@@ -3275,6 +3338,7 @@ font-style: inherit;">        </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">with</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span></span>
 <span id="cb11-18"><span class="at" style="color: #657422;
 background-color: null;
@@ -3282,6 +3346,7 @@ font-style: inherit;">          </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">fetch-depth</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> </span><span class="dv" style="color: #AD0000;
@@ -3294,12 +3359,14 @@ font-style: inherit;">      </span></span>
 background-color: null;
 font-style: inherit;">      </span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">-</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">name</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> Install SSH key</span></span>
@@ -3307,6 +3374,7 @@ font-style: inherit;"> Install SSH key</span></span>
 background-color: null;
 font-style: inherit;">        run</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">: </span><span class="ch" style="color: #20794D;
 background-color: null;
 font-style: inherit;">|</span></span>
@@ -3317,12 +3385,14 @@ font-style: inherit;">|</span></span>
 background-color: null;
 font-style: inherit;">      </span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">-</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> </span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">name</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> Add remote and push</span></span>
@@ -3330,6 +3400,7 @@ font-style: inherit;"> Add remote and push</span></span>
 background-color: null;
 font-style: inherit;">        run</span><span class="kw" style="color: #003B4F;
 background-color: null;
+font-weight: bold;
 font-style: inherit;">: </span><span class="ch" style="color: #20794D;
 background-color: null;
 font-style: inherit;">|</span></span>
@@ -3428,7 +3499,7 @@ font-style: inherit;">ssh</span> dokku@rehcat.co ps:rebuild llm-eval</span></cod
 
 
 
-<div class="img-fluid quarto-figure quarto-figure-center">
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://hamel.dev/blog/posts/nbdev/nbdev.png" class="img-fluid figure-img"></p>
 <figcaption><a href="https://nbdev.fast.ai">nbdev</a> is a software development tool based on Jupyter that feels like its from the future.</figcaption>
@@ -3523,9 +3594,9 @@ K8s For Data Scientists Course
 <p>Below, I outline several reasons why learning K8s is a good idea for machine learning engineers<sup>2</sup>.</p>
 <section id="hosted-dataml-tools-are-not-always-an-option" class="level2">
 <h2 class="anchored" data-anchor-id="hosted-dataml-tools-are-not-always-an-option">Hosted data/ML tools are not always an option</h2>
-<div class="img-fluid quarto-figure quarto-figure-left">
+<div class="quarto-figure quarto-figure-left">
 <figure class="figure">
-<p><img src="https://hamel.dev/blog/posts/k8s/course_img/bellman.png" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+<p><img src="https://hamel.dev/blog/posts/k8s/course_img/bellman.png" class="img-fluid figure-img" style="width:50.0%"></p>
 <figcaption>A robot concierge helping a scientist</figcaption>
 </figure>
 </div>
@@ -3542,9 +3613,9 @@ K8s For Data Scientists Course
 </section>
 <section id="nobody-is-coming-to-save-you" class="level2">
 <h2 class="anchored" data-anchor-id="nobody-is-coming-to-save-you">Nobody is coming to save you</h2>
-<div class="img-fluid quarto-figure quarto-figure-left">
+<div class="quarto-figure quarto-figure-left">
 <figure class="figure">
-<p><img src="https://hamel.dev/blog/posts/k8s/course_img/superhero.png" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+<p><img src="https://hamel.dev/blog/posts/k8s/course_img/superhero.png" class="img-fluid figure-img" style="width:50.0%"></p>
 <figcaption>A super hero</figcaption>
 </figure>
 </div>
@@ -3561,9 +3632,9 @@ K8s For Data Scientists Course
 </section>
 <section id="ml-research-is-crowded.-compete-on-swe-skills." class="level2">
 <h2 class="anchored" data-anchor-id="ml-research-is-crowded.-compete-on-swe-skills.">ML research is crowded. Compete on SWE skills.</h2>
-<div class="img-fluid quarto-figure quarto-figure-left">
+<div class="quarto-figure quarto-figure-left">
 <figure class="figure">
-<p><img src="https://hamel.dev/blog/posts/k8s/course_img/crowd.png" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+<p><img src="https://hamel.dev/blog/posts/k8s/course_img/crowd.png" class="img-fluid figure-img" style="width:50.0%"></p>
 <figcaption>An overcrowded room of scientists</figcaption>
 </figure>
 </div>
@@ -3573,9 +3644,9 @@ K8s For Data Scientists Course
 </section>
 <section id="your-company-likely-already-runs-k8s" class="level2">
 <h2 class="anchored" data-anchor-id="your-company-likely-already-runs-k8s">Your company likely already runs K8s</h2>
-<div class="img-fluid quarto-figure quarto-figure-left">
+<div class="quarto-figure quarto-figure-left">
 <figure class="figure">
-<p><img src="https://hamel.dev/blog/posts/k8s/course_img/meeting.png" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+<p><img src="https://hamel.dev/blog/posts/k8s/course_img/meeting.png" class="img-fluid figure-img" style="width:50.0%"></p>
 <figcaption>A scientist shaking hands with someone who runs infrastructure</figcaption>
 </figure>
 </div>
@@ -3590,9 +3661,9 @@ K8s For Data Scientists Course
 </section>
 <section id="but-isnt-it-overkill" class="level2">
 <h2 class="anchored" data-anchor-id="but-isnt-it-overkill">But isn’t it overkill?</h2>
-<div class="img-fluid quarto-figure quarto-figure-left">
+<div class="quarto-figure quarto-figure-left">
 <figure class="figure">
-<p><img src="https://hamel.dev/blog/posts/k8s/course_img/orange.png" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+<p><img src="https://hamel.dev/blog/posts/k8s/course_img/orange.png" class="img-fluid figure-img" style="width:50.0%"></p>
 <figcaption>Cutting oranges with a chainsaw</figcaption>
 </figure>
 </div>
@@ -3601,9 +3672,9 @@ K8s For Data Scientists Course
 </section>
 <section id="you-dont-need-to-be-an-expert" class="level2">
 <h2 class="anchored" data-anchor-id="you-dont-need-to-be-an-expert">You don’t need to be an expert</h2>
-<div class="img-fluid quarto-figure quarto-figure-left">
+<div class="quarto-figure quarto-figure-left">
 <figure class="figure">
-<p><img src="https://hamel.dev/blog/posts/k8s/course_img/student.png" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+<p><img src="https://hamel.dev/blog/posts/k8s/course_img/student.png" class="img-fluid figure-img" style="width:50.0%"></p>
 <figcaption>A student sitting at a desk in a library</figcaption>
 </figure>
 </div>
