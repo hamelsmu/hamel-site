@@ -1329,7 +1329,7 @@ Speedup factor: 3.70x</code></pre>
 <p>In the code above, async is only as slow as the slowest single task. calling <code>await asyncio.gather(*tasks)</code> waits until all tasks are finished. <strong>However, if you just want to run tasks in the background, you can delete that line of code</strong> (see the comment in the code above).</p>
 <section id="limiting-async-tasks" class="level3">
 <h3 class="anchored" data-anchor-id="limiting-async-tasks">Limiting Async Tasks</h3>
-<p>To limit the number of tasks that can be running concurrently, we can use a <code>asyncio.Semaphore</code>. A semaphore allows us to control access to a shared resource, in this case, the number of concurrent tasks. Here’s how it works:</p>
+<p>To limit the number of tasks that can be running concurrently, we can use a <code>asyncio.Semaphore</code>. A semaphore allows us to control access to a shared resource, in this case, the number of concurrent tasks. <a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> Here’s how it works:</p>
 <div id="3c09596d" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> asyncio</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> nest_asyncio</span>
@@ -1679,7 +1679,13 @@ Wall time: 14.4 ms
 </section>
 </section>
 
-</main> <!-- /main -->
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Thanks to Krisztian for the <a href="https://x.com/kk1694/status/1844336706058846496">suggestion</a>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
