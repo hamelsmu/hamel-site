@@ -2,11 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.55">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-01-28">
+<meta name="dcterms.date" content="2024-10-09">
 <meta name="description" content="Using tensor parallelism w/ vLLM &amp; Modal to run Llama 70b">
 
 <title>vLLM &amp; large models – Hamel’s Blog</title>
@@ -260,7 +260,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth3 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../notes/llm/inference/03_inference.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/inference/inference.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Optimizing latency</span></a>
   </div>
 </li>
@@ -329,13 +329,13 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../notes/llm/finetuning/02_langchain_connectors.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/langchain_connectors.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">LangChain <code>DocumentLoaders</code></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../notes/llm/finetuning/03_estimating_vram.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/estimating_vram.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Estimating vRAM</span></a>
   </div>
 </li>
@@ -347,13 +347,13 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../notes/llm/finetuning/05_tokenizer_gotchas.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/tokenizer_gotchas.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Tokenization Gotchas</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../notes/llm/finetuning/09_template_free.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/template_free.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Template-free axolotl</span></a>
   </div>
 </li>
@@ -717,19 +717,19 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../notes/fastai/01_fundamentals.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fastai/fundamentals.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Fundamentals</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../notes/fastai/02_cv.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fastai/cv.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Image Classification</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../notes/fastai/03_data.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fastai/data.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Data</span></a>
   </div>
 </li>
@@ -903,7 +903,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-22" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../notes/fasthtml/01_concurrency_fasthtml.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fasthtml/concurrency.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Concurrency Foundations For FastHTML</span></a>
   </div>
 </li>
@@ -1045,7 +1045,7 @@ Subscribe for updates
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 28, 2024</p>
+      <p class="date">October 9, 2024</p>
     </div>
   </div>
   
@@ -1074,7 +1074,7 @@ Correction
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>Let’s paste an image below:</p>
 <p><img src="images/paste-6.png" class="img-fluid"></p>
-<p>Large models like <a href="https://huggingface.co/meta-llama/Llama-2-70b-hf">Llama-2-70b</a> may not fit in a single GPU. I previously <a href="../../../notes/llm/inference/03_inference.html">profiled</a> the smaller 7b model against various inference tools. When a model is too big to fit on a single GPU, we can use <a href="https://huggingface.co/docs/transformers/v4.15.0/parallelism">various techniques</a> to split the model across multiple GPUs.</p>
+<p>Large models like <a href="https://huggingface.co/meta-llama/Llama-2-70b-hf">Llama-2-70b</a> may not fit in a single GPU. I previously <a href="../../../notes/llm/inference/inference.html">profiled</a> the smaller 7b model against various inference tools. When a model is too big to fit on a single GPU, we can use <a href="https://huggingface.co/docs/transformers/v4.15.0/parallelism">various techniques</a> to split the model across multiple GPUs.</p>
 <section id="compute-reproducibility" class="level3">
 <h3 class="anchored" data-anchor-id="compute-reproducibility">Compute &amp; Reproducibility</h3>
 <p>I used <a href="https://modal.com/">Modal Labs</a> for serverless compute. Modal is very <a href="https://modal.com/pricing">economical</a> and built for machine learning use cases. Unlike other clouds, there are plenty of A100s available. They even give you $30 of free credits, which is more than enough to run the experiments in this note. Thanks to Modal, the scripts I reference in this note are reproducible.</p>
@@ -1150,7 +1150,7 @@ Be Careful To Mind The Cache When Downloading Files
 <p>Call <code>llm.generate</code> to generate the outputs. It adds the input prompts to vLLM engine’s waiting queue and executes the vLLM engine to generate the outputs with high throughput.</p>
 </blockquote>
 <p>Here are the results, averaged over 5 runs for each row:</p>
-<div id="711e0656" class="cell" data-execution_count="1">
+<div id="a20e9295" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -1222,7 +1222,7 @@ Do Not Compare To Latency Benchmark
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The tok/sec number you see here is VERY different than the latency benchmark shown on <a href="../../../notes/llm/inference/03_inference.html">this note</a>. This particular benchmark maximizes throughput by running multiple requests in parallel. The previous latency benchmark measures the time it takes to process a single request.</p>
+<p>The tok/sec number you see here is VERY different than the latency benchmark shown on <a href="../../../notes/llm/inference/inference.html">this note</a>. This particular benchmark maximizes throughput by running multiple requests in parallel. The previous latency benchmark measures the time it takes to process a single request.</p>
 </div>
 </div>
 <section id="observations" class="level3">
