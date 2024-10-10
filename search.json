@@ -134,6 +134,97 @@
     ]
   },
   {
+    "objectID": "notes/fasthtml/01_concurrency_fasthtml.html",
+    "href": "notes/fasthtml/01_concurrency_fasthtml.html",
+    "title": "Concurrency Foundations For FastHTML",
+    "section": "",
+    "text": "Motivation: we often want to call LLMs in fastHTML apps, and we don’t want to block the server on network calls to APIs.\nThis notebook documents of explorations I went on to better understand various types of concurrency that could be useful with FastHTML. Specifically, I wanted to investigate how to run certain kinds of tasks in the background without blocking the main process.",
+    "crumbs": [
+      "Notes",
+      "📚 Hamel's Notes",
+      "FastHTML",
+      "Concurrency Foundations For FastHTML"
+    ]
+  },
+  {
+    "objectID": "notes/fasthtml/01_concurrency_fasthtml.html#using-a-sql-database-as-a-queue",
+    "href": "notes/fasthtml/01_concurrency_fasthtml.html#using-a-sql-database-as-a-queue",
+    "title": "Concurrency Foundations For FastHTML",
+    "section": "Using A SQL Database As A Queue",
+    "text": "Using A SQL Database As A Queue\nFrom this HN Comment. We will use fastlite as the interface to our SQL database.\n\nWhy\nYou are often already using a database for your web application, and if you need to process items in that database with some kind queue, its convenient to use the database itself!\nYou really don't need anything fancy to implement a queue using SQL. You need a table with a primary id and a \"status\" field. An \"expired\" field can be used instead of the \"status\". We used the latter because it allows easy retries.\n1. SELECT item_id WHERE expire = 0. If this is empty, no items are available.\n\n2. UPDATE SET expire = some_future_time WHERE item_id = $selected_item_id AND expire = 0. Then check whether UPDATE affected any rows. If it did, item_id is yours. If not, loop. If the database has a sane optimizer it'll note at most one document needs locking as the primary id is given.\n\nAll this needs is a very weak property: document level atomic UPDATE which can return whether it changed anything. (How weak? MongoDB could do that in 2009.)\n\nSource code at https://git.drupalcode.org/project/drupal/-/blob/9.2.x/core/... (We cooked this up for Drupal in 2009 but I am reasonably sure we didn't invent anything new.)\n\nOf course, this is not the fastest job queue there is but it is quite often good enough.\n\n\nFirst, let’s define our queue table:\n\nfrom fastlite import *\nPath('queue.db').delete()\n\ndb = Database('queue.db')\n\nclass QueueItem:\n    id: int\n    data: str\n    expire: int  # Unix timestamp\n\nqueue = db.create(QueueItem, pk='id')\n\n\n\nNow, let’s implement the enqueue operation:\n\ndef enqueue(data): return queue.insert(data=data, expire=0)\n\n\n\nFor the dequeue operation, we’ll implement the logic described in the comment:\n\nimport time\ndef dequeue():\n    available_items = queue(where=\"expire = 0\", limit=1)\n    \n    if not available_items: return None  # Queue is empty\n    \n    item = available_items[0]\n    future_time = int(time.time()) + 300  # 5 minutes from now\n    \n    # Step 2: UPDATE SET expire = future_time WHERE id = item.id AND expire = 0\n    updated_item = queue.update(id=item.id, expire=future_time)\n    \n    if updated_item.expire == future_time: return updated_item\n    else: return dequeue()\n\n\n\nLet’s See It In Action!\n\n# Enqueue some items\nenqueue(\"Task 1\")\nenqueue(\"Task 2\")\nenqueue(\"Task 3\")\n\n# Dequeue and process items\nwhile True:\n    item = dequeue()\n    if item is None:\n        print(\"Queue is empty\")\n        break\n    \n    print(f\"Processing {item.data}\")\n\nProcessing Task 1\nProcessing Task 2\nProcessing Task 3\nQueue is empty",
+    "crumbs": [
+      "Notes",
+      "📚 Hamel's Notes",
+      "FastHTML",
+      "Concurrency Foundations For FastHTML"
+    ]
+  },
+  {
+    "objectID": "notes/fasthtml/01_concurrency_fasthtml.html#using-threads-to-run-tasks-in-background",
+    "href": "notes/fasthtml/01_concurrency_fasthtml.html#using-threads-to-run-tasks-in-background",
+    "title": "Concurrency Foundations For FastHTML",
+    "section": "Using Threads To Run Tasks In Background",
+    "text": "Using Threads To Run Tasks In Background\nNext, we want perform proceessing on items from the queue, but do so in the background. We can use the ThreadPoolExecutor from Python’s concurrent.futures module to process items in a thread pool without blocking the main process. Here’s how we can modify our implementation to achieve this:\n\nfrom concurrent.futures import ThreadPoolExecutor\nimport time\nimport threading\n\n\ndef process_item(item):\n    # Simulate some work\n    print(f\"Processing {item.data}\")\n    time.sleep(2)  # Simulating work that takes 2 seconds\n    print(f\"Finished processing {item.data}\")\n\ndef worker():\n    while True:\n        item = dequeue()\n        if item is None: break\n        yield item\n\ndef run_queue_processor_background(max_workers=3):\n    def background_task():\n        with ThreadPoolExecutor(max_workers=max_workers) as executor:\n            futures = []\n            for item in worker():\n                future = executor.submit(process_item, item)\n                futures.append(future)\n            # Wait for all tasks to complete\n            for future in futures: future.result()\n        print(\"Queue processing completed\")\n\n    # Start the background thread\n    thread = threading.Thread(target=background_task)\n    thread.start()\n    \n    return thread  # Return the thread object in case we want to join it later\n\n\n# Enqueue some items\nfor i in range(10): enqueue(f\"Task {i+1}\")\n\n\nprocessor_thread = run_queue_processor_background()\n\n# Main process can continue immediately\nprint(\"Main process continues...\")\n\nMain process continues...\nProcessing Task 1\nProcessing Task 2\nProcessing Task 3\nFinished processing Task 1\nProcessing Task 4\nFinished processing Task 2\nProcessing Task 5\nFinished processing Task 3\nProcessing Task 6\nFinished processing Task 4\nProcessing Task 7\nFinished processing Task 5\nProcessing Task 8\nFinished processing Task 6\nProcessing Task 9\nFinished processing Task 7\nProcessing Task 10\nFinished processing Task 8\nFinished processing Task 9\nFinished processing Task 10\nQueue processing completed\n\n\n\nUser",
+    "crumbs": [
+      "Notes",
+      "📚 Hamel's Notes",
+      "FastHTML",
+      "Concurrency Foundations For FastHTML"
+    ]
+  },
+  {
+    "objectID": "notes/fasthtml/01_concurrency_fasthtml.html#fasthtml-app-with-async",
+    "href": "notes/fasthtml/01_concurrency_fasthtml.html#fasthtml-app-with-async",
+    "title": "Concurrency Foundations For FastHTML",
+    "section": "FastHTML App With Async",
+    "text": "FastHTML App With Async\nHere’s a minimal FastHTML app that incorporates async. You have to run this in a notebook to try it!\n\nfrom fasthtml.common import *\nfrom fasthtml.jupyter import *\nfrom fastcore.utils import *\nimport asyncio, nest_asyncio\n\n\nDefine the server\n\n\n\n\n\n\nNote\n\n\n\nThe “I’m done” messages will be printed after this cell, because all of the console output is printed where the server is defined in a Jupyter notebook.\n\n\n\n#The \"I'm done\" messages will be printed after this cell\nif IN_JUPYTER:\n    from fasthtml.jupyter import JupyUvi, jupy_app, HTMX\n    app, rt = jupy_app()\n    server = JupyUvi(app) \n    nest_asyncio.apply()\nelse:\n    app,rt = fast_app()\n\nI'm done\nI'm done\n\n\n\nasync def long_running_task():\n    await asyncio.sleep(5)  # Simulate a long-running task\n    print(\"I'm done\")\n\n@rt(\"/\")\ndef get():\n    return P(\"Async Task Demo\",\n        Div(\n            Button(\"Start Task\", hx_post=\"/start-task\", hx_swap=\"outerHTML\"),\n            id=\"task-button\"\n        )\n    )\n\n@rt(\"/start-task\")\nasync def post():\n    # These will run in the background since we aren't calling await.\n    # There are multiple tasks, and asyncio.gather is one way of kicking them off\n    asyncio.gather(long_running_task(), long_running_task())\n    return Div(\n        P(\"Task started! Check your console in 5 seconds.\"),\n        id=\"task-button\"\n    )\n\n\nHTMX()\n\n \n\n\n\nserver.stop()",
+    "crumbs": [
+      "Notes",
+      "📚 Hamel's Notes",
+      "FastHTML",
+      "Concurrency Foundations For FastHTML"
+    ]
+  },
+  {
+    "objectID": "notes/fasthtml/01_concurrency_fasthtml.html#async-openai",
+    "href": "notes/fasthtml/01_concurrency_fasthtml.html#async-openai",
+    "title": "Concurrency Foundations For FastHTML",
+    "section": "Async OpenAI",
+    "text": "Async OpenAI\nLet’s show a more realistic example by using OpenAI instead of the sleep. We’ll use the OpenAI API to generate a response, and then print it when it’s done. Here’s the updated code:\n\nfrom fasthtml.common import *\nfrom fasthtml.jupyter import *\nimport asyncio, nest_asyncio\nfrom openai import AsyncOpenAI\n\n\n## The console output (from the background task) will be printed after this cell\nif IN_JUPYTER:\n    from fasthtml.jupyter import JupyUvi, jupy_app, HTMX\n    app, rt = jupy_app()\n    server = JupyUvi(app) \n    nest_asyncio.apply()\nelse:\n    app,rt = fast_app()\n\n# Initialize the AsyncOpenAI client\nclient = AsyncOpenAI()\n\nOpenAI response: Sure, here's a long joke for you:\n\nOnce upon a time, in a small village, there was a man named Sam who was known for his unmatched sense of humor. People loved his company because he always made them laugh. One day, Sam heard about a mystical parrot that could speak 18 different languages and tell the funniest jokes anyone had ever heard. Intrigued, he decided to seek out this parrot and bring it to his village to entertain everyone.\n\nAfter several days of traveling, Sam finally reached the remote island where the parrot was rumored to live. As he ventured into the dense jungle, he encountered a wise old hermit who knew about the legendary bird. The hermit offered Sam some advice: “The parrot is intelligent and loves a good challenge. To win it over, you must make it laugh.”\n\nSam, confident in his comedic skills, accepted the challenge. The hermit guided him to a clearing where the parrot resided. The bird was indeed magnificent, with vibrant feathers and a mischievous glint in its eyes. Sam introduced himself and said, \"I hear you are quite the witty parrot, but I bet you haven’t heard this one.\"\n\nSam proceeded to tell his best joke. Hours passed, and Sam was relentless, telling joke after joke, yet the parrot remained stone-faced, not even a twitch of its beak.\n\nRealizing he needed to up his game, Sam started telling the parrot jokes in different languages: English, French, Spanish, even Mandarin. Still, the parrot didn’t even chuckle. The sun began to set, and feeling desperate, Sam remembered the hermit's advice: the parrot loves a good challenge.\n\nSo Sam took one last shot. \"All right, clever bird, if you don't laugh at this one, I'll admit defeat.” He then told a complex, multi-layered pun that integrated all the languages he had used that day, creating a linguistic masterpiece.\n\nThe parrot paused, tilted its head, and then exploded into uncontrollable laughter. It flapped its wings and hopped around, wheezing and squawking with delight.\n\nOnce the parrot managed to calm down, it spoke to Sam in a melodious voice, \"Bravo, my friend. You've impressed me. I shall accompany you back to your village.\"\n\nSam returned triumphantly with the parrot, and as promised, the bird entertained the village with its multilingual jokes, becoming a beloved member of the community. And Sam, well, he learned that sometimes, the best way to make someone laugh is to speak their language—literally and figuratively.\n\n\n\nasync def openai_task():\n    response = await client.chat.completions.create(\n        model=\"gpt-4o\",\n        messages=[{\"role\": \"user\", \"content\": \"Tell me a long joke\"}]\n    )\n    joke = response.choices[0].message.content\n    print(f\"OpenAI response: {joke}\")\n\n@rt(\"/\")\ndef get():\n    return P(\"Async OpenAI Demo\",\n        Div(\n            Button(\"Get a Joke\", hx_post=\"/get-joke\", hx_swap=\"outerHTML\"),\n            id=\"joke-button\"\n        )\n    )\n\n@rt(\"/get-joke\")\nasync def post():\n    asyncio.create_task(openai_task())\n    return Div(\n        P(\"Joke request sent! Check your console in a minute.\"),\n        id=\"joke-button\"\n    )\n\n\nHTMX()\n\n \n\n\n\nserver.stop()",
+    "crumbs": [
+      "Notes",
+      "📚 Hamel's Notes",
+      "FastHTML",
+      "Concurrency Foundations For FastHTML"
+    ]
+  },
+  {
+    "objectID": "notes/fasthtml/01_concurrency_fasthtml.html#threads-processes",
+    "href": "notes/fasthtml/01_concurrency_fasthtml.html#threads-processes",
+    "title": "Concurrency Foundations For FastHTML",
+    "section": "Threads & Processes",
+    "text": "Threads & Processes\nNote: Async tasks can be started in the background with threads or processes. You can also spawn threads or processes from other threads or processes as well.\nLet’s see the basic functionality of threads and processes in python.\n\nimport time\nfrom fastcore.parallel import parallel\n\ndef f(x): time.sleep(1); print(x)\na = [1,2,3,4,5,6,7,8,9]\n\n# parallel starts a new thread when threadpool=True.\ndef g(): parallel(f, a, threadpool=True)\n\n\nRun with a process\nWe are starting a thread inside a new process so it runs in the background. Remember, parallel will execute f in a new thread.\nIt will print kinda wierd because of the threading and things completing at the same time.\n\n%%time\nfrom multiprocess import Process\np = Process(target=g)\np.start()\n\nCPU times: user 6.04 ms, sys: 6.68 ms, total: 12.7 ms\nWall time: 14.4 ms\n48\n6\n2315\n7\n\n\n\n\n9\n\n\n\n\nRun with a thread\nInstaed of starting a thread in the background with a process, we can also start it with another thread.\n\nfrom threading import Thread\nt = Thread(target=g)\nt.start()\n\n35\n\n4\n7\n2\n1\n6\n8\n9\n\n\n\n\nHow to choose Threads vs. Processes\nSee my blog post.\nIf your tasks involves network calls, consider using threads. For CPU intensive tasks, use processes.",
+    "crumbs": [
+      "Notes",
+      "📚 Hamel's Notes",
+      "FastHTML",
+      "Concurrency Foundations For FastHTML"
+    ]
+  },
+  {
+    "objectID": "notes/fasthtml/01_concurrency_fasthtml.html#fastcore",
+    "href": "notes/fasthtml/01_concurrency_fasthtml.html#fastcore",
+    "title": "Concurrency Foundations For FastHTML",
+    "section": "Fastcore",
+    "text": "Fastcore\nFastcore has goodies for threads and processes\n\n@threaded decorator\nThis will make functions run in the background in a new thread or process.\n\nfrom fastcore.parallel import threaded\n\n@threaded # casuses g to be threaded\ndef g(): parallel(f, a, threadpool=True)\n    \n    \n@threaded(process=True) # casuses h to be run in a process\ndef h(): parallel(f, a, threadpool=True)\n\n\ng()\n\n&lt;Thread(Thread-17 (g), started 13053145088)&gt;\n\n\n12\n\n3\n4\n5\n8\n6\n7\n9\n\n\n\nh()\n\n&lt;Process name='Process-7' pid=65921 parent=59763 started&gt;\n\n\n284637\n\n\n5\n1\n\n\n\n9\n\n\n\n\nstartthread\nWe can also start a thread by calling the startthread function.\n\ndef g(): parallel(f, a, threadpool=True)\nstartthread(g)\n\n# this will run right away in the main process, since the other code is running in the background\nprint('hello') \n\nhello\n12\n\n3\n4\n5\n7\n8\n6\n9",
+    "crumbs": [
+      "Notes",
+      "📚 Hamel's Notes",
+      "FastHTML",
+      "Concurrency Foundations For FastHTML"
+    ]
+  },
+  {
     "objectID": "notes/video_editing.html",
     "href": "notes/video_editing.html",
     "title": "Video Editing",
