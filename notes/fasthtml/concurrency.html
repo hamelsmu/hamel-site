@@ -266,7 +266,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/inference/04_max_engine.html" class="sidebar-item-text sidebar-link">
+  <a href="../../notes/llm/inference/max_engine.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Max Inference Engine</span></a>
   </div>
 </li>
@@ -323,7 +323,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/finetuning/01_datasets.html" class="sidebar-item-text sidebar-link">
+  <a href="../../notes/llm/finetuning/datasets.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Dataset Basics</span></a>
   </div>
 </li>
@@ -1092,26 +1092,16 @@ Tip
 </div>
 <section id="using-a-sql-database-as-a-queue" class="level2">
 <h2 class="anchored" data-anchor-id="using-a-sql-database-as-a-queue">Using A SQL Database As A Queue</h2>
-<p>From this <a href="https://news.ycombinator.com/item?id=27482402">HN Comment</a>. We will use <a href="https://github.com/AnswerDotAI/fastlite">fastlite</a> as the interface to our SQL database.</p>
+<p>We will use <a href="https://github.com/AnswerDotAI/fastlite">fastlite</a> as the interface to our SQL database.</p>
 <section id="why" class="level3">
 <h3 class="anchored" data-anchor-id="why">Why</h3>
 <p>You are often already using a database for your web application, and if you need to process items in that database with some kind queue, its convenient to use the database itself!</p>
-<blockquote class="blockquote">
-<p>You really don’t need anything fancy to implement a queue using SQL. You need a table with a primary id and a “status” field. An “expired” field can be used instead of the “status”. We used the latter because it allows easy retries.</p>
-</blockquote>
-<blockquote class="blockquote">
-<ol type="1">
-<li>SELECT item_id WHERE expire = 0. If this is empty, no items are available.</li>
-</ol>
-</blockquote>
-<blockquote class="blockquote">
-<ol start="2" type="1">
-<li>UPDATE SET expire = some_future_time WHERE item_id = $selected_item_id AND expire = 0. Then check whether UPDATE affected any rows. If it did, item_id is yours. If not, loop. If the database has a sane optimizer it’ll note at most one document needs locking as the primary id is given.</li>
-</ol>
-</blockquote>
-<blockquote class="blockquote">
-<p>All this needs is a very weak property: document level atomic UPDATE which can return whether it changed anything. (How weak? MongoDB could do that in 2009.) Source code at https://git.drupalcode.org/project/drupal/-/blob/9.2.x/core/… (We cooked this up for Drupal in 2009 but I am reasonably sure we didn’t invent anything new.) Of course, this is not the fastest job queue there is but it is quite often good enough.</p>
-</blockquote>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="hn.png" class="img-fluid figure-img"></p>
+<figcaption>Screenshot is from this <a href="https://news.ycombinator.com/item?id=27482402">HN Comment</a></figcaption>
+</figure>
+</div>
 </section>
 <section id="first-lets-define-our-queue-table" class="level3">
 <h3 class="anchored" data-anchor-id="first-lets-define-our-queue-table">First, let’s define our queue table:</h3>
