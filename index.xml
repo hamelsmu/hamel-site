@@ -3598,12 +3598,508 @@ font-style: inherit;">ssh</span> dokku@rehcat.co ps:rebuild llm-eval</span></cod
 </item>
 <item>
   <title>Tokenization Gotchas</title>
-  <link>https://hamel.dev/</link>
-  <description>Footguns with tokenizers and inferencing LLMs
-</description>
+  <link>https://hamel.dev/notes/llm/finetuning/tokenizer_gotchas.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>Lots of people experience fiddly behavior when using LLMs. For example:</p>
+<blockquote class="twitter-tweet blockquote">
+<p lang="en" dir="ltr">
+Unironically I found this to be very helpful when prompting LLMs. Giving them spaces and new lines <a href="https://t.co/vVuxcCuDzB">pic.twitter.com/vVuxcCuDzB</a>
+</p>
+— anton (<span class="citation" data-cites="abacaj">@abacaj</span>) <a href="https://twitter.com/abacaj/status/1728190808191537604?ref_src=twsrc%5Etfw">November 24, 2023</a>
+</blockquote>
+<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<p>If you aren’t careful, these can be very hard to debug. This is because of the subtle ways tokenizers work that is not always easy to see by looking at the text.</p>
+</section>
+<section id="example" class="level2">
+<h2 class="anchored" data-anchor-id="example">Example</h2>
+<p>The below example demonstrates how things can get confusing and can drift between training and inference time.</p>
+<div id="a14be044-f279-4856-8980-e7b15912f6a5" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> AutoTokenizer</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> functools <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> partial</span>
+<span id="cb1-3">model_id <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Open-Orca/Mistral-7B-OpenOrca'</span></span>
+<span id="cb1-4">tok <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> AutoTokenizer.from_pretrained(model_id)</span></code></pre></div>
+</div>
+<div id="e0817615-1661-4fda-8757-4d0c7c51a2a6" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">enc <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> partial(tok.encode, add_special_tokens<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span>
+<span id="cb2-2">dec <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> partial(tok.decode)</span></code></pre></div>
+</div>
+<section id="many-frameworks-do-prompt-construction-by-concatenating-tokens" class="level3">
+<h3 class="anchored" data-anchor-id="many-frameworks-do-prompt-construction-by-concatenating-tokens">Many frameworks do prompt construction by concatenating tokens</h3>
+<p>Popular frameworks like <a href="https://github.com/OpenAccess-AI-Collective/axolotl">axolotl</a> construct prompts by concatenating tokens instead of strings.<sup>1</sup> It is reasonable to decode the training data to check what the prompt template is:</p>
+<p>For example, a prompt may be constructed like this:</p>
+<div id="9c960919-7671-4493-b9c5-381da8d77ac6" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">axolotl <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> enc(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Ok</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> enc(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'&lt;|im_start|&gt;'</span>)</span>
+<span id="cb3-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(dec(axolotl))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Ok
+&lt;|im_start|&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="lets-say-you-have-an-inference-server" class="level3">
+<h3 class="anchored" data-anchor-id="lets-say-you-have-an-inference-server">Let’s say you have an inference server</h3>
+<p>It’s common for inference servers to assemble the prompt for you. The below looks like it should be fine, right?</p>
+<div id="f93f0316-971e-44fd-8c97-a5c8df57f610" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> inf_server(inp): </span>
+<span id="cb5-2">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f'</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>inp<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">&lt;|im_start|&gt;'</span></span>
+<span id="cb5-3"></span>
+<span id="cb5-4">srv <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> inf_server(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Ok'</span>)</span>
+<span id="cb5-5"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(srv)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Ok
+&lt;|im_start|&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="drift-between-your-server-and-the-way-the-model-is-trained" class="level3">
+<h3 class="anchored" data-anchor-id="drift-between-your-server-and-the-way-the-model-is-trained">Drift between your server and the way the model is trained</h3>
+<p>Wrong! Notice the difference in the decoding of the prompt vs the training data. This is a subtle problem that can be hard to debug.</p>
+<div id="7870389c-4a67-4542-bedb-e506e55993df" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f'axolotl training data:  </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>axolotl<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span>)</span>
+<span id="cb7-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"your server's decoding: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>enc(srv)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>axolotl training data:  [6504, 13, 32001]
+your server's decoding: [6504, 32001]</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="solutions" class="level2">
+<h2 class="anchored" data-anchor-id="solutions">Solutions</h2>
+<section id="decode-your-inference-data" class="level3">
+<h3 class="anchored" data-anchor-id="decode-your-inference-data">1. Decode your inference data</h3>
+<p>Decode your inference data right before your forward pass. For example, you’ll notice the newline is missing if you do this. This is one way to tell that something fishy is going on.</p>
+<div id="246702e3-1282-4250-80c4-5976db96e42e" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">dec(enc(srv))</span></code></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>'Ok&lt;|im_start|&gt;'</code></pre>
+</div>
+</div>
+</section>
+<section id="use-hf-chat-templating" class="level3">
+<h3 class="anchored" data-anchor-id="use-hf-chat-templating">2. Use HF chat templating</h3>
+<p>Use the new HuggingFace <a href="https://huggingface.co/docs/transformers/chat_templating">chat template</a> when possible. This will help avoid these issues (however, I would still check using method #1 to be sure!). Related GitHub Issue <a href="https://github.com/huggingface/transformers/issues/25304#issuecomment-1728111915">comment</a>.</p>
+</section>
+</section>
+<section id="example-axolotl-vs.-huggingface-chat-templates" class="level2">
+<h2 class="anchored" data-anchor-id="example-axolotl-vs.-huggingface-chat-templates">Example: Axolotl vs.&nbsp;HuggingFace Chat Templates</h2>
+<p>This is real example of how tokenization drift can bite you.</p>
+<section id="chat-template-from-huggingface" class="level3">
+<h3 class="anchored" data-anchor-id="chat-template-from-huggingface">Chat Template From HuggingFace</h3>
+<div id="d8375302-88c3-43f4-863d-2240283cb3c4" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> AutoTokenizer</span>
+<span id="cb11-2">tokenizer <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> AutoTokenizer.from_pretrained(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"NousResearch/Llama-2-7b-chat-hf"</span>)</span>
+<span id="cb11-3"></span>
+<span id="cb11-4">chat <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [</span>
+<span id="cb11-5">   {<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"role"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"system"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"content"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"lorem"</span>},</span>
+<span id="cb11-6">   {<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"role"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"user"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"content"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"abc"</span>},</span>
+<span id="cb11-7">   {<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"role"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"assistant"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"content"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ipsum"</span>},</span>
+<span id="cb11-8">   {<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"role"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"user"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"content"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"123"</span>},</span>
+<span id="cb11-9">   {<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"role"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"assistant"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"content"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"sit"</span>},</span>
+<span id="cb11-10">]</span>
+<span id="cb11-11"></span>
+<span id="cb11-12">ids <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> tokenizer.apply_chat_template(chat)</span>
+<span id="cb11-13"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(tokenizer.decode(ids))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;s&gt;[INST] &lt;&lt;SYS&gt;&gt;
+lorem
+&lt;&lt;/SYS&gt;&gt;
+
+abc [/INST] ipsum&lt;/s&gt;&lt;s&gt;[INST] 123 [/INST] sit&lt;/s&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="same-thing-decoded-from-axolotl-with-a-space-after-s" class="level3">
+<h3 class="anchored" data-anchor-id="same-thing-decoded-from-axolotl-with-a-space-after-s">Same thing decoded from Axolotl (with a space after <code>&lt;s&gt;</code>)</h3>
+<p>Got the token ids from <a href="https://github.com/OpenAccess-AI-Collective/axolotl/pull/952/files#diff-e2bb558861fee0a2caf4307a1613cd7f19e01e206f771ce7ec4644488acdfd2fR133-R146">this test</a>.</p>
+<div id="f3cd6a66-3bc0-4575-8f52-6e425ad901be" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">axolotl_ids <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">518</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25580</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">29962</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3532</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14816</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">29903</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6778</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span>, </span>
+<span id="cb13-2">                <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">29880</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3668</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">29966</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">829</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14816</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">29903</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6778</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span>, </span>
+<span id="cb13-3">                <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10736</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">518</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">29914</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25580</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">29962</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">23421</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, </span>
+<span id="cb13-4">                <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">518</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25580</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">29962</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">29871</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">29896</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">29906</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">29941</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">518</span>, </span>
+<span id="cb13-5">                <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">29914</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25580</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">29962</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7845</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>]</span>
+<span id="cb13-6"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(tokenizer.decode(axolotl_ids))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;s&gt; [INST] &lt;&lt;SYS&gt;&gt;
+lorem
+&lt;&lt;/SYS&gt;&gt;
+
+abc [/INST] ipsum&lt;/s&gt;&lt;s&gt; [INST] 123 [/INST] sit&lt;/s&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="lets-decode-hf-tokens-one-at-a-time" class="level3">
+<h3 class="anchored" data-anchor-id="lets-decode-hf-tokens-one-at-a-time">Let’s decode HF tokens one at a time</h3>
+<div id="dcbc326c-802b-42f3-a173-19aedc31baaf" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> i <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> ids[:<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">9</span>]:</span>
+<span id="cb15-2">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f'</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>i<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>tokenizer<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>decode(i)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1: &lt;s&gt;
+29961: [
+25580: INST
+29962: ]
+3532: &lt;&lt;
+14816: SY
+29903: S
+6778: &gt;&gt;
+13: 
+</code></pre>
+</div>
+</div>
+</section>
+<section id="lets-decode-axolotl-tokens-one-at-a-time" class="level3">
+<h3 class="anchored" data-anchor-id="lets-decode-axolotl-tokens-one-at-a-time">Let’s decode Axolotl tokens one at a time</h3>
+<p>See the second token <code>518</code> this is a mismatch with the HF Chat template which is <code>29961</code></p>
+<div id="1409ec09-89eb-429b-a846-c30a802a8647" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> i <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> axolotl_ids[:<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">9</span>]:</span>
+<span id="cb17-2">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f'</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>i<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>tokenizer<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>decode(i)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1: &lt;s&gt;
+518: [
+25580: INST
+29962: ]
+3532: &lt;&lt;
+14816: SY
+29903: S
+6778: &gt;&gt;
+13: 
+</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="why-does-this-happen" class="level2">
+<h2 class="anchored" data-anchor-id="why-does-this-happen">Why does this happen?</h2>
+<p>Axolotl assembles prompts in token space rather than string space.</p>
+<div id="c00acd59-7f69-49ad-ada7-286ca7b13c63" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1">tokenizer.encode(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'&lt;s&gt;'</span>, add_special_tokens<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> tokenizer.encode(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'[INST]'</span>, add_special_tokens<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[1, 518, 25580, 29962]</code></pre>
+</div>
+</div>
+<p>HF Chat templates interpolate strings instead</p>
+<div id="db856a19-cbdb-4ae7-a515-675ee31ff21f" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">tokenizer.encode(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'&lt;s&gt;[INST]'</span>, add_special_tokens<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[1, 29961, 25580, 29962]</code></pre>
+</div>
+</div>
+</section>
+<section id="other-examples" class="level2">
+<h2 class="anchored" data-anchor-id="other-examples">Other Examples</h2>
+<p>These are other examples of people being bitten by drift between differences in tokenization between training and inference time:</p>
+<ol type="1">
+<li>This <a href="https://github.com/huggingface/transformers/issues/25304">GitHub Issue</a>.</li>
+<li>This <a href="https://twitter.com/johnowhitaker/status/1732097798286475578">Tweet</a>.</li>
+</ol>
+
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>This is for good reason, as masking must also be done at the token level.↩︎</p></li>
+</ol>
+</section></div> ]]></description>
   <category>LLMs</category>
   <category>Notes</category>
-  <guid>https://hamel.dev/</guid>
+  <guid>https://hamel.dev/notes/llm/finetuning/tokenizer_gotchas.html</guid>
   <pubDate>Sun, 17 Dec 2023 08:00:00 GMT</pubDate>
 </item>
 <item>
