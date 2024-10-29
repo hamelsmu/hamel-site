@@ -400,6 +400,8 @@ It took us only three iterations to achieve > 90% agreement between the LLM and 
 
 I usually adjust the prompts by hand.  I haven't had much luck with prompt optimizers like DSPy.  However, my friend [Eugene Yan](https://eugeneyan.com/) has just released a promising tool named [ALIGN Eval](https://eugeneyan.com/writing/aligneval/).  I like it because it's simple and effective.  Also, don't forget the approach of [continual in-context learning](https://blog.langchain.dev/dosu-langsmith-no-prompt-eng/) mentioned earlier - it can be very effective when implemented correctly.
 
+In rare cases, I might fine-tune a judge, but I prefer not to.  I talk about this more in the [FAQ](#do-you-recommend-fine-tuning-judges) section.
+
 ### The Human Side of the Process
 
 Something unexpected happened during this process. [Phillip Carter](https://www.linkedin.com/in/phillip-carter-4714a135/), our domain expert at Honeycomb, found that reviewing the LLM's critiques helped him articulate his own evaluation criteria more clearly. He said, 
@@ -665,11 +667,12 @@ These are some of the resources I recommend to learn more on this topic:
 
 - [Your AI Product Needs Evals](https://hamel.dev/evals): This blog post is the predecessor to this one, and provides a high-level overview of evals for LLM based products.
 - [Who Validates the Validators? Aligning LLM-Assisted Evaluation of LLM Outputs with Human Preferences](https://arxiv.org/abs/2404.12272): This paper by Shreya Shankar et al provides a good overview of the challenges of evaluating LLMs, and the importance of following a good process.
-- [Align Eval](https://aligneval.com/): Eugene Yan's new tool that helps you build LLM judges by following a good process.
+- [Align Eval](https://aligneval.com/): Eugene Yan's new tool that helps you build LLM judges by following a good process.  Also read his accompanying [blog post](https://eugeneyan.com/writing/align-eval/).
 - [Evaluating the Effectiveness of LLM-Evaluators (aka LLM-as-Judge)](https://eugeneyan.com/writing/llm-evaluators/): This is a great survey of different use-cases and approaches for LLM judges, also written by Eugene Yan.
-- [Enhancing LLM-As-A-Judge with Grading Notes](https://www.databricks.com/blog/enhancing-llm-as-a-judge-with-grading-notes): This is _very_ similar to the approach articulated in this blog post, and provides another point of view regarding the utility of writing critiques (they call them grading notes).
-- [Custom LLM as a Judge Cookbook from OpenAI](https://cookbook.openai.com/examples/custom-llm-as-a-judge) by Ankur Goyal and Shaymal Anadkt provide an end-to-end example of building a LLM judge, and for the use case highlighted, authors found that a classification approach was more reliable than numeric ratings (consistent with this blog post).
-
+- [Enhancing LLM-As-A-Judge with Grading Notes](https://www.databricks.com/blog/enhancing-llm-as-a-judge-with-grading-notes) by Yi Liu et al. Describes an approach very similar to the one in this blog post, and provides another point of view regarding the utility of writing critiques (they call them grading notes).
+- [Custom LLM as a Judge to Detect Hallucinations with Braintrust](https://cookbook.openai.com/examples/custom-llm-as-a-judge) by Ankur Goyal and Shaymal Anadkt provide an end-to-end example of building a LLM judge, and for the use case highlighted, authors found that a classification approach was more reliable than numeric ratings (consistent with this blog post).
+- [Techniques for Self-Improving LLM Evals](https://arize.com/blog/techniques-for-self-improving-llm-evals/) by Eric Xiao from Arize shows a nice approach to building LLM Evals with some additional tools that are worth checking out.
+- [How Dosu Used LangSmith to Achieve a 30% Accuracy Improvement with No Prompt Engineering](https://blog.langchain.dev/dosu-langsmith-no-prompt-eng/) by Langchain shows a nice approach to building LLM prompts with dynamic examples.  The idea is very simple, but very effective.  I've been adapting it for my own use cases, including LLM judges.  Here is a [video walkthrough](https://www.youtube.com/watch?v=tHZtq_pJSGo) of the approach.
 
 ## Stay Connected
 
