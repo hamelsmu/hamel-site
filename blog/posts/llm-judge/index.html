@@ -922,13 +922,15 @@ then provide a pass/fail judgment in the same format as above.
 <section id="how-to-optimize-the-llm-judge-prompt" class="level3">
 <h3 class="anchored" data-anchor-id="how-to-optimize-the-llm-judge-prompt">How to Optimize the LLM Judge Prompt?</h3>
 <p>I usually adjust the prompts by hand. I haven’t had much luck with prompt optimizers like DSPy. However, my friend <a href="https://eugeneyan.com/">Eugene Yan</a> has just released a promising tool named <a href="https://eugeneyan.com/writing/aligneval/">ALIGN Eval</a>. I like it because it’s simple and effective. Also, don’t forget the approach of <a href="https://blog.langchain.dev/dosu-langsmith-no-prompt-eng/">continual in-context learning</a> mentioned earlier - it can be very effective when implemented correctly.</p>
+<p>In rare cases, I might fine-tune a judge, but I prefer not to. I talk about this more in the <a href="#do-you-recommend-fine-tuning-judges">FAQ</a> section.</p>
 </section>
 <section id="the-human-side-of-the-process" class="level3">
 <h3 class="anchored" data-anchor-id="the-human-side-of-the-process">The Human Side of the Process</h3>
 <p>Something unexpected happened during this process. <a href="https://www.linkedin.com/in/phillip-carter-4714a135/">Phillip Carter</a>, our domain expert at Honeycomb, found that reviewing the LLM’s critiques helped him articulate his own evaluation criteria more clearly. He said,</p>
 <blockquote class="blockquote">
-<p>“Seeing how the LLM breaks down its reasoning made me realize I wasn’t being consistent about how I judged certain edge cases.” This is a pattern I’ve seen repeatedly—the process of building an LLM judge often helps standardize evaluation criteria.”</p>
+<p>“Seeing how the LLM breaks down its reasoning made me realize I wasn’t being consistent about how I judged certain edge cases.”</p>
 </blockquote>
+<p>This is a pattern I’ve seen repeatedly—the process of building an LLM judge often helps standardize evaluation criteria.</p>
 <p>Furthermore, because this process forces the domain expert to look at data carefully, I always uncover new insights about the product, AI capabilities, and user needs. The resulting benefits are often <em>more valuable</em> than creating a LLM judge!</p>
 </section>
 <section id="how-often-should-you-evaluate" class="level3">
@@ -1123,7 +1125,7 @@ Example Trace
 </section>
 <section id="doing-this-well-requires-data-literacy" class="level3">
 <h3 class="anchored" data-anchor-id="doing-this-well-requires-data-literacy">Doing this well requires data literacy</h3>
-<p>Investigating your data is much harder in practice than I made it look in this post. It requires a nose for detail that only comes from practice. It also helps to have some basic familiarity with statistics and data analysis tools. My favorite post on data literacy is <a href="https://jxnl.co/writing/2024/06/02/10-ways-to-be-data-illiterate-and-how-to-avoid-them/">this one</a> by Jason Liu and Eugene Yan.</p>
+<p>Investigating your data is much harder in practice than I made it look in this post. It requires a nose for data that only comes from practice. It also helps to have some basic familiarity with statistics and data analysis tools. My favorite post on data literacy is <a href="https://jxnl.co/writing/2024/06/02/10-ways-to-be-data-illiterate-and-how-to-avoid-them/">this one</a> by Jason Liu and Eugene Yan.</p>
 </section>
 </section>
 <section id="step-7-create-more-specialized-llm-judges-if-needed" class="level2">
@@ -1275,11 +1277,13 @@ Example Trace
 <p>These are some of the resources I recommend to learn more on this topic:</p>
 <ul>
 <li><a href="https://hamel.dev/evals">Your AI Product Needs Evals</a>: This blog post is the predecessor to this one, and provides a high-level overview of evals for LLM based products.</li>
-<li><a href="https://arxiv.org/abs/2404.12272">Who Validates the Validators? Aligning LLM-Assisted Evaluation of LLM Outputs with Human Preferences</a>: This paper provides a good overview of the challenges of evaluating LLMs, and the importance of following a good process.</li>
-<li><a href="https://aligneval.com/">Align Eval</a>: Eugene Yan’s new tool that helps you build LLM judges by following a good process.</li>
+<li><a href="https://arxiv.org/abs/2404.12272">Who Validates the Validators? Aligning LLM-Assisted Evaluation of LLM Outputs with Human Preferences</a>: This paper by Shreya Shankar et al provides a good overview of the challenges of evaluating LLMs, and the importance of following a good process.</li>
+<li><a href="https://aligneval.com/">Align Eval</a>: Eugene Yan’s new tool that helps you build LLM judges by following a good process. Also read his accompanying <a href="https://eugeneyan.com/writing/align-eval/">blog post</a>.</li>
 <li><a href="https://eugeneyan.com/writing/llm-evaluators/">Evaluating the Effectiveness of LLM-Evaluators (aka LLM-as-Judge)</a>: This is a great survey of different use-cases and approaches for LLM judges, also written by Eugene Yan.</li>
-<li><a href="https://www.databricks.com/blog/enhancing-llm-as-a-judge-with-grading-notes">Enhancing LLM-As-A-Judge with Grading Notes</a>: This is <em>very</em> similar to the approach articulated in this blog post, and provides another point of view regarding the utility of writing critiques (they call them grading notes).</li>
-<li><a href="https://cookbook.openai.com/examples/custom-llm-as-a-judge">Custom LLM as a Judge Cookbook from OpenAI</a> by Ankur Goyal and Shaymal Anadkt provide an end-to-end example of building a LLM judge, and for the use case highlighted, authors found that a classification approach was more reliable than numeric ratings (consistent with this blog post).</li>
+<li><a href="https://www.databricks.com/blog/enhancing-llm-as-a-judge-with-grading-notes">Enhancing LLM-As-A-Judge with Grading Notes</a> by Yi Liu et al.&nbsp;Describes an approach very similar to the one in this blog post, and provides another point of view regarding the utility of writing critiques (they call them grading notes).</li>
+<li><a href="https://cookbook.openai.com/examples/custom-llm-as-a-judge">Custom LLM as a Judge to Detect Hallucinations with Braintrust</a> by Ankur Goyal and Shaymal Anadkt provide an end-to-end example of building a LLM judge, and for the use case highlighted, authors found that a classification approach was more reliable than numeric ratings (consistent with this blog post).</li>
+<li><a href="https://arize.com/blog/techniques-for-self-improving-llm-evals/">Techniques for Self-Improving LLM Evals</a> by Eric Xiao from Arize shows a nice approach to building LLM Evals with some additional tools that are worth checking out.</li>
+<li><a href="https://blog.langchain.dev/dosu-langsmith-no-prompt-eng/">How Dosu Used LangSmith to Achieve a 30% Accuracy Improvement with No Prompt Engineering</a> by Langchain shows a nice approach to building LLM prompts with dynamic examples. The idea is very simple, but very effective. I’ve been adapting it for my own use cases, including LLM judges. Here is a <a href="https://www.youtube.com/watch?v=tHZtq_pJSGo">video walkthrough</a> of the approach.</li>
 </ul>
 </section>
 <section id="stay-connected" class="level2">
