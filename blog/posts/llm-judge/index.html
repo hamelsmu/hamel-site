@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Hamel Husain">
+<meta name="dcterms.date" content="2024-10-29">
+<meta name="description" content="A step-by-step guide with my learnings from 30+ AI implementations.">
+
+<title>Creating a LLM-as-a-Judge That Drives Business Results – Hamel's Blog</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-2486e1f0a3ee9ee1fc393803a1361cdb.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-6561bbde787c299e21493071c8edc6ff.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-88e40121a9eb9eafaffc4dafa1ad0c2f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark.min.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-ZSZXL3KFR5"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
+</script>
+<script src="../../../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../../../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+<meta name="quarto:status" content="draft">
+
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><div id="quarto-draft-alert" class="alert alert-warning"><i class="bi bi-pencil-square"></i>Draft</div>
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+          <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../index.html"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../oss/opensource.html"> 
+<span class="menu-text">OSS</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../talks.html"> 
+<span class="menu-text">Talks</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../notes/index.html"> 
+<span class="menu-text">Notes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://parlance-labs.com/" target="_blank"> 
+<span class="menu-text">Hire Me</span></a>
+  </li>  
+</ul>
+          <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="1">
+    <h2 id="toc-title">Table Of Contents</h2>
+   
+  <ul>
+  <li><a href="#the-problem-ai-teams-are-drowning-in-data" id="toc-the-problem-ai-teams-are-drowning-in-data" class="nav-link active" data-scroll-target="#the-problem-ai-teams-are-drowning-in-data">The Problem: AI Teams Are Drowning in Data</a></li>
+  <li><a href="#step-1-find-the-principal-domain-expert" id="toc-step-1-find-the-principal-domain-expert" class="nav-link" data-scroll-target="#step-1-find-the-principal-domain-expert">Step 1: Find <em>The</em> Principal Domain Expert</a>
+  <ul class="collapse">
+  <li><a href="#next-steps" id="toc-next-steps" class="nav-link" data-scroll-target="#next-steps">Next Steps</a></li>
+  </ul></li>
+  <li><a href="#step-2-create-a-dataset" id="toc-step-2-create-a-dataset" class="nav-link" data-scroll-target="#step-2-create-a-dataset">Step 2: Create a Dataset</a>
+  <ul class="collapse">
+  <li><a href="#why-a-diverse-dataset-matters" id="toc-why-a-diverse-dataset-matters" class="nav-link" data-scroll-target="#why-a-diverse-dataset-matters">Why a Diverse Dataset Matters</a></li>
+  <li><a href="#key-components-of-your-dataset" id="toc-key-components-of-your-dataset" class="nav-link" data-scroll-target="#key-components-of-your-dataset">Key Components of Your Dataset</a></li>
+  <li><a href="#examples-of-features-scenarios-and-personas" id="toc-examples-of-features-scenarios-and-personas" class="nav-link" data-scroll-target="#examples-of-features-scenarios-and-personas">Examples of Features, Scenarios, and Personas</a></li>
+  <li><a href="#this-taxonomy-is-not-universal" id="toc-this-taxonomy-is-not-universal" class="nav-link" data-scroll-target="#this-taxonomy-is-not-universal">This taxonomy is not universal</a></li>
+  <li><a href="#generating-data" id="toc-generating-data" class="nav-link" data-scroll-target="#generating-data">Generating Data</a></li>
+  <li><a href="#example-llm-prompts-for-generating-user-inputs" id="toc-example-llm-prompts-for-generating-user-inputs" class="nav-link" data-scroll-target="#example-llm-prompts-for-generating-user-inputs">Example LLM Prompts for Generating User Inputs</a></li>
+  <li><a href="#generating-synthetic-data" id="toc-generating-synthetic-data" class="nav-link" data-scroll-target="#generating-synthetic-data">Generating Synthetic Data</a></li>
+  <li><a href="#next-steps-1" id="toc-next-steps-1" class="nav-link" data-scroll-target="#next-steps-1">Next Steps</a></li>
+  </ul></li>
+  <li><a href="#step-3-direct-the-domain-expert-to-make-passfail-judgments-with-critiques" id="toc-step-3-direct-the-domain-expert-to-make-passfail-judgments-with-critiques" class="nav-link" data-scroll-target="#step-3-direct-the-domain-expert-to-make-passfail-judgments-with-critiques">Step 3: Direct The Domain Expert to Make Pass/Fail Judgments with Critiques</a>
+  <ul class="collapse">
+  <li><a href="#why-are-simple-passfail-metrics-important" id="toc-why-are-simple-passfail-metrics-important" class="nav-link" data-scroll-target="#why-are-simple-passfail-metrics-important">Why are simple pass/fail metrics important?</a></li>
+  <li><a href="#the-role-of-critiques" id="toc-the-role-of-critiques" class="nav-link" data-scroll-target="#the-role-of-critiques">The Role of Critiques</a></li>
+  <li><a href="#examples-of-good-critiques" id="toc-examples-of-good-critiques" class="nav-link" data-scroll-target="#examples-of-good-critiques">Examples of Good Critiques</a></li>
+  <li><a href="#dont-stray-from-binary-passfail-judgments-when-starting-out" id="toc-dont-stray-from-binary-passfail-judgments-when-starting-out" class="nav-link" data-scroll-target="#dont-stray-from-binary-passfail-judgments-when-starting-out">Don’t stray from binary pass/fail judgments when starting out</a></li>
+  <li><a href="#make-it-easy-for-the-domain-expert-to-review-data" id="toc-make-it-easy-for-the-domain-expert-to-review-data" class="nav-link" data-scroll-target="#make-it-easy-for-the-domain-expert-to-review-data">Make it easy for the domain expert to review data</a></li>
+  <li><a href="#how-many-examples-do-you-need" id="toc-how-many-examples-do-you-need" class="nav-link" data-scroll-target="#how-many-examples-do-you-need">How many examples do you need?</a></li>
+  </ul></li>
+  <li><a href="#step-4-fix-errors" id="toc-step-4-fix-errors" class="nav-link" data-scroll-target="#step-4-fix-errors">Step 4: Fix Errors</a></li>
+  <li><a href="#step-5-build-your-llm-as-a-judge-iteratively" id="toc-step-5-build-your-llm-as-a-judge-iteratively" class="nav-link" data-scroll-target="#step-5-build-your-llm-as-a-judge-iteratively">Step 5: Build Your LLM as A Judge, Iteratively</a>
+  <ul class="collapse">
+  <li><a href="#the-hidden-power-of-critiques" id="toc-the-hidden-power-of-critiques" class="nav-link" data-scroll-target="#the-hidden-power-of-critiques">The Hidden Power of Critiques</a></li>
+  <li><a href="#start-with-expert-examples" id="toc-start-with-expert-examples" class="nav-link" data-scroll-target="#start-with-expert-examples">Start with Expert Examples</a></li>
+  <li><a href="#keep-iterating-on-the-prompt-until-convergence-with-domain-expert" id="toc-keep-iterating-on-the-prompt-until-convergence-with-domain-expert" class="nav-link" data-scroll-target="#keep-iterating-on-the-prompt-until-convergence-with-domain-expert">Keep Iterating on the Prompt Until Convergence With Domain Expert</a></li>
+  <li><a href="#how-to-optimize-the-llm-judge-prompt" id="toc-how-to-optimize-the-llm-judge-prompt" class="nav-link" data-scroll-target="#how-to-optimize-the-llm-judge-prompt">How to Optimize the LLM Judge Prompt?</a></li>
+  <li><a href="#the-human-side-of-the-process" id="toc-the-human-side-of-the-process" class="nav-link" data-scroll-target="#the-human-side-of-the-process">The Human Side of the Process</a></li>
+  <li><a href="#how-often-should-you-evaluate" id="toc-how-often-should-you-evaluate" class="nav-link" data-scroll-target="#how-often-should-you-evaluate">How Often Should You Evaluate?</a></li>
+  <li><a href="#what-if-this-doesnt-work" id="toc-what-if-this-doesnt-work" class="nav-link" data-scroll-target="#what-if-this-doesnt-work">What if this doesn’t work?</a></li>
+  <li><a href="#mistakes-ive-noticed-in-llm-judge-prompts" id="toc-mistakes-ive-noticed-in-llm-judge-prompts" class="nav-link" data-scroll-target="#mistakes-ive-noticed-in-llm-judge-prompts">Mistakes I’ve noticed in LLM judge prompts</a></li>
+  </ul></li>
+  <li><a href="#step-6-perform-error-analysis" id="toc-step-6-perform-error-analysis" class="nav-link" data-scroll-target="#step-6-perform-error-analysis">Step 6: Perform Error Analysis</a>
+  <ul class="collapse">
+  <li><a href="#classify-traces" id="toc-classify-traces" class="nav-link" data-scroll-target="#classify-traces">Classify Traces</a></li>
+  <li><a href="#an-interactive-walkthrough-of-error-analysis" id="toc-an-interactive-walkthrough-of-error-analysis" class="nav-link" data-scroll-target="#an-interactive-walkthrough-of-error-analysis">An Interactive Walkthrough of Error Analysis</a></li>
+  <li><a href="#fix-your-errors-again" id="toc-fix-your-errors-again" class="nav-link" data-scroll-target="#fix-your-errors-again">Fix Your Errors, Again</a></li>
+  <li><a href="#doing-this-well-requires-data-literacy" id="toc-doing-this-well-requires-data-literacy" class="nav-link" data-scroll-target="#doing-this-well-requires-data-literacy">Doing this well requires data literacy</a></li>
+  </ul></li>
+  <li><a href="#step-7-create-more-specialized-llm-judges-if-needed" id="toc-step-7-create-more-specialized-llm-judges-if-needed" class="nav-link" data-scroll-target="#step-7-create-more-specialized-llm-judges-if-needed">Step 7: Create More Specialized LLM Judges (if needed)</a></li>
+  <li><a href="#recap-of-critique-shadowing" id="toc-recap-of-critique-shadowing" class="nav-link" data-scroll-target="#recap-of-critique-shadowing">Recap of Critique Shadowing</a>
+  <ul class="collapse">
+  <li><a href="#its-not-the-judge-that-created-value-afterall" id="toc-its-not-the-judge-that-created-value-afterall" class="nav-link" data-scroll-target="#its-not-the-judge-that-created-value-afterall">It’s Not The Judge That Created Value, Afterall</a></li>
+  <li><a href="#do-you-really-need-this" id="toc-do-you-really-need-this" class="nav-link" data-scroll-target="#do-you-really-need-this">Do You Really Need This?</a></li>
+  </ul></li>
+  <li><a href="#faq" id="toc-faq" class="nav-link" data-scroll-target="#faq">FAQ</a>
+  <ul class="collapse">
+  <li><a href="#do-you-recommend-fine-tuning-judges" id="toc-do-you-recommend-fine-tuning-judges" class="nav-link" data-scroll-target="#do-you-recommend-fine-tuning-judges">Do you recommend fine-tuning judges?</a></li>
+  <li><a href="#if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-use-for-my-use-case" id="toc-if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-use-for-my-use-case" class="nav-link" data-scroll-target="#if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-use-for-my-use-case">If I have a good judge LLM, isn’t that also the LLM I’d use for my use case?</a></li>
+  <li><a href="#whats-wrong-with-off-the-shelf-llm-judges" id="toc-whats-wrong-with-off-the-shelf-llm-judges" class="nav-link" data-scroll-target="#whats-wrong-with-off-the-shelf-llm-judges">What’s wrong with off-the-shelf LLM judges?</a></li>
+  <li><a href="#how-do-you-evaluate-the-llm-judge" id="toc-how-do-you-evaluate-the-llm-judge" class="nav-link" data-scroll-target="#how-do-you-evaluate-the-llm-judge">How Do you evaluate the LLM judge?</a></li>
+  <li><a href="#what-model-do-you-use-for-the-llm-judge" id="toc-what-model-do-you-use-for-the-llm-judge" class="nav-link" data-scroll-target="#what-model-do-you-use-for-the-llm-judge">What model do you use for the LLM judge?</a></li>
+  <li><a href="#what-about-guardrails" id="toc-what-about-guardrails" class="nav-link" data-scroll-target="#what-about-guardrails">What about guardrails?</a></li>
+  <li><a href="#im-using-llm-as-a-judge-and-getting-tremendous-value-but-i-didnt-follow-this-approach." id="toc-im-using-llm-as-a-judge-and-getting-tremendous-value-but-i-didnt-follow-this-approach." class="nav-link" data-scroll-target="#im-using-llm-as-a-judge-and-getting-tremendous-value-but-i-didnt-follow-this-approach.">I’m using LLM as a judge, and getting tremendous value but I didn’t follow this approach.</a></li>
+  <li><a href="#how-do-you-choose-between-traditional-ml-techniques-llm-as-a-judge-and-human-annotations" id="toc-how-do-you-choose-between-traditional-ml-techniques-llm-as-a-judge-and-human-annotations" class="nav-link" data-scroll-target="#how-do-you-choose-between-traditional-ml-techniques-llm-as-a-judge-and-human-annotations">How do you choose between traditional ML techniques, LLM-as-a-judge and human annotations?</a></li>
+  <li><a href="#can-you-make-judges-from-small-models" id="toc-can-you-make-judges-from-small-models" class="nav-link" data-scroll-target="#can-you-make-judges-from-small-models">Can you make judges from small models?</a></li>
+  <li><a href="#how-do-you-ensure-consistency-when-updating-your-llm-model" id="toc-how-do-you-ensure-consistency-when-updating-your-llm-model" class="nav-link" data-scroll-target="#how-do-you-ensure-consistency-when-updating-your-llm-model">How do you ensure consistency when updating your LLM model?</a></li>
+  <li><a href="#how-do-you-phase-out-human-in-the-loop-to-scale-this" id="toc-how-do-you-phase-out-human-in-the-loop-to-scale-this" class="nav-link" data-scroll-target="#how-do-you-phase-out-human-in-the-loop-to-scale-this">How do you phase out human in the loop to scale this?</a></li>
+  </ul></li>
+  <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources">Resources</a></li>
+  <li><a href="#stay-connected" id="toc-stay-connected" class="nav-link" data-scroll-target="#stay-connected">Stay Connected</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/blog/posts/llm-judge/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+    <div class="quarto-margin-footer"><div class="margin-footer-item">
+<div class="margin-subscribe">
+<p>
+Subscribe for updates
+</p>
+<script async="" data-uid="f405c5ca98" src="https://hamel.ck.page/f405c5ca98/index.js"></script>
+</div>
+<style>
+  .margin-subscribe {
+    border: none;
+    /* Same color as header */
+    background-color: #343A40;
+    padding: 0.5em 0.5em 0 0.5em;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .margin-subscribe p {
+    margin-bottom: 0;
+    font-size: 0.9em;
+    text-align: center;
+    color: white;
+  }
+</style>
+</div></div></div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Creating a LLM-as-a-Judge That Drives Business Results</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">LLMs</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    A step-by-step guide with my learnings from 30+ AI implementations.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Hamel Husain </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 29, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+<nav id="TOC-body" role="doc-toc">
+    <h2 id="toc-title">Table Of Contents</h2>
+   
+  <ul>
+  <li><a href="#the-problem-ai-teams-are-drowning-in-data" id="toc-the-problem-ai-teams-are-drowning-in-data">The Problem: AI Teams Are Drowning in Data</a></li>
+  <li><a href="#step-1-find-the-principal-domain-expert" id="toc-step-1-find-the-principal-domain-expert">Step 1: Find <em>The</em> Principal Domain Expert</a>
+  <ul>
+  <li><a href="#next-steps" id="toc-next-steps">Next Steps</a></li>
+  </ul></li>
+  <li><a href="#step-2-create-a-dataset" id="toc-step-2-create-a-dataset">Step 2: Create a Dataset</a>
+  <ul>
+  <li><a href="#why-a-diverse-dataset-matters" id="toc-why-a-diverse-dataset-matters">Why a Diverse Dataset Matters</a></li>
+  <li><a href="#key-components-of-your-dataset" id="toc-key-components-of-your-dataset">Key Components of Your Dataset</a></li>
+  <li><a href="#examples-of-features-scenarios-and-personas" id="toc-examples-of-features-scenarios-and-personas">Examples of Features, Scenarios, and Personas</a></li>
+  <li><a href="#this-taxonomy-is-not-universal" id="toc-this-taxonomy-is-not-universal">This taxonomy is not universal</a></li>
+  <li><a href="#generating-data" id="toc-generating-data">Generating Data</a></li>
+  <li><a href="#example-llm-prompts-for-generating-user-inputs" id="toc-example-llm-prompts-for-generating-user-inputs">Example LLM Prompts for Generating User Inputs</a></li>
+  <li><a href="#generating-synthetic-data" id="toc-generating-synthetic-data">Generating Synthetic Data</a></li>
+  <li><a href="#next-steps-1" id="toc-next-steps-1">Next Steps</a></li>
+  </ul></li>
+  <li><a href="#step-3-direct-the-domain-expert-to-make-passfail-judgments-with-critiques" id="toc-step-3-direct-the-domain-expert-to-make-passfail-judgments-with-critiques">Step 3: Direct The Domain Expert to Make Pass/Fail Judgments with Critiques</a>
+  <ul>
+  <li><a href="#why-are-simple-passfail-metrics-important" id="toc-why-are-simple-passfail-metrics-important">Why are simple pass/fail metrics important?</a></li>
+  <li><a href="#the-role-of-critiques" id="toc-the-role-of-critiques">The Role of Critiques</a></li>
+  <li><a href="#examples-of-good-critiques" id="toc-examples-of-good-critiques">Examples of Good Critiques</a></li>
+  <li><a href="#dont-stray-from-binary-passfail-judgments-when-starting-out" id="toc-dont-stray-from-binary-passfail-judgments-when-starting-out">Don’t stray from binary pass/fail judgments when starting out</a></li>
+  <li><a href="#make-it-easy-for-the-domain-expert-to-review-data" id="toc-make-it-easy-for-the-domain-expert-to-review-data">Make it easy for the domain expert to review data</a></li>
+  <li><a href="#how-many-examples-do-you-need" id="toc-how-many-examples-do-you-need">How many examples do you need?</a></li>
+  </ul></li>
+  <li><a href="#step-4-fix-errors" id="toc-step-4-fix-errors">Step 4: Fix Errors</a></li>
+  <li><a href="#step-5-build-your-llm-as-a-judge-iteratively" id="toc-step-5-build-your-llm-as-a-judge-iteratively">Step 5: Build Your LLM as A Judge, Iteratively</a>
+  <ul>
+  <li><a href="#the-hidden-power-of-critiques" id="toc-the-hidden-power-of-critiques">The Hidden Power of Critiques</a></li>
+  <li><a href="#start-with-expert-examples" id="toc-start-with-expert-examples">Start with Expert Examples</a></li>
+  <li><a href="#keep-iterating-on-the-prompt-until-convergence-with-domain-expert" id="toc-keep-iterating-on-the-prompt-until-convergence-with-domain-expert">Keep Iterating on the Prompt Until Convergence With Domain Expert</a></li>
+  <li><a href="#how-to-optimize-the-llm-judge-prompt" id="toc-how-to-optimize-the-llm-judge-prompt">How to Optimize the LLM Judge Prompt?</a></li>
+  <li><a href="#the-human-side-of-the-process" id="toc-the-human-side-of-the-process">The Human Side of the Process</a></li>
+  <li><a href="#how-often-should-you-evaluate" id="toc-how-often-should-you-evaluate">How Often Should You Evaluate?</a></li>
+  <li><a href="#what-if-this-doesnt-work" id="toc-what-if-this-doesnt-work">What if this doesn’t work?</a></li>
+  <li><a href="#mistakes-ive-noticed-in-llm-judge-prompts" id="toc-mistakes-ive-noticed-in-llm-judge-prompts">Mistakes I’ve noticed in LLM judge prompts</a></li>
+  </ul></li>
+  <li><a href="#step-6-perform-error-analysis" id="toc-step-6-perform-error-analysis">Step 6: Perform Error Analysis</a>
+  <ul>
+  <li><a href="#classify-traces" id="toc-classify-traces">Classify Traces</a></li>
+  <li><a href="#an-interactive-walkthrough-of-error-analysis" id="toc-an-interactive-walkthrough-of-error-analysis">An Interactive Walkthrough of Error Analysis</a></li>
+  <li><a href="#fix-your-errors-again" id="toc-fix-your-errors-again">Fix Your Errors, Again</a></li>
+  <li><a href="#doing-this-well-requires-data-literacy" id="toc-doing-this-well-requires-data-literacy">Doing this well requires data literacy</a></li>
+  </ul></li>
+  <li><a href="#step-7-create-more-specialized-llm-judges-if-needed" id="toc-step-7-create-more-specialized-llm-judges-if-needed">Step 7: Create More Specialized LLM Judges (if needed)</a></li>
+  <li><a href="#recap-of-critique-shadowing" id="toc-recap-of-critique-shadowing">Recap of Critique Shadowing</a>
+  <ul>
+  <li><a href="#its-not-the-judge-that-created-value-afterall" id="toc-its-not-the-judge-that-created-value-afterall">It’s Not The Judge That Created Value, Afterall</a></li>
+  <li><a href="#do-you-really-need-this" id="toc-do-you-really-need-this">Do You Really Need This?</a></li>
+  </ul></li>
+  <li><a href="#faq" id="toc-faq">FAQ</a>
+  <ul>
+  <li><a href="#do-you-recommend-fine-tuning-judges" id="toc-do-you-recommend-fine-tuning-judges">Do you recommend fine-tuning judges?</a></li>
+  <li><a href="#if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-use-for-my-use-case" id="toc-if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-use-for-my-use-case">If I have a good judge LLM, isn’t that also the LLM I’d use for my use case?</a></li>
+  <li><a href="#whats-wrong-with-off-the-shelf-llm-judges" id="toc-whats-wrong-with-off-the-shelf-llm-judges">What’s wrong with off-the-shelf LLM judges?</a></li>
+  <li><a href="#how-do-you-evaluate-the-llm-judge" id="toc-how-do-you-evaluate-the-llm-judge">How Do you evaluate the LLM judge?</a></li>
+  <li><a href="#what-model-do-you-use-for-the-llm-judge" id="toc-what-model-do-you-use-for-the-llm-judge">What model do you use for the LLM judge?</a></li>
+  <li><a href="#what-about-guardrails" id="toc-what-about-guardrails">What about guardrails?</a></li>
+  <li><a href="#im-using-llm-as-a-judge-and-getting-tremendous-value-but-i-didnt-follow-this-approach." id="toc-im-using-llm-as-a-judge-and-getting-tremendous-value-but-i-didnt-follow-this-approach.">I’m using LLM as a judge, and getting tremendous value but I didn’t follow this approach.</a></li>
+  <li><a href="#how-do-you-choose-between-traditional-ml-techniques-llm-as-a-judge-and-human-annotations" id="toc-how-do-you-choose-between-traditional-ml-techniques-llm-as-a-judge-and-human-annotations">How do you choose between traditional ML techniques, LLM-as-a-judge and human annotations?</a></li>
+  <li><a href="#can-you-make-judges-from-small-models" id="toc-can-you-make-judges-from-small-models">Can you make judges from small models?</a></li>
+  <li><a href="#how-do-you-ensure-consistency-when-updating-your-llm-model" id="toc-how-do-you-ensure-consistency-when-updating-your-llm-model">How do you ensure consistency when updating your LLM model?</a></li>
+  <li><a href="#how-do-you-phase-out-human-in-the-loop-to-scale-this" id="toc-how-do-you-phase-out-human-in-the-loop-to-scale-this">How do you phase out human in the loop to scale this?</a></li>
+  </ul></li>
+  <li><a href="#resources" id="toc-resources">Resources</a></li>
+  <li><a href="#stay-connected" id="toc-stay-connected">Stay Connected</a></li>
+  </ul>
+</nav>
+<p>Earlier this year, I wrote <a href="https://hamel.dev/blog/posts/evals/">Why your AI product needs evals</a>. Many of you asked, “How do I get started with LLM-as-a-judge?” This guide shares what I’ve learned after helping over <a href="https://parlance-labs.com/">30 companies</a> set up their evaluation systems.</p>
+<section id="the-problem-ai-teams-are-drowning-in-data" class="level2">
+<h2 class="anchored" data-anchor-id="the-problem-ai-teams-are-drowning-in-data">The Problem: AI Teams Are Drowning in Data</h2>
+<p>Ever spend weeks building an AI system, only to realize you have no idea if it’s actually working? You’re not alone. I’ve noticed teams repeat the same mistakes when using LLMs to evaluate AI outputs:</p>
+<ol type="1">
+<li><strong>Too Many Metrics</strong>: Creating numerous measurements that become unmanageable.</li>
+<li><strong>Complex Scoring Systems</strong>: Using scales like 1-5 across multiple dimensions.</li>
+<li><strong>Ignoring Domain Experts</strong>: Not involving the people who understand the subject matter deeply.</li>
+<li><strong>Unvalidated Metrics</strong>: Using measurements that don’t truly reflect what matters to the users or the business.</li>
+</ol>
+<p>The result? Teams end up buried under mountains of metrics or data they don’t trust and can’t use. Progress grinds to a halt. Everyone gets frustrated.</p>
+<p>For example, it’s not uncommon for me to see dashboards that look like this:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="blog_header.png" class="img-fluid figure-img"></p>
+<figcaption>An illustrative example of a bad eval dashboard</figcaption>
+</figure>
+</div>
+<p>Tracking a bunch of scores on a 1-5 scale is often a sign of a bad eval process, especially when starting out. In this post, I’ll show you how to avoid these pitfalls. The solution is to use a technique that I call <strong>“Critique Shadowing”</strong>. Here’s how to do it, step by step.</p>
+</section>
+<section id="step-1-find-the-principal-domain-expert" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-find-the-principal-domain-expert">Step 1: Find <em>The</em> Principal Domain Expert</h2>
+<p>In most organizations there is usually one (maybe two) key individuals whose judgment is crucial for the success of your AI product. These are the people who have the final authority or whom you must convince that the AI is ready for deployment. Identifying and involving this <strong>Principal Domain Expert</strong> early in the process is critical.</p>
+<p><strong>Why is finding the right domain expert so important?</strong></p>
+<ul>
+<li><p><strong>They Set the Standard</strong>: This person defines what is acceptable or not for your AI’s performance. Their opinion often carries the most weight in decision-making.</p></li>
+<li><p><strong>Capture Unspoken Expectations</strong>: By involving them, you uncover their preferences and expectations, which they might not be able to fully articulate upfront. Through the evaluation process, you help them clarify what a “passable” AI interaction looks like.</p></li>
+<li><p><strong>Consistency in Judgment</strong>: People in your organization may have different opinions about the AI’s performance. Focusing on the principal expert ensures that evaluations are consistent and aligned with the most critical standards.</p></li>
+<li><p><strong>Sense of Ownership</strong>: Involving the expert gives them a stake in the AI’s development. They feel invested because they’ve had a hand in shaping it. In the end, they are more likely to approve of the AI.</p></li>
+</ul>
+<p><strong>Examples of Principal Domain Experts:</strong></p>
+<ul>
+<li>A <strong>psychologist</strong> for a mental health AI assistant.</li>
+<li>A <strong>lawyer</strong> for an AI that analyzes legal documents.</li>
+<li>A <strong>customer service director</strong> for a support chatbot.</li>
+<li>A <strong>lead teacher or curriculum developer</strong> for an educational AI tool.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exceptions
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In a smaller company, this might be the CEO or founder. If you are an independent developer, you should be the domain expert (but be honest with yourself about your expertise).</p>
+</div>
+</div>
+<p>Many developers attempt to act as the domain expert themselves, or find a convenient proxy (ex: their superior). This is a recipe for disaster. People will have varying opinions about what is acceptable, and you can’t make everyone happy. What’s important is that your principal domain expert is satisfied.</p>
+<p><strong>Remember:</strong> This doesn’t have to take a lot of the domain expert’s time. Later in this post, I’ll discuss how you can make the process efficient. Their involvement is absolutely critical to the AI’s success.</p>
+<section id="next-steps" class="level3">
+<h3 class="anchored" data-anchor-id="next-steps">Next Steps</h3>
+<p>Once you’ve found your expert, we need to give them the right data to review. Let’s talk about how to do that next.</p>
+</section>
+</section>
+<section id="step-2-create-a-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-create-a-dataset">Step 2: Create a Dataset</h2>
+<p>With your principal domain expert on board, the next step is to build a dataset that captures problems that your AI will encounter. It’s important that the dataset is diverse and represents the types of interactions that your AI will have in production.</p>
+<section id="why-a-diverse-dataset-matters" class="level3">
+<h3 class="anchored" data-anchor-id="why-a-diverse-dataset-matters">Why a Diverse Dataset Matters</h3>
+<ul>
+<li><strong>Comprehensive Testing</strong>: Ensures your AI is evaluated across a wide range of situations.</li>
+<li><strong>Realistic Interactions</strong>: Reflects actual user behavior for more relevant evaluations.</li>
+<li><strong>Identifies Weaknesses</strong>: Helps uncover areas where the AI may struggle or produce errors.</li>
+</ul>
+</section>
+<section id="key-components-of-your-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="key-components-of-your-dataset">Key Components of Your Dataset</h3>
+<p>You want to define dimensions that make sense for your use case. For example, here are ones that I often use for many B2C applications:</p>
+<ol type="1">
+<li><strong>Features</strong>: Specific functionalities of your AI product.</li>
+<li><strong>Scenarios</strong>: Situations or contexts the AI may encounter and needs to handle.</li>
+<li><strong>Personas</strong>: Representative user profiles with distinct characteristics and needs.</li>
+</ol>
+</section>
+<section id="examples-of-features-scenarios-and-personas" class="level3">
+<h3 class="anchored" data-anchor-id="examples-of-features-scenarios-and-personas">Examples of Features, Scenarios, and Personas</h3>
+<section id="features" class="level4">
+<h4 class="anchored" data-anchor-id="features">Features</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 69%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Feature</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Email Summarization</strong></td>
+<td>Condensing lengthy emails into key points.</td>
+</tr>
+<tr class="even">
+<td><strong>Meeting Scheduler</strong></td>
+<td>Automating the scheduling of meetings across time zones.</td>
+</tr>
+<tr class="odd">
+<td><strong>Order Tracking</strong></td>
+<td>Providing shipment status and delivery updates.</td>
+</tr>
+<tr class="even">
+<td><strong>Contact Search</strong></td>
+<td>Finding and retrieving contact information from a database.</td>
+</tr>
+<tr class="odd">
+<td><strong>Language Translation</strong></td>
+<td>Translating text between languages.</td>
+</tr>
+<tr class="even">
+<td><strong>Content Recommendation</strong></td>
+<td>Suggesting articles or products based on user interests.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="scenarios" class="level4">
+<h4 class="anchored" data-anchor-id="scenarios">Scenarios</h4>
+<p>Scenarios are situations the AI needs to handle, (not based on the outcome of the AI’s response).</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 73%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Scenario</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Multiple Matches Found</strong></td>
+<td>User’s request yields multiple results; AI must help narrow down options.</td>
+</tr>
+<tr class="even">
+<td><strong>No Matches Found</strong></td>
+<td>User’s request yields no results; AI should suggest alternatives or corrections.</td>
+</tr>
+<tr class="odd">
+<td><strong>Ambiguous Request</strong></td>
+<td>User input is unclear; AI needs to ask clarifying questions.</td>
+</tr>
+<tr class="even">
+<td><strong>Invalid Data Provided</strong></td>
+<td>User provides data not present in the system; AI must handle gracefully.</td>
+</tr>
+<tr class="odd">
+<td><strong>System Errors</strong></td>
+<td>Technical issues occur; AI should inform the user appropriately.</td>
+</tr>
+<tr class="even">
+<td><strong>Incomplete Information</strong></td>
+<td>User omits necessary details; AI must guide the user to provide missing info.</td>
+</tr>
+<tr class="odd">
+<td><strong>Unsupported Feature</strong></td>
+<td>User requests an unsupported feature; AI must inform the user politely.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="personas" class="level4">
+<h4 class="anchored" data-anchor-id="personas">Personas</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 72%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Persona</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>New User</strong></td>
+<td>Unfamiliar with the system; requires guidance.</td>
+</tr>
+<tr class="even">
+<td><strong>Expert User</strong></td>
+<td>Experienced; expects efficiency and advanced features.</td>
+</tr>
+<tr class="odd">
+<td><strong>Non-Native Speaker</strong></td>
+<td>May have language barriers; uses non-standard expressions.</td>
+</tr>
+<tr class="even">
+<td><strong>Busy Professional</strong></td>
+<td>Values quick, concise responses; often multitasking.</td>
+</tr>
+<tr class="odd">
+<td><strong>Technophobe</strong></td>
+<td>Uncomfortable with technology; needs simple instructions.</td>
+</tr>
+<tr class="even">
+<td><strong>Elderly User</strong></td>
+<td>May not be tech-savvy; requires patience and clear guidance.</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="this-taxonomy-is-not-universal" class="level3">
+<h3 class="anchored" data-anchor-id="this-taxonomy-is-not-universal">This taxonomy is not universal</h3>
+<p>This taxonomy (features, scenarios, personas) is not universal. For example, it may not make sense to even have personas if users aren’t directly engaging with your AI. The idea is you should outline dimensions that make sense for your use case and generate data that covers them. You’ll likely refine these after the first round of evaluations.</p>
+</section>
+<section id="generating-data" class="level3">
+<h3 class="anchored" data-anchor-id="generating-data">Generating Data</h3>
+<p>To build your dataset, you can:</p>
+<ul>
+<li><strong>Use Existing Data</strong>: Sample real user interactions or behaviors from your AI system.</li>
+<li><strong>Generate Synthetic Data</strong>: Use LLMs to create realistic user inputs covering various features, scenarios, and personas.</li>
+</ul>
+<p>Often, you’ll do a combination of both to ensure comprehensive coverage. Synthetic data is not as good as real data, but it’s a good starting point. Also, we are only using LLMs to generate the user inputs, not the LLM responses or internal system behavior.</p>
+<p>Regardless of whether you use existing data or synthetic data, you want good coverage across the dimensions you’ve defined.</p>
+<p><strong>Incorporating System Information</strong></p>
+<p>When making test data, use your APIs and databases where appropriate. This will create realistic data and trigger the right scenarios. Sometimes you’ll need to write simple programs to get this information. That’s what the “Assumptions” column is referring to in the examples below.</p>
+</section>
+<section id="example-llm-prompts-for-generating-user-inputs" class="level3">
+<h3 class="anchored" data-anchor-id="example-llm-prompts-for-generating-user-inputs">Example LLM Prompts for Generating User Inputs</h3>
+<p>Here are some example prompts that illustrate how to use an LLM to generate synthetic <strong>user inputs</strong> for different combinations of features, scenarios, and personas:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 10%">
+<col style="width: 35%">
+<col style="width: 26%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>ID</strong></th>
+<th><strong>Feature</strong></th>
+<th><strong>Scenario</strong></th>
+<th><strong>Persona</strong></th>
+<th><strong>LLM Prompt to Generate User Input</strong></th>
+<th>Assumptions (not directly in the prompt)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td><strong>Order Tracking</strong></td>
+<td>Invalid Data Provided</td>
+<td>Frustrated Customer</td>
+<td>“Generate a user input from someone who is clearly irritated and impatient, using short, terse language to demand information about their order status for order number <strong>#1234567890</strong>. Include hints of previous negative experiences.”</td>
+<td>Order number <strong>#1234567890</strong> does <strong>not</strong> exist in the system.</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td><strong>Contact Search</strong></td>
+<td>Multiple Matches Found</td>
+<td>New User</td>
+<td>“Create a user input from someone who seems unfamiliar with the system, using hesitant language and asking for help to find contact information for a person named ‘Alex’. The user should appear unsure about what information is needed.”</td>
+<td>Multiple contacts named ‘Alex’ exist in the system.</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td><strong>Meeting Scheduler</strong></td>
+<td>Ambiguous Request</td>
+<td>Busy Professional</td>
+<td>“Simulate a user input from someone who is clearly in a hurry, using abbreviated language and minimal details to request scheduling a meeting. The message should feel rushed and lack specific information.”</td>
+<td>N/A</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td><strong>Content Recommendation</strong></td>
+<td>No Matches Found</td>
+<td>Expert User</td>
+<td>“Produce a user input from someone who demonstrates in-depth knowledge of their industry, using specific terminology to request articles on sustainable supply chain management. Use the information in this article involving sustainable supply chain management to formulate a plausible query: {{article}}”</td>
+<td>No articles on ‘Emerging trends in sustainable supply chain management’ exist in the system.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="generating-synthetic-data" class="level3">
+<h3 class="anchored" data-anchor-id="generating-synthetic-data">Generating Synthetic Data</h3>
+<p>When generating synthetic data, you only need to create the user inputs. You then feed these inputs into your AI system to generate the AI’s responses. It’s important that you log everything so you can evaluate your AI. To recap, here’s the process:</p>
+<ol type="1">
+<li><strong>Generate User Inputs</strong>: Use the LLM prompts to create realistic user inputs.</li>
+<li><strong>Feed Inputs into Your AI System</strong>: Input the user interactions into your AI as it currently exists.</li>
+<li><strong>Capture AI Responses</strong>: Record the AI’s responses to form complete interactions.</li>
+<li><strong>Organize the Interactions</strong>: Create a table to store the user inputs, AI responses, and relevant metadata.</li>
+</ol>
+</section>
+<section id="next-steps-1" class="level3">
+<h3 class="anchored" data-anchor-id="next-steps-1">Next Steps</h3>
+<p>With your dataset ready, now comes the most important part: getting your principal domain expert to evaluate the interactions.</p>
+</section>
+</section>
+<section id="step-3-direct-the-domain-expert-to-make-passfail-judgments-with-critiques" class="level2">
+<h2 class="anchored" data-anchor-id="step-3-direct-the-domain-expert-to-make-passfail-judgments-with-critiques">Step 3: Direct The Domain Expert to Make Pass/Fail Judgments with Critiques</h2>
+<p>The domain expert’s job is to focus on one thing: <strong>“Did the AI achieve the desired outcome?”</strong> No complex scoring scales or multiple metrics. Just a clear <strong>pass or fail</strong> decision. In addition to the pass/fail decision, the domain expert should write a critique that explains their reasoning.</p>
+<section id="why-are-simple-passfail-metrics-important" class="level3">
+<h3 class="anchored" data-anchor-id="why-are-simple-passfail-metrics-important">Why are simple pass/fail metrics important?</h3>
+<ul>
+<li><p><strong>Clarity and Focus</strong>: A binary decision forces everyone to consider what truly matters. It simplifies the evaluation to a single, crucial question.</p></li>
+<li><p><strong>Actionable Insights</strong>: Pass/fail judgments are easy to interpret and act upon. They help you quickly identify whether the AI meets the user’s needs.</p></li>
+<li><p><strong>Forces Articulation of Expectations</strong>: When domain experts must decide if an interaction passes or fails, they are compelled to articulate their expectations clearly. This process uncovers nuances and unspoken assumptions about how the AI should behave.</p></li>
+<li><p><strong>Efficient Use of Resources</strong>: Keeps the evaluation process manageable, especially when starting out. You avoid getting bogged down in detailed metrics that might not be meaningful yet.</p></li>
+</ul>
+</section>
+<section id="the-role-of-critiques" class="level3">
+<h3 class="anchored" data-anchor-id="the-role-of-critiques">The Role of Critiques</h3>
+<p>Alongside a binary pass/fail judgment, it’s important to write a detailed critique of the LLM-generated output. These critiques:</p>
+<ul>
+<li><p><strong>Captures Nuances</strong>: The critique allows you to note if something was mostly correct but had areas for improvement.</p></li>
+<li><p><strong>Guide Improvement</strong>: Detailed feedback provides specific insights into how the AI can be enhanced.</p></li>
+<li><p><strong>Balance Simplicity with Depth</strong>: While the pass/fail offers a clear verdict, the critique offers the depth needed to understand the reasoning behind the judgment.</p></li>
+</ul>
+<p><strong>Why Write Critiques?:</strong></p>
+<p>In practice, domain experts may not have fully internalized all the judgment criteria. By forcing them to make a pass/fail decision and explain their reasoning, they clarify their expectations and provide valuable guidance for refining the AI.</p>
+<p><em>“But my problem is complex!”</em> Trust me—starting simple forces you to focus on what truly matters. You can introduce more complexity later if needed.</p>
+</section>
+<section id="examples-of-good-critiques" class="level3">
+<h3 class="anchored" data-anchor-id="examples-of-good-critiques">Examples of Good Critiques</h3>
+<p>To illustrate how simple pass/fail judgments combined with detailed critiques work in practice, here’s a table showcasing examples of user interactions with an AI assistant. The table includes both <strong>passes</strong> and <strong>fails</strong>, with critiques explaining why the AI received that judgment. In cases where the AI passed despite critical issues, the critique highlights these aspects and justifies why it still passed overall. For failed interactions, the critique explains the critical elements that led to the failure.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 51%">
+<col style="width: 24%">
+<col style="width: 24%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>User Interaction with AI</strong></th>
+<th><strong>Judgment</strong></th>
+<th><strong>Critique</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>User:</strong> “I need to cancel my flight booking for next week.”<br><strong>AI:</strong> “Your flight booking for next week has been canceled. A confirmation email has been sent to you.”</td>
+<td><strong>Pass</strong></td>
+<td>The AI successfully executed the user’s request by canceling the flight and sending a confirmation, achieving the primary goal. <strong>However</strong>, it should have asked for confirmation before proceeding to prevent accidental cancellations. Despite this critical oversight, the AI fulfilled the user’s request, so it <strong>passes</strong>, but adding a confirmation step would improve user safety.</td>
+</tr>
+<tr class="even">
+<td><strong>User:</strong> “What’s the capital of France?”<br><strong>AI:</strong> “The capital of France is Paris.”</td>
+<td><strong>Pass</strong></td>
+<td>The AI correctly answered the user’s question, providing accurate information promptly. <strong>Although</strong> the response is sufficient, the AI could enhance the interaction by offering additional interesting facts or asking if the user has more questions. Despite this opportunity for added engagement, the AI met the user’s primary need, so it <strong>passes</strong>.</td>
+</tr>
+<tr class="odd">
+<td><strong>User:</strong> “I can’t log into my account; it says my password is incorrect.”<br><strong>AI:</strong> “Please reset your password by clicking ‘Forgot Password’.”</td>
+<td><strong>Fail</strong></td>
+<td>The AI provided a generic solution without acknowledging the user’s frustration or checking for other issues like account lockout. It failed to offer empathetic support or additional assistance. Due to the lack of personalized help and poor user experience, it <strong>fails</strong>.</td>
+</tr>
+<tr class="even">
+<td><strong>User:</strong> “Book a table for two at an Italian restaurant tonight at 7 PM.”<br><strong>AI:</strong> “Table for two at Luigi’s Italian Restaurant booked for tonight at 7 PM. Confirmation number is 12345.”</td>
+<td><strong>Pass</strong></td>
+<td>The AI efficiently completed the booking as requested, providing all necessary details and a confirmation number. <strong>However</strong>, it could have asked if the user had seating preferences or dietary restrictions. The AI accomplished the primary task successfully, so it <strong>passes</strong>, with minor opportunities for enhanced service.</td>
+</tr>
+<tr class="odd">
+<td><strong>User:</strong> “I need help with my billing statement.”<br><strong>AI:</strong> “Please provide your account number and full name.”</td>
+<td><strong>Fail</strong></td>
+<td>The AI requested sensitive information without verifying the user’s identity through secure means, potentially compromising security. It should guide the user through a secure authentication process first. Due to this critical oversight in user data protection, it <strong>fails</strong>.</td>
+</tr>
+</tbody>
+</table>
+<p>These examples demonstrate how the AI can receive both <strong>“Pass”</strong> and <strong>“Fail”</strong> judgments. In the critiques:</p>
+<ul>
+<li><p>For <strong>passes</strong>, we explain why the AI succeeded in meeting the user’s primary need, even if there were critical aspects that could be improved. We highlight these areas for enhancement while justifying the overall passing judgment.</p></li>
+<li><p>For <strong>fails</strong>, we identify the critical elements that led to the failure, explaining why the AI did not meet the user’s main objective or compromised important factors like user experience or security.</p></li>
+</ul>
+<p>Most importantly, <strong>the critique should be detailed enough so that you can use it in a few-shot prompt for a LLM judge</strong>. In other words, it should be detailed enough that a new employee could understand it. Being too terse is a common mistake.</p>
+<p>Note that the example user interactions with the AI are simplified for brevity - but you might need to give the domain expert more context to make a judgement. More on that later.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>At this point, you don’t need to perform a root cause analysis into the technical reasons behind why the AI failed. Many times, it’s useful to get a sense of overall behavior before diving into the weeds.</p>
+</div>
+</div>
+</section>
+<section id="dont-stray-from-binary-passfail-judgments-when-starting-out" class="level3">
+<h3 class="anchored" data-anchor-id="dont-stray-from-binary-passfail-judgments-when-starting-out">Don’t stray from binary pass/fail judgments when starting out</h3>
+<p>A common mistake is straying from binary pass/fail judgments. I constantly see evaluation dashboards that look like this:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="dashboard.png" class="img-fluid figure-img"></p>
+<figcaption>Don’t do this. This is illustrative, but representative of many eval dashboards I’ve seen in the wild</figcaption>
+</figure>
+</div>
+<p>If your evaluations consist of a bunch of metrics that LLMs score on a 1-5 scale (or any other scale), you’re doing it wrong. Let’s unpack why.</p>
+<ol type="1">
+<li><strong>It’s not actionable</strong>: People don’t know what to do with a 3 or 4. It’s not immediately obvious how this number is better than a 2. You need to be able to say “this interaction passed because…” and “this interaction failed because…”.</li>
+<li>More often than not, <strong>these metrics do not matter</strong>. Every time I’ve analyzed data on domain expert judgments, they tend not to correlate with these kind of metrics. By having a domain expert make a binary judgment, you can figure out what truly matters.</li>
+</ol>
+<p>This is why I hate off the shelf metrics that come with many evaluation frameworks. They tend to lead people astray.</p>
+<p><strong>Common Objections to Pass/Fail Judgments:</strong></p>
+<ul>
+<li>“The business said that these 8 dimensions are important, so we need to evaluate all of them.”</li>
+<li>“We need to be able to say why an interaction passed or failed.”</li>
+</ul>
+<p>I can guarantee you that if someone says you need to measure 8 things on a 1-5 scale, they don’t know what they are looking for. They are just guessing. You have to let the domain expert drive and make a pass/fail judgment with critiques so you can figure out what truly matters. Stand your ground here.</p>
+</section>
+<section id="make-it-easy-for-the-domain-expert-to-review-data" class="level3">
+<h3 class="anchored" data-anchor-id="make-it-easy-for-the-domain-expert-to-review-data">Make it easy for the domain expert to review data</h3>
+<p>Finally, you need to remove all friction from removing data. I’ve written about this <a href="../../../notes/llm/finetuning/data_cleaning.html">here</a>. Sometimes, you can just use a spreadsheet. It’s a judgement call in terms of what is easiest for the domain expert. I found that I often have to provide additional context to help the domain expert understand the user interaction, such as:</p>
+<ul>
+<li>Metadata about the user, such as their location, subscription tier, etc.</li>
+<li>Additional context about the system, such as the current time, inventory levels, etc.</li>
+<li>Resources so you can check if the AI’s response is correct (ex: ability to search a database, etc.)</li>
+</ul>
+<p>All of this data needs to be presented on a single screen so the domain expert can review it without jumping through hoops. That’s why I recommend building <a href="../../../notes/llm/finetuning/data_cleaning.html">a simple web app</a> to review data.</p>
+</section>
+<section id="how-many-examples-do-you-need" class="level3">
+<h3 class="anchored" data-anchor-id="how-many-examples-do-you-need">How many examples do you need?</h3>
+<p>The number of examples you need depends on the complexity of the task. My heuristic is that I start with around 30 examples each time I iterate. From there, I keep going until I’m not learning anything new.</p>
+<p>Next, we’ll look at how to use this data to build an LLM judge.</p>
+</section>
+</section>
+<section id="step-4-fix-errors" class="level2">
+<h2 class="anchored" data-anchor-id="step-4-fix-errors">Step 4: Fix Errors</h2>
+<p>After looking at the data, it’s likely you will find errors in your AI system. For example, one of my clients found that their router for agents was always fetching the wrong agent after critiquing ~20 examples. Instead of plowing ahead and building an LLM judge, you want to fix any obvious errors. Remember, the whole point of the LLM as a judge is to help you find these errors, so it’s totally fine if you find them earlier!</p>
+<p>If you have already developed <a href="https://hamel.dev/blog/posts/evals">Level 1 evals as outlined in my previous post</a>, you should not have any pervasive errors. However, these errors can sometimes slip through the cracks. If you find pervasive errors, fix them and go back to step 3. Keep iterating until you feel like you have stabilized your system.</p>
+</section>
+<section id="step-5-build-your-llm-as-a-judge-iteratively" class="level2">
+<h2 class="anchored" data-anchor-id="step-5-build-your-llm-as-a-judge-iteratively">Step 5: Build Your LLM as A Judge, Iteratively</h2>
+<section id="the-hidden-power-of-critiques" class="level3">
+<h3 class="anchored" data-anchor-id="the-hidden-power-of-critiques">The Hidden Power of Critiques</h3>
+<p>You cannot write a good judge prompt until you’ve seen the data. <a href="https://arxiv.org/abs/2404.12272">The paper from Shankar et al.,</a> “Who Validates the Validators? Aligning LLM-Assisted Evaluation of LLM Outputs with Human Preferences” summarizes this well:</p>
+<blockquote class="blockquote">
+<p>to grade outputs,people need to externalize and define their evaluation criteria; however, the process of grading outputs helps them to define that very criteria. We dub this phenomenon criteria drift, and it implies thatit is impossible to completely determine evaluation criteria prior to human judging of LLM outputs.</p>
+</blockquote>
+</section>
+<section id="start-with-expert-examples" class="level3">
+<h3 class="anchored" data-anchor-id="start-with-expert-examples">Start with Expert Examples</h3>
+<p>Let me share a real-world example of building an LLM judge you can apply to your own use case. When I was helping Honeycomb build their <a href="https://www.honeycomb.io/blog/introducing-query-assistant">Query Assistant feature</a>, we needed a way to evaluate if the AI was generating good queries. Here’s what our LLM judge prompt looked like, including few-shot examples of critiques from our domain expert, <a href="https://x.com/_cartermp">Phillip</a>:</p>
+<pre class="text"><code>You are a Honeycomb query evaluator with advanced capabilities to judge if a query is good or not.
+You understand the nuances of the Honeycomb query language, including what is likely to be
+most useful from an analytics perspective. 
+
+Here is information about the Honeycomb query language:
+{{query_language_info}}
+
+Here are some guidelines for evaluating queries:
+{{guidelines}}
+
+Example evaluations:
+
+&lt;examples&gt;
+
+&lt;example-1&gt;
+&lt;nlq&gt;show me traces where ip is 10.0.2.90&lt;/nlq&gt;
+&lt;query&gt;
+{
+  "breakdowns": ["trace.trace_id"],
+  "calculations": [{"op": "COUNT"}],
+  "filters": [{"column": "net.host.ip", "op": "=", "value": "10.0.2.90"}]
+}
+&lt;/query&gt;
+&lt;critique&gt;
+{
+  "critique": "The query correctly filters for traces with an IP address of 10.0.2.90 
+   and counts the occurrences of those traces, grouped by trace.trace_id. The response 
+   is good as it meets the requirement of showing traces from a specific IP address 
+   without additional complexities.",
+  "outcome": "good"
+}
+&lt;/critique&gt;
+&lt;/example-1&gt;
+
+&lt;example-2&gt;
+&lt;nlq&gt;show me slowest trace&lt;/nlq&gt;
+&lt;query&gt;
+{
+  "calculations": [{"column": "duration_ms", "op": "MAX"}],
+  "orders": [{"column": "duration_ms", "op": "MAX", "order": "descending"}],
+  "limit": 1
+}
+&lt;/query&gt;
+&lt;critique&gt;
+{
+  "critique": "While the query attempts to find the slowest trace using MAX(duration_ms) 
+   and ordering correctly, it fails to group by trace.trace_id. Without this grouping, 
+   the query only shows the MAX(duration_ms) measurement over time, not the actual 
+   slowest trace.",
+  "outcome": "bad"
+}
+&lt;/critique&gt;
+&lt;/example-2&gt;
+
+&lt;example-3&gt;
+&lt;nlq&gt;count window-hash where window-hash exists per hour&lt;/nlq&gt;
+&lt;query&gt;
+{
+  "breakdowns": ["window-hash"],
+  "calculations": [{"op": "COUNT"}],
+  "filters": [{"column": "window-hash", "op": "exists"}],
+  "time_range": 3600
+}
+&lt;/query&gt;
+&lt;critique&gt;
+{
+  "critique": "While the query correctly counts window-hash occurrences, the time_range 
+   of 3600 seconds (1 hour) is insufficient for per-hour analysis. When we say 'per hour', 
+   we need a time_range of at least 36000 seconds to show meaningful hourly patterns.",
+  "outcome": "bad"
+}
+&lt;/critique&gt;
+&lt;/example-3&gt;
+
+&lt;/examples&gt;
+
+For the following query, first write a detailed critique explaining your reasoning,
+then provide a pass/fail judgment in the same format as above.
+
+&lt;nlq&gt;{{user_input}}&lt;/nlq&gt;
+&lt;query&gt;
+{{generated_query}}
+&lt;/query&gt;
+&lt;critique&gt;</code></pre>
+<p>Notice how each example includes:</p>
+<ol type="1">
+<li>The natural language query (NLQ) in <code>&lt;nlq&gt;</code> tags</li>
+<li>The generated query in <code>&lt;query&gt;</code> tags</li>
+<li>The critique and outcome in <code>&lt;critique&gt;</code> tags</li>
+</ol>
+<p>In the prompt above, the example critiques are fixed. An advanced approach is to include examples dynamically based upon the item you are judging. You can learn more in <a href="https://blog.langchain.dev/dosu-langsmith-no-prompt-eng/">this post about Continual In-Context Learning</a>.</p>
+</section>
+<section id="keep-iterating-on-the-prompt-until-convergence-with-domain-expert" class="level3">
+<h3 class="anchored" data-anchor-id="keep-iterating-on-the-prompt-until-convergence-with-domain-expert">Keep Iterating on the Prompt Until Convergence With Domain Expert</h3>
+<p>In this case, I used a low-tech approach to iterate on the prompt. I sent Phillip a spreadsheet with the following information:</p>
+<ol type="1">
+<li>The NLQ</li>
+<li>The generated query</li>
+<li>The critique</li>
+<li>The outcome (pass or fail)</li>
+</ol>
+<p>Phillip would then fill out his own version of the spreadsheet with his critiques. I used this to iteratively improve the prompt. The spreadsheet looked like this:</p>
+<p><img src="spreadsheet.png" class="img-fluid"></p>
+<p>I also tracked agreement rates over time to ensure we were converging on a good prompt.</p>
+<p><img src="score.png" class="img-fluid"></p>
+<p>It took us only three iterations to achieve &gt; 90% agreement between the LLM and Phillip. Your mileage may vary depending on the complexity of the task. For example, <a href="https://humanloop.com/blog/why-your-product-needs-evals">Swyx has conducted a similar process hundreds of times</a> for <a href="https://www.latent.space/">AI News</a>, an <a href="https://x.com/swyx/status/1672306744884887553">extremely popular</a> news aggregator with high quality recommendations. The quality of the AI owing to this process is why this product has received <a href="https://buttondown.com/ainews">critical acclaim</a>.</p>
+</section>
+<section id="how-to-optimize-the-llm-judge-prompt" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-optimize-the-llm-judge-prompt">How to Optimize the LLM Judge Prompt?</h3>
+<p>I usually adjust the prompts by hand. I haven’t had much luck with prompt optimizers like DSPy. However, my friend <a href="https://eugeneyan.com/">Eugene Yan</a> has just released a promising tool named <a href="https://eugeneyan.com/writing/aligneval/">ALIGN Eval</a>. I like it because it’s simple and effective. Also, don’t forget the approach of <a href="https://blog.langchain.dev/dosu-langsmith-no-prompt-eng/">continual in-context learning</a> mentioned earlier - it can be very effective when implemented correctly.</p>
+</section>
+<section id="the-human-side-of-the-process" class="level3">
+<h3 class="anchored" data-anchor-id="the-human-side-of-the-process">The Human Side of the Process</h3>
+<p>Something unexpected happened during this process. <a href="https://www.linkedin.com/in/phillip-carter-4714a135/">Phillip Carter</a>, our domain expert at Honeycomb, found that reviewing the LLM’s critiques helped him articulate his own evaluation criteria more clearly. He said,</p>
+<blockquote class="blockquote">
+<p>“Seeing how the LLM breaks down its reasoning made me realize I wasn’t being consistent about how I judged certain edge cases.” This is a pattern I’ve seen repeatedly—the process of building an LLM judge often helps standardize evaluation criteria.”</p>
+</blockquote>
+<p>Furthermore, because this process forces the domain expert to look at data carefully, I always uncover new insights about the product, AI capabilities, and user needs. The resulting benefits are often <em>more valuable</em> than creating a LLM judge!</p>
+</section>
+<section id="how-often-should-you-evaluate" class="level3">
+<h3 class="anchored" data-anchor-id="how-often-should-you-evaluate">How Often Should You Evaluate?</h3>
+<p>I conduct this human review at regular intervals and whenever something material changes. For example, if I update a model, I’ll run the process again. I don’t get too scientific here; instead, I rely on my best judgment. Also note that after the first two iterations, I tend to focus more on errors rather than sampling randomly. For example, if I find an error, I’ll search for more examples that I think might trigger the same error. However, I always do a bit of random sampling as well.</p>
+</section>
+<section id="what-if-this-doesnt-work" class="level3">
+<h3 class="anchored" data-anchor-id="what-if-this-doesnt-work">What if this doesn’t work?</h3>
+<p>I’ve seen this process fail when:</p>
+<ul>
+<li>The AI is overscoped: Example - a chatbot in a SaaS product that promises to do anything you want.</li>
+<li>The process is not followed correctly: Not using the principal domain expert, not writing proper critiques, etc.</li>
+<li>The expecatations of alignment are unrealistic or not feasible.</li>
+</ul>
+<p>In each of these cases, I try to address the root cause instead of trying to force alignment. Sometimes, you may not be able to achieve the alignment you want and may have to lean heavier on human annotations. However, after following the process described here, you will have metrics that help you understand how much you can trust the LLM judge.</p>
+</section>
+<section id="mistakes-ive-noticed-in-llm-judge-prompts" class="level3">
+<h3 class="anchored" data-anchor-id="mistakes-ive-noticed-in-llm-judge-prompts">Mistakes I’ve noticed in LLM judge prompts</h3>
+<p>Most of the mistakes I’ve seen in LLM judge prompts have to do with not providing good examples:</p>
+<ol type="1">
+<li>Not providing any critiques.</li>
+<li>Writing extremely terse critiques.</li>
+<li>Not providing external context. Your examples should contain the same information you use to evaluate, including external information like user metadata, system information etc.</li>
+<li>Not providing diverse examples. You need a wide variety of examples to ensure that your judge works for a wide variety of inputs.</li>
+</ol>
+<p>Sometimes, you may encounter difficulties with fitting everything you need into the prompt, and may have to get creative about how you structure the examples. However, this is becoming less of an issue with expanding context windows and <a href="https://platform.openai.com/docs/guides/prompt-caching">prompt caching</a>.</p>
+</section>
+</section>
+<section id="step-6-perform-error-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="step-6-perform-error-analysis">Step 6: Perform Error Analysis</h2>
+<p>After you have created a LLM as a judge, you will have a dataset of user interactions with the AI, and the LLM’s judgments. If your metrics show an acceptable agreement between the domain expert and the LLM judge, you can apply this judge against real or synthetic interactions. After this, you can you calculate error rates for different dimensions of your data. You should calculate the error on unseen data only to make sure your aren’t getting biased results.</p>
+<p>For example, if you have segmented your data by persona, scenario, feature, etc, your data analysis may look like this</p>
+<p><strong>Error Rates by Key Dimensions</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Scenario</th>
+<th>Persona</th>
+<th>Total Examples</th>
+<th>Failure Rate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Order Tracking</td>
+<td>Multiple Matches</td>
+<td>New User</td>
+<td>42</td>
+<td>24.3%</td>
+</tr>
+<tr class="even">
+<td>Order Tracking</td>
+<td>Multiple Matches</td>
+<td>Expert User</td>
+<td>38</td>
+<td>18.4%</td>
+</tr>
+<tr class="odd">
+<td>Order Tracking</td>
+<td>No Matches</td>
+<td>Expert User</td>
+<td>30</td>
+<td>23.3%</td>
+</tr>
+<tr class="even">
+<td>Order Tracking</td>
+<td>No Matches</td>
+<td>New User</td>
+<td>20</td>
+<td>75.0%</td>
+</tr>
+<tr class="odd">
+<td>Contact Search</td>
+<td>Multiple Matches</td>
+<td>New User</td>
+<td>35</td>
+<td>22.9%</td>
+</tr>
+<tr class="even">
+<td>Contact Search</td>
+<td>Multiple Matches</td>
+<td>Expert User</td>
+<td>32</td>
+<td>19.7%</td>
+</tr>
+<tr class="odd">
+<td>Contact Search</td>
+<td>No Matches</td>
+<td>New User</td>
+<td>25</td>
+<td>68.0%</td>
+</tr>
+<tr class="even">
+<td>Contact Search</td>
+<td>No Matches</td>
+<td>Expert User</td>
+<td>28</td>
+<td>21.4%</td>
+</tr>
+</tbody>
+</table>
+<section id="classify-traces" class="level3">
+<h3 class="anchored" data-anchor-id="classify-traces">Classify Traces</h3>
+<p>Once you know where the errors are now you can perform an error analysis to get to the root cause of the errors. My favorite way is to look at examples of each type of error and classify them by hand. I recommend using a spreadsheet for this. For example, a trace for Order tracking where there are no matches for new users might look like this:</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Example Trace
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In this example trace, the user provides an invalid order number. The AI correctly identifies that the order number is invalid but provides an unhelpful response. If you are not familiar with logging LLM traces, refer to my <a href="https://hamel.dev/blog/posts/evals/">previous post on evals</a>.</p>
+<p>Note that this trace is formatted for readability.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a> <span class="dt">"user_input"</span><span class="fu">:</span> <span class="st">"Where's my order #ABC123?"</span><span class="fu">,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a> <span class="dt">"function_calls"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>   <span class="fu">{</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>     <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"search_order_database"</span><span class="fu">,</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>     <span class="dt">"args"</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">"order_id"</span><span class="fu">:</span> <span class="st">"ABC123"</span><span class="fu">},</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>     <span class="dt">"result"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>       <span class="dt">"status"</span><span class="fu">:</span> <span class="st">"not_found"</span><span class="fu">,</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>       <span class="dt">"valid_patterns"</span><span class="fu">:</span> <span class="ot">[</span><span class="st">"XXX-XXX-XXX"</span><span class="ot">]</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>     <span class="fu">}</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>   <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>   <span class="fu">{</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>     <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"retrieve_context"</span><span class="fu">,</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>     <span class="dt">"result"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>       <span class="dt">"relevant_docs"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>         <span class="st">"Order numbers follow format XXX-XXX-XXX"</span><span class="ot">,</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>         <span class="st">"New users should check confirmation email"</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>       <span class="ot">]</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>     <span class="fu">}</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>   <span class="fu">}</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a> <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a> <span class="dt">"llm_intermediate_steps"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>   <span class="fu">{</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>     <span class="dt">"thought"</span><span class="fu">:</span> <span class="st">"User is new and order format is invalid"</span><span class="fu">,</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>     <span class="dt">"action"</span><span class="fu">:</span> <span class="st">"Generate help message with format info"</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>   <span class="fu">}</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a> <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a> <span class="dt">"final_response"</span><span class="fu">:</span> <span class="st">"I cannot find that order #. Please check the number and try again."</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<p>In this case, you might classify the error as: <code>Missing User Education</code>. The system retrieved new user context and format information but failed to include it in the response, which suggests we could improve our prompt. After you have classified a number of errors, you can calculate the distribution of errors by root cause. That might look like this:</p>
+<p><strong>Root Cause Distribution (20 Failed Interactions)</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Root Cause</th>
+<th>Count</th>
+<th>Percentage</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Missing User Education</td>
+<td>8</td>
+<td>40%</td>
+</tr>
+<tr class="even">
+<td>Authentication/Access Issues</td>
+<td>6</td>
+<td>30%</td>
+</tr>
+<tr class="odd">
+<td>Poor Context Handling</td>
+<td>4</td>
+<td>20%</td>
+</tr>
+<tr class="even">
+<td>Inadequate Error Messages</td>
+<td>2</td>
+<td>10%</td>
+</tr>
+</tbody>
+</table>
+<p>Now you know where to focus your efforts. This doesn’t have to take an extraordinary amount of time. You can get quite far in just 15 minutes. Also, you can use a LLM to help you with this classification, but that is beyond the scope of this post (you can use a LLM to help you do anything in this post, as long as you have a process to verify the results).</p>
+</section>
+<section id="an-interactive-walkthrough-of-error-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="an-interactive-walkthrough-of-error-analysis">An Interactive Walkthrough of Error Analysis</h3>
+<p>Error analysis has been around in Machine Learning for quite some time. This video by Andrew Ng does a great job of walking through the process interactively:</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/JoAxZsdw_3w?si=R4P1awrDBIYDhJS9" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+</section>
+<section id="fix-your-errors-again" class="level3">
+<h3 class="anchored" data-anchor-id="fix-your-errors-again">Fix Your Errors, Again</h3>
+<p>Now that you have a sense of the errors, you can go back and fix them again. Go back to step 3 and iterate until you are satisfied. Note that every time you fix an error, you should try to write a test case for it. Sometimes, this can be an assertion in your test suite, but other times you may need to create a more “specialized” LLM judge for these failures. We’ll talk about this next.</p>
+</section>
+<section id="doing-this-well-requires-data-literacy" class="level3">
+<h3 class="anchored" data-anchor-id="doing-this-well-requires-data-literacy">Doing this well requires data literacy</h3>
+<p>Investigating your data is much harder in practice than I made it look in this post. It requires a nose for detail that only comes from practice. It also helps to have some basic familiarity with statistics and data analysis tools. My favorite post on data literacy is <a href="https://jxnl.co/writing/2024/06/02/10-ways-to-be-data-illiterate-and-how-to-avoid-them/">this one</a> by Jason Liu and Eugene Yan.</p>
+</section>
+</section>
+<section id="step-7-create-more-specialized-llm-judges-if-needed" class="level2">
+<h2 class="anchored" data-anchor-id="step-7-create-more-specialized-llm-judges-if-needed">Step 7: Create More Specialized LLM Judges (if needed)</h2>
+<p>Now that you have a sense for where the problems in your AI are, you can decide where and if to invest in more targeted LLM judges. For example, if you find that the AI has trouble with citing sources correctly, you can created a targeted eval for that. You might not even need a LLM judge for many errors. I often find that I can write code based assertions for issues I find.</p>
+<p>The key takeaway is don’t jump directly to using specialized LLM judges until you have gone through this critique shadowing process. This will help you rationalize where to invest your time.</p>
+</section>
+<section id="recap-of-critique-shadowing" class="level2">
+<h2 class="anchored" data-anchor-id="recap-of-critique-shadowing">Recap of Critique Shadowing</h2>
+<p>Using an LLM as a judge can streamline your AI evaluation process if approached correctly. Here’s a visual illustration of the process (there is a description of the process below the diagram as well):</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph TB
+    A[Start] --&gt; B[1 Find Principal Domain Expert]
+    B --&gt; C[2 Create Dataset]
+    C --&gt; D[3 Domain Expert Reviews Data]
+    D --&gt; E{Found Errors?}
+    E --&gt;|Yes| F[4 Fix Errors]
+    F --&gt; D
+    E --&gt;|No| G[5 Build LLM Judge]
+    G --&gt; H[Test Against Domain Expert]
+    H --&gt; I{Acceptable Agreement?}
+    I --&gt;|No| J[Refine Prompt]
+    J --&gt; H
+    I --&gt;|Yes| K[6 Perform Error Analysis]
+    K --&gt; L{Critical Issues Found?}
+    L --&gt;|Yes| M[7 Fix Issues &amp; Create Specialized Judges]
+    M --&gt; D
+    L --&gt;|No| N[Material Changes or Periodic Review?]
+    N --&gt;|Yes| C
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>The Critique Shadowing process is iterative, with feedback loops. Let’s list out the steps:</p>
+<ol type="1">
+<li>Find Principal Domain Expert</li>
+<li>Create A Dataset
+<ul>
+<li>Generate diverse examples covering your use cases</li>
+<li>Include real or synthetic user interactions</li>
+</ul></li>
+<li>Domain Expert Reviews Data
+<ul>
+<li>Expert makes pass/fail judgments</li>
+<li>Expert writes detailed critiques explaining their reasoning</li>
+</ul></li>
+<li>Fix Errors (if found)
+<ul>
+<li>Address any issues discovered during review</li>
+<li>Return to expert review to verify fixes</li>
+<li>Go back to step 3 if errors are found</li>
+</ul></li>
+<li>Build LLM Judge
+<ul>
+<li>Create prompt using expert examples</li>
+<li>Test against expert judgments</li>
+<li>Refine prompt until agreement is satisfactory</li>
+</ul></li>
+<li>Perform Error Analysis
+<ul>
+<li>Calculate error rates across different dimensions</li>
+<li>Identify patterns and root causes</li>
+<li>Fix errors and go back to step 3 if needed</li>
+<li>Create specialized judges as needed</li>
+</ul></li>
+</ol>
+<p>This process never truly ends. It repeats periodically or when material changes occur.</p>
+<section id="its-not-the-judge-that-created-value-afterall" class="level3">
+<h3 class="anchored" data-anchor-id="its-not-the-judge-that-created-value-afterall">It’s Not The Judge That Created Value, Afterall</h3>
+<p>The real value of this process is looking at your data and doing careful analysis. Even though an AI judge can be a helpful tool, going through this process is what drives results. I would go as far as saying that creating a LLM judge is a nice “hack” I use to trick people into carefully looking at their data!</p>
+<p>That’s right. The real business value comes from looking at your data. But hey, potato, potahto.</p>
+</section>
+<section id="do-you-really-need-this" class="level3">
+<h3 class="anchored" data-anchor-id="do-you-really-need-this">Do You Really Need This?</h3>
+<p>Phew, this seems like a lot of work! Do you really need this? Well, it depends. There are cases where you can take a shortcut through this process. For example, let’s say:</p>
+<ol type="1">
+<li>You are an indpendent developer who is also a domain expert.</li>
+<li>You are working with test data that already available. (Tweets, etc.)</li>
+<li>Looking at data is not costly (etc. you can manually look at enough data in a few hours)</li>
+</ol>
+<p>In this scenario, you can jump directly to something that looks like step 3 and start looking at data right away. Also, since it’s not that costly to look at data, it’s probably fine to just do error analysis without a judge (at least initially). You can incorporate what you learn directly back into your primary model right away. This example is not exhaustive, but gives you an idea of how you can adapt this process to your needs.</p>
+<p>However, you can never completely eliminate looking at your data! This is precisely the step that most people skip. Don’t be that person.</p>
+</section>
+</section>
+<section id="faq" class="level2">
+<h2 class="anchored" data-anchor-id="faq">FAQ</h2>
+<p>I received <a href="https://x.com/HamelHusain/status/1850256204553244713">a lot of questions</a> about this topic. Here are answers to the most common ones:</p>
+<section id="do-you-recommend-fine-tuning-judges" class="level3">
+<h3 class="anchored" data-anchor-id="do-you-recommend-fine-tuning-judges">Do you recommend fine-tuning judges?</h3>
+<p>I prefer not to fine-tune LLM judges. I’d rather spend the effort fine-tuning the actual LLM instead. However, fine-tuning guardrails or other specialized judges can be useful (especially if they are small classifiers).</p>
+<p>As a related note, you can leverage a LLM judge to curate and transform data for fine-tuning your primary model. For example, you can use the judge to:</p>
+<ul>
+<li>Eliminate bad examples for fine-tuning.</li>
+<li>Generate higher quality outputs (by referencing the critique).</li>
+<li>Simulate high quality chain-of-thought with critiques.</li>
+</ul>
+<p>Using a LLM judge for enhancing fine-tuning data is even more compelling when you are trying to <a href="https://openai.com/index/api-model-distillation/">distill a large LLM into a smaller one</a>. The details of fine-tuning are beyond the scope of this post. If you are interested in learning more, see <a href="https://parlance-labs.com/education/#fine-tuning">these resources</a>.</p>
+</section>
+<section id="if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-use-for-my-use-case" class="level3">
+<h3 class="anchored" data-anchor-id="if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-use-for-my-use-case">If I have a good judge LLM, isn’t that also the LLM I’d use for my use case?</h3>
+<p>If the cost of the most powerful LLM is not prohibitive, and latency is not an issue, then the utility of the judge LLM as described in this post is significantly diminished. In this case, it probably makes sense to weight your effort towards fixing the errors you find in the primary model, rather than building a judge. If latency is not an issue, you can even have your primary model write internal critiques and retries (chain-of-thought, etc) before responding.</p>
+<p>However, in this case specialist LLM judges can still be useful. But you should go through the process of looking at data and critiquing the LLM’s output before you adopt specialized judges.</p>
+</section>
+<section id="whats-wrong-with-off-the-shelf-llm-judges" class="level3">
+<h3 class="anchored" data-anchor-id="whats-wrong-with-off-the-shelf-llm-judges">What’s wrong with off-the-shelf LLM judges?</h3>
+<p>Nothing is strictly wrong with them. It’s just that many people are led astray by them. If you are disciplined you can apply them to your data and see if they are telling you something valuable. However, I’ve found that these tend to cause more confusion than value.</p>
+</section>
+<section id="how-do-you-evaluate-the-llm-judge" class="level3">
+<h3 class="anchored" data-anchor-id="how-do-you-evaluate-the-llm-judge">How Do you evaluate the LLM judge?</h3>
+<p>You will collect metrics on the agreement between the domain expert and the LLM judge. This tells you how much you can trust the judge and in what scenarios. Your domain expert doesn’t have to inspect every single example, you just need a representative sample so you can have reliable statistics.</p>
+</section>
+<section id="what-model-do-you-use-for-the-llm-judge" class="level3">
+<h3 class="anchored" data-anchor-id="what-model-do-you-use-for-the-llm-judge">What model do you use for the LLM judge?</h3>
+<p>For the kind of judge articulated in this blog post, I like to use the most powerful model I can afford in my cost/latency budget. This budget might be different than my primary model, depending on the number of examples I need to score. This can vary significantly according to the use case.</p>
+</section>
+<section id="what-about-guardrails" class="level3">
+<h3 class="anchored" data-anchor-id="what-about-guardrails">What about guardrails?</h3>
+<p>Guardrails are a separate but related topic. They are a way to prevent the LLM from saying/doing something harmful or inappropriate. This blog post focuses on helping you create a judge that’s aligned with business goals, especially when starting out.</p>
+</section>
+<section id="im-using-llm-as-a-judge-and-getting-tremendous-value-but-i-didnt-follow-this-approach." class="level3">
+<h3 class="anchored" data-anchor-id="im-using-llm-as-a-judge-and-getting-tremendous-value-but-i-didnt-follow-this-approach.">I’m using LLM as a judge, and getting tremendous value but I didn’t follow this approach.</h3>
+<p>I believe you. This blog post is not the only way to use a LLM as a judge. In fact, I’ve seen people use a LLM as a judge in all sorts of creative ways, which include ranking, classification, model selection and so-on. I’m focused on an approach that works well when you are getting started, and avoids the pitfalls of confusing metric sprawl. However, the general process of looking at the data is still central no matter what kind of judge you are building.</p>
+</section>
+<section id="how-do-you-choose-between-traditional-ml-techniques-llm-as-a-judge-and-human-annotations" class="level3">
+<h3 class="anchored" data-anchor-id="how-do-you-choose-between-traditional-ml-techniques-llm-as-a-judge-and-human-annotations">How do you choose between traditional ML techniques, LLM-as-a-judge and human annotations?</h3>
+<p>The answer to this (and many other questions) is: do the simplest thing that works. And simple doesn’t always mean traditional ML techniques. Depending on your situation, it might be easier to use a LLM API as a classifier than to train a model and deploy it.</p>
+</section>
+<section id="can-you-make-judges-from-small-models" class="level3">
+<h3 class="anchored" data-anchor-id="can-you-make-judges-from-small-models">Can you make judges from small models?</h3>
+<p>Yes, potentially. I’ve only used the larger models for judges. You have to base the answer to this question on the data (i.e.&nbsp;the agreement with the domain expert).</p>
+</section>
+<section id="how-do-you-ensure-consistency-when-updating-your-llm-model" class="level3">
+<h3 class="anchored" data-anchor-id="how-do-you-ensure-consistency-when-updating-your-llm-model">How do you ensure consistency when updating your LLM model?</h3>
+<p>You have to go through the process again and measure the results.</p>
+</section>
+<section id="how-do-you-phase-out-human-in-the-loop-to-scale-this" class="level3">
+<h3 class="anchored" data-anchor-id="how-do-you-phase-out-human-in-the-loop-to-scale-this">How do you phase out human in the loop to scale this?</h3>
+<p>You don’t need a domain expert to grade every single example. You just need a representative sample. I don’t think you can eliminate humans completely, because the LLM still needs to be aligned to something, and that something is usually a human. As your evaluation system gets better, it naturally reduces the amount of human effort required.</p>
+</section>
+</section>
+<section id="resources" class="level2">
+<h2 class="anchored" data-anchor-id="resources">Resources</h2>
+<p>These are some of the resources I recommend to learn more on this topic:</p>
+<ul>
+<li><a href="https://hamel.dev/evals">Your AI Product Needs Evals</a>: This blog post is the predecessor to this one, and provides a high-level overview of evals for LLM based products.</li>
+<li><a href="https://arxiv.org/abs/2404.12272">Who Validates the Validators? Aligning LLM-Assisted Evaluation of LLM Outputs with Human Preferences</a>: This paper provides a good overview of the challenges of evaluating LLMs, and the importance of following a good process.</li>
+<li><a href="https://aligneval.com/">Align Eval</a>: Eugene Yan’s new tool that helps you build LLM judges by following a good process.</li>
+<li><a href="https://eugeneyan.com/writing/llm-evaluators/">Evaluating the Effectiveness of LLM-Evaluators (aka LLM-as-Judge)</a>: This is a great survey of different use-cases and approaches for LLM judges, also written by Eugene Yan.</li>
+<li><a href="https://www.databricks.com/blog/enhancing-llm-as-a-judge-with-grading-notes">Enhancing LLM-As-A-Judge with Grading Notes</a>: This is <em>very</em> similar to the approach articulated in this blog post, and provides another point of view regarding the utility of writing critiques (they call them grading notes).</li>
+<li><a href="https://cookbook.openai.com/examples/custom-llm-as-a-judge">Custom LLM as a Judge Cookbook from OpenAI</a> by Ankur Goyal and Shaymal Anadkt provide an end-to-end example of building a LLM judge, and for the use case highlighted, authors found that a classification approach was more reliable than numeric ratings (consistent with this blog post).</li>
+</ul>
+</section>
+<section id="stay-connected" class="level2">
+<h2 class="anchored" data-anchor-id="stay-connected">Stay Connected</h2>
+<p>I’m continuously learning about LLMs, and enjoy sharing my findings. If you’re interested in this journey, consider subscribing.</p>
+<p>What to expect:</p>
+<ul>
+<li>Occasional emails with my latest insights on LLMs</li>
+<li>Early access to new content</li>
+<li>No spam, just honest thoughts and discoveries</li>
+</ul>
+<script async="" data-uid="6379a28bdb" src="https://hamel.ck.page/6379a28bdb/index.js"></script>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = true;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/hamelhusain/">
+      <i class="bi bi-linkedin" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/HamelHusain">
+      <i class="bi bi-twitter" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/hamelsmu">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/blog/posts/llm-judge/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

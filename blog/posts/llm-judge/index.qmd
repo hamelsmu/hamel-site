@@ -16,15 +16,11 @@ website:
 draft: true
 ---
 
-![Tracking a bunch of scores on a 1-5 scale is often a sign of a bad eval process, especially when starting out.](blog_header.png)
-
-Earlier this year, I wrote [why your AI product needs evals](https://hamel.dev/blog/posts/evals/). The response was amazing! Many of you asked, "How do I get started with LLM-as-a-judge?" This guide shares what I've learned after helping over [30 companies](https://parlance-labs.com/) set up their evaluation systems.
+Earlier this year, I wrote [Why your AI product needs evals](https://hamel.dev/blog/posts/evals/). Many of you asked, "How do I get started with LLM-as-a-judge?" This guide shares what I've learned after helping over [30 companies](https://parlance-labs.com/) set up their evaluation systems.
 
 ## The Problem: AI Teams Are Drowning in Data
 
-Ever spend weeks building an AI system, only to realize you have no idea if it's actually working? You're not alone.
-
-When teams start using Language Models (LLMs) to evaluate AI outputs, they often make these mistakes:
+Ever spend weeks building an AI system, only to realize you have no idea if it's actually working? You're not alone.  I've noticed teams repeat the same mistakes when using LLMs to evaluate AI outputs:
 
 1. **Too Many Metrics**: Creating numerous measurements that become unmanageable.
 2. **Complex Scoring Systems**: Using scales like 1-5 across multiple dimensions.
@@ -33,11 +29,13 @@ When teams start using Language Models (LLMs) to evaluate AI outputs, they often
 
 The result? Teams end up buried under mountains of metrics or data they don't trust and can't use. Progress grinds to a halt. Everyone gets frustrated.
 
-The solution is to use a technique that I call **"Critique Shadowing"**. Here's how to do it, step by step.
+For example, it's not uncommon for me to see dashboards that look like this:
+
+![An illustrative example of a bad eval dashboard](blog_header.png)
+
+Tracking a bunch of scores on a 1-5 scale is often a sign of a bad eval process, especially when starting out.  In this post, I'll show you how to avoid these pitfalls. The solution is to use a technique that I call **"Critique Shadowing"**. Here's how to do it, step by step. 
 
 ## Step 1: Find _The_ Principal Domain Expert
-
-Here's a secret most AI teams miss: You don't need to make everyone happy. You just need to convince one key person.
 
 In most organizations there is usually one (maybe two) key individuals whose judgment is crucial for the success of your AI product. These are the people who have the final authority or whom you must convince that the AI is ready for deployment. Identifying and involving this **Principal Domain Expert** early in the process is critical.
 
@@ -140,9 +138,9 @@ To build your dataset, you can:
 - **Use Existing Data**: Sample real user interactions or behaviors from your AI system.
 - **Generate Synthetic Data**: Use LLMs to create realistic user inputs covering various features, scenarios, and personas.
 
-Often, you'll do a combination of both to ensure comprehensive coverage.  
+Often, you'll do a combination of both to ensure comprehensive coverage.  Synthetic data is not as good as real data, but it's a good starting point.  Also, we are only using LLMs to generate the user inputs, not the LLM responses or internal system behavior.
 
-This post discusses how to generate synthetic data since leveraging existing data is much more straightforward.  Just remember that you want good coverage across the dimensions you've defined.
+Regardless of whether you use existing data or synthetic data, you want good coverage across the dimensions you've defined.
 
 **Incorporating System Information**
 
@@ -189,7 +187,7 @@ The domain expert's job is to focus on one thing: **"Did the AI achieve the desi
 
 ### The Role of Critiques
 
-Alongside a binary pass/fail judgment, it's important to write a detailed critique.  These critiques:
+Alongside a binary pass/fail judgment, it's important to write a detailed critique of the LLM-generated output.  These critiques:
 
 - **Captures Nuances**: The critique allows you to note if something was mostly correct but had areas for improvement.
 
@@ -221,7 +219,7 @@ These examples demonstrate how the AI can receive both **"Pass"** and **"Fail"**
 
 - For **fails**, we identify the critical elements that led to the failure, explaining why the AI did not meet the user's main objective or compromised important factors like user experience or security.
 
-Most importantly, the critique should be detailed enough so that you can use it in a few-shot prompt for a LLM judge.  In other words, it should be detailed enough that a new employee could understand it.  Being too terse is a common mistake.  
+Most importantly, **the critique should be detailed enough so that you can use it in a few-shot prompt for a LLM judge**.  In other words, it should be detailed enough that a new employee could understand it.  Being too terse is a common mistake.  
 
 Note that the example user interactions with the AI are simplified for brevity - but you might need to give the domain expert more context to make a judgement.  More on that later.
 
@@ -404,7 +402,10 @@ I usually adjust the prompts by hand.  I haven't had much luck with prompt optim
 
 ### The Human Side of the Process
 
-Something unexpected happened during this process. Phillip, our domain expert at Honeycomb, found that reviewing the LLM's critiques helped him articulate his own evaluation criteria more clearly. He told me, "Seeing how the LLM breaks down its reasoning made me realize I wasn't being consistent about how I judged certain edge cases." This is a pattern I've seen repeatedly—the process of building an LLM judge often helps standardize evaluation criteria.
+Something unexpected happened during this process. [Phillip Carter](https://www.linkedin.com/in/phillip-carter-4714a135/), our domain expert at Honeycomb, found that reviewing the LLM's critiques helped him articulate his own evaluation criteria more clearly. He said, 
+
+> "Seeing how the LLM breaks down its reasoning made me realize I wasn't being consistent about how I judged certain edge cases." This is a pattern I've seen repeatedly—the process of building an LLM judge often helps standardize evaluation criteria."
+
 
 Furthermore, because this process forces the domain expert to look at data carefully, I always uncover new insights about the product, AI capabilities, and user needs. The resulting benefits are often _more valuable_ than creating a LLM judge!
 
@@ -421,16 +422,6 @@ I've seen this process fail when:
 - The expecatations of alignment are unrealistic or not feasible.
 
 In each of these cases, I try to address the root cause instead of trying to force alignment.  Sometimes, you may not be able to achieve the alignment you want and may have to lean heavier on human annotations.  However, after following the process described here, you will have metrics that help you understand how much you can trust the LLM judge.
-
-### What about Fine-Tuning?
-
-I prefer not to fine-tune LLM judges.  I'd rather spend the effort fine-tuning the actual LLM instead.  For example, you can leverage a LLM judge to curate and transform data for fine-tuning your primary model.  For example, you can use the judge to:
-
-- Eliminate bad examples for fine-tuning.
-- Generate higher quality outputs (by referencing the critique).
-- Simulate high quality chain-of-thought with critiques.
-
-Using a LLM judge for enhancing fine-tuning data is even more compelling when you are trying to [distill a large LLM into a smaller one](https://openai.com/index/api-model-distillation/).  The details of fine-tuning are beyond the scope of this post.  If you are interested in learning more, see [these resources](https://parlance-labs.com/education/#fine-tuning).
 
 ### Mistakes I've noticed in LLM judge prompts
 
@@ -613,6 +604,18 @@ However, you can never completely eliminate looking at your data!  This is preci
 
 I received [a lot of questions](https://x.com/HamelHusain/status/1850256204553244713) about this topic.  Here are answers to the most common ones:
 
+### Do you recommend fine-tuning judges?
+
+I prefer not to fine-tune LLM judges.  I'd rather spend the effort fine-tuning the actual LLM instead.  However, fine-tuning guardrails or other specialized judges can be useful (especially if they are small classifiers).
+
+As a related note, you can leverage a LLM judge to curate and transform data for fine-tuning your primary model.  For example, you can use the judge to:
+
+- Eliminate bad examples for fine-tuning.
+- Generate higher quality outputs (by referencing the critique).
+- Simulate high quality chain-of-thought with critiques.
+
+Using a LLM judge for enhancing fine-tuning data is even more compelling when you are trying to [distill a large LLM into a smaller one](https://openai.com/index/api-model-distillation/).  The details of fine-tuning are beyond the scope of this post.  If you are interested in learning more, see [these resources](https://parlance-labs.com/education/#fine-tuning).
+
 ### If I have a good judge LLM, isn’t that also the LLM I’d use for my use case?
 
 If the cost of the most powerful LLM is not prohibitive, and latency is not an issue, then the utility of the judge LLM as described in this post is significantly diminished.  In this case, it probably makes sense to weight your effort towards fixing the errors you find in the primary model, rather than building a judge. If latency is not an issue, you can even have your primary model write internal critiques and retries (chain-of-thought, etc) before responding.
@@ -639,12 +642,6 @@ Guardrails are a separate but related topic.  They are a way to prevent the LLM 
 
 I believe you.  This blog post is not the only way to use a LLM as a judge.  In fact, I've seen people use a LLM as a judge in all sorts of creative ways, which include ranking, classification, model selection and so-on.  I'm focused on an approach that works well when you are getting started, and avoids the pitfalls of confusing metric sprawl.  However, the general process of looking at the data is still central no matter what kind of judge you are building.
 
-### Should I focus on prompting or fine-tuning for optimizing my judge?
-
-I recommend focusing on prompting.  I would only fine-tune in rare cases.  It's usually not worth the effort of fine-tuning a judge relative to improving your primary model.  However, fine-tuning guardrails or other specialized judges can be useful (especially if they are small classifiers).
-
-However, as I mentioned earlier in this post, I like to use LLM judge to help me curate a dataset that I can use for distillation into a smaller model.
-
 ###  How do you choose between traditional ML techniques, LLM-as-a-judge and human annotations?
 
 The answer to this (and many other questions) is: do the simplest thing that works.  And simple doesn't always mean traditional ML techniques.  Depending on your situation, it might be easier to use a LLM API as a classifier than to train a model and deploy it.
@@ -663,10 +660,11 @@ You don't need a domain expert to grade every single example.  You just need a r
 
 ## Resources
 
-These are some of the resources I recommend to learn more about LLM judges:
+These are some of the resources I recommend to learn more on this topic:
 
+- [Your AI Product Needs Evals](https://hamel.dev/evals): This blog post is the predecessor to this one, and provides a high-level overview of evals for LLM based products.
 - [Who Validates the Validators? Aligning LLM-Assisted Evaluation of LLM Outputs with Human Preferences](https://arxiv.org/abs/2404.12272): This paper provides a good overview of the challenges of evaluating LLMs, and the importance of following a good process.
-- [Align Eval](https://humanloop.com/blog/align-eval-a-new-approach-to-evaluating-llms): Eugene Yan's new tool that helps you build LLM judges by following a good process.
+- [Align Eval](https://aligneval.com/): Eugene Yan's new tool that helps you build LLM judges by following a good process.
 - [Evaluating the Effectiveness of LLM-Evaluators (aka LLM-as-Judge)](https://eugeneyan.com/writing/llm-evaluators/): This is a great survey of different use-cases and approaches for LLM judges, also written by Eugene Yan.
 - [Enhancing LLM-As-A-Judge with Grading Notes](https://www.databricks.com/blog/enhancing-llm-as-a-judge-with-grading-notes): This is _very_ similar to the approach articulated in this blog post, and provides another point of view regarding the utility of writing critiques (they call them grading notes).
 - [Custom LLM as a Judge Cookbook from OpenAI](https://cookbook.openai.com/examples/custom-llm-as-a-judge) by Ankur Goyal and Shaymal Anadkt provide an end-to-end example of building a LLM judge, and for the use case highlighted, authors found that a classification approach was more reliable than numeric ratings (consistent with this blog post).
