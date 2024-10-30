@@ -382,7 +382,7 @@ Subscribe for updates
 <p>Ever spend weeks building an AI system, only to realize you have no idea if it’s actually working? You’re not alone. I’ve noticed teams repeat the same mistakes when using LLMs to evaluate AI outputs:</p>
 <ol type="1">
 <li><strong>Too Many Metrics</strong>: Creating numerous measurements that become unmanageable.</li>
-<li><strong>Complex Scoring Systems</strong>: Using scales like 1-5 across multiple dimensions.</li>
+<li><strong>Arbitrary Scoring Systems</strong>: Using uncalibrated scales (like 1-5) across multiple dimensions, where the difference between scores is unclear and subjective. What makes something a 3 versus a 4? Nobody knows, and different evaluators often interpret these scales differently.</li>
 <li><strong>Ignoring Domain Experts</strong>: Not involving the people who understand the subject matter deeply.</li>
 <li><strong>Unvalidated Metrics</strong>: Using measurements that don’t truly reflect what matters to the users or the business.</li>
 </ol>
@@ -398,10 +398,10 @@ Subscribe for updates
 </section>
 <section id="step-1-find-the-principal-domain-expert" class="level2">
 <h2 class="anchored" data-anchor-id="step-1-find-the-principal-domain-expert">Step 1: Find <em>The</em> Principal Domain Expert</h2>
-<p>In most organizations there is usually one (maybe two) key individuals whose judgment is crucial for the success of your AI product. These are the people who have the final authority or whom you must convince that the AI is ready for deployment. Identifying and involving this <strong>Principal Domain Expert</strong> early in the process is critical.</p>
+<p>In most organizations there is usually one (maybe two) key individuals whose judgment is crucial for the success of your AI product. These are the people with deep domain expertise or represent your target users. Identifying and involving this <strong>Principal Domain Expert</strong> early in the process is critical.</p>
 <p><strong>Why is finding the right domain expert so important?</strong></p>
 <ul>
-<li><p><strong>They Set the Standard</strong>: This person defines what is acceptable or not for your AI’s performance. Their opinion often carries the most weight in decision-making.</p></li>
+<li><p><strong>They Set the Standard</strong>: This person not only defines what is acceptable technically, but also helps you understand if you’re building something users actually want.</p></li>
 <li><p><strong>Capture Unspoken Expectations</strong>: By involving them, you uncover their preferences and expectations, which they might not be able to fully articulate upfront. Through the evaluation process, you help them clarify what a “passable” AI interaction looks like.</p></li>
 <li><p><strong>Consistency in Judgment</strong>: People in your organization may have different opinions about the AI’s performance. Focusing on the principal expert ensures that evaluations are consistent and aligned with the most critical standards.</p></li>
 <li><p><strong>Sense of Ownership</strong>: Involving the expert gives them a stake in the AI’s development. They feel invested because they’ve had a hand in shaping it. In the end, they are more likely to approve of the AI.</p></li>
@@ -424,6 +424,7 @@ Exceptions
 </div>
 <div class="callout-body-container callout-body">
 <p>In a smaller company, this might be the CEO or founder. If you are an independent developer, you should be the domain expert (but be honest with yourself about your expertise).</p>
+<p>If you must rely on leadership, you should regularly validate their assumptions against real user feedback.</p>
 </div>
 </div>
 <p>Many developers attempt to act as the domain expert themselves, or find a convenient proxy (ex: their superior). This is a recipe for disaster. People will have varying opinions about what is acceptable, and you can’t make everyone happy. What’s important is that your principal domain expert is satisfied.</p>
@@ -446,7 +447,7 @@ Exceptions
 </section>
 <section id="dimensions-for-structuring-your-dataset" class="level3">
 <h3 class="anchored" data-anchor-id="dimensions-for-structuring-your-dataset">Dimensions for Structuring Your Dataset</h3>
-<p>You want to define dimensions that make sense for your use case. For example, here are ones that I often use for many B2C applications:</p>
+<p>You want to define dimensions that make sense for your use case. For example, here are ones that I often use for B2C applications:</p>
 <ol type="1">
 <li><strong>Features</strong>: Specific functionalities of your AI product.</li>
 <li><strong>Scenarios</strong>: Situations or problems the AI may encounter and needs to handle.</li>
@@ -501,8 +502,8 @@ Exceptions
 <p>Scenarios are situations the AI needs to handle, (not based on the outcome of the AI’s response).</p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 26%">
-<col style="width: 73%">
+<col style="width: 31%">
+<col style="width: 68%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -513,31 +514,31 @@ Exceptions
 <tbody>
 <tr class="odd">
 <td><strong>Multiple Matches Found</strong></td>
-<td>User’s request yields multiple results; AI must help narrow down options.</td>
+<td>User’s request yields multiple results that need narrowing down. For example: User asks “Where’s my order?” but has three active orders (#123, #124, #125). AI must help identify which specific order they’re asking about.</td>
 </tr>
 <tr class="even">
 <td><strong>No Matches Found</strong></td>
-<td>User’s request yields no results; AI should suggest alternatives or corrections.</td>
+<td>User’s request yields no results, requiring alternatives or corrections. For example: User searches for order #ABC-123 which doesn’t exist. AI should explain valid order formats and suggest checking their confirmation email.</td>
 </tr>
 <tr class="odd">
 <td><strong>Ambiguous Request</strong></td>
-<td>User input is unclear; AI needs to ask clarifying questions.</td>
+<td>User input lacks necessary specificity. For example: User says “I need to change my delivery” without specifying which order or what aspect of delivery (date, address, etc.) they want to change.</td>
 </tr>
 <tr class="even">
 <td><strong>Invalid Data Provided</strong></td>
-<td>User provides data not present in the system; AI must handle gracefully.</td>
+<td>User provides incorrect data type or format. For example: User tries to track a return using a regular order number instead of a return authorization (RMA) number.</td>
 </tr>
 <tr class="odd">
 <td><strong>System Errors</strong></td>
-<td>Technical issues occur; AI should inform the user appropriately.</td>
+<td>Technical issues prevent normal operation. For example: While looking up an order, the inventory database is temporarily unavailable. AI needs to explain the situation and provide alternatives.</td>
 </tr>
 <tr class="even">
 <td><strong>Incomplete Information</strong></td>
-<td>User omits necessary details; AI must guide the user to provide missing info.</td>
+<td>User omits required details. For example: User wants to initiate a return but hasn’t provided the order number or reason. AI needs to collect this information step by step.</td>
 </tr>
 <tr class="odd">
 <td><strong>Unsupported Feature</strong></td>
-<td>User requests an unsupported feature; AI must inform the user politely.</td>
+<td>User requests functionality that doesn’t exist. For example: User asks to change payment method after order has shipped. AI must explain why this isn’t possible and suggest alternatives.</td>
 </tr>
 </tbody>
 </table>
@@ -670,6 +671,13 @@ Exceptions
 <section id="how-much-data-should-you-generate" class="level4">
 <h4 class="anchored" data-anchor-id="how-much-data-should-you-generate">How much data should you generate?</h4>
 <p>There is no right answer here. At a minimum, you want to generate enough data so that you have examples for each combination of dimensions (in this toy example: features, scenarios, and personas). However, you also want to keep generating more data until you feel like you have stopped seeing new failure modes. The amount of data I generate varies significantly depending on the use case.</p>
+</section>
+<section id="does-synthetic-data-actually-work" class="level4">
+<h4 class="anchored" data-anchor-id="does-synthetic-data-actually-work">Does synthetic data actually work?</h4>
+<p>You might be skeptical of using synthetic data. After all, it’s not real data, so how can it be a good proxy? In my experience, it works surprisingly well. Some of my favorite AI products, like <a href="https://hex.tech/">Hex</a> use synthetic data to power their evals:</p>
+<blockquote class="blockquote">
+<p>“LLMs are surprisingly good at generating excellent - and diverse - examples of user prompts. This can be relevant for powering application features, and sneakily, for building Evals. If this sounds a bit like the Large Language Snake is eating its tail, I was just as surprised as you! All I can say is: it works, ship it.” <em><a href="https://www.linkedin.com/in/bryan-bischof/">Bryan Bischof</a>, Head of AI Engineering at Hex</em></p>
+</blockquote>
 </section>
 </section>
 <section id="next-steps-1" class="level3">
@@ -1134,7 +1142,7 @@ Example Trace
 </section>
 <section id="step-7-create-more-specialized-llm-judges-if-needed" class="level2">
 <h2 class="anchored" data-anchor-id="step-7-create-more-specialized-llm-judges-if-needed">Step 7: Create More Specialized LLM Judges (if needed)</h2>
-<p>Now that you have a sense for where the problems in your AI are, you can decide where and if to invest in more targeted LLM judges. For example, if you find that the AI has trouble with citing sources correctly, you can created a targeted eval for that. You might not even need a LLM judge for many errors. I often find that I can write code based assertions for issues I find.</p>
+<p>Now that you have a sense for where the problems in your AI are, you can decide where and if to invest in more targeted LLM judges. For example, if you find that the AI has trouble with citing sources correctly, you can created a targeted eval for that. You might not even need a LLM judge for some errors (and use a code-based assertion instead).</p>
 <p>The key takeaway is don’t jump directly to using specialized LLM judges until you have gone through this critique shadowing process. This will help you rationalize where to invest your time.</p>
 </section>
 <section id="recap-of-critique-shadowing" class="level2">
@@ -1236,8 +1244,8 @@ Example Trace
 </section>
 <section id="if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-use-for-my-use-case" class="level3">
 <h3 class="anchored" data-anchor-id="if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-use-for-my-use-case">If I have a good judge LLM, isn’t that also the LLM I’d use for my use case?</h3>
-<p>If the cost of the most powerful LLM is not prohibitive, and latency is not an issue, then the utility of the judge LLM as described in this post is significantly diminished. In this case, it probably makes sense to weight your effort towards fixing the errors you find in the primary model, rather than building a judge. If latency is not an issue, you can even have your primary model write internal critiques and retries (chain-of-thought, etc) before responding.</p>
-<p>However, in this case specialist LLM judges can still be useful. But you should go through the process of looking at data and critiquing the LLM’s output before you adopt specialized judges.</p>
+<p>If the cost of the most powerful LLM is not prohibitive, and latency is not an issue, then you might want to consider where you invest your efforts differently. In this case, it might make more sense to weight your effort towards fixing the errors you find in the primary model, and rely on human evaluation.</p>
+<p>However, in this case specialist LLM judges are likely to be useful. But you should go through the process of looking at data and critiquing the LLM’s output before you adopt specialized judges.</p>
 </section>
 <section id="whats-wrong-with-off-the-shelf-llm-judges" class="level3">
 <h3 class="anchored" data-anchor-id="whats-wrong-with-off-the-shelf-llm-judges">What’s wrong with off-the-shelf LLM judges?</h3>
@@ -1288,6 +1296,7 @@ Example Trace
 <li><a href="https://cookbook.openai.com/examples/custom-llm-as-a-judge">Custom LLM as a Judge to Detect Hallucinations with Braintrust</a> by Ankur Goyal and Shaymal Anadkt provide an end-to-end example of building a LLM judge, and for the use case highlighted, authors found that a classification approach was more reliable than numeric ratings (consistent with this blog post).</li>
 <li><a href="https://arize.com/blog/techniques-for-self-improving-llm-evals/">Techniques for Self-Improving LLM Evals</a> by Eric Xiao from Arize shows a nice approach to building LLM Evals with some additional tools that are worth checking out.</li>
 <li><a href="https://blog.langchain.dev/dosu-langsmith-no-prompt-eng/">How Dosu Used LangSmith to Achieve a 30% Accuracy Improvement with No Prompt Engineering</a> by Langchain shows a nice approach to building LLM prompts with dynamic examples. The idea is very simple, but very effective. I’ve been adapting it for my own use cases, including LLM judges. Here is a <a href="https://www.youtube.com/watch?v=tHZtq_pJSGo">video walkthrough</a> of the approach.</li>
+<li><a href="https://applied-llms.org/">What We’ve Learned From A Year of Building with LLMs</a>: is a great overview of many practical aspects of building with LLMs, with an emphasis on the importance of evaluation.</li>
 </ul>
 </section>
 <section id="stay-connected" class="level2">
