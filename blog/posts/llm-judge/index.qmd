@@ -23,7 +23,7 @@ Earlier this year, I wrote [Your AI product needs evals](https://hamel.dev/blog/
 Ever spend weeks building an AI system, only to realize you have no idea if it's actually working? You're not alone.  I've noticed teams repeat the same mistakes when using LLMs to evaluate AI outputs:
 
 1. **Too Many Metrics**: Creating numerous measurements that become unmanageable.
-2. **Complex Scoring Systems**: Using scales like 1-5 across multiple dimensions.
+2. **Arbitrary Scoring Systems**: Using uncalibrated scales (like 1-5) across multiple dimensions, where the difference between scores is unclear and subjective. What makes something a 3 versus a 4? Nobody knows, and different evaluators often interpret these scales differently.
 3. **Ignoring Domain Experts**: Not involving the people who understand the subject matter deeply.
 4. **Unvalidated Metrics**: Using measurements that don't truly reflect what matters to the users or the business.
 
@@ -37,11 +37,11 @@ Tracking a bunch of scores on a 1-5 scale is often a sign of a bad eval process 
 
 ## Step 1: Find _The_ Principal Domain Expert
 
-In most organizations there is usually one (maybe two) key individuals whose judgment is crucial for the success of your AI product. These are the people with deep domain expertise who you must convince that the AI is ready for deployment. Identifying and involving this **Principal Domain Expert** early in the process is critical.
+In most organizations there is usually one (maybe two) key individuals whose judgment is crucial for the success of your AI product. These are the people with deep domain expertise or represent your target users. Identifying and involving this **Principal Domain Expert** early in the process is critical.
 
 **Why is finding the right domain expert so important?**
 
-- **They Set the Standard**: This person defines what is acceptable or not for your AI's performance. Their opinion often carries the most weight in decision-making.
+- **They Set the Standard**: This person not only defines what is acceptable technically, but also helps you understand if you're building something users actually want.
 
 - **Capture Unspoken Expectations**: By involving them, you uncover their preferences and expectations, which they might not be able to fully articulate upfront. Through the evaluation process, you help them clarify what a "passable" AI interaction looks like.
 
@@ -59,6 +59,8 @@ In most organizations there is usually one (maybe two) key individuals whose jud
 ::: {.callout-note}
 ## Exceptions
 In a smaller company, this might be the CEO or founder.  If you are an independent developer, you should be the domain expert (but be honest with yourself about your expertise).
+
+If you must rely on leadership, you should regularly validate their assumptions against real user feedback.
 :::
 
 Many developers attempt to act as the domain expert themselves, or find a convenient proxy (ex: their superior).  This is a recipe for disaster.  People will have varying opinions about what is acceptable, and you can't make everyone happy. What's important is that your principal domain expert is satisfied.
@@ -105,15 +107,16 @@ You want to define dimensions that make sense for your use case.  For example, h
 
 Scenarios are situations the AI needs to handle, (not based on the outcome of the AI's response).
 
-| **Scenario**                | **Description**                                                                 |
-|-----------------------------|---------------------------------------------------------------------------------|
-| **Multiple Matches Found**  | User's request yields multiple results; AI must help narrow down options.       |
-| **No Matches Found**        | User's request yields no results; AI should suggest alternatives or corrections.|
-| **Ambiguous Request**       | User input is unclear; AI needs to ask clarifying questions.                    |
-| **Invalid Data Provided**   | User provides data not present in the system; AI must handle gracefully.        |
-| **System Errors**           | Technical issues occur; AI should inform the user appropriately.                |
-| **Incomplete Information**  | User omits necessary details; AI must guide the user to provide missing info.   |
-| **Unsupported Feature**     | User requests an unsupported feature; AI must inform the user politely.         |
+| **Scenario**                | **Description**                                                |
+|-----------------------------|----------------------------------------------------------------|
+| **Multiple Matches Found**  | User's request yields multiple results that need narrowing down. For example: User asks "Where's my order?" but has three active orders (#123, #124, #125). AI must help identify which specific order they're asking about. |
+| **No Matches Found**        | User's request yields no results, requiring alternatives or corrections. For example: User searches for order #ABC-123 which doesn't exist. AI should explain valid order formats and suggest checking their confirmation email. |
+| **Ambiguous Request**       | User input lacks necessary specificity. For example: User says "I need to change my delivery" without specifying which order or what aspect of delivery (date, address, etc.) they want to change. |
+| **Invalid Data Provided**   | User provides incorrect data type or format. For example: User tries to track a return using a regular order number instead of a return authorization (RMA) number. |
+| **System Errors**           | Technical issues prevent normal operation. For example: While looking up an order, the inventory database is temporarily unavailable. AI needs to explain the situation and provide alternatives. |
+| **Incomplete Information**  | User omits required details. For example: User wants to initiate a return but hasn't provided the order number or reason. AI needs to collect this information step by step. |
+| **Unsupported Feature**     | User requests functionality that doesn't exist. For example: User asks to change payment method after order has shipped. AI must explain why this isn't possible and suggest alternatives. |
+
 
 #### Personas
 
@@ -169,6 +172,12 @@ When generating synthetic data, you only need to create the user inputs. You the
 #### How much data should you generate?
 
 There is no right answer here.  At a minimum, you want to generate enough data so that you have examples for each combination of dimensions (in this toy example: features, scenarios, and personas).  However, you also want to keep generating more data until you feel like you have stopped seeing new failure modes.  The amount of data I generate varies significantly depending on the use case.
+
+#### Does synthetic data actually work?
+
+You might be skeptical of using synthetic data.  After all, it's not real data, so how can it be a good proxy?  In my experience, it works surprisingly well. Some of my favorite AI products, like [Hex](https://hex.tech/) use synthetic data to power their evals:
+
+> "LLMs are surprisingly good at generating excellent - and diverse - examples of user prompts. This can be relevant for powering application features, and sneakily, for building Evals. If this sounds a bit like the Large Language Snake is eating its tail, I was just as surprised as you! All I can say is: it works, ship it." _[Bryan Bischof](https://www.linkedin.com/in/bryan-bischof/), Head of AI Engineering at Hex_
 
 ### Next Steps
 
@@ -676,6 +685,7 @@ These are some of the resources I recommend to learn more on this topic:
 - [Custom LLM as a Judge to Detect Hallucinations with Braintrust](https://cookbook.openai.com/examples/custom-llm-as-a-judge) by Ankur Goyal and Shaymal Anadkt provide an end-to-end example of building a LLM judge, and for the use case highlighted, authors found that a classification approach was more reliable than numeric ratings (consistent with this blog post).
 - [Techniques for Self-Improving LLM Evals](https://arize.com/blog/techniques-for-self-improving-llm-evals/) by Eric Xiao from Arize shows a nice approach to building LLM Evals with some additional tools that are worth checking out.
 - [How Dosu Used LangSmith to Achieve a 30% Accuracy Improvement with No Prompt Engineering](https://blog.langchain.dev/dosu-langsmith-no-prompt-eng/) by Langchain shows a nice approach to building LLM prompts with dynamic examples.  The idea is very simple, but very effective.  I've been adapting it for my own use cases, including LLM judges.  Here is a [video walkthrough](https://www.youtube.com/watch?v=tHZtq_pJSGo) of the approach.
+- [What We've Learned From A Year of Building with LLMs](https://applied-llms.org/): is a great overview of many practical aspects of building with LLMs, with an emphasis on the importance of evaluation.
 
 ## Stay Connected
 
