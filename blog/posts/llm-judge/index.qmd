@@ -80,12 +80,12 @@ With your principal domain expert on board, the next step is to build a dataset 
 - **Realistic Interactions**: Reflects actual user behavior for more relevant evaluations.
 - **Identifies Weaknesses**: Helps uncover areas where the AI may struggle or produce errors.
 
-### Key Components of Your Dataset
+### Dimensions for Structuring Your Dataset
 
 You want to define dimensions that make sense for your use case.  For example, here are ones that I often use for many B2C applications:
 
 1. **Features**: Specific functionalities of your AI product.
-2. **Scenarios**: Situations or contexts the AI may encounter and needs to handle.
+2. **Scenarios**: Situations or problems the AI may encounter and needs to handle.
 3. **Personas**: Representative user profiles with distinct characteristics and needs.
 
 
@@ -166,6 +166,10 @@ When generating synthetic data, you only need to create the user inputs. You the
 3. **Feed Inputs into Your AI System**: Input the user interactions into your AI as it currently exists.
 4. **Capture AI Responses**: Record the AI's responses to form complete interactions.
 5. **Organize the Interactions**: Create a table to store the user inputs, AI responses, and relevant metadata.
+
+#### How much data should you generate?
+
+There is no right answer here.  You want to generate enough data so that you have at least ~10 examples for each combination of dimension (in this case, features, scenarios, and personas).  However, you also want to keep generating more data until you feel like you have stopped seeing new failure modes.  The amount of data I generate varies significantly depending on the use case.
 
 ### Next Steps
 
@@ -259,13 +263,13 @@ All of this data needs to be presented on a single screen so the domain expert c
 
 ### How many examples do you need?
 
-The number of examples you need depends on the complexity of the task.  My heuristic is that I start with around 30 examples each time I iterate.  From there, I keep going until I'm not learning anything new.
+The number of examples you need depends on the complexity of the task.  My heuristic is that I start with around 30 examples and keep going until I do not see any new failure modes.  From there, I keep going until I'm not learning anything new.
 
 Next, we'll look at how to use this data to build an LLM judge.
 
 ## Step 4: Fix Errors
 
-After looking at the data, it's likely you will find errors in your AI system.  For example, one of my clients found that their router for agents was always fetching the wrong agent after critiquing ~20 examples.  Instead of plowing ahead and building an LLM judge, you want to fix any obvious errors.  Remember, the whole point of the LLM as a judge is to help you find these errors, so it's totally fine if you find them earlier!  
+After looking at the data, it's likely you will find errors in your AI system.  Instead of plowing ahead and building an LLM judge, you want to fix any obvious errors.  Remember, the whole point of the LLM as a judge is to help you find these errors, so it's totally fine if you find them earlier!  
 
 
 If you have already developed [Level 1 evals as outlined in my previous post](https://hamel.dev/blog/posts/evals), you should not have any pervasive errors.  However, these errors can sometimes slip through the cracks.  If you find pervasive errors, fix them and go back to step 3.  Keep iterating until you feel like you have stabilized your system.
