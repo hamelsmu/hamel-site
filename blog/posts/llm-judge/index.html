@@ -793,7 +793,7 @@ Note
 </section>
 <section id="make-it-easy-for-the-domain-expert-to-review-data" class="level3">
 <h3 class="anchored" data-anchor-id="make-it-easy-for-the-domain-expert-to-review-data">Make it easy for the domain expert to review data</h3>
-<p>Finally, you need to remove all friction from removing data. I’ve written about this <a href="../../../notes/llm/finetuning/data_cleaning.html">here</a>. Sometimes, you can just use a spreadsheet. It’s a judgement call in terms of what is easiest for the domain expert. I found that I often have to provide additional context to help the domain expert understand the user interaction, such as:</p>
+<p>Finally, you need to remove all friction from reviewing data. I’ve written about this <a href="../../../notes/llm/finetuning/data_cleaning.html">here</a>. Sometimes, you can just use a spreadsheet. It’s a judgement call in terms of what is easiest for the domain expert. I found that I often have to provide additional context to help the domain expert understand the user interaction, such as:</p>
 <ul>
 <li>Metadata about the user, such as their location, subscription tier, etc.</li>
 <li>Additional context about the system, such as the current time, inventory levels, etc.</li>
@@ -933,7 +933,7 @@ then provide a pass/fail judgment in the same format as above.
 </section>
 <section id="how-to-optimize-the-llm-judge-prompt" class="level3">
 <h3 class="anchored" data-anchor-id="how-to-optimize-the-llm-judge-prompt">How to Optimize the LLM Judge Prompt?</h3>
-<p>I usually adjust the prompts by hand. I haven’t had much luck with prompt optimizers like DSPy. However, my friend <a href="https://eugeneyan.com/">Eugene Yan</a> has just released a promising tool named <a href="https://eugeneyan.com/writing/aligneval/">ALIGN Eval</a>. I like it because it’s simple and effective. Also, don’t forget the approach of <a href="https://blog.langchain.dev/dosu-langsmith-no-prompt-eng/">continual in-context learning</a> mentioned earlier - it can be very effective when implemented correctly.</p>
+<p>I usually adjust the prompts by hand. I haven’t had much luck with prompt optimizers like DSPy. However, my friend <a href="https://eugeneyan.com/">Eugene Yan</a> has just released a promising tool named <a href="https://eugeneyan.com/writing/aligneval/">ALIGN Eval</a>. I like it because it’s simple and effective. Also, don’t forget the approach of <a href="https://blog.langchain.dev/dosu-langsmith-no-prompt-eng/">continual in-context learning</a> mentioned earlier - it can be effective when implemented correctly.</p>
 <p>In rare cases, I might fine-tune a judge, but I prefer not to. I talk about this more in the <a href="#do-you-recommend-fine-tuning-judges">FAQ</a> section.</p>
 </section>
 <section id="the-human-side-of-the-process" class="level3">
@@ -955,7 +955,7 @@ then provide a pass/fail judgment in the same format as above.
 <ul>
 <li>The AI is overscoped: Example - a chatbot in a SaaS product that promises to do anything you want.</li>
 <li>The process is not followed correctly: Not using the principal domain expert, not writing proper critiques, etc.</li>
-<li>The expecatations of alignment are unrealistic or not feasible.</li>
+<li>The expectations of alignment are unrealistic or not feasible.</li>
 </ul>
 <p>In each of these cases, I try to address the root cause instead of trying to force alignment. Sometimes, you may not be able to achieve the alignment you want and may have to lean heavier on human annotations. However, after following the process described here, you will have metrics that help you understand how much you can trust the LLM judge.</p>
 </section>
@@ -968,7 +968,7 @@ then provide a pass/fail judgment in the same format as above.
 <li>Not providing external context. Your examples should contain the same information you use to evaluate, including external information like user metadata, system information etc.</li>
 <li>Not providing diverse examples. You need a wide variety of examples to ensure that your judge works for a wide variety of inputs.</li>
 </ol>
-<p>Sometimes, you may encounter difficulties with fitting everything you need into the prompt, and may have to get creative about how you structure the examples. However, this is becoming less of an issue with expanding context windows and <a href="https://platform.openai.com/docs/guides/prompt-caching">prompt caching</a>.</p>
+<p>Sometimes, you may encounter difficulties with fitting everything you need into the prompt, and may have to get creative about how you structure the examples. However, this is becoming less of an issue thanks to expanding context windows and <a href="https://platform.openai.com/docs/guides/prompt-caching">prompt caching</a>.</p>
 </section>
 </section>
 <section id="step-6-perform-error-analysis" class="level2">
@@ -1220,7 +1220,7 @@ Example Trace
 <h3 class="anchored" data-anchor-id="do-you-really-need-this">Do You Really Need This?</h3>
 <p>Phew, this seems like a lot of work! Do you really need this? Well, it depends. There are cases where you can take a shortcut through this process. For example, let’s say:</p>
 <ol type="1">
-<li>You are an indpendent developer who is also a domain expert.</li>
+<li>You are an independent developer who is also a domain expert.</li>
 <li>You are working with test data that already available. (Tweets, etc.)</li>
 <li>Looking at data is not costly (etc. you can manually look at enough data in a few hours)</li>
 </ol>
@@ -1244,7 +1244,7 @@ Example Trace
 </section>
 <section id="if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-use-for-my-use-case" class="level3">
 <h3 class="anchored" data-anchor-id="if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-use-for-my-use-case">If I have a good judge LLM, isn’t that also the LLM I’d use for my use case?</h3>
-<p>If the cost of the most powerful LLM is not prohibitive, and latency is not an issue, then you might want to consider where you invest your efforts differently. In this case, it might make more sense to weight your effort towards fixing the errors you find in the primary model, and rely on human evaluation.</p>
+<p>If the cost of the most powerful LLM is not prohibitive, and latency is not an issue, then you might want to consider where you invest your efforts differently. In this case, it might make sense to put more effort towards fixing the errors you find in the primary model, and rely on human evaluation.</p>
 <p>However, in this case specialist LLM judges are likely to be useful. But you should go through the process of looking at data and critiquing the LLM’s output before you adopt specialized judges.</p>
 </section>
 <section id="whats-wrong-with-off-the-shelf-llm-judges" class="level3">
@@ -1295,7 +1295,7 @@ Example Trace
 <li><a href="https://www.databricks.com/blog/enhancing-llm-as-a-judge-with-grading-notes">Enhancing LLM-As-A-Judge with Grading Notes</a> by Yi Liu et al.&nbsp;Describes an approach very similar to the one in this blog post, and provides another point of view regarding the utility of writing critiques (they call them grading notes).</li>
 <li><a href="https://cookbook.openai.com/examples/custom-llm-as-a-judge">Custom LLM as a Judge to Detect Hallucinations with Braintrust</a> by Ankur Goyal and Shaymal Anadkt provide an end-to-end example of building a LLM judge, and for the use case highlighted, authors found that a classification approach was more reliable than numeric ratings (consistent with this blog post).</li>
 <li><a href="https://arize.com/blog/techniques-for-self-improving-llm-evals/">Techniques for Self-Improving LLM Evals</a> by Eric Xiao from Arize shows a nice approach to building LLM Evals with some additional tools that are worth checking out.</li>
-<li><a href="https://blog.langchain.dev/dosu-langsmith-no-prompt-eng/">How Dosu Used LangSmith to Achieve a 30% Accuracy Improvement with No Prompt Engineering</a> by Langchain shows a nice approach to building LLM prompts with dynamic examples. The idea is very simple, but very effective. I’ve been adapting it for my own use cases, including LLM judges. Here is a <a href="https://www.youtube.com/watch?v=tHZtq_pJSGo">video walkthrough</a> of the approach.</li>
+<li><a href="https://blog.langchain.dev/dosu-langsmith-no-prompt-eng/">How Dosu Used LangSmith to Achieve a 30% Accuracy Improvement with No Prompt Engineering</a> by Langchain shows a nice approach to building LLM prompts with dynamic examples. The idea is simple, but effective. I’ve been adapting it for my own use cases, including LLM judges. Here is a <a href="https://www.youtube.com/watch?v=tHZtq_pJSGo">video walkthrough</a> of the approach.</li>
 <li><a href="https://applied-llms.org/">What We’ve Learned From A Year of Building with LLMs</a>: is a great overview of many practical aspects of building with LLMs, with an emphasis on the importance of evaluation.</li>
 </ul>
 </section>
