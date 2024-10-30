@@ -176,7 +176,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   <li><a href="#step-2-create-a-dataset" id="toc-step-2-create-a-dataset" class="nav-link" data-scroll-target="#step-2-create-a-dataset">Step 2: Create a Dataset</a>
   <ul class="collapse">
   <li><a href="#why-a-diverse-dataset-matters" id="toc-why-a-diverse-dataset-matters" class="nav-link" data-scroll-target="#why-a-diverse-dataset-matters">Why a Diverse Dataset Matters</a></li>
-  <li><a href="#key-components-of-your-dataset" id="toc-key-components-of-your-dataset" class="nav-link" data-scroll-target="#key-components-of-your-dataset">Key Components of Your Dataset</a></li>
+  <li><a href="#dimensions-for-structuring-your-dataset" id="toc-dimensions-for-structuring-your-dataset" class="nav-link" data-scroll-target="#dimensions-for-structuring-your-dataset">Dimensions for Structuring Your Dataset</a></li>
   <li><a href="#examples-of-features-scenarios-and-personas" id="toc-examples-of-features-scenarios-and-personas" class="nav-link" data-scroll-target="#examples-of-features-scenarios-and-personas">Examples of Features, Scenarios, and Personas</a></li>
   <li><a href="#this-taxonomy-is-not-universal" id="toc-this-taxonomy-is-not-universal" class="nav-link" data-scroll-target="#this-taxonomy-is-not-universal">This taxonomy is not universal</a></li>
   <li><a href="#generating-data" id="toc-generating-data" class="nav-link" data-scroll-target="#generating-data">Generating Data</a></li>
@@ -316,7 +316,7 @@ Subscribe for updates
   <li><a href="#step-2-create-a-dataset" id="toc-step-2-create-a-dataset">Step 2: Create a Dataset</a>
   <ul>
   <li><a href="#why-a-diverse-dataset-matters" id="toc-why-a-diverse-dataset-matters">Why a Diverse Dataset Matters</a></li>
-  <li><a href="#key-components-of-your-dataset" id="toc-key-components-of-your-dataset">Key Components of Your Dataset</a></li>
+  <li><a href="#dimensions-for-structuring-your-dataset" id="toc-dimensions-for-structuring-your-dataset">Dimensions for Structuring Your Dataset</a></li>
   <li><a href="#examples-of-features-scenarios-and-personas" id="toc-examples-of-features-scenarios-and-personas">Examples of Features, Scenarios, and Personas</a></li>
   <li><a href="#this-taxonomy-is-not-universal" id="toc-this-taxonomy-is-not-universal">This taxonomy is not universal</a></li>
   <li><a href="#generating-data" id="toc-generating-data">Generating Data</a></li>
@@ -444,12 +444,12 @@ Exceptions
 <li><strong>Identifies Weaknesses</strong>: Helps uncover areas where the AI may struggle or produce errors.</li>
 </ul>
 </section>
-<section id="key-components-of-your-dataset" class="level3">
-<h3 class="anchored" data-anchor-id="key-components-of-your-dataset">Key Components of Your Dataset</h3>
+<section id="dimensions-for-structuring-your-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="dimensions-for-structuring-your-dataset">Dimensions for Structuring Your Dataset</h3>
 <p>You want to define dimensions that make sense for your use case. For example, here are ones that I often use for many B2C applications:</p>
 <ol type="1">
 <li><strong>Features</strong>: Specific functionalities of your AI product.</li>
-<li><strong>Scenarios</strong>: Situations or contexts the AI may encounter and needs to handle.</li>
+<li><strong>Scenarios</strong>: Situations or problems the AI may encounter and needs to handle.</li>
 <li><strong>Personas</strong>: Representative user profiles with distinct characteristics and needs.</li>
 </ol>
 </section>
@@ -667,6 +667,10 @@ Exceptions
 <li><strong>Capture AI Responses</strong>: Record the AI’s responses to form complete interactions.</li>
 <li><strong>Organize the Interactions</strong>: Create a table to store the user inputs, AI responses, and relevant metadata.</li>
 </ol>
+<section id="how-much-data-should-you-generate" class="level4">
+<h4 class="anchored" data-anchor-id="how-much-data-should-you-generate">How much data should you generate?</h4>
+<p>There is no right answer here. At a minimum, you want to generate enough data so that you have examples for each combination of dimensions (in this toy example: features, scenarios, and personas). However, you also want to keep generating more data until you feel like you have stopped seeing new failure modes. The amount of data I generate varies significantly depending on the use case.</p>
+</section>
 </section>
 <section id="next-steps-1" class="level3">
 <h3 class="anchored" data-anchor-id="next-steps-1">Next Steps</h3>
@@ -791,13 +795,13 @@ Note
 </section>
 <section id="how-many-examples-do-you-need" class="level3">
 <h3 class="anchored" data-anchor-id="how-many-examples-do-you-need">How many examples do you need?</h3>
-<p>The number of examples you need depends on the complexity of the task. My heuristic is that I start with around 30 examples each time I iterate. From there, I keep going until I’m not learning anything new.</p>
+<p>The number of examples you need depends on the complexity of the task. My heuristic is that I start with around 30 examples and keep going until I do not see any new failure modes. From there, I keep going until I’m not learning anything new.</p>
 <p>Next, we’ll look at how to use this data to build an LLM judge.</p>
 </section>
 </section>
 <section id="step-4-fix-errors" class="level2">
 <h2 class="anchored" data-anchor-id="step-4-fix-errors">Step 4: Fix Errors</h2>
-<p>After looking at the data, it’s likely you will find errors in your AI system. For example, one of my clients found that their router for agents was always fetching the wrong agent after critiquing ~20 examples. Instead of plowing ahead and building an LLM judge, you want to fix any obvious errors. Remember, the whole point of the LLM as a judge is to help you find these errors, so it’s totally fine if you find them earlier!</p>
+<p>After looking at the data, it’s likely you will find errors in your AI system. Instead of plowing ahead and building an LLM judge, you want to fix any obvious errors. Remember, the whole point of the LLM as a judge is to help you find these errors, so it’s totally fine if you find them earlier!</p>
 <p>If you have already developed <a href="https://hamel.dev/blog/posts/evals">Level 1 evals as outlined in my previous post</a>, you should not have any pervasive errors. However, these errors can sometimes slip through the cracks. If you find pervasive errors, fix them and go back to step 3. Keep iterating until you feel like you have stabilized your system.</p>
 </section>
 <section id="step-5-build-your-llm-as-a-judge-iteratively" class="level2">
