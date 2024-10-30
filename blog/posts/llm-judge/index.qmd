@@ -618,6 +618,12 @@ However, you can never completely eliminate looking at your data!  This is preci
 
 I received [a lot of questions](https://x.com/HamelHusain/status/1850256204553244713) about this topic.  Here are answers to the most common ones:
 
+### If I have a good judge LLM, isn’t that also the LLM I’d also want to use?
+
+Effective judges often use larger models or more compute (via longer prompts, chain-of-thought, etc.) than the systems they evaluate.
+
+However, If the cost of the most powerful LLM is not prohibitive, and latency is not an issue, then you might want to consider where you invest your efforts differently.  In this case, it might make sense to put more effort towards specialist LLM judges, [code-based assertions, and A/B testing](https://hamel.dev/blog/posts/evals/#the-types-of-evaluation).  However, you should still go through the process of looking at data and critiquing the LLM's output before you adopt specialized judges.
+
 ### Do you recommend fine-tuning judges?
 
 I prefer not to fine-tune LLM judges.  I'd rather spend the effort fine-tuning the actual LLM instead.  However, fine-tuning guardrails or other specialized judges can be useful (especially if they are small classifiers).
@@ -630,11 +636,6 @@ As a related note, you can leverage a LLM judge to curate and transform data for
 
 Using a LLM judge for enhancing fine-tuning data is even more compelling when you are trying to [distill a large LLM into a smaller one](https://openai.com/index/api-model-distillation/).  The details of fine-tuning are beyond the scope of this post.  If you are interested in learning more, see [these resources](https://parlance-labs.com/education/#fine-tuning).
 
-### If I have a good judge LLM, isn’t that also the LLM I’d use for my use case?
-
-If the cost of the most powerful LLM is not prohibitive, and latency is not an issue, then you might want to consider where you invest your efforts differently.  In this case, it might make sense to put more effort towards fixing the errors you find in the primary model, and rely on human evaluation.
-
-However, in this case specialist LLM judges are likely to be useful.  But you should go through the process of looking at data and critiquing the LLM's output before you adopt specialized judges.
 
 ### What's wrong with off-the-shelf LLM judges?
 
