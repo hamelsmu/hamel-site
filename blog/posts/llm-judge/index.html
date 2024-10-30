@@ -219,8 +219,8 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </ul></li>
   <li><a href="#faq" id="toc-faq" class="nav-link" data-scroll-target="#faq">FAQ</a>
   <ul class="collapse">
+  <li><a href="#if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-also-want-to-use" id="toc-if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-also-want-to-use" class="nav-link" data-scroll-target="#if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-also-want-to-use">If I have a good judge LLM, isn’t that also the LLM I’d also want to use?</a></li>
   <li><a href="#do-you-recommend-fine-tuning-judges" id="toc-do-you-recommend-fine-tuning-judges" class="nav-link" data-scroll-target="#do-you-recommend-fine-tuning-judges">Do you recommend fine-tuning judges?</a></li>
-  <li><a href="#if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-use-for-my-use-case" id="toc-if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-use-for-my-use-case" class="nav-link" data-scroll-target="#if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-use-for-my-use-case">If I have a good judge LLM, isn’t that also the LLM I’d use for my use case?</a></li>
   <li><a href="#whats-wrong-with-off-the-shelf-llm-judges" id="toc-whats-wrong-with-off-the-shelf-llm-judges" class="nav-link" data-scroll-target="#whats-wrong-with-off-the-shelf-llm-judges">What’s wrong with off-the-shelf LLM judges?</a></li>
   <li><a href="#how-do-you-evaluate-the-llm-judge" id="toc-how-do-you-evaluate-the-llm-judge" class="nav-link" data-scroll-target="#how-do-you-evaluate-the-llm-judge">How Do you evaluate the LLM judge?</a></li>
   <li><a href="#what-model-do-you-use-for-the-llm-judge" id="toc-what-model-do-you-use-for-the-llm-judge" class="nav-link" data-scroll-target="#what-model-do-you-use-for-the-llm-judge">What model do you use for the LLM judge?</a></li>
@@ -359,8 +359,8 @@ Subscribe for updates
   </ul></li>
   <li><a href="#faq" id="toc-faq">FAQ</a>
   <ul>
+  <li><a href="#if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-also-want-to-use" id="toc-if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-also-want-to-use">If I have a good judge LLM, isn’t that also the LLM I’d also want to use?</a></li>
   <li><a href="#do-you-recommend-fine-tuning-judges" id="toc-do-you-recommend-fine-tuning-judges">Do you recommend fine-tuning judges?</a></li>
-  <li><a href="#if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-use-for-my-use-case" id="toc-if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-use-for-my-use-case">If I have a good judge LLM, isn’t that also the LLM I’d use for my use case?</a></li>
   <li><a href="#whats-wrong-with-off-the-shelf-llm-judges" id="toc-whats-wrong-with-off-the-shelf-llm-judges">What’s wrong with off-the-shelf LLM judges?</a></li>
   <li><a href="#how-do-you-evaluate-the-llm-judge" id="toc-how-do-you-evaluate-the-llm-judge">How Do you evaluate the LLM judge?</a></li>
   <li><a href="#what-model-do-you-use-for-the-llm-judge" id="toc-what-model-do-you-use-for-the-llm-judge">What model do you use for the LLM judge?</a></li>
@@ -1230,6 +1230,11 @@ Example Trace
 <section id="faq" class="level2">
 <h2 class="anchored" data-anchor-id="faq">FAQ</h2>
 <p>I received <a href="https://x.com/HamelHusain/status/1850256204553244713">a lot of questions</a> about this topic. Here are answers to the most common ones:</p>
+<section id="if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-also-want-to-use" class="level3">
+<h3 class="anchored" data-anchor-id="if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-also-want-to-use">If I have a good judge LLM, isn’t that also the LLM I’d also want to use?</h3>
+<p>Effective judges often use larger models or more compute (via longer prompts, chain-of-thought, etc.) than the systems they evaluate.</p>
+<p>However, If the cost of the most powerful LLM is not prohibitive, and latency is not an issue, then you might want to consider where you invest your efforts differently. In this case, it might make sense to put more effort towards specialist LLM judges, <a href="https://hamel.dev/blog/posts/evals/#the-types-of-evaluation">code-based assertions, and A/B testing</a>. However, you should still go through the process of looking at data and critiquing the LLM’s output before you adopt specialized judges.</p>
+</section>
 <section id="do-you-recommend-fine-tuning-judges" class="level3">
 <h3 class="anchored" data-anchor-id="do-you-recommend-fine-tuning-judges">Do you recommend fine-tuning judges?</h3>
 <p>I prefer not to fine-tune LLM judges. I’d rather spend the effort fine-tuning the actual LLM instead. However, fine-tuning guardrails or other specialized judges can be useful (especially if they are small classifiers).</p>
@@ -1240,11 +1245,6 @@ Example Trace
 <li>Simulate high quality chain-of-thought with critiques.</li>
 </ul>
 <p>Using a LLM judge for enhancing fine-tuning data is even more compelling when you are trying to <a href="https://openai.com/index/api-model-distillation/">distill a large LLM into a smaller one</a>. The details of fine-tuning are beyond the scope of this post. If you are interested in learning more, see <a href="https://parlance-labs.com/education/#fine-tuning">these resources</a>.</p>
-</section>
-<section id="if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-use-for-my-use-case" class="level3">
-<h3 class="anchored" data-anchor-id="if-i-have-a-good-judge-llm-isnt-that-also-the-llm-id-use-for-my-use-case">If I have a good judge LLM, isn’t that also the LLM I’d use for my use case?</h3>
-<p>If the cost of the most powerful LLM is not prohibitive, and latency is not an issue, then you might want to consider where you invest your efforts differently. In this case, it might make sense to put more effort towards fixing the errors you find in the primary model, and rely on human evaluation.</p>
-<p>However, in this case specialist LLM judges are likely to be useful. But you should go through the process of looking at data and critiquing the LLM’s output before you adopt specialized judges.</p>
 </section>
 <section id="whats-wrong-with-off-the-shelf-llm-judges" class="level3">
 <h3 class="anchored" data-anchor-id="whats-wrong-with-off-the-shelf-llm-judges">What’s wrong with off-the-shelf LLM judges?</h3>
