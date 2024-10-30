@@ -261,7 +261,7 @@ I can guarantee you that if someone says you need to measure 8 things on a 1-5 s
 
 ### Make it easy for the domain expert to review data
 
-Finally, you need to remove all friction from removing data. I've written about this [here](../../../notes/llm/finetuning/04_data_cleaning.qmd).  Sometimes, you can just use a spreadsheet.  It's a judgement call in terms of what is easiest for the domain expert. I found that I often have to provide additional context to help the domain expert understand the user interaction, such as:
+Finally, you need to remove all friction from reviewing data. I've written about this [here](../../../notes/llm/finetuning/04_data_cleaning.qmd).  Sometimes, you can just use a spreadsheet.  It's a judgement call in terms of what is easiest for the domain expert. I found that I often have to provide additional context to help the domain expert understand the user interaction, such as:
 
 - Metadata about the user, such as their location, subscription tier, etc.
 - Additional context about the system, such as the current time, inventory levels, etc.
@@ -410,7 +410,7 @@ It took us only three iterations to achieve > 90% agreement between the LLM and 
 
 ### How to Optimize the LLM Judge Prompt?
 
-I usually adjust the prompts by hand.  I haven't had much luck with prompt optimizers like DSPy.  However, my friend [Eugene Yan](https://eugeneyan.com/) has just released a promising tool named [ALIGN Eval](https://eugeneyan.com/writing/aligneval/).  I like it because it's simple and effective.  Also, don't forget the approach of [continual in-context learning](https://blog.langchain.dev/dosu-langsmith-no-prompt-eng/) mentioned earlier - it can be very effective when implemented correctly.
+I usually adjust the prompts by hand.  I haven't had much luck with prompt optimizers like DSPy.  However, my friend [Eugene Yan](https://eugeneyan.com/) has just released a promising tool named [ALIGN Eval](https://eugeneyan.com/writing/aligneval/).  I like it because it's simple and effective.  Also, don't forget the approach of [continual in-context learning](https://blog.langchain.dev/dosu-langsmith-no-prompt-eng/) mentioned earlier - it can be effective when implemented correctly.
 
 In rare cases, I might fine-tune a judge, but I prefer not to.  I talk about this more in the [FAQ](#do-you-recommend-fine-tuning-judges) section.
 
@@ -434,7 +434,7 @@ I've seen this process fail when:
 
 - The AI is overscoped: Example - a chatbot in a SaaS product that promises to do anything you want.
 - The process is not followed correctly:  Not using the principal domain expert, not writing proper critiques, etc.
-- The expecatations of alignment are unrealistic or not feasible.
+- The expectations of alignment are unrealistic or not feasible.
 
 In each of these cases, I try to address the root cause instead of trying to force alignment.  Sometimes, you may not be able to achieve the alignment you want and may have to lean heavier on human annotations.  However, after following the process described here, you will have metrics that help you understand how much you can trust the LLM judge.
 
@@ -447,7 +447,7 @@ Most of the mistakes I've seen in LLM judge prompts have to do with not providin
 3. Not providing external context.  Your examples should contain the same information you use to evaluate, including external information like user metadata, system information etc.
 4. Not providing diverse examples.  You need a wide variety of examples to ensure that your judge works for a wide variety of inputs.
 
-Sometimes, you may encounter difficulties with fitting everything you need into the prompt, and may have to get creative about how you structure the examples.  However, this is becoming less of an issue with expanding context windows and [prompt caching](https://platform.openai.com/docs/guides/prompt-caching).
+Sometimes, you may encounter difficulties with fitting everything you need into the prompt, and may have to get creative about how you structure the examples.  However, this is becoming less of an issue thanks to expanding context windows and [prompt caching](https://platform.openai.com/docs/guides/prompt-caching).
 
 ## Step 6: Perform Error Analysis
 
@@ -607,7 +607,7 @@ That's right.  The real business value comes from looking at your data.  But hey
 
 Phew, this seems like a lot of work!  Do you really need this?  Well, it depends.  There are cases where you can take a shortcut through this process.  For example, let's say:
 
-1. You are an indpendent developer who is also a domain expert.
+1. You are an independent developer who is also a domain expert.
 2. You are working with test data that already available. (Tweets, etc.)
 3. Looking at data is not costly (etc. you can manually look at enough data in a few hours)
 
@@ -633,7 +633,7 @@ Using a LLM judge for enhancing fine-tuning data is even more compelling when yo
 
 ### If I have a good judge LLM, isn’t that also the LLM I’d use for my use case?
 
-If the cost of the most powerful LLM is not prohibitive, and latency is not an issue, then you might want to consider where you invest your efforts differently.  In this case, it might make more sense to weight your effort towards fixing the errors you find in the primary model, and rely on human evaluation.
+If the cost of the most powerful LLM is not prohibitive, and latency is not an issue, then you might want to consider where you invest your efforts differently.  In this case, it might make sense to put more effort towards fixing the errors you find in the primary model, and rely on human evaluation.
 
 However, in this case specialist LLM judges are likely to be useful.  But you should go through the process of looking at data and critiquing the LLM's output before you adopt specialized judges.
 
@@ -684,7 +684,7 @@ These are some of the resources I recommend to learn more on this topic:
 - [Enhancing LLM-As-A-Judge with Grading Notes](https://www.databricks.com/blog/enhancing-llm-as-a-judge-with-grading-notes) by Yi Liu et al. Describes an approach very similar to the one in this blog post, and provides another point of view regarding the utility of writing critiques (they call them grading notes).
 - [Custom LLM as a Judge to Detect Hallucinations with Braintrust](https://cookbook.openai.com/examples/custom-llm-as-a-judge) by Ankur Goyal and Shaymal Anadkt provide an end-to-end example of building a LLM judge, and for the use case highlighted, authors found that a classification approach was more reliable than numeric ratings (consistent with this blog post).
 - [Techniques for Self-Improving LLM Evals](https://arize.com/blog/techniques-for-self-improving-llm-evals/) by Eric Xiao from Arize shows a nice approach to building LLM Evals with some additional tools that are worth checking out.
-- [How Dosu Used LangSmith to Achieve a 30% Accuracy Improvement with No Prompt Engineering](https://blog.langchain.dev/dosu-langsmith-no-prompt-eng/) by Langchain shows a nice approach to building LLM prompts with dynamic examples.  The idea is very simple, but very effective.  I've been adapting it for my own use cases, including LLM judges.  Here is a [video walkthrough](https://www.youtube.com/watch?v=tHZtq_pJSGo) of the approach.
+- [How Dosu Used LangSmith to Achieve a 30% Accuracy Improvement with No Prompt Engineering](https://blog.langchain.dev/dosu-langsmith-no-prompt-eng/) by Langchain shows a nice approach to building LLM prompts with dynamic examples.  The idea is simple, but effective.  I've been adapting it for my own use cases, including LLM judges.  Here is a [video walkthrough](https://www.youtube.com/watch?v=tHZtq_pJSGo) of the approach.
 - [What We've Learned From A Year of Building with LLMs](https://applied-llms.org/): is a great overview of many practical aspects of building with LLMs, with an emphasis on the importance of evaluation.
 
 ## Stay Connected
