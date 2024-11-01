@@ -2,7 +2,6 @@ const kProgressiveAttr = "data-src";
 let categoriesLoaded = false;
 
 window.quartoListingCategory = (category) => {
-  category = atob(category);
   if (categoriesLoaded) {
     activateCategory(category);
     setCategoryHash(category);
@@ -59,7 +58,7 @@ window.document.addEventListener("DOMContentLoaded", function (_event) {
   );
 
   for (const categoryEl of categoryEls) {
-    const category = atob(categoryEl.getAttribute("data-category"));
+    const category = categoryEl.getAttribute("data-category");
     categoryEl.onclick = () => {
       activateCategory(category);
       setCategoryHash(category);
@@ -209,7 +208,7 @@ function activateCategory(category) {
 
   // Activate this category
   const categoryEl = window.document.querySelector(
-    `.quarto-listing-category .category[data-category='${btoa(category)}']`
+    `.quarto-listing-category .category[data-category='${category}'`
   );
   if (categoryEl) {
     categoryEl.classList.add("active");
@@ -232,7 +231,7 @@ function filterListingCategory(category) {
         list.filter(function (item) {
           const itemValues = item.values();
           if (itemValues.categories !== null) {
-            const categories = atob(itemValues.categories).split(",");
+            const categories = itemValues.categories.split(",");
             return categories.includes(category);
           } else {
             return false;
