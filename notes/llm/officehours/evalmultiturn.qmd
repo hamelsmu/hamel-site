@@ -1,0 +1,147 @@
+---
+title: Multi-Turn Chat Evals
+description: Office hours discussion on multi-turn chat evals
+categories: [LLMs, evals]
+aliases:
+  - /chat-evals
+author: Hamel Husain
+date: 2024-12-05
+---
+
+:::{.callout-note}
+
+ _These are notes from [my open office hours on LLM Evals](https://x.com/HamelHusain/status/1862567292955156734), where I troubleshoot real issues companies are having with their evals.  Each session is 20 minutes._
+
+:::
+
+I spoke with [Max](https://www.linkedin.com/in/max-shaw-82287025/) from [Windmill](https://gowindmill.com/) (see video below) about a common challenge many teams face: evaluating multi-turn chat conversations. Their team had built an AI assistant named Windy that helps managers collect peer feedback and track team focus areas through Slack conversations. While they had success improving prompts manually at first, they reached a point where they needed more robust evaluation approaches.
+
+## Watch The Office Hours
+
+Here is the video of the full discussion (20 minutes):
+
+{{< video https://youtu.be/4X4fCknI4vw >}}
+
+(Sorry about the video quality. I'll try to fix that in the future.)
+
+This conversation highlighted several key patterns I've seen teams struggle with when evaluating conversational AI. Let's break down how to get unstuck.
+
+## Common Pitfalls
+
+When teams first approach evaluating multi-turn conversations, they often:
+
+1. Try to evaluate everything at once
+2. Get overwhelmed by the subjective nature of conversations
+3. Jump straight to automated solutions before understanding what "good" looks like
+4. Struggle to define clear success criteria
+
+As Max put it during our discussion: "You get into that whack-a-mole game where you fix one thing and then other stuff gets worse."
+
+## Start with Error Analysis
+
+The counterintuitive first step is not to build an evaluation system, but to do error analysis. In Max's case, they had already started this process by analyzing cases where users dismissed the chat interaction with "I don't have any feedback" responses.
+
+This is exactly the right approach. Before building complex evaluation frameworks, you need to:
+
+1. Collect real examples of conversations
+2. Categorize what's going wrong
+3. Look for patterns in the failures
+
+As I mentioned during our discussion: "There's no linear workflow through this. If you find something that's obviously really wrong all the time, just go fix it. Don't get nerd sniped by evals in the extreme sense."
+
+## Focus on Binary Decisions
+
+One of the key insights from our conversation was the importance of making binary decisions rather than using complex scoring systems. When evaluating conversations, you want to ask: "Did this conversation achieve its intended outcome?"
+
+Do Not Do This:
+
+- "Rate this conversation on a scale of 1-5 for clarity"
+- "Score these 12 different aspects of the interaction"
+- "Evaluate the conversation across multiple dimensions"
+
+The reason is simple: Binary decisions force you to be clear about what success looks like. They also make it easier to:
+
+- Identify clear patterns in failures
+- Make actionable improvements
+- Agree on what constitutes a good interaction
+
+## Building Your Evaluation Process
+
+Based on the challenges Max's team faced, here's a step-by-step process for getting started with multi-turn chat evaluations:
+
+1. **Collect Example Conversations**
+   - Gather real user interactions
+   - Include the full context and metadata
+   - Sample across different user types and scenarios
+
+2. **Identify Clear Success Criteria**
+   - What is the intended outcome of each conversation?
+   - What makes a conversation successful from the user's perspective?
+   - What are the minimum requirements for a "pass"?
+
+3. **Perform Error Analysis**
+   - Review conversations with domain experts
+   - Make binary pass/fail decisions
+   - Write detailed explanations for each decision
+
+4. **Fix Obvious Issues First**
+   - Address clear patterns of failure
+   - Implement simple fixes before building complex evaluation systems
+   - Validate improvements with more manual review
+
+5. **Then Consider Automation**
+   - Build LLM-based evaluation only for well-understood patterns
+   - Prioritize errors uncovered through error analysis
+   - Validate judge agreements with domain experts so that you can trust the results
+
+## A Real Example
+
+Let's look at a simplified example from Max's context. Here's how you might evaluate a peer feedback conversation:
+
+```text
+Windy: "I noticed you worked with Sarah on the Q4 planning doc. How was that collaboration?"
+
+User: "I don't have any feedback on that."
+
+Windy: "No problem! Let me know if you have feedback later."
+```
+
+**Pass/Fail Decision:** Fail
+
+**Reasoning:** The conversation failed because:
+1. The timing or context was wrong (user didn't have meaningful feedback to share)
+2. The assistant didn't attempt to understand why feedback wasn't available
+3. No value was created from the interaction
+
+This is much more actionable than scoring various aspects of the conversation on a 1-5 scale.
+
+## When to Scale Up
+
+Only after you have:
+1. Clear patterns of what makes conversations successful
+2. Documented examples of good and bad interactions
+3. Specific criteria for pass/fail decisions
+
+Should you consider building more sophisticated evaluation systems. As Max's team discovered, trying to automate evaluations before these fundamentals are in place leads to confusion and wasted effort.
+
+## Key Takeaways
+
+1. Start with manual error analysis before building automated evaluations
+2. Use binary pass/fail decisions to force clarity about success criteria
+3. Fix obvious issues before building complex evaluation systems
+4. Document your reasoning about why conversations succeed or fail
+5. Build automation only after you have clear patterns and criteria
+
+Remember, the goal isn't to build a perfect evaluation system. The goal is to consistently improve the quality of your AI. Looking at your data carefully is an important prerequisite prior to setting up an evaluation system.
+
+
+
+## Resources
+
+These resources can help you learn more about evaluating conversational AI:
+
+- [Your AI Product Needs Evals](https://hamel.dev/blog/posts/evals): A broader overview of evaluation approaches for AI products
+- [Creating a LLM-as-Judge That Drives Business Results](https://hamel.dev/blog/posts/llm-judge): Detailed guidance on building LLM-based evaluation systems
+- [Who Validates the Validators?](https://arxiv.org/abs/2404.12272): Research on aligning LLM evaluations with human preferences
+
+_If you'd like to find out about future office hours, you can [subscribe to my newsletter](https://ai.hamel.dev/)._
