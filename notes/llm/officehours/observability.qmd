@@ -1,0 +1,85 @@
+---
+title: Observability in LLM Applications
+description: Office hours discussion on LLM observability and evaluation
+categories: [LLMs, evals]
+aliases:
+  - /llm-observability
+date: 2024-12-14
+---
+
+:::{.callout-note}
+_These are notes from [my open office hours on LLM Evals](https://x.com/HamelHusain/status/1862567292955156734), where I troubleshoot real issues companies are having with their evals. Each session is 20 minutes._
+:::
+
+In this office hours session, I had an insightful conversation with [Sebastian Sosa](https://www.linkedin.com/in/sebastian-sosa-918b19184/), an engineer grappling with observability challenges in complex LLM systems. Our discussion centered around testing and monitoring strategies for applications with multiple points of failure.
+
+## Watch The Discussion
+
+For those interested in the full context, here's our complete 20-minute conversation:
+
+{{< video https://youtu.be/TZwmLXXFbh4 >}}
+
+## The Challenge: Cascading Failures in Interconnected Systems
+
+Sebastian described a system where failures could occur at multiple stages:
+
+> _"This entire project had a lot of dependencies chaining dependencies ... you have an LLM that can fail at inference time and failing to produce the function calls. Then after that the plugin that it's trying to reach out to, which is kind of an unreliable third party service, might fail as well. And then presenting that to the user might have failed as well."_
+
+His initial approach was to implement extensive print logging and store traces in MongoDB, creating additional endpoints to parse through the logs. While this provided some visibility, it became cumbersome to navigate and understand what was happening in the system.
+
+## Moving Beyond Print Logging
+
+When Sebastian asked about building tools for better visibility into his system's performance, we discussed several approaches. The key is getting all the necessary information in one place – whether that's a database, traces, or other context – so you can quickly understand what's happening in your system.
+
+### Specialized LLM Tooling
+
+Rather than building logging infrastructure from scratch, we discussed several existing tools designed specifically for LLM applications. These include hosted solutions like [Langsmith](https://smith.langchain.com/), [Braintrust](https://www.braintrust.dev/), [Humanloop](https://humanloop.com/), as well as open source options like [Phoenix Arize](https://phoenix.arize.com/).
+
+These platforms provide auto-instrumentation capabilities – they can automatically capture the entire trace of what happens in your LLM application, from the initial prompt to function calls and responses. As Sebastian noted, this would have been "a huge time saver" compared to building custom logging infrastructure.
+
+The tools also provide facilities for prompt iteration. Sebastian mentioned how testing his agent would require running "from zero to the end," leading to wasted time and money. With proper tooling, you can iterate on specific components using saved traces, making development more efficient.
+
+## When to Adopt Tools
+
+Sebastian raised an important question: "When should I switch over to this tool as opposed to just building my own tooling?" 
+
+While there's no universal answer, the guidance I provided was to distinguish between different components:
+
+- For logging and observability infrastructure, use existing tools rather than building from scratch.  This is because logging and observability are likely not your core product, and you want to spend your time wisely.
+
+- For data viewing interfaces, first see if using an excel spreadsheet or a jupyter notebook will fit your needs.  If not, it is often advantageous to [build your own data viewer](https://hamel.dev/notes/llm/finetuning/data_cleaning.html) to remove friction from looking at your data.  The wisdom is your data and use case has idiosyncrasies that often will not be served by a generic tool.  Furthermore, you can use front end frameworks like [Gradio](https://www.gradio.app/), [Streamlit](https://www.streamlit.io/), or [FastHTML](https://fastht.ml/) to quickly build a data viewer without too much effort.
+
+## Using Error Analysis to Tame Complex Systems
+
+Towards the end of our conversation, we tackled the challenge of debugging and evaluating complex, interconnected systems. Since there are many possible failure points, the challenge he faced was where to focus his efforts.
+
+This is exactly where a technique called [error analysis](https://hamel.dev/blog/posts/llm-judge/#step-6-perform-error-analysis) shines. When you have multiple potential failure points - it's tempting to try to build comprehensive evals for every possible failure mode. However, as Sebastian discovered with his initial logging approach, this can quickly become overwhelming.
+
+Instead, error analysis helps you identify which failures actually matter. The process is straightforward:
+
+1. Look at a representative set of examples (start with at least 50)[^1]
+2. Categorize the types of failures you observe
+3. Track which parts of your system are involved in each failure
+
+This focused analysis often reveals surprising patterns. You might discover that while your system has many potential failure points, 80% of meaningful failures occur in just a few places. This approach is particularly valuable for interconnected systems because it reveals not just where failures occur, but how they cascade through your system. Understanding these patterns lets you focus your monitoring efforts where they matter most and prioritize fixes that will have the biggest impact. The goal isn't to catch every possible error - it's to understand and address the ones that meaningfully impact your system's performance.
+
+You can follow this bit about error analysis at [this part of the video](https://youtu.be/TZwmLXXFbh4?si=n5CoqQIzpDCvoJnr&t=911).
+
+## Key Insights
+
+Throughout our conversation, several important points emerged about tooling and evaluation for LLM applications:
+
+Start simple, but be thoughtful about what you build versus what you adopt. As Sebastian noted, while it's "tempting to just go immerse yourself in building these additional tools," it's important to stay focused on the core product.
+
+Most importantly, the goal isn't to build the perfect evaluation system, but to understand how your system is behaving and where it needs improvement. Whether you're using sophisticated tooling or simple spreadsheets, the key is having visibility into your system's behavior.
+
+## Resources
+
+For those interested in exploring these topics further:
+
+- [How to create domain-specific evals](https://www.youtube.com/watch?v=eLXF0VojuSs): A talk I gave at the 2024 AI Engineer World's Fair, with a case study of how we created domain-specific evals for a real estate CRM assistant. 
+- [Your AI Product Needs Evals](https://hamel.dev/blog/posts/evals): A broader overview of evaluation approaches for AI products
+- [Creating a LLM-as-Judge That Drives Business Results](https://hamel.dev/blog/posts/llm-judge): Detailed guidance on building LLM-based evaluation systems
+- [What We’ve Learned From A Year of Building with LLMs](https://applied-llms.org/)
+
+[^1]: There is no magic number.  The heuristic is keep looking at examples until you feel like you aren't learning anything new. However, I find that people experience a great deal of inertia that prevents them from starting.  So sometimes I say "start with at least 50".
