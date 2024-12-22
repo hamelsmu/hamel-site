@@ -1,0 +1,83 @@
+---
+title: "Evals: Doing Error Analysis Before Writing Tests"
+description: The importance of starting with error analysis before writing tests when evaluating LLMs
+categories: [LLMs, evals]
+date: 2024-12-21
+---
+
+:::{.callout-note}
+
+ _These are notes from [my open office hours on LLM Evals](https://x.com/HamelHusain/status/1862567292955156734), where I troubleshoot real issues companies are having with their evals.  Each session is 20 minutes._
+
+:::
+
+I spoke with Ali about evaluating an SMS-based caregiving app for unpaid caregivers - people taking care of family members like elderly parents or disabled children. His experience highlighted a common challenge: how do you start evaluating an LLM application when there are many potential approaches?
+
+## Watch The Office Hours
+
+Here is the video of the full discussion (20 minutes):
+
+{{< video https://youtu.be/ZEvXvyY17Ys >}}
+
+## The Issue: Starting with Metrics Before Looking at Data
+
+Ali came prepared with a thoughtful analysis of his application's architecture and evaluation needs. His App had the following components:
+
+- Twilio for SMS
+- FastAPI backend
+- Chroma for vector storage
+- Mem0 for memory
+- Azure OpenAI for LLM
+- Helicone for observability
+
+He had already begun exploring evaluation approaches, including:
+
+- Writing unit tests for expected behaviors
+- Using Azure AI Foundry's eval tools
+- Tracking metrics like coherence, fluency, and relevance
+
+However, like many teams, he wasn't sure if this was the right place to start: "I don't know what part of my application to evaluate since there are many different parts".
+
+## The Data-First Approach 
+
+The instinct to start with metrics and tests is understandable - they feel concrete and actionable. We want clear numbers to track improvement and automated tests to catch regressions. But this top-down approach often leads us to measure what's easy to measure, not what actually matters to users.
+
+Instead of immediately jumping to metrics or tests, start by creating a simple spreadsheet to analyze real conversations. Here's an example of how you might structure your error analysis:
+
+| Conversation ID | Primary Issue | Category | Notes |
+|----------------|---------------|-----------|-------|
+| 1 | Failed to recall previous discussion about respite care | Memory | Assistant suggested respite care again without acknowledging it was discussed last week |
+| 2 | Generic advice not tailored to situation | Personalization | Didn't incorporate known context about user's work schedule |
+| 3 | Missed emotional cues | Empathy | Focused on tactical solutions without addressing expressed anxiety |
+
+The goal isn't to be comprehensive - it's to start seeing patterns. This analysis naturally suggests where to focus your evaluation efforts.
+
+
+## Why Not Use Off-the-Shelf Metrics?
+
+A key moment in our conversation came when discussing off-the-shelf metrics from Azure AI Foundry. While these tools offer metrics like "coherence" or "fluency", they often don't capture what actually matters for your specific use case.
+
+As I mentioned to Ali: "If you get a score of 3.72 today and a score of 4.2 tomorrow, does it really mean your system is better? We don't know. That's the problem with generic metrics."
+
+Instead, focus on metrics that directly tie to your users' needs.
+
+## Starting Small with Synthetic Data
+
+Once you understand your real failure modes, you can use synthetic data to expand your test coverage. But start small:
+
+1. Generate 1-2 test cases for each identified issue
+2. Run them through your system
+3. Analyze the results
+4. Gradually expand based on what you learn
+
+The key is to avoid getting overwhelmed. As Ali reflected: "I think that eases a lot of anxiety I had just thinking about evals."
+
+## Key Takeaways
+
+1. Start by analyzing real conversations, not writing tests
+2. Use a simple spreadsheet or similar tools to track and categorize issues
+3. Let patterns in the data guide your evaluation strategy
+4. Write tests for specific, observed failure modes
+5. Use synthetic data to expand coverage, but start small
+
+Remember that looking at data might feel like a clerical task, but as we discussed, it's often "the highest leverage thing you can do."
