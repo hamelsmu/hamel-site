@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2024-12-29">
+<meta name="description" content="Office hours discussion on managing evaluation complexity through proper scoping">
 
-<title>📚 Hamel’s Notes – Hamel's Blog</title>
+<title>Scoping LLM evaluations – Hamel’s Blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,26 +25,24 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../">
-<link href="../favicon.ico" rel="icon">
-<script src="../site_libs/quarto-listing/list.min.js"></script>
-<script src="../site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="../site_libs/quarto-html/quarto.js"></script>
-<script src="../site_libs/quarto-html/popper.min.js"></script>
-<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark.min.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -70,35 +70,6 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-title','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-title-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-ZSZXL3KFR5"></script>
 
 <script type="text/javascript">
@@ -109,44 +80,15 @@ gtag('js', new Date());
 gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="../styles.css">
-<link rel="alternate" type="application/rss+xml" title="Hamel's Blog" href="index.xml" data-external="1"><meta property="og:title" content="📚 Hamel’s Notes – Hamel’s Blog">
-<meta property="og:description" content="A collection of blogs and talks on machine learning and data science.">
-<meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359222-2b7e938e-27c4-4556-aacb-f5a81ce77b2d.png">
+<link rel="stylesheet" href="../../../styles.css">
+<meta property="og:title" content="Scoping LLM evaluations – Hamel’s Blog">
+<meta property="og:description" content="Office hours discussion on managing evaluation complexity through proper scoping">
+<meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta property="og:site_name" content="Hamel's Blog">
-<meta name="twitter:title" content="📚 Hamel’s Notes – Hamel’s Blog">
-<meta name="twitter:description" content="A collection of blogs and talks on machine learning and data science.">
-<meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359222-2b7e938e-27c4-4556-aacb-f5a81ce77b2d.png">
+<meta name="twitter:title" content="Scoping LLM evaluations – Hamel’s Blog">
+<meta name="twitter:description" content="Office hours discussion on managing evaluation complexity through proper scoping">
+<meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta name="twitter:creator" content="@HamelHusain">
 <meta name="twitter:site" content="@HamelHusain">
 <meta name="twitter:card" content="summary_large_image">
@@ -160,11 +102,11 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
           <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
+    <a class="nav-link" href="../../../index.html"> 
 <span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="../notes/index.html" aria-current="page"> 
+    <a class="nav-link active" href="../../../notes/index.html" aria-current="page"> 
 <span class="menu-text">Notes</span></a>
   </li>  
   <li class="nav-item">
@@ -172,11 +114,11 @@ window.Quarto = {
 <span class="menu-text">Hire Me</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../oss/opensource.html"> 
+    <a class="nav-link" href="../../../oss/opensource.html"> 
 <span class="menu-text">OSS</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../talks.html" target="_blank"> 
+    <a class="nav-link" href="../../../talks.html" target="_blank"> 
 <span class="menu-text">Talks</span></a>
   </li>  
 </ul>
@@ -191,7 +133,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../notes/index.html">📚 Hamel’s Notes</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/index.html">📚 Hamel’s Notes</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/officehours/index.html">Open Office Hours</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/officehours/scoping.html">Scoping LLM evaluations</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -205,7 +147,7 @@ window.Quarto = {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/index.html" class="sidebar-item-text sidebar-link active">
+            <a href="../../../notes/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">📚 Hamel's Notes</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -214,64 +156,64 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/concurrency.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/concurrency.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Python Concurrency</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/cuda.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/cuda.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">CUDA Version Management</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/how-to-learn/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/how-to-learn/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">How to learn</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/pandoc/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/pandoc/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">pandoc filters</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/docker/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/docker/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Docker</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/dbt/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/dbt/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">dbt</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/programming-languages/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/programming-languages/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">programming languages</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/video_editing.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/video_editing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Video Editing</span></a>
   </div>
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/llm/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">LLMs</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/llm/inference/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/inference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Inference</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -280,19 +222,19 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/llm/inference/inference.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/inference/inference.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Optimizing latency</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/llm/inference/max_engine.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/inference/max_engine.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Max Inference Engine</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/llm/inference/big_inference.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/inference/big_inference.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">vLLM &amp; large models</span></a>
   </div>
 </li>
@@ -300,7 +242,7 @@ window.Quarto = {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/llm/openai/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/openai/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">OpenAI</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -309,7 +251,7 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/llm/openai/func_template.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/openai/func_template.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Function prompts</span></a>
   </div>
 </li>
@@ -317,7 +259,7 @@ window.Quarto = {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/llm/tools/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/tools/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Function Calling</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -326,7 +268,7 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/llm/tools/llama3.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/tools/llama3.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Llama-3 Func Calling</span></a>
   </div>
 </li>
@@ -334,7 +276,7 @@ window.Quarto = {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/llm/finetuning/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/finetuning/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Fine-tuning</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -343,37 +285,37 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/llm/finetuning/datasets.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/datasets.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Dataset Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/llm/finetuning/langchain_connectors.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/langchain_connectors.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">LangChain <code>DocumentLoaders</code></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/llm/finetuning/estimating_vram.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/estimating_vram.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Estimating vRAM</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/llm/finetuning/data_cleaning.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/data_cleaning.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Curating LLM data</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/llm/finetuning/tokenizer_gotchas.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/tokenizer_gotchas.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Tokenization Gotchas</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/llm/finetuning/template_free.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/template_free.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Template-free axolotl</span></a>
   </div>
 </li>
@@ -381,34 +323,34 @@ window.Quarto = {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/llm/officehours/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/officehours/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Open Office Hours</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth3 ">  
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth3 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/llm/officehours/erroranalysis.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/officehours/erroranalysis.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Evals: Doing Error Analysis Before Writing Tests</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/llm/officehours/evalmultiturn.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/officehours/evalmultiturn.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Multi-Turn Chat Evals</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/llm/officehours/observability.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/officehours/observability.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Observability in LLM Applications</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/llm/officehours/scoping.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/officehours/scoping.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Scoping LLM evaluations</span></a>
   </div>
 </li>
@@ -418,7 +360,7 @@ window.Quarto = {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/serving/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/serving/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">ML Serving</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -427,7 +369,7 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/serving/tfserving/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/serving/tfserving/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">TF Serving</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -436,13 +378,13 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/serving/tfserving/tf-serving-basics.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/serving/tfserving/tf-serving-basics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/serving/tfserving/gpu.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/serving/tfserving/gpu.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">GPUs &amp; Batching</span></a>
   </div>
 </li>
@@ -450,7 +392,7 @@ window.Quarto = {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/serving/torchserve/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/serving/torchserve/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">TorchServe</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -459,13 +401,13 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/serving/torchserve/basic-torchserve.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/serving/torchserve/basic-torchserve.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/serving/torchserve/hf.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/serving/torchserve/hf.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Serving Your Own Model</span></a>
   </div>
 </li>
@@ -473,7 +415,7 @@ window.Quarto = {
   </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/serving/fastapi/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/serving/fastapi/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">FastAPI</span></a>
   </div>
 </li>
@@ -481,7 +423,7 @@ window.Quarto = {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/k8s/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">K8s</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -490,19 +432,19 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/02-Basics.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/02-Basics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/03-Secrets.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/03-Secrets.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Secrets</span></a>
   </div>
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/k8s/storage/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/storage/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Storage</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -511,13 +453,13 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/storage/04-Basics.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/storage/04-Basics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Storage Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/storage/05-Dynamic Provisioning.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/storage/05-Dynamic Provisioning.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Dynamic Provisioning</span></a>
   </div>
 </li>
@@ -525,7 +467,7 @@ window.Quarto = {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/k8s/scaling/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/scaling/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Scaling</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -534,13 +476,13 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/scaling/06-ReplicaSets.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/scaling/06-ReplicaSets.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">ReplicaSets</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/scaling/07- Scaling.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/scaling/07- Scaling.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Scaling</span></a>
   </div>
 </li>
@@ -548,25 +490,25 @@ window.Quarto = {
   </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/12-StatefulSet.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/12-StatefulSet.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">StatefulSet</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/13-JobsCron.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/13-JobsCron.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Jobs &amp; CronJobs</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/14-RolloutsRollbacks.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/14-RolloutsRollbacks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Rollouts</span></a>
   </div>
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/k8s/multi_container_pods/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/multi_container_pods/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Multi-Container Pods</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -575,25 +517,25 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/multi_container_pods/08-Multi-Container-Pods.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/multi_container_pods/08-Multi-Container-Pods.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Multi-Container Pods</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/multi_container_pods/09-Ambassador Sidecars.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/multi_container_pods/09-Ambassador Sidecars.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Ambassador Sidecars</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/multi_container_pods/10-Downsides of MC Pods.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/multi_container_pods/10-Downsides of MC Pods.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Restart Conditions</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/multi_container_pods/11-Sharing Processes in MC Pods.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/multi_container_pods/11-Sharing Processes in MC Pods.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Sharing Processes in MC Pods</span></a>
   </div>
 </li>
@@ -601,7 +543,7 @@ window.Quarto = {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/k8s/helm/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/helm/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Helm</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -610,25 +552,25 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/helm/15-Helm.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/helm/15-Helm.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Helm Intro</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/helm/16-Creating Your Own Helm Charts.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/helm/16-Creating Your Own Helm Charts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Creating Helm Charts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/helm/17-Helm Upgrade &amp; Rollbacks.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/helm/17-Helm Upgrade &amp; Rollbacks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Helm Upgrades &amp; Rollbacks</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/helm/21-Testing-With-Helm.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/helm/21-Testing-With-Helm.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Testing With Helm</span></a>
   </div>
 </li>
@@ -636,61 +578,61 @@ window.Quarto = {
   </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/18-Developer.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/18-Developer.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Developer tips</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/19-Pod-Lifecycle.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/19-Pod-Lifecycle.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Pod restart vs.&nbsp;replacement</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/20-Health-Check.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/20-Health-Check.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Probes</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/22-Resource-Limits.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/22-Resource-Limits.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Resource Limits</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/22a-Resource-Requests.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/22a-Resource-Requests.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Requesting resources</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/23-Logging.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/23-Logging.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Logging</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/24-monitoring.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/24-monitoring.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Monitoring</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/25-Ingress.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/25-Ingress.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Ingress</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/26-cluster.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/26-cluster.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Cluster Components</span></a>
   </div>
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/k8s/security/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/security/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Security</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -699,31 +641,31 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/security/26-network-security.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/security/26-network-security.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Network Security</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/security/27-container-security.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/security/27-container-security.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Securing Containers</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/security/28-workloads.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/security/28-workloads.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Webhooks</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/security/29-cluster-updates.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/security/29-cluster-updates.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Updating a K8s Cluster</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/security/30-rbac.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/security/30-rbac.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">RBAC</span></a>
   </div>
 </li>
@@ -731,31 +673,31 @@ window.Quarto = {
   </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/27-workload-placement.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/27-workload-placement.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Workload Placement</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/28-auto-scaling.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/28-auto-scaling.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Auto Scaling</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/29-preemption.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/29-preemption.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preemption</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/99-Random.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/99-Random.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Random TILs</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/k8s/Open Questions.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/Open Questions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Open Questions</span></a>
   </div>
 </li>
@@ -763,7 +705,7 @@ window.Quarto = {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/fastai/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/fastai/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">fastai</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -772,25 +714,25 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/fastai/fundamentals.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fastai/fundamentals.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Fundamentals</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/fastai/cv.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fastai/cv.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Image Classification</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/fastai/data.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fastai/data.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Data</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/fastai/batch_predicitions.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fastai/batch_predicitions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Batch Predictions</span></a>
   </div>
 </li>
@@ -798,7 +740,7 @@ window.Quarto = {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/linux/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/linux/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Linux</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -807,31 +749,31 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/linux/bash_scripting.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/linux/bash_scripting.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Cheatsheet</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/linux/cookbook.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/linux/cookbook.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Cookbook</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/linux/misc_utils.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/linux/misc_utils.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Misc Utilities</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/linux/osx.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/linux/osx.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">OSX Shell Tips</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/linux/permprocdata.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/linux/permprocdata.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Processes, Permissions and Moving Data</span></a>
   </div>
 </li>
@@ -839,7 +781,7 @@ window.Quarto = {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/actions/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/actions/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">GitHub Actions</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -848,13 +790,13 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-19" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/actions/ocotkit.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/actions/ocotkit.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">ocotokit.js</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/actions/resources.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/actions/resources.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Resources</span></a>
   </div>
 </li>
@@ -862,7 +804,7 @@ window.Quarto = {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/prompt-eng/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/prompt-eng/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Prompt engineering</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-20" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -871,7 +813,7 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-20" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/prompt-eng/course/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/prompt-eng/course/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Course</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-21" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -880,43 +822,43 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-21" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/prompt-eng/course/01_guidelines.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/01_guidelines.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Guidelines for Prompting</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/prompt-eng/course/02_iterative.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/02_iterative.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Iterative Prompt Development</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/prompt-eng/course/03_summarizing.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/03_summarizing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Summarizing</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/prompt-eng/course/04_inferring.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/04_inferring.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Inferring</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/prompt-eng/course/05_transforming.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/05_transforming.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Transforming</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/prompt-eng/course/06_expanding.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/06_expanding.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Expanding</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/prompt-eng/course/07_chatbot.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/07_chatbot.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">The Chat Format</span></a>
   </div>
 </li>
@@ -926,7 +868,7 @@ window.Quarto = {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/web-scraping/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/web-scraping/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Web Scraping</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-22" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -935,13 +877,13 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-22" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/web-scraping/browser-to-python.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/web-scraping/browser-to-python.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Browser requests to code</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/web-scraping/transcribe-diarize.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/web-scraping/transcribe-diarize.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Transcribe &amp; Diarize Videos</span></a>
   </div>
 </li>
@@ -949,7 +891,7 @@ window.Quarto = {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/fasthtml/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/fasthtml/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">FastHTML</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-23" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -958,7 +900,7 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-23" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/fasthtml/concurrency.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fasthtml/concurrency.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Concurrency For Starlette Apps (e.g FastAPI / FastHTML)</span></a>
   </div>
 </li>
@@ -966,7 +908,7 @@ window.Quarto = {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/quarto/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/quarto/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Quarto</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-24" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -975,19 +917,19 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-24" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/quarto/highlighting.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/quarto/highlighting.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Syntax Highlighting</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/quarto/listings-from-data.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/quarto/listings-from-data.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Listings from data</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/quarto/merging.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/quarto/merging.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Merge listings</span></a>
   </div>
 </li>
@@ -995,7 +937,7 @@ window.Quarto = {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../notes/jupyter/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/jupyter/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Jupyter</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-25" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -1004,25 +946,25 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-25" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/jupyter/Best Way To Launch Jupyter On A Remote Server.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/jupyter/Best Way To Launch Jupyter On A Remote Server.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Launch Jupyter on a remote server</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/jupyter/Fix Jupyter CUDA cache.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/jupyter/Fix Jupyter CUDA cache.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Fix Jupyter CUDA cache</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/jupyter/remote_browser.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/jupyter/remote_browser.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Remote Browser For Jupyter</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../notes/jupyter/shortcuts.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/jupyter/shortcuts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">My Jupyter Shortcuts</span></a>
   </div>
 </li>
@@ -1036,23 +978,53 @@ window.Quarto = {
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#watch-the-discussion" id="toc-watch-the-discussion" class="nav-link active" data-scroll-target="#watch-the-discussion">Watch The Discussion</a></li>
+  <li><a href="#the-challenge-broad-surface-area" id="toc-the-challenge-broad-surface-area" class="nav-link" data-scroll-target="#the-challenge-broad-surface-area">The Challenge: Broad Surface Area</a></li>
+  <li><a href="#topic-distribution-and-seasonal-patterns" id="toc-topic-distribution-and-seasonal-patterns" class="nav-link" data-scroll-target="#topic-distribution-and-seasonal-patterns">Topic Distribution and Seasonal Patterns</a>
+  <ul class="collapse">
+  <li><a href="#focus-on-high-traffic-topics" id="toc-focus-on-high-traffic-topics" class="nav-link" data-scroll-target="#focus-on-high-traffic-topics">1. Focus on High-Traffic Topics</a></li>
+  <li><a href="#segment-evaluation-by-topic-type" id="toc-segment-evaluation-by-topic-type" class="nav-link" data-scroll-target="#segment-evaluation-by-topic-type">2. Segment Evaluation by Topic Type</a></li>
+  <li><a href="#consider-synthetic-data-for-seasonal-patterns" id="toc-consider-synthetic-data-for-seasonal-patterns" class="nav-link" data-scroll-target="#consider-synthetic-data-for-seasonal-patterns">3. Consider Synthetic Data for Seasonal Patterns</a></li>
+  </ul></li>
+  <li><a href="#on-automation-vs.-manual-review" id="toc-on-automation-vs.-manual-review" class="nav-link" data-scroll-target="#on-automation-vs.-manual-review">On Automation vs.&nbsp;Manual Review</a></li>
+  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways">Key Takeaways</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/llm/officehours/scoping.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     <div class="quarto-margin-footer"><div class="margin-footer-item">
-<p><br></p>
+<p><br> <button onclick="window.location.href='https://hamel.ck.page/7d15a4b6e7'" style="background-color: #C75C56; color: white; padding: 12px 24px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; transition: background-color 0.3s ease;">Subscribe To My Newsletter</button></p>
 </div></div></div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/index.html">📚 Hamel’s Notes</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/officehours/index.html">Open Office Hours</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/officehours/scoping.html">Scoping LLM evaluations</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">📚 Hamel’s Notes</h1>
-</div>
+<h1 class="title">Scoping LLM evaluations</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">LLMs</div>
+    <div class="quarto-category">evals</div>
+  </div>
+  </div>
 
+<div>
+  <div class="description">
+    Office hours discussion on managing evaluation complexity through proper scoping
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
 
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">December 29, 2024</p>
+    </div>
+  </div>
   
     
   </div>
@@ -1062,182 +1034,86 @@ window.Quarto = {
 </header>
 
 
-<p>This is a place where I share some of my notes. If you find an error, please <a href="https://github.com/hamelsmu/hamel-site/tree/master/notes">submit a pull request</a>. You can also get in touch with me <a href="../index.html">here</a>.</p>
-
-
-
-
-<div class="quarto-listing quarto-listing-container-table" id="listing-listing">
-<table class="quarto-listing-table table">
-<thead>
-<tr>
-<th>
-Title
-</th>
-<th>
-Description
-</th>
-</tr>
-</thead>
-<tbody class="list">
-<tr data-index="0" data-listing-file-modified-sort="1730305000691" data-listing-reading-time-sort="2" data-listing-word-count-sort="340" data-listing-title-sort="CUDA Version Management" data-listing-filename-sort="cuda.qmd">
-<td>
-<a href="../notes/cuda.html" class="title listing-title">CUDA Version Management</a>
-</td>
-<td>
-<span class="listing-description">Managing CUDA versions</span>
-</td>
-</tr>
-<tr data-index="1" data-listing-file-modified-sort="1730305000697" data-listing-reading-time-sort="17" data-listing-word-count-sort="3346" data-listing-title-sort="Docker" data-listing-filename-sort="index.qmd">
-<td>
-<a href="../notes/docker/index.html" class="title listing-title">Docker</a>
-</td>
-<td>
-<span class="listing-description">Notes from the book Docker In Action</span>
-</td>
-</tr>
-<tr data-index="2" data-listing-file-modified-sort="1730490341874" data-listing-reading-time-sort="1" data-listing-word-count-sort="1" data-listing-title-sort="FastHTML" data-listing-filename-sort="index.qmd">
-<td>
-<a href="../notes/fasthtml/index.html" class="title listing-title">FastHTML</a>
-</td>
-<td>
-<span class="listing-description">Web development in FastHTML</span>
-</td>
-</tr>
-<tr data-index="3" data-listing-file-modified-sort="1730490310699" data-listing-reading-time-sort="1" data-listing-word-count-sort="1" data-listing-title-sort="GitHub Actions" data-listing-filename-sort="index.qmd">
-<td>
-<a href="../notes/actions/index.html" class="title listing-title">GitHub Actions</a>
-</td>
-<td>
-<span class="listing-description">Notes on working with GitHub Actions</span>
-</td>
-</tr>
-<tr data-index="4" data-listing-file-modified-sort="1730305000703" data-listing-reading-time-sort="4" data-listing-word-count-sort="782" data-listing-title-sort="How to learn" data-listing-filename-sort="index.qmd">
-<td>
-<a href="../notes/how-to-learn/index.html" class="title listing-title">How to learn</a>
-</td>
-<td>
-<span class="listing-description">Notes from the course “Learning How To Learn”</span>
-</td>
-</tr>
-<tr data-index="5" data-listing-file-modified-sort="1730490349347" data-listing-reading-time-sort="1" data-listing-word-count-sort="1" data-listing-title-sort="Jupyter" data-listing-filename-sort="index.qmd">
-<td>
-<a href="../notes/jupyter/index.html" class="title listing-title">Jupyter</a>
-</td>
-<td>
-<span class="listing-description">various Jupyter tricks</span>
-</td>
-</tr>
-<tr data-index="6" data-listing-file-modified-sort="1730305000722" data-listing-reading-time-sort="1" data-listing-word-count-sort="1" data-listing-title-sort="K8s" data-listing-filename-sort="index.qmd">
-<td>
-<a href="../notes/k8s/index.html" class="title listing-title">K8s</a>
-</td>
-<td>
-<span class="listing-description">Notes on K8s from the perspective of data…</span>
-</td>
-</tr>
-<tr data-index="7" data-listing-file-modified-sort="1730490359252" data-listing-reading-time-sort="1" data-listing-word-count-sort="1" data-listing-title-sort="LLMs" data-listing-filename-sort="index.qmd">
-<td>
-<a href="../notes/llm/index.html" class="title listing-title">LLMs</a>
-</td>
-<td>
-<span class="listing-description">Notes on LLMs</span>
-</td>
-</tr>
-<tr data-index="8" data-listing-file-modified-sort="1730305000798" data-listing-reading-time-sort="1" data-listing-word-count-sort="1" data-listing-title-sort="Linux" data-listing-filename-sort="index.qmd">
-<td>
-<a href="../notes/linux/index.html" class="title listing-title">Linux</a>
-</td>
-<td>
-<span class="listing-description">Notes on Linux</span>
-</td>
-</tr>
-<tr data-index="9" data-listing-file-modified-sort="1730305000814" data-listing-reading-time-sort="13" data-listing-word-count-sort="2498" data-listing-title-sort="ML Serving" data-listing-filename-sort="index.qmd">
-<td>
-<a href="../notes/serving/index.html" class="title listing-title">ML Serving</a>
-</td>
-<td>
-<span class="listing-description">ML serving is about optimization &amp; portability</span>
-</td>
-</tr>
-<tr data-index="10" data-listing-file-modified-sort="1730305000810" data-listing-reading-time-sort="1" data-listing-word-count-sort="1" data-listing-title-sort="Prompt engineering" data-listing-filename-sort="index.qmd">
-<td>
-<a href="../notes/prompt-eng/index.html" class="title listing-title">Prompt engineering</a>
-</td>
-<td>
-<span class="listing-description">Prompt engineering notes</span>
-</td>
-</tr>
-<tr data-index="11" data-listing-file-modified-sort="1730305000691" data-listing-reading-time-sort="1" data-listing-word-count-sort="19" data-listing-title-sort="Python Concurrency" data-listing-filename-sort="concurrency.qmd">
-<td>
-<a href="../notes/concurrency.html" class="title listing-title">Python Concurrency</a>
-</td>
-<td>
-<span class="listing-description">Understand the world of Python concurrency…</span>
-</td>
-</tr>
-<tr data-index="12" data-listing-file-modified-sort="1730305000810" data-listing-reading-time-sort="1" data-listing-word-count-sort="1" data-listing-title-sort="Quarto" data-listing-filename-sort="index.qmd">
-<td>
-<a href="../notes/quarto/index.html" class="title listing-title">Quarto</a>
-</td>
-<td>
-<span class="listing-description">Quarto tips</span>
-</td>
-</tr>
-<tr data-index="13" data-categories="video-editing" data-listing-file-modified-sort="1730305000969" data-listing-reading-time-sort="1" data-listing-word-count-sort="103" data-listing-title-sort="Video Editing" data-listing-filename-sort="video_editing.qmd">
-<td>
-<a href="../notes/video_editing.html" class="title listing-title">Video Editing</a>
-</td>
-<td>
-<span class="listing-description">Notes on video editing software</span>
-</td>
-</tr>
-<tr data-index="14" data-listing-file-modified-sort="1730490369733" data-listing-reading-time-sort="1" data-listing-word-count-sort="1" data-listing-title-sort="Web Scraping" data-listing-filename-sort="index.qmd">
-<td>
-<a href="../notes/web-scraping/index.html" class="title listing-title">Web Scraping</a>
-</td>
-<td>
-<span class="listing-description">Notes on web scraping</span>
-</td>
-</tr>
-<tr data-index="15" data-listing-file-modified-sort="1730305000692" data-listing-reading-time-sort="14" data-listing-word-count-sort="2774" data-listing-title-sort="dbt" data-listing-filename-sort="index.qmd">
-<td>
-<a href="../notes/dbt/index.html" class="title listing-title">dbt</a>
-</td>
-<td>
-<span class="listing-description">dbt basics: models, tests and docs</span>
-</td>
-</tr>
-<tr data-index="16" data-listing-file-modified-sort="1730490329085" data-listing-reading-time-sort="1" data-listing-word-count-sort="1" data-listing-title-sort="fastai" data-listing-filename-sort="index.qmd">
-<td>
-<a href="../notes/fastai/index.html" class="title listing-title">fastai</a>
-</td>
-<td>
-<span class="listing-description">fastai notes</span>
-</td>
-</tr>
-<tr data-index="17" data-listing-file-modified-sort="1730305000808" data-listing-reading-time-sort="6" data-listing-word-count-sort="1067" data-listing-title-sort="pandoc filters" data-listing-filename-sort="index.qmd">
-<td>
-<a href="../notes/pandoc/index.html" class="title listing-title">pandoc filters</a>
-</td>
-<td>
-<span class="listing-description">Notes on pandoc filters for use in Quarto</span>
-</td>
-</tr>
-<tr data-index="18" data-listing-file-modified-sort="1730305000808" data-listing-reading-time-sort="8" data-listing-word-count-sort="1417" data-listing-title-sort="programming languages" data-listing-filename-sort="index.qmd">
-<td>
-<a href="../notes/programming-languages/index.html" class="title listing-title">programming languages</a>
-</td>
-<td>
-<span class="listing-description">Notes from PL class (SML, Racket, Ruby)</span>
-</td>
-</tr>
-</tbody>
-</table>
-<div class="listing-no-matching d-none">
-No matching items
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
-</div></main> <!-- /main -->
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><em>These are notes from <a href="https://x.com/HamelHusain/status/1862567292955156734">my open office hours on LLM Evals</a>, where I troubleshoot real issues companies are having with their evals. Each session is 20 minutes.</em></p>
+</div>
+</div>
+<p>I spoke with Maggie from <a href="https://www.getsunday.com/">Sunday</a>, a lawn and garden startup that offers personalized lawn care subscriptions. They’ve built a chatbot that helps customers with everything from product recommendations to subscription questions. Their experience highlighted a common challenge: how do you effectively evaluate an LLM application with broad scope?</p>
+<section id="watch-the-discussion" class="level2">
+<h2 class="anchored" data-anchor-id="watch-the-discussion">Watch The Discussion</h2>
+<p>For those interested in the full context, here’s our complete 20-minute conversation:</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/WkGFLQWbP6A" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+</section>
+<section id="the-challenge-broad-surface-area" class="level2">
+<h2 class="anchored" data-anchor-id="the-challenge-broad-surface-area">The Challenge: Broad Surface Area</h2>
+<p>The team had already made significant progress with their evaluation approach:</p>
+<ul>
+<li>Built a Python Shiny app for <a href="http://hamel.dev/notes/llm/finetuning/data_cleaning.html">manual evaluation</a></li>
+<li>Implemented an <a href="http://hamel.dev/blog/posts/llm-judge/">LLM-as-judge system</a></li>
+<li>Achieved 80% alignment between human and LLM judgments</li>
+<li>Categorized conversations into roughly 40 distinct topics</li>
+<li>Created detailed critiques for different response types</li>
+</ul>
+<p>However, they were struggling with consistency in their evaluations. “One in five are wrong,” Maggie noted. “… I worry about just letting that run in an automated way.”</p>
+</section>
+<section id="topic-distribution-and-seasonal-patterns" class="level2">
+<h2 class="anchored" data-anchor-id="topic-distribution-and-seasonal-patterns">Topic Distribution and Seasonal Patterns</h2>
+<p>A deeper look at their usage patterns revealed some important insights:</p>
+<ol type="1">
+<li>5-6 topics drove most conversations in any given season</li>
+<li>Topics shifted seasonally (e.g., fall questions about frost vs.&nbsp;spring questions about timing)</li>
+<li>While specific concerns changed with seasons, the underlying topics remained similar</li>
+<li>Example top topics for fall included:
+<ul>
+<li>Seeding timing</li>
+<li>Renewal dates</li>
+<li>Next year’s plan</li>
+<li>Subscription questions</li>
+<li>Weed management</li>
+</ul></li>
+</ol>
+<p>Rather than trying to perfect evaluation across all 40 topics, we discussed several approaches:</p>
+<section id="focus-on-high-traffic-topics" class="level3">
+<h3 class="anchored" data-anchor-id="focus-on-high-traffic-topics">1. Focus on High-Traffic Topics</h3>
+<p>Instead of trying to excel at everything, focus evaluation efforts on the 5-6 topics that drive most conversations. This doesn’t mean abandoning other topics, but rather acknowledging that some areas will be more polished than others.</p>
+</section>
+<section id="segment-evaluation-by-topic-type" class="level3">
+<h3 class="anchored" data-anchor-id="segment-evaluation-by-topic-type">2. Segment Evaluation by Topic Type</h3>
+<p>Some topics showed better alignment between human and LLM judgments than others. For example, verification questions performed well because they had clear information in their knowledge base. Shipping questions were more problematic due to complex data formatting.</p>
+</section>
+<section id="consider-synthetic-data-for-seasonal-patterns" class="level3">
+<h3 class="anchored" data-anchor-id="consider-synthetic-data-for-seasonal-patterns">3. Consider Synthetic Data for Seasonal Patterns</h3>
+<p>For seasonal variations, Maggie realized they could generate synthetic data: “They’re going to ask different questions in the fall about seeding, timing, it being too late, or what about frost? But they’re going to ask the same… they’re still going to ask about seeding timing in the spring. It might just be, is it too early or is it too hot?”</p>
+</section>
+</section>
+<section id="on-automation-vs.-manual-review" class="level2">
+<h2 class="anchored" data-anchor-id="on-automation-vs.-manual-review">On Automation vs.&nbsp;Manual Review</h2>
+<p>One key question was about scaling evaluations: “If there’s thousands of conversations happening, can’t possibly read them all… How do you ensure quality?”</p>
+<p>The reality is that you can’t completely automate away the need to look at data. However, you can be strategic: - Sample more heavily from areas with low judge alignment - Use specialized tests for specific failure modes - Leverage user feedback (they saw 8-10% feedback rate) - Focus manual review on the most important topics</p>
+</section>
+<section id="key-takeaways" class="level2">
+<h2 class="anchored" data-anchor-id="key-takeaways">Key Takeaways</h2>
+<ol type="1">
+<li>Start narrow and expand: Perfect your approach on a few key topics before trying to handle everything</li>
+<li>Don’t expect perfect automation: Manual review will always play some role</li>
+<li>Be realistic about evaluation metrics: 80% alignment might be better than it sounds</li>
+<li>Consider your real requirements: Not every topic needs the same level of polish</li>
+</ol>
+<p>This pragmatic approach allows teams to make real progress while acknowledging the inherent challenges of building broad-scope LLM applications.</p>
+
+
+</section>
+
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -1829,7 +1705,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </a>
   </li>  
 </ul>
-    <div class="toc-actions"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/llm/officehours/scoping.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
