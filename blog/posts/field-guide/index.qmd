@@ -67,19 +67,19 @@ One client proudly showed me their evaluation dashboard, which looked like this:
 
 ![The kind of dashboard that foreshadows failure. I've [written about this before](https://hamel.dev/blog/posts/llm-judge/){target="_blank"}.](images/dashboard.png)
 
-This is what I call the "tools trap" – the belief that adopting the right tools or frameworks (in this case, eval tools and generic metrics) will solve your AI problems. It's particularly dangerous because it feels like progress. You're building things, deploying features, staying current with the latest tech. But without meaningful measurement, you're essentially flying blind.
+This is what I call the "tools trap" – the belief that adopting the right tools or frameworks (in this case, generic metrics) will solve your AI problems. It's particularly dangerous because it feels like progress. But without meaningful measurement, you're flying blind.
 
 These generic metrics are worse than useless – they actively impede progress in three ways:
 
-First, they create a false sense of measurement. Teams think they're data-driven because they have dashboards, but they're tracking vanity metrics that don't correlate with actual user problems.
+First, they create a false sense of measurement. Teams think they're data-driven because they have dashboards, but they're tracking vanity metrics that don't correlate with real user problems.
 
 Second, generic metrics fragment your attention. Instead of focusing on the few metrics that matter for your specific use case, you're trying to optimize multiple dimensions simultaneously. When everything is important, nothing is.
 
 Third, and most dangerously, these metrics create the illusion of progress. I've seen teams celebrate improving their "helpfulness score" by 10% while their actual users were still struggling with basic tasks. It's like optimizing your website's load time while your checkout process is broken – you're getting better at the wrong thing.
 
-What's the alternative? Let me share a story from [Nurture Boss](https://nurtureboss.io/), a company building AI assistants for the apartment industry.  I've embedded a video [below] where Jacob walks through his journey, but here is a synopsis:
+What's the alternative? Let me share a story from Jacob, the founder of [Nurture Boss](https://nurtureboss.io/), a company building AI assistants for the apartment industry.  I've embedded a video below where Jacob walks through his journey, but first, here is a synopsis:
 
-When I first started working with them, their founder Jacob was struggling to understand if their AI was actually working.
+When I first started working with them, Jacob was struggling to understand if their AI was actually working.
 
 > "When we released our products, it was a giant black box for us in terms of what was happening.  We didn't have a way to know if it was going well or not systematically."
 
@@ -146,7 +146,7 @@ There's no decision tree for data analysis. You can't follow a rigid process and
 
 As Jacob from NurtureBoss put it:
 
-> "The most valuable thing we did was create a habit of looking at our data every single day. It completely changed how we thought about our product."
+> "The most valuable thing we did was create a habit of looking at our data every day. It completely changed how we thought about our product."
 
 This brings us to a crucial question: How do you make it easy for teams to look at their data? The answer leads us to what I consider the most important investment any AI team can make...
 
@@ -285,7 +285,7 @@ But having these dimensions defined is only half the battle. The real challenge 
 
 For Rechat, we maintained a test database of listings that we knew would trigger different edge cases. Some teams prefer to use an anonymized copy of production data, but either way, you need to ensure your test data has enough variety to exercise the scenarios you care about.
 
-Here's an example of how we might use these dimensions with real data to generate test cases for the property search feature (this is just psuedo code, and very illustrative):
+Here's an example of how we might use these dimensions with real data to generate test cases for the property search feature (this is just psuedo-code, and very illustrative):
 
 ```python
 def generate_search_query(scenario, persona, listing_db):
@@ -371,7 +371,7 @@ One of the most insidious problems in AI evaluation is "criteria drift" – a ph
 
 This creates a paradox: you can't fully define your evaluation criteria until you've seen a wide range of outputs, but you need criteria to evaluate those outputs in the first place. In other words, **it is impossible to completely determine evaluation criteria prior to human judging of LLM outputs**.
 
-I've observed this firsthand when working with Phillip Carter at Honeycomb on their Query Assistant feature. As we evaluated the AI's ability to generate database queries, Phillip noticed something interesting:
+I've observed this firsthand when working with Phillip Carter at Honeycomb on their [Query Assistant](https://www.honeycomb.io/blog/introducing-query-assistant) feature. As we evaluated the AI's ability to generate database queries, Phillip noticed something interesting:
 
 > "Seeing how the LLM breaks down its reasoning made me realize I wasn't being consistent about how I judged certain edge cases."
 
@@ -417,7 +417,7 @@ This over-trust problem extends beyond self-evaluation. Research has shown that 
 
 When working with Honeycomb, we tracked agreement rates between our LLM-as-a-judge and Phillip's evaluations:
 
-![Agreement rates between LLM evaluator and human expert. Yes, we are using an a spreadsheet again - but it works!](images/score.png)
+![Agreement rates between LLM evaluator and human expert. More details [here](https://hamel.dev/blog/posts/evals/#automated-evaluation-w-llms).](images/score.png)
 
 It took three iterations to achieve >90% agreement, but this investment paid off in a system the team could trust. Without this validation step, automated evaluations often drift from human expectations over time, especially as the distribution of inputs changes.  You can [read more about this here](https://hamel.dev/blog/posts/evals/#automated-evaluation-w-llms).
 
