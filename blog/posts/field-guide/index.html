@@ -316,13 +316,13 @@ ME
 <figcaption>The kind of dashboard that foreshadows failure. I’ve <a href="https://hamel.dev/blog/posts/llm-judge/" target="_blank">written about this before</a>.</figcaption>
 </figure>
 </div>
-<p>This is what I call the “tools trap” – the belief that adopting the right tools or frameworks (in this case, eval tools and generic metrics) will solve your AI problems. It’s particularly dangerous because it feels like progress. You’re building things, deploying features, staying current with the latest tech. But without meaningful measurement, you’re essentially flying blind.</p>
+<p>This is what I call the “tools trap” – the belief that adopting the right tools or frameworks (in this case, generic metrics) will solve your AI problems. It’s particularly dangerous because it feels like progress. But without meaningful measurement, you’re flying blind.</p>
 <p>These generic metrics are worse than useless – they actively impede progress in three ways:</p>
-<p>First, they create a false sense of measurement. Teams think they’re data-driven because they have dashboards, but they’re tracking vanity metrics that don’t correlate with actual user problems.</p>
+<p>First, they create a false sense of measurement. Teams think they’re data-driven because they have dashboards, but they’re tracking vanity metrics that don’t correlate with real user problems.</p>
 <p>Second, generic metrics fragment your attention. Instead of focusing on the few metrics that matter for your specific use case, you’re trying to optimize multiple dimensions simultaneously. When everything is important, nothing is.</p>
 <p>Third, and most dangerously, these metrics create the illusion of progress. I’ve seen teams celebrate improving their “helpfulness score” by 10% while their actual users were still struggling with basic tasks. It’s like optimizing your website’s load time while your checkout process is broken – you’re getting better at the wrong thing.</p>
-<p>What’s the alternative? Let me share a story from <a href="https://nurtureboss.io/">Nurture Boss</a>, a company building AI assistants for the apartment industry. I’ve embedded a video [below] where Jacob walks through his journey, but here is a synopsis:</p>
-<p>When I first started working with them, their founder Jacob was struggling to understand if their AI was actually working.</p>
+<p>What’s the alternative? Let me share a story from Jacob, the founder of <a href="https://nurtureboss.io/">Nurture Boss</a>, a company building AI assistants for the apartment industry. I’ve embedded a video below where Jacob walks through his journey, but first, here is a synopsis:</p>
+<p>When I first started working with them, Jacob was struggling to understand if their AI was actually working.</p>
 <blockquote class="blockquote">
 <p>“When we released our products, it was a giant black box for us in terms of what was happening. We didn’t have a way to know if it was going well or not systematically.”</p>
 </blockquote>
@@ -374,7 +374,7 @@ ME
 <p>There’s no decision tree for data analysis. You can’t follow a rigid process and expect insights to emerge. Instead, you need to develop intuition through experience. The good news is that this intuition builds quickly when you make looking at data a habit.</p>
 <p>As Jacob from NurtureBoss put it:</p>
 <blockquote class="blockquote">
-<p>“The most valuable thing we did was create a habit of looking at our data every single day. It completely changed how we thought about our product.”</p>
+<p>“The most valuable thing we did was create a habit of looking at our data every day. It completely changed how we thought about our product.”</p>
 </blockquote>
 <p>This brings us to a crucial question: How do you make it easy for teams to look at their data? The answer leads us to what I consider the most important investment any AI team can make…</p>
 </section>
@@ -555,7 +555,7 @@ ME
 <li>A way to verify that generated queries actually trigger intended scenarios</li>
 </ol>
 <p>For Rechat, we maintained a test database of listings that we knew would trigger different edge cases. Some teams prefer to use an anonymized copy of production data, but either way, you need to ensure your test data has enough variety to exercise the scenarios you care about.</p>
-<p>Here’s an example of how we might use these dimensions with real data to generate test cases for the property search feature (this is just psuedo code, and very illustrative):</p>
+<p>Here’s an example of how we might use these dimensions with real data to generate test cases for the property search feature (this is just psuedo-code, and very illustrative):</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> generate_search_query(scenario, persona, listing_db):</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Generate a realistic user query about listings"""</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Pull real listing data to ground the generation</span></span>
@@ -653,7 +653,7 @@ ME
 <p>“To grade outputs, people need to externalize and define their evaluation criteria; however, the process of grading outputs helps them to define that very criteria.”</p>
 </blockquote>
 <p>This creates a paradox: you can’t fully define your evaluation criteria until you’ve seen a wide range of outputs, but you need criteria to evaluate those outputs in the first place. In other words, <strong>it is impossible to completely determine evaluation criteria prior to human judging of LLM outputs</strong>.</p>
-<p>I’ve observed this firsthand when working with Phillip Carter at Honeycomb on their Query Assistant feature. As we evaluated the AI’s ability to generate database queries, Phillip noticed something interesting:</p>
+<p>I’ve observed this firsthand when working with Phillip Carter at Honeycomb on their <a href="https://www.honeycomb.io/blog/introducing-query-assistant">Query Assistant</a> feature. As we evaluated the AI’s ability to generate database queries, Phillip noticed something interesting:</p>
 <blockquote class="blockquote">
 <p>“Seeing how the LLM breaks down its reasoning made me realize I wasn’t being consistent about how I judged certain edge cases.”</p>
 </blockquote>
@@ -692,7 +692,7 @@ ME
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="images/score.png" class="img-fluid figure-img"></p>
-<figcaption>Agreement rates between LLM evaluator and human expert. Yes, we are using an a spreadsheet again - but it works!</figcaption>
+<figcaption>Agreement rates between LLM evaluator and human expert. More details <a href="https://hamel.dev/blog/posts/evals/#automated-evaluation-w-llms">here</a>.</figcaption>
 </figure>
 </div>
 <p>It took three iterations to achieve &gt;90% agreement, but this investment paid off in a system the team could trust. Without this validation step, automated evaluations often drift from human expectations over time, especially as the distribution of inputs changes. You can <a href="https://hamel.dev/blog/posts/evals/#automated-evaluation-w-llms">read more about this here</a>.</p>
@@ -796,7 +796,7 @@ ME
 <p>If you’d like to explore these topics further, here are some resources that might help:</p>
 <ul>
 <li><p><a href="https://ai.hamel.dev/">My blog</a> for more content on AI evaluation and improvement. My other posts dive into more technical detail on topics such as constructing effective LLM judges, implementing evaluation systems, and other aspects of AI development<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. Also check out the blogs of <a href="https://www.sh-reya.com/">Shreya Shankar</a> and <a href="https://eugeneyan.com/">Eugene Yan</a> who are also great sources of information on these topics.</p></li>
-<li><p><strong><a href="https://bit.ly/evals-ai">Rapidly Improve AI Products With Evals</a></strong>, a course I’m teaching with Shreya Shankar. The course provides hands-on experience with techniques such as error analysis, synthetic data generation, and building trustworthy evaluation systems. It includes practical exercises and personalized instruction through office hours.</p></li>
+<li><p>A course I’m teaching: <strong><a href="https://bit.ly/evals-ai">Rapidly Improve AI Products With Evals</a></strong>, with Shreya Shankar. The course provides hands-on experience with techniques such as error analysis, synthetic data generation, and building trustworthy evaluation systems. It includes practical exercises and personalized instruction through office hours.</p></li>
 <li><p>If you’re looking for hands-on guidance specific to your organization’s needs, you can learn more about working with me at <a href="https://parlance-labs.com/">Parlance Labs</a>.</p></li>
 </ul>
 
