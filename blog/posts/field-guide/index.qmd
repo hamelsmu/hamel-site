@@ -41,116 +41,98 @@ Most AI teams focus on the wrong things. Here's a common scene from my consultin
 
 <br>
 
-This scene has played out dozens of times over my two years of independent AI consulting. Teams invest weeks architecting complex AI systems, but can't tell me if their changes are helping or hurting.
+This scene has played out dozens of times over the last two years. Teams invest weeks building complex AI systems, but can't tell me if their changes are helping or hurting.
 
 This isn't surprising. With new tools and frameworks emerging weekly, it's natural to focus on tangible things we can control – which vector database to use, which LLM provider to choose, which agent framework to adopt. But after helping 30+ companies build AI products, I've discovered the teams who succeed barely talk about tools at all. Instead, they obsess over measurement and iteration.
 
 In this post, I'll show you exactly how these successful teams operate. You'll learn:
 
-- [Why focusing on tools over process is killing your AI projects](#the-most-common-mistake-focus-on-tools-over-process)
-- [How error analysis consistently reveals the highest-ROI improvements](#everyone-skips-error-analysis-and-its-the-highest-roi-activity)
-- [Why a simple data viewer is your most important AI investment](#the-most-important-ai-investment-a-simple-data-viewer)
-- [How to empower domain experts (not just engineers) to improve your AI](#empower-domain-experts-to-write-prompts)
-- [Why synthetic data is more effective than you think](#bootstrapping-your-ai-with-synthetic-data-is-effective-even-with-zero-users)
-- [How to maintain trust in your evaluation system](#maintaining-trust-in-evals-is-critical)
-- [Why your AI roadmap should count experiments, not features](#your-ai-roadmap-should-count-experiments-not-features)
+1. [Why focusing on tools over process is killing your AI projects](#1-the-most-common-mistake-focus-on-tools-over-process)
+2. [How error analysis consistently reveals the highest-ROI improvements](#2-everyone-skips-error-analysis-and-its-the-highest-roi-activity)
+3. [Why a simple data viewer is your most important AI investment](#3-the-most-important-ai-investment-a-simple-data-viewer)
+4. [How to empower domain experts (not just engineers) to improve your AI](#4-empower-domain-experts-to-write-prompts)
+5. [Why synthetic data is more effective than you think](#5-bootstrapping-your-ai-with-synthetic-data-is-effective-even-with-zero-users)
+6. [How to maintain trust in your evaluation system](#6-maintaining-trust-in-evals-is-critical)
+7. [Why your AI roadmap should count experiments, not features](#7-your-ai-roadmap-should-count-experiments-not-features)
 
-I'll anchor everything in real examples. While every situation is unique, you'll see patterns that apply regardless of your domain or team size.
+I'll explain each of these topics with real examples. While every situation is unique, you'll see patterns that apply regardless of your domain or team size.
 
 Let's start by examining the most common mistake I see teams make – one that derails AI projects before they even begin.
 
-## The Most Common Mistake: Focus on Tools Over Process
+## 1. The Most Common Mistake: Focus on Tools Over Process
 
 The "tools first" mindset runs deep in AI development. It's not just about architecture diagrams and frameworks – even when teams try to be data-driven, they often reach for tools instead of process. Let me show you what this looks like in practice.
 
-One client proudly showed me their evaluation dashboard, which looked like this:
+One client proudly showed me this evaluation dashboard:
 
 ![The kind of dashboard that foreshadows failure. I've [written about this before](https://hamel.dev/blog/posts/llm-judge/){target="_blank"}.](images/dashboard.png)
 
 This is what I call the "tools trap" – the belief that adopting the right tools or frameworks (in this case, generic metrics) will solve your AI problems. It's particularly dangerous because it feels like progress. But without meaningful measurement, you're flying blind.
 
-These generic metrics are worse than useless – they actively impede progress in three ways:
+Generic metrics are worse than useless – they actively impede progress in three ways:
 
-First, they create a false sense of measurement. Teams think they're data-driven because they have dashboards, but they're tracking vanity metrics that don't correlate with real user problems.
+First, they create a **false sense of measurement and progress**. Teams think they're data-driven because they have dashboards, but they're tracking vanity metrics that don't correlate with real user problems. I've seen teams celebrate improving their "helpfulness score" by 10% while their actual users were still struggling with basic tasks. It's like optimizing your website's load time while your checkout process is broken – you're getting better at the wrong thing.
 
-Second, generic metrics fragment your attention. Instead of focusing on the few metrics that matter for your specific use case, you're trying to optimize multiple dimensions simultaneously. When everything is important, nothing is.
+Second, too many metrics fragment your attention. Instead of focusing on the few metrics that matter for your specific use case, you're trying to optimize multiple dimensions simultaneously. When everything is important, nothing is.
 
-Third, and most dangerously, these metrics create the illusion of progress. I've seen teams celebrate improving their "helpfulness score" by 10% while their actual users were still struggling with basic tasks. It's like optimizing your website's load time while your checkout process is broken – you're getting better at the wrong thing.
+What's the alternative? Building your own metrics and methods of evaluation in a data-driven way.
 
-What's the alternative? Let me share a story from Jacob, the founder of [Nurture Boss](https://nurtureboss.io/), a company building AI assistants for the apartment industry.  I've embedded a video below where Jacob walks through his journey, but first, here is a synopsis:
+Many people are skeptical when I suggest they need custom metrics. "Look at your data" sounds simple, but what does it actually mean in practice? Let me share a story from Jacob, the founder of [Nurture Boss](https://nurtureboss.io/), a company building AI assistants for the apartment industry.
 
-When I first started working with them, Jacob was struggling to understand if their AI was actually working.
+Jacob built a simple viewer that let his development team examine conversations between their AI and users. Next to each conversation was a space where they could add notes, listing all the failure modes they observed in an open-ended way. By parallelizing this work across developers, Jacob's team quickly annotated dozens of conversations.
 
-> "When we released our products, it was a giant black box for us in terms of what was happening.  We didn't have a way to know if it was going well or not systematically."
+As team members scanned through these notes, clear patterns emerged. Through this process of error analysis, they discovered their AI was struggling with date handling – a seemingly simple task that was failing 66% of the time. Users would say "let's schedule a tour two weeks from now" and the AI would suggest random dates, sometimes even in past years. 
 
-I gave Jacob what seemed like simple advice: look at your data. What's particularly striking is his initial skepticism:
-
-> "I had no idea or understood at all the value that would come from quite literally just looking at our data. Hamel, I don't know if I ever expressed this with you, but it was kinda frustrating when you kept telling me that. Like, what is the secret here that I'm gonna learn? And then I got into it, and realized how impactful, insightful, and important it was that we do that, and we'll continue to do that."
-
-The approach was straightforward: they built a simple data viewer that let the team examine conversations between their AI and users (more on that later). They could see exactly what users were asking for, how the AI responded, and what tools it used. More importantly, they could quickly flag issues and add notes explaining what went wrong.
-
-The results were transformative. As Jacob explains:
-
-> "Being able to actually see what people are asking your product, every day, and identifying gaps where they're looking to get problems solved that your product does not know how to solve is invaluable. It builds your product road map for you...
-
-Let me give you a concrete example. Through this process, they discovered their AI was struggling with date handling – a seemingly simple task that was failing 33% of the time. Users would say "let's schedule a tour two weeks from now" and the AI would suggest random dates, sometimes even in past years. Instead of immediately reaching for new tools, they:
-
-1. Looked at actual conversation logs
-2. Categorized the types of date-handling failures
-3. Built specific tests to catch these issues
-4. Measured improvement on these concrete metrics
+Instead of immediately reaching for new tools, they looked at actual conversation logs, categorized the types of date-handling failures, built specific tests to catch these issues, and measured improvement on these metrics.
 
 The result? They improved their date handling success rate from 33% to 95%. The solution didn't require new tools – it required understanding the problem.
 
-This pattern repeats across successful AI teams: they prioritize measurement and iteration over tool selection. They build simple systems to track specific, meaningful metrics. And most importantly, they look at their data. 
+So what does focusing on this annotation process give you?
+- Metrics specific to your task that you can actually measure
+- Systematic ways of improving those metrics
+- A sense of progress throughout every step of the way
 
-I recommend watching Jacob explain this journey himself:
+I recommend watching Jacob explain this process himself:
 
 {{< video https://youtu.be/e2i6JbU2R-s height="450" width="800" >}}
 
-Which brings us to the highest ROI activity in AI development – one that almost everyone skips...
+Your job is no longer about wrangling tools to work in your stack; it's about creating processes that work for you and your team. And the most powerful process – the one that consistently delivers the highest ROI – is structured error analysis.
 
+## 2. Everyone Skips Error Analysis (And It's The Highest ROI Activity)
 
-## Everyone Skips Error Analysis (And It's The Highest ROI Activity)
+Now let's dive deeper into how to conduct effective error analysis. It sounds boring – it's not as exciting as trying the latest LLM or implementing a new agent framework. **But it's the single most valuable activity in AI development, and I've never seen a team regret investing in it.** Let me show you how this played out at NurtureBoss.
 
-Error analysis sounds boring. It's not as exciting as trying the latest LLM or implementing a new agent framework. **But it's the single most valuable activity in AI development**, and I've never seen a team regret investing in it. Let me show you how this played out at NurtureBoss.
+When thinking about potential error types, you can take one of two approaches: "top-down" or "bottom-up."
 
-Remember how Jacob's team was struggling with their apartment leasing AI? To expand on our error analysis process: we started with nothing more than a spreadsheet and an LLM. For each failed interaction, we wrote brief notes about what went wrong, then used the LLM to classify these notes into categories. This bottom-up approach let patterns emerge naturally from the data, rather than trying to pre-define what we were looking for.
+With a top-down approach, you start with evaluation metrics common in the AI community like "hallucination" or "toxicity," plus metrics unique to your task. At NurtureBoss, they might have wanted to measure customer frustration since their AI chatbot interacts directly with apartment seekers.
 
-We then summarized the error categories with a pivot table (truncated for confidentiality):
+Top-down is ok, but I find it's better to start with a bottom-up approach. A bottom-up approach forces you to look at actual data and let the metrics naturally emerge. Let me describe how Jacob's team implemented their bottom-up approach at NurtureBoss.
+
+We started with a simple spreadsheet where each row represented a conversation. In one column, team members wrote open-ended notes on anything good or bad the AI did in that conversation, with each row annotated independently. This process revealed latent evaluation criteria that wouldn't have emerged in a top-down approach.
+
+Next, we fed annotations into a LLM and asked it to build a taxonomy of common failure modes. A second LLM call then mapped each row to a specific failure mode label. Finally, we created a pivot table of failure modes and counts. The results were striking: just three issues accounted for over 60% of all problems:
 
 ![Excel Pivot Tables are a simple tool, but they work!](images/pivot.png){width="200"}
 
-Three issues accounted for over 60% of their problems:
-- Conversation flow issues: The AI would miss context or respond awkardly to user queries or go off topic.
+- Conversation flow issues: The AI would miss context or respond awkwardly to user queries or go off topic.
 - Handoff failures: The AI wasn't recognizing when to transfer conversations to human agents
 - Rescheduling problems: The AI struggled with date handling and appointment modifications
-
-The classification approach is key. Instead of trying to pre-define error categories, we let them emerge from the data. We wrote natural language descriptions of what went wrong in each case, then used an LLM to group similar issues. This revealed patterns we wouldn't have thought to look for upfront.
 
 The impact was immediate. Jacob paused our evaluation work – not because it wasn't valuable, but because they had uncovered so many actionable insights that his team needed several weeks just to implement fixes for the problems we'd already found. This simple exercise had revealed more concrete opportunities for improvement than they had discovered in all their previous attempts at measurement.
 
 The key is combining systematic analysis with domain expertise. Technical teams often miss crucial business context, while business teams may lack the tools to analyze patterns systematically. The magic happens when you bring these perspectives together.
 
-But there's a deeper skill at play here – what I call a "nose for data." It's a combination of skepticism and curiosity that leads you to ask questions like:
+Let me share a concrete story about how top-down metrics in isolation can lead you astray, even when they feel perfectly customized to your use case.
 
-- Why did this metric suddenly improve?
-- What are we not measuring?
-- Does this number match our qualitative experience?
+A recruiting platform I consulted with was using AI to generate initial outreach emails to candidates. They tracked success using edit distance – measuring how much recruiters modified the AI's output. This seemed like an ideal custom metric for their specific needs: less editing should mean better AI performance.
 
-Let me share a striking example from a recruiting platform I worked with. Their AI was generating initial outreach emails to candidates, and they were tracking success using edit distance – measuring how much recruiters modified the AI's output. When this metric started showing improvement, the team was ecstatic. The average edit distance had dropped by 40%!
+But when we conducted error analysis on specific examples with the goal of reducing edit distance, we discovered something startling: many recruiters on this platform were non-native speakers who were introducing grammatical errors and awkward phrasing into AI-generated text. When we showed both versions to hiring managers (the ultimate judges of quality), they consistently rated the less-edited AI versions as significantly better (which surprised me too).  No dashboard or pre-defined metric would have caught this fundamental misalignment.
 
-But something felt off. When we dug deeper, we discovered a crucial detail: most of their recruiters were non-native English speakers. These recruiters were actively making edits that introduced grammatical errors and awkward phrasing into otherwise correct AI-generated text. In fact, when we showed the emails to hiring managers, they rated the less-edited versions as significantly better. The metric had improved (lower edit distance) because the AI was actually doing a better job than the human editors, but the team's reliance on edit distance as a metric led them to incorrectly conclude their recruiters should keep making changes.
-
-There's no decision tree for data analysis. You can't follow a rigid process and expect insights to emerge. Instead, you need to develop intuition through experience. The good news is that this intuition builds quickly when you make looking at data a habit.
-
-As Jacob from NurtureBoss put it:
-
-> "The most valuable thing we did was create a habit of looking at our data every day. It completely changed how we thought about our product."
+If you'd like a live walkthrough of what error analysis looks like, [here is a mini-lesson I did with Shreya Shankar](https://maven.com/p/0c0359/error-analysis-the-ai-engineer-s-best-roi).
 
 This brings us to a crucial question: How do you make it easy for teams to look at their data? The answer leads us to what I consider the most important investment any AI team can make...
 
-## The Most Important AI Investment: A Simple Data Viewer
+## 3. The Most Important AI Investment: A Simple Data Viewer
 
 The single most impactful investment I've seen AI teams make isn't a fancy evaluation dashboard – it's building a customized interface that lets anyone examine what their AI is actually doing. I emphasize *customized* because every domain has unique needs that off-the-shelf tools rarely address. When reviewing apartment leasing conversations, you need to see the full chat history and scheduling context. For real estate queries, you need the property details and source documents right there. Even small UX decisions – like where to place metadata or which filters to expose – can make the difference between a tool people actually use and one they avoid.
 
@@ -168,24 +150,23 @@ Let me show you what I mean. Here's the data viewer built for NurtureBoss (which
 ![Aggregate and count errors](images/nboss_analysis.png)
 :::
 
-The power of these interfaces isn't in their sophistication. It's that they remove friction from looking at real data. When domain experts can easily examine AI outputs, they consistently find insights that surprise the technical team.
+Here's what makes a good data annotation tool:
 
-Here's what makes a good data viewer:
-
-1. Show all context in one place. Don't make users hunt through different systems to understand what happened.
+1. Show all context in one place. Don't make users hunt through different systems to understand what happened.  
 2. Make feedback trivial to capture. One-click correct/incorrect buttons beat lengthy forms.
-3. Enable quick filtering and sorting. Teams need to easily dive into specific error types.
-4. Have hotkeys that allow users to navigate quickly and annotate without clicking.
+3. Capture open-ended feedback. This lets you capture nuanced issues that don't fit into a pre-defined taxonomy.
+4. Enable quick filtering and sorting. Teams need to easily dive into specific error types.  In the example above, NurtureBoss can quickly filter by the channel (voice, text, chat) or the specific property they want to look at quickly.
+5. Have hotkeys that allow users to navigate between data examples and annotate without clicking.
 
-It doesn't matter what web frameworks you use - use whatever you are familiar with.  Because I'm a python developer, my current favorite web framework is [FastHTML](https://fastht.ml/docs/) coupled with [MonsterUI](https://www.answer.ai/posts/2025-01-15-monsterui.html), because it allows me to define the back-end and front-end code in one small python file. The [FastHTML gallery](https://fastht.ml/gallery/) has an example of an annotation app in the "Applications" section.  
+It doesn't matter what web frameworks you use - use whatever you are familiar with. Because I'm a python developer, my current favorite web framework is [FastHTML](https://fastht.ml/docs/) coupled with [MonsterUI](https://www.answer.ai/posts/2025-01-15-monsterui.html), because it allows me to define the back-end and front-end code in one small python file.
 
-You don't need to build something complex. Even a spreadsheet can work initially. The key is making it easy for domain experts to spot patterns. This brings us to another counter-intuitive lesson: the people best positioned to improve your AI system are often the ones who know the least about AI.
+The key is starting somewhere, even if it's simple. I've found custom web apps provide the best experience, but if you're just beginning, a spreadsheet is better than nothing. As your needs grow, you can evolve your tools accordingly.
 
-## Empower Domain Experts To Write Prompts
+This brings us to another counter-intuitive lesson: the people best positioned to improve your AI system are often the ones who know the least about AI.
 
-I recently worked with an AI startup building an interactive learning platform. Their product helps students master complex concepts through guided problem-solving – the AI adapts in real-time, providing personalized scaffolding and feedback as students work through challenges. It's the kind of product that requires deep expertise in both education and technology.
+## 4. Empower Domain Experts To Write Prompts
 
-Like many teams, they followed what seemed like a logical process: their product manager – a learning design expert, would create detailed PowerPoint decks explaining pedagogical principles, example dialogues, and desired learning outcomes. She'd present these to the engineering team, who would then work to translate her expertise into prompts.
+I recently worked with an education startup building an interactive learning platform with LLMs. Their product manager, a learning design expert, would create detailed PowerPoint decks explaining pedagogical principles and example dialogues. She'd present these to the engineering team, who would then translate her expertise into prompts.
 
 But here's the thing: prompts are just English. Having a learning expert communicate teaching principles through PowerPoint, only for engineers to translate that back into English prompts, created unnecessary friction. The most successful teams flip this model by giving domain experts tools to write and iterate on prompts directly.
 
@@ -203,10 +184,20 @@ Prompt playgrounds are a great starting point for this. Tools like Arize, Langsm
 
 :::
 
-
 But there's a crucial next step that many teams miss: integrating prompt development into their application context. Most AI applications aren't just prompts –  They commonly involve RAG systems pulling from your knowledge base, agent orchestration coordinating multiple steps, and application-specific business logic. The most effective teams I've worked with go beyond standalone playgrounds. They build what I call _**integrated prompt environments**_ – essentially admin versions of their actual user interface that expose prompt editing.
 
-### The Power of Plain Language
+Here's an illustration of what an integrated prompt environment might look like for a real estate AI assistant:
+
+::: {layout-ncol=2}
+
+![The UI that users (real estate agents) see.](images/ipe_before.png){width="700"}
+
+![The same UI, but with an "admin mode"used by the engineering & product team to iterate on the prompt and debug issues.](images/ipe_after.png)
+
+:::
+
+
+### Tips For Communicating With Domain Experts
 
 There's another barrier that often prevents domain experts from contributing effectively: unnecessary jargon. I was working with an education startup where engineers, product managers, and learning specialists were talking past each other in meetings. The engineers kept saying, "We're going to build an agent that does XYZ," when really the job to be done was writing a prompt. This created an artificial barrier – the learning specialists, who were the actual domain experts, felt like they couldn't contribute because they didn't understand "agents."
 
@@ -222,23 +213,17 @@ Here's a simple example of how to translate common AI jargon:
 
 This doesn't mean dumbing things down – it means being precise about what you're actually doing. When you say "we're building an agent," what specific capability are you adding? Is it function calling? Tool use? Or just a better prompt? Being specific helps everyone understand what's actually happening.
 
-Of course, there's nuance here. Technical terminology exists for a reason – it provides precision when talking with other technical stakeholders. The key is adapting your language to your audience:
-
-- With non-technical domain experts: Focus on capabilities and outcomes, not implementation details
-- In mixed audiences: Introduce technical terms with plain language explanations 
-- With technical teams: Use precise terminology when needed for implementation discussions
-
-The most effective teams I've seen create a shared vocabulary that bridges these worlds. They don't abandon technical terms entirely – they just make sure everyone understands what they mean in practice.
+There's nuance here. Technical terminology exists for a reason – it provides precision when talking with other technical stakeholders. The key is adapting your language to your audience.
 
 The challenge many teams raise at this point is: "This all sounds great, but what if we don't have any data yet? How can we look at examples or iterate on prompts when we're just starting out?" That's what we'll talk about next.
 
-## Bootstrapping Your AI With Synthetic Data Is Effective (Even With Zero Users)
+## 5. Bootstrapping Your AI With Synthetic Data Is Effective (Even With Zero Users)
 
 One of the most common roadblocks I hear from teams is: "We can't do proper evaluation because we don't have enough real user data yet." This creates a chicken-and-egg problem – you need data to improve your AI, but you need a decent AI to get users who generate that data.
 
 Fortunately, there's a solution that works surprisingly well: synthetic data. LLMs can generate realistic test cases that cover the range of scenarios your AI will encounter.
 
-As I wrote in my [LLM-as-a-Judge blog post](https://hamel.dev/blog/posts/llm-judge/#generating-data), synthetic data can be remarkably effective for evaluation. [Bryan Bischof](https://www.linkedin.com/in/bryan-bischof/), Former Head of AI at Hex, put it perfectly:
+As I wrote in my [LLM-as-a-Judge blog post](https://hamel.dev/blog/posts/llm-judge/#generating-data), synthetic data can be remarkably effective for evaluation. [Bryan Bischof](https://www.linkedin.com/in/bryan-bischof/), the former Head of AI at Hex, put it perfectly:
 
 > "LLMs are surprisingly good at generating excellent - and diverse - examples of user prompts. This can be relevant for powering application features, and sneakily, for building Evals. If this sounds a bit like the Large Language Snake is eating its tail, I was just as surprised as you! All I can say is: it works, ship it."
 
@@ -285,7 +270,7 @@ But having these dimensions defined is only half the battle. The real challenge 
 
 For Rechat, we maintained a test database of listings that we knew would trigger different edge cases. Some teams prefer to use an anonymized copy of production data, but either way, you need to ensure your test data has enough variety to exercise the scenarios you care about.
 
-Here's an example of how we might use these dimensions with real data to generate test cases for the property search feature (this is just psuedo-code, and very illustrative):
+Here's an example of how we might use these dimensions with real data to generate test cases for the property search feature (this is just pseudo-code, and very illustrative):
 
 ```python
 def generate_search_query(scenario, persona, listing_db):
@@ -357,7 +342,7 @@ This approach isn't just theoretical – it's been proven in production across d
 
 Let's look at how to maintain trust in your evaluation system as you scale...
 
-## Maintaining Trust In Evals Is Critical
+## 6. Maintaining Trust In Evals Is Critical
 
 This is a pattern I've seen repeatedly: teams build evaluation systems, then gradually lose faith in them. Sometimes it's because the metrics don't align with what they observe in production. Other times, it's because the evaluations become too complex to interpret. Either way, the result is the same – the team reverts to making decisions based on gut feeling and anecdotal feedback, undermining the entire purpose of having evaluations.
 
@@ -385,13 +370,11 @@ So how do you build evaluation systems that remain trustworthy despite criteria 
 
 #### 1. Favor Binary Decisions Over Arbitrary Scales
 
-As I wrote in my [LLM-as-a-Judge post](https://hamel.dev/blog/posts/llm-judge/#why-are-simple-passfail-metrics-important), binary decisions provide clarity that more complex scales often obscure. When faced with a 1-5 scale, evaluators frequently struggle with the difference between a 3 and a 4, introducing inconsistency and subjectivity. What exactly distinguishes "somewhat helpful" from "helpful"? These boundary cases consume disproportionate mental energy and create noise in your evaluation data.
+As I wrote in my [LLM-as-a-Judge post](https://hamel.dev/blog/posts/llm-judge/#why-are-simple-passfail-metrics-important), binary decisions provide clarity that more complex scales often obscure. When faced with a 1-5 scale, evaluators frequently struggle with the difference between a 3 and a 4, introducing inconsistency and subjectivity. What exactly distinguishes "somewhat helpful" from "helpful"? These boundary cases consume disproportionate mental energy and create noise in your evaluation data. And even when businesses use a 1-5 scale, they inevitably ask where to draw the line for "good enough" or to trigger intervention, forcing a binary decision anyway.
 
 In contrast, a binary pass/fail forces evaluators to make a clear judgment: did this output achieve its purpose or not? This clarity extends to measuring progress – a 10% increase in passing outputs is immediately meaningful, while a 0.5-point improvement on a 5-point scale requires interpretation.
 
 I've found that teams who resist binary evaluation often do so because they want to capture nuance. But nuance isn't lost – it's just moved to the qualitative critique that accompanies the judgment. The critique provides rich context about why something passed or failed, and what specific aspects could be improved, while the binary decision creates actionable clarity about whether improvement is needed at all.
-
-The simplicity of binary decisions also makes it easier to align automated evaluations with human judgment. When measuring agreement between humans and LLMs, calculating agreement on binary decisions is straightforward. This simplicity helps teams maintain trust evaluation systems.
 
 #### 2. Enhance Binary Judgments With Detailed Critiques
 
@@ -442,7 +425,7 @@ Scaling evaluation isn't just about reducing human effort – it's about directi
 
 Now that we've covered how to maintain trust in your evaluations, let's talk about a fundamental shift in how you should approach AI development roadmaps...
 
-## Your AI Roadmap Should Count Experiments, Not Features
+## 7. Your AI Roadmap Should Count Experiments, Not Features
 
 If you've worked in software development, you're familiar with traditional roadmaps: a list of features with target delivery dates. Teams commit to shipping specific functionality by specific deadlines, and success is measured by how closely they hit those targets.
 
@@ -481,9 +464,7 @@ The key to making an experiment-based roadmap work is having robust evaluation i
 
 I saw this firsthand during the early development of GitHub Copilot. What most people don't realize is that the team invested heavily in building sophisticated offline evaluation infrastructure. They created systems that could test code completions against a very large corpus of repositories on GitHub, leveraging unit tests that already existed in high-quality codebases as an automated way to verify completion correctness. This was a massive engineering undertaking – they had to build systems that could clone repositories at scale, set up their environments, run their test suites, and analyze the results, all while handling the incredible diversity of programming languages, frameworks, and testing approaches.
 
-This wasn't wasted time – it was the critical foundation that enabled everything that followed. Once that evaluation framework was in place, the pace of improvement accelerated dramatically. The team could run thousands of experiments, quickly identify which approaches worked best, and iterate rapidly. They could confidently say "this change improved completion quality by X%" rather than relying on gut feelings or anecdotal feedback.
-
-This pattern repeats across successful AI teams. The upfront investment in evaluation infrastructure feels slow initially, but it creates a foundation for rapid experimentation and improvement later. Without trusted evaluation metrics, teams get stuck in endless debates about whether changes are actually helping or hurting.
+This wasn't wasted time—it was the foundation that accelerated everything. With solid evaluation in place, the team ran thousands of experiments, quickly identified what worked, and could say with confidence "this change improved quality by X%" instead of relying on gut feelings. While the upfront investment in evaluation feels slow, it prevents endless debates about whether changes help or hurt, and dramatically speeds up innovation later.
 
 ### Communicating This to Stakeholders
 
@@ -493,13 +474,11 @@ The key is to shift the conversation from outputs to outcomes. Instead of promis
 
 Eugene shared how he handles these conversations:
 
-> "I try to reassure leadership with timeboxes. At the end of three months, if it works out, then we move it to production. At any step of the way, if it doesn't work out, we abort."
+> "I try to reassure leadership with timeboxes. At the end of three months, if it works out, then we move it to production. At any step of the way, if it doesn't work out, we pivot."
 
 This approach gives stakeholders clear decision points while acknowledging the inherent uncertainty in AI development. It also helps manage expectations about timelines – instead of promising a feature in six months, you're promising a clear understanding of whether that feature is feasible in three months.
 
 Bryan's capability funnel approach provides another powerful communication tool. It allows teams to show concrete progress through the funnel stages, even when the final solution isn't ready. It also helps executives understand where problems are occurring and make informed decisions about where to invest resources.
-
-This level of transparency about both successes and failures builds trust with stakeholders, even when the outcomes aren't what they hoped for.
 
 ### Build a Culture of Experimentation Through Failure Sharing
 
@@ -521,7 +500,7 @@ The roadmap didn't promise specific features or capabilities. Instead, it commit
 
 The results were telling:
 
-> "For the first two to three months, it was all massive failures. [...] And then [a breakthrough] came out. [...] Within a month, that problem was solved. So you can see that in the first quarter or even four months, it was going nowhere. [...] But then you can also see that all of a sudden, some new technology comes along, some new paradigm, some new reframing comes along that just [solves] 80% of [the problem]."
+> "For the first two to three months, nothing worked. [...] And then [a breakthrough] came out. [...] Within a month, that problem was solved. So you can see that in the first quarter or even four months, it was going nowhere. [...] But then you can also see that all of a sudden, some new technology comes along, some new paradigm, some new reframing comes along that just [solves] 80% of [the problem]."
 
 This pattern – long periods of apparent failure followed by breakthroughs – is common in AI development. Traditional feature-based roadmaps would have killed the project after months of "failure," missing the eventual breakthrough.
 
