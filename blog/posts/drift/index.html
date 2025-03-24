@@ -206,7 +206,7 @@ Subscribe To My Newsletter
 <li>Your data for <a href="../../../blog/posts/evals/index.html">evaluations</a> are materially different from the inputs your model receives in production, causing your evaluations to be misleading.</li>
 <li>Updates to prompts, functions, RAG, and similar elements aren’t incorporated into your fine-tuning or training data, leading to unexpected model behavior in production.</li>
 </ol>
-<p>No matter how careful you are, bugs can still slip through the cracks. A high-value activity is to routinely audit all your AI/ML projects for drift.</p>
+<p>No matter how careful you are, bugs can still slip through the cracks. A a high ROI activity is to routinely audit all your AI/ML projects for drift.</p>
 <section id="how-it-works" class="level2">
 <h2 class="anchored" data-anchor-id="how-it-works">How It Works</h2>
 <div class="callout callout-style-default callout-warning callout-titled">
@@ -262,9 +262,7 @@ Warning
 <h2 class="anchored" data-anchor-id="minimal-example-ft_drift">Minimal Example: <code>ft_drift</code></h2>
 <p>I work with lots of folks who are fine-tuning models using the OpenAI API. I’ve created a small CLI tool, <a href="https://github.com/hamelsmu/ft-drift/"><code>ft_drift</code></a>, that detects drift between two <a href="https://platform.openai.com/docs/guides/fine-tuning/preparing-your-dataset">multi-turn chat formatted</a> jsonl files. Currently, <code>ft_drift</code> only detects drift in prompt templates, schemas and other token-based drift (as opposed to semantic drift). However, this is a good starting point to understand the general concept of adversarial validation. Here is a demo of this tool at work:</p>
 <p><img src="images/drift_cli.gif" class="img-fluid"></p>
-<p>The demo shows the tool detecting a difference between two datasets, <code>file_a.jsonl</code> and <code>file_b.jsonl</code>. Afterward, a table of important tokens that account for the drift are shown, such as <code>END-UI-FORMAT</code>, <code>UI-FORMAT</code>, etc.</p>
-<p>This demo is from a real-world example where an unintentional change in a prompt template caused unexpected behavior in a model. We were able to apply the tool and quickly find the root cause of the issue. The modeling code is embarrassingly simple and located at <a href="https://github.com/hamelsmu/ft-drift/blob/main/ft_drift/model.py"><code>ft_drift/model.py</code></a>. The point is you don’t need sophisticated techniques to get started.</p>
-<p>You can take this approach further by adding embeddings to your features to also detect semantic drift. Similarly, you could add additional features by hand like the number of conversation turns, length of messages, etc.</p>
+<p>The demo is from a real-world example where an unintentional change in a prompt template caused unexpected behavior in a model. The demo shows the tool detecting a difference between two datasets, <code>file_a.jsonl</code> and <code>file_b.jsonl</code>. Afterward, a table of important tokens that account for the drift are shown, such as <code>END-UI-FORMAT</code>, <code>UI-FORMAT</code>, etc. We were able to apply the tool and quickly find the root cause of the issue. The modeling code is embarrassingly simple and located at <a href="https://github.com/hamelsmu/ft-drift/blob/main/ft_drift/model.py"><code>ft_drift/model.py</code></a>. The point is you don’t need sophisticated techniques to get started. You can then take this approach further by adding embeddings to your features to also detect semantic drift. Similarly, you could add additional features by hand like the number of conversation turns, length of messages, etc.</p>
 
 
 </section>

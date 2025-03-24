@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-01-17">
+<meta name="dcterms.date" content="2025-03-24">
 <meta name="description" content="Using tensor parallelism w/ vLLM &amp; Modal to run Llama 70b">
 
 <title>vLLM &amp; large models – Hamel’s Blog</title>
@@ -59,7 +59,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
 <script src="../../../site_libs/quarto-search/fuse.min.js"></script>
@@ -113,9 +113,6 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-
-<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 <link rel="stylesheet" href="../../../styles.css">
@@ -1055,7 +1052,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 17, 2025</p>
+      <p class="date">March 24, 2025</p>
     </div>
   </div>
   
@@ -1160,103 +1157,6 @@ Be Careful To Mind The Cache When Downloading Files
 <p>Call <code>llm.generate</code> to generate the outputs. It adds the input prompts to vLLM engine’s waiting queue and executes the vLLM engine to generate the outputs with high throughput.</p>
 </blockquote>
 <p>Here are the results, averaged over 5 runs for each row:</p>
-<div id="780f7b90" class="cell" data-execution_count="1">
-<div class="cell-output cell-output-stdout">
-<pre><code>True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True
-True</code></pre>
-</div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<div>
-
-
-<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">avg tok/sec</th>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">model</th>
-<th data-quarto-table-cell-role="th">GPU</th>
-<th data-quarto-table-cell-role="th">num_gpus</th>
-<th data-quarto-table-cell-role="th"></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">Llama-2-70b-chat-hf</td>
-<td data-quarto-table-cell-role="th">NVIDIA A100-SXM4-40GB</td>
-<td data-quarto-table-cell-role="th">4</td>
-<td>380.9</td>
-</tr>
-<tr class="even">
-<td rowspan="6" data-quarto-table-cell-role="th" data-valign="top">Llama-2-7b-chat-hf</td>
-<td rowspan="3" data-quarto-table-cell-role="th" data-valign="top">NVIDIA A10</td>
-<td data-quarto-table-cell-role="th">1</td>
-<td>458.8</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>497.3</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">4</td>
-<td>543.6</td>
-</tr>
-<tr class="odd">
-<td rowspan="3" data-quarto-table-cell-role="th" data-valign="top">NVIDIA A100-SXM4-40GB</td>
-<td data-quarto-table-cell-role="th">1</td>
-<td>842.9</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">2</td>
-<td>699.1</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>650.7</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
 <p>You can see all the individual runs <a href="https://wandb.ai/hamelsmu/llama-inference?workspace=user-hamelsmu">here</a>. In my experiments, the 70b model needed a minimum of 4 A100s to run, so that’s why there is only one row for that model (Modal only has instances with 1, 2, or 4 GPUs).</p>
 <p>```{python}</p>
 <div class="callout callout-style-default callout-warning callout-titled">

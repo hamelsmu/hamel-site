@@ -17,7 +17,735 @@
 <width>144</width>
 </image>
 <generator>quarto-1.5.57</generator>
-<lastBuildDate>Sun, 19 Jan 2025 08:00:00 GMT</lastBuildDate>
+<lastBuildDate>Mon, 24 Mar 2025 07:00:00 GMT</lastBuildDate>
+<item>
+  <title>A Field Guide to Rapidly Improving AI Products</title>
+  <dc:creator>Hamel Husain</dc:creator>
+  <link>https://hamel.dev/blog/posts/field-guide/</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>Most AI teams focus on the wrong things. Here’s a common scene from my consulting work:</p>
+<div class="screenplay" style="border: 2px solid #ccc; border-radius: 5px; padding: 20px; font-family: Courier, monospace;">
+<div style="margin-bottom: 15px;">
+<div style="text-transform: uppercase; font-weight: bold;">
+AI TEAM
+</div>
+<blockquote class="blockquote">
+<p>
+Here’s our agent architecture – we’ve got RAG here, a router there, and we’re using this new framework for…
+</p>
+</blockquote>
+</div>
+<div style="margin-bottom: 15px;">
+<div style="text-transform: uppercase; font-weight: bold;">
+ME
+</div>
+<blockquote class="blockquote">
+<div style="font-style: italic;">
+<p>
+[Holding up my hand to pause the enthusiastic tech lead.]
+</p>
+</div>
+<p>
+“Can you show me how you’re measuring if any of this actually works?”
+</p>
+</blockquote>
+</div>
+<div style="margin-bottom: 15px;">
+<div style="font-style: italic;">
+… Room goes quiet
+</div>
+</div>
+</div>
+<p><br></p>
+<p>This scene has played out dozens of times over the last two years. Teams invest weeks building complex AI systems, but can’t tell me if their changes are helping or hurting.</p>
+<p>This isn’t surprising. With new tools and frameworks emerging weekly, it’s natural to focus on tangible things we can control – which vector database to use, which LLM provider to choose, which agent framework to adopt. But after helping 30+ companies build AI products, I’ve discovered the teams who succeed barely talk about tools at all. Instead, they obsess over measurement and iteration.</p>
+<p>In this post, I’ll show you exactly how these successful teams operate. You’ll learn:</p>
+<ol type="1">
+<li>Why focusing on tools over process is killing your AI projects</li>
+<li>How error analysis consistently reveals the highest-ROI improvements</li>
+<li>Why a simple data viewer is your most important AI investment</li>
+<li>How to empower domain experts (not just engineers) to improve your AI</li>
+<li>Why synthetic data is more effective than you think</li>
+<li>How to maintain trust in your evaluation system</li>
+<li>Why your AI roadmap should count experiments, not features</li>
+</ol>
+<p>I’ll explain each of these topics with real examples. While every situation is unique, you’ll see patterns that apply regardless of your domain or team size.</p>
+<p>Let’s start by examining the most common mistake I see teams make – one that derails AI projects before they even begin.</p>
+<section id="the-most-common-mistake-focus-on-tools-over-process" class="level2">
+<h2 class="anchored" data-anchor-id="the-most-common-mistake-focus-on-tools-over-process">1. The Most Common Mistake: Focus on Tools Over Process</h2>
+<p>The “tools first” mindset runs deep in AI development. It’s not just about architecture diagrams and frameworks – even when teams try to be data-driven, they often reach for tools instead of process. Let me show you what this looks like in practice.</p>
+<p>One client proudly showed me this evaluation dashboard:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://hamel.dev/blog/posts/field-guide/images/dashboard.png" class="img-fluid figure-img"></p>
+<figcaption>The kind of dashboard that foreshadows failure. I’ve <a href="https://hamel.dev/blog/posts/llm-judge/" target="_blank">written about this before</a>.</figcaption>
+</figure>
+</div>
+<p>This is what I call the “tools trap” – the belief that adopting the right tools or frameworks (in this case, generic metrics) will solve your AI problems. It’s particularly dangerous because it feels like progress. But without meaningful measurement, you’re flying blind.</p>
+<p>Generic metrics are worse than useless – they actively impede progress in three ways:</p>
+<p>First, they create a <strong>false sense of measurement and progress</strong>. Teams think they’re data-driven because they have dashboards, but they’re tracking vanity metrics that don’t correlate with real user problems. I’ve seen teams celebrate improving their “helpfulness score” by 10% while their actual users were still struggling with basic tasks. It’s like optimizing your website’s load time while your checkout process is broken – you’re getting better at the wrong thing.</p>
+<p>Second, too many metrics fragment your attention. Instead of focusing on the few metrics that matter for your specific use case, you’re trying to optimize multiple dimensions simultaneously. When everything is important, nothing is.</p>
+<p>What’s the alternative? Building your own metrics and methods of evaluation in a data-driven way.</p>
+<p>Many people are skeptical when I suggest they need custom metrics. “Look at your data” sounds simple, but what does it actually mean in practice? Let me share a story from Jacob, the founder of <a href="https://nurtureboss.io/">Nurture Boss</a>, a company building AI assistants for the apartment industry.</p>
+<p>Jacob built a simple viewer that let his development team examine conversations between their AI and users. Next to each conversation was a space where they could add notes, listing all the failure modes they observed in an open-ended way. By parallelizing this work across developers, Jacob’s team quickly annotated dozens of conversations.</p>
+<p>As team members scanned through these notes, clear patterns emerged. Through this process of error analysis, they discovered their AI was struggling with date handling – a seemingly simple task that was failing 66% of the time. Users would say “let’s schedule a tour two weeks from now” and the AI would suggest random dates, sometimes even in past years.</p>
+<p>Instead of immediately reaching for new tools, they looked at actual conversation logs, categorized the types of date-handling failures, built specific tests to catch these issues, and measured improvement on these metrics.</p>
+<p>The result? They improved their date handling success rate from 33% to 95%. The solution didn’t require new tools – it required understanding the problem.</p>
+<p>So what does focusing on this annotation process give you? - Metrics specific to your task that you can actually measure - Systematic ways of improving those metrics - A sense of progress throughout every step of the way</p>
+<p>I recommend watching Jacob explain this process himself:</p>
+<div class="quarto-video"><iframe data-external="1" src="https://www.youtube.com/embed/e2i6JbU2R-s" width="800" height="450" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p>Your job is no longer about wrangling tools to work in your stack; it’s about creating processes that work for you and your team. And the most powerful process – the one that consistently delivers the highest ROI – is structured error analysis.</p>
+</section>
+<section id="everyone-skips-error-analysis-and-its-the-highest-roi-activity" class="level2">
+<h2 class="anchored" data-anchor-id="everyone-skips-error-analysis-and-its-the-highest-roi-activity">2. Everyone Skips Error Analysis (And It’s The Highest ROI Activity)</h2>
+<p>Now let’s dive deeper into how to conduct effective error analysis. It sounds boring – it’s not as exciting as trying the latest LLM or implementing a new agent framework. <strong>But it’s the single most valuable activity in AI development, and I’ve never seen a team regret investing in it.</strong> Let me show you how this played out at NurtureBoss.</p>
+<p>When thinking about potential error types, you can take one of two approaches: “top-down” or “bottom-up.”</p>
+<p>With a top-down approach, you start with evaluation metrics common in the AI community like “hallucination” or “toxicity,” plus metrics unique to your task. At NurtureBoss, they might have wanted to measure customer frustration since their AI chatbot interacts directly with apartment seekers.</p>
+<p>Top-down is ok, but I find it’s better to start with a bottom-up approach. A bottom-up approach forces you to look at actual data and let the metrics naturally emerge. Let me describe how Jacob’s team implemented their bottom-up approach at NurtureBoss.</p>
+<p>We started with a simple spreadsheet where each row represented a conversation. In one column, team members wrote open-ended notes on anything good or bad the AI did in that conversation, with each row annotated independently. This process revealed latent evaluation criteria that wouldn’t have emerged in a top-down approach.</p>
+<p>Next, we fed annotations into a LLM and asked it to build a taxonomy of common failure modes. A second LLM call then mapped each row to a specific failure mode label. Finally, we created a pivot table of failure modes and counts. The results were striking: just three issues accounted for over 60% of all problems:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://hamel.dev/blog/posts/field-guide/images/pivot.png" class="img-fluid figure-img" width="200"></p>
+<figcaption>Excel Pivot Tables are a simple tool, but they work!</figcaption>
+</figure>
+</div>
+<ul>
+<li>Conversation flow issues: The AI would miss context or respond awkwardly to user queries or go off topic.</li>
+<li>Handoff failures: The AI wasn’t recognizing when to transfer conversations to human agents</li>
+<li>Rescheduling problems: The AI struggled with date handling and appointment modifications</li>
+</ul>
+<p>The impact was immediate. Jacob paused our evaluation work – not because it wasn’t valuable, but because they had uncovered so many actionable insights that his team needed several weeks just to implement fixes for the problems we’d already found. This simple exercise had revealed more concrete opportunities for improvement than they had discovered in all their previous attempts at measurement.</p>
+<p>The key is combining systematic analysis with domain expertise. Technical teams often miss crucial business context, while business teams may lack the tools to analyze patterns systematically. The magic happens when you bring these perspectives together.</p>
+<p>Let me share a concrete story about how top-down metrics in isolation can lead you astray, even when they feel perfectly customized to your use case.</p>
+<p>A recruiting platform I consulted with was using AI to generate initial outreach emails to candidates. They tracked success using edit distance – measuring how much recruiters modified the AI’s output. This seemed like an ideal custom metric for their specific needs: less editing should mean better AI performance.</p>
+<p>But when we conducted error analysis on specific examples with the goal of reducing edit distance, we discovered something startling: many recruiters on this platform were non-native speakers who were introducing grammatical errors and awkward phrasing into AI-generated text. When we showed both versions to hiring managers (the ultimate judges of quality), they consistently rated the less-edited AI versions as significantly better (which surprised me too). No dashboard or pre-defined metric would have caught this fundamental misalignment.</p>
+<p>If you’d like to see error analysis in action, we recorded a <a href="https://youtu.be/qH1dZ8JLLdU">live walkthrough here</a>.</p>
+<p>This brings us to a crucial question: How do you make it easy for teams to look at their data? The answer leads us to what I consider the most important investment any AI team can make…</p>
+</section>
+<section id="the-most-important-ai-investment-a-simple-data-viewer" class="level2">
+<h2 class="anchored" data-anchor-id="the-most-important-ai-investment-a-simple-data-viewer">3. The Most Important AI Investment: A Simple Data Viewer</h2>
+<p>The single most impactful investment I’ve seen AI teams make isn’t a fancy evaluation dashboard – it’s building a customized interface that lets anyone examine what their AI is actually doing. I emphasize <em>customized</em> because every domain has unique needs that off-the-shelf tools rarely address. When reviewing apartment leasing conversations, you need to see the full chat history and scheduling context. For real estate queries, you need the property details and source documents right there. Even small UX decisions – like where to place metadata or which filters to expose – can make the difference between a tool people actually use and one they avoid.</p>
+<p>I’ve watched teams struggle with generic labeling interfaces, hunting through multiple systems just to understand a single interaction. The friction adds up: clicking through to different systems to see context, copying error descriptions into separate tracking sheets, switching between tools to verify information. This friction doesn’t just slow teams down – it actively discourages the kind of systematic analysis that catches subtle issues.</p>
+<p>Teams with thoughtfully designed data viewers iterate 10x faster than those without them. And here’s the thing: <strong>these tools can be built in hours using AI-assisted development</strong> (like Cursor or Loveable). The investment is minimal compared to the returns.</p>
+<p>Let me show you what I mean. Here’s the data viewer built for NurtureBoss (which we discussed earlier):</p>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://hamel.dev/blog/posts/field-guide/images/nboss_filter.png" class="img-fluid figure-img"></p>
+<figcaption>Search and filter sessions</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://hamel.dev/blog/posts/field-guide/images/nboss_annotate.png" class="img-fluid figure-img"></p>
+<figcaption>Annotate and add notes</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://hamel.dev/blog/posts/field-guide/images/nboss_analysis.png" class="img-fluid figure-img"></p>
+<figcaption>Aggregate and count errors</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<p>Here’s what makes a good data annotation tool:</p>
+<ol type="1">
+<li>Show all context in one place. Don’t make users hunt through different systems to understand what happened.<br>
+</li>
+<li>Make feedback trivial to capture. One-click correct/incorrect buttons beat lengthy forms.</li>
+<li>Capture open-ended feedback. This lets you capture nuanced issues that don’t fit into a pre-defined taxonomy.</li>
+<li>Enable quick filtering and sorting. Teams need to easily dive into specific error types. In the example above, NurtureBoss can quickly filter by the channel (voice, text, chat) or the specific property they want to look at quickly.</li>
+<li>Have hotkeys that allow users to navigate between data examples and annotate without clicking.</li>
+</ol>
+<p>It doesn’t matter what web frameworks you use - use whatever you are familiar with. Because I’m a python developer, my current favorite web framework is <a href="https://fastht.ml/docs/">FastHTML</a> coupled with <a href="https://www.answer.ai/posts/2025-01-15-monsterui.html">MonsterUI</a>, because it allows me to define the back-end and front-end code in one small python file.</p>
+<p>The key is starting somewhere, even if it’s simple. I’ve found custom web apps provide the best experience, but if you’re just beginning, a spreadsheet is better than nothing. As your needs grow, you can evolve your tools accordingly.</p>
+<p>This brings us to another counter-intuitive lesson: the people best positioned to improve your AI system are often the ones who know the least about AI.</p>
+</section>
+<section id="empower-domain-experts-to-write-prompts" class="level2">
+<h2 class="anchored" data-anchor-id="empower-domain-experts-to-write-prompts">4. Empower Domain Experts To Write Prompts</h2>
+<p>I recently worked with an education startup building an interactive learning platform with LLMs. Their product manager, a learning design expert, would create detailed PowerPoint decks explaining pedagogical principles and example dialogues. She’d present these to the engineering team, who would then translate her expertise into prompts.</p>
+<p>But here’s the thing: prompts are just English. Having a learning expert communicate teaching principles through PowerPoint, only for engineers to translate that back into English prompts, created unnecessary friction. The most successful teams flip this model by giving domain experts tools to write and iterate on prompts directly.</p>
+<section id="build-bridges-not-gatekeepers" class="level3">
+<h3 class="anchored" data-anchor-id="build-bridges-not-gatekeepers">Build Bridges, Not Gatekeepers</h3>
+<p>Prompt playgrounds are a great starting point for this. Tools like Arize, Langsmith and Braintrust let teams quickly test different prompts, feed in example datasets, and compare results. Here are some screenshots of these tools:</p>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout-ncol="3">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://hamel.dev/blog/posts/field-guide/images/pp_phoenix2.png" class="img-fluid figure-img"></p>
+<figcaption>Arize Phoenix</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://hamel.dev/blog/posts/field-guide/images/pp_langsmith.png" class="img-fluid figure-img"></p>
+<figcaption>LangSmith</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://hamel.dev/blog/posts/field-guide/images/pp_bt.png" class="img-fluid figure-img"></p>
+<figcaption>Braintrust</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<p>But there’s a crucial next step that many teams miss: integrating prompt development into their application context. Most AI applications aren’t just prompts – They commonly involve RAG systems pulling from your knowledge base, agent orchestration coordinating multiple steps, and application-specific business logic. The most effective teams I’ve worked with go beyond standalone playgrounds. They build what I call <em><strong>integrated prompt environments</strong></em> – essentially admin versions of their actual user interface that expose prompt editing.</p>
+<p>Here’s an illustration of what an integrated prompt environment might look like for a real estate AI assistant:</p>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://hamel.dev/blog/posts/field-guide/images/ipe_before.png" class="img-fluid figure-img" width="700"></p>
+<figcaption>The UI that users (real estate agents) see.</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://hamel.dev/blog/posts/field-guide/images/ipe_after.png" class="img-fluid figure-img"></p>
+<figcaption>The same UI, but with an “admin mode”used by the engineering &amp; product team to iterate on the prompt and debug issues.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="tips-for-communicating-with-domain-experts" class="level3">
+<h3 class="anchored" data-anchor-id="tips-for-communicating-with-domain-experts">Tips For Communicating With Domain Experts</h3>
+<p>There’s another barrier that often prevents domain experts from contributing effectively: unnecessary jargon. I was working with an education startup where engineers, product managers, and learning specialists were talking past each other in meetings. The engineers kept saying, “We’re going to build an agent that does XYZ,” when really the job to be done was writing a prompt. This created an artificial barrier – the learning specialists, who were the actual domain experts, felt like they couldn’t contribute because they didn’t understand “agents.”</p>
+<p>This happens everywhere. I’ve seen it with lawyers at legal tech companies, psychologists at mental health startups, and doctors at healthcare firms. The magic of LLMs is that they make AI accessible through natural language, but we often destroy that advantage by wrapping everything in technical terminology.</p>
+<p>Here’s a simple example of how to translate common AI jargon:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 73%">
+<col style="width: 26%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Instead of saying…</th>
+<th>Say…</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>“We’re implementing a RAG approach”</td>
+<td>“We’re making sure the model has the right context to answer questions”</td>
+</tr>
+<tr class="even">
+<td>“We need to prevent prompt injection”</td>
+<td>“We need to make sure users can’t trick the AI into ignoring our rules”</td>
+</tr>
+<tr class="odd">
+<td>“Our model suffers from hallucination issues”</td>
+<td>“Sometimes the AI makes things up, so we need to check its answers”</td>
+</tr>
+</tbody>
+</table>
+<p>This doesn’t mean dumbing things down – it means being precise about what you’re actually doing. When you say “we’re building an agent,” what specific capability are you adding? Is it function calling? Tool use? Or just a better prompt? Being specific helps everyone understand what’s actually happening.</p>
+<p>There’s nuance here. Technical terminology exists for a reason – it provides precision when talking with other technical stakeholders. The key is adapting your language to your audience.</p>
+<p>The challenge many teams raise at this point is: “This all sounds great, but what if we don’t have any data yet? How can we look at examples or iterate on prompts when we’re just starting out?” That’s what we’ll talk about next.</p>
+</section>
+</section>
+<section id="bootstrapping-your-ai-with-synthetic-data-is-effective-even-with-zero-users" class="level2">
+<h2 class="anchored" data-anchor-id="bootstrapping-your-ai-with-synthetic-data-is-effective-even-with-zero-users">5. Bootstrapping Your AI With Synthetic Data Is Effective (Even With Zero Users)</h2>
+<p>One of the most common roadblocks I hear from teams is: “We can’t do proper evaluation because we don’t have enough real user data yet.” This creates a chicken-and-egg problem – you need data to improve your AI, but you need a decent AI to get users who generate that data.</p>
+<p>Fortunately, there’s a solution that works surprisingly well: synthetic data. LLMs can generate realistic test cases that cover the range of scenarios your AI will encounter.</p>
+<p>As I wrote in my <a href="https://hamel.dev/blog/posts/llm-judge/#generating-data">LLM-as-a-Judge blog post</a>, synthetic data can be remarkably effective for evaluation. <a href="https://www.linkedin.com/in/bryan-bischof/">Bryan Bischof</a>, the former Head of AI at Hex, put it perfectly:</p>
+<blockquote class="blockquote">
+<p>“LLMs are surprisingly good at generating excellent - and diverse - examples of user prompts. This can be relevant for powering application features, and sneakily, for building Evals. If this sounds a bit like the Large Language Snake is eating its tail, I was just as surprised as you! All I can say is: it works, ship it.”</p>
+</blockquote>
+<section id="a-framework-for-generating-realistic-test-data" class="level3">
+<h3 class="anchored" data-anchor-id="a-framework-for-generating-realistic-test-data">A Framework for Generating Realistic Test Data</h3>
+<p>The key to effective synthetic data is choosing the right dimensions to test. While these dimensions will vary based on your specific needs, I find it helpful to think about three broad categories:</p>
+<ol type="1">
+<li><strong>Features</strong>: What capabilities does your AI need to support?</li>
+<li><strong>Scenarios</strong>: What situations will it encounter?</li>
+<li><strong>User Personas</strong>: Who will be using it and how?</li>
+</ol>
+<p>These aren’t the only dimensions you might care about – you might also want to test different tones of voice, levels of technical sophistication, or even different locales and languages. The important thing is identifying dimensions that matter for your specific use case.</p>
+<p>For a real estate CRM AI assistant I worked on with <a href="https://www.rechat.com/">Rechat</a>, we defined these dimensions like this:</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1">features <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [</span>
+<span id="cb1-2">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"property search"</span>,      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Finding listings matching criteria</span></span>
+<span id="cb1-3">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"market analysis"</span>,      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Analyzing trends and pricing</span></span>
+<span id="cb1-4">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"scheduling"</span>,          <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Setting up property viewings</span></span>
+<span id="cb1-5">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"follow-up"</span>           <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Post-viewing communication</span></span>
+<span id="cb1-6">]</span>
+<span id="cb1-7"></span>
+<span id="cb1-8">scenarios <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [</span>
+<span id="cb1-9">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"exact match"</span>,         <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># One perfect listing match</span></span>
+<span id="cb1-10">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"multiple matches"</span>,    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Need to help user narrow down</span></span>
+<span id="cb1-11">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"no matches"</span>,         <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Need to suggest alternatives</span></span>
+<span id="cb1-12">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"invalid criteria"</span>     <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Help user correct search terms</span></span>
+<span id="cb1-13">]</span>
+<span id="cb1-14"></span>
+<span id="cb1-15">personas <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [</span>
+<span id="cb1-16">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"first_time_buyer"</span>,    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Needs more guidance and explanation</span></span>
+<span id="cb1-17">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"investor"</span>,           <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Focused on numbers and ROI</span></span>
+<span id="cb1-18">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"luxury_client"</span>,      <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Expects white-glove service</span></span>
+<span id="cb1-19">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"relocating_family"</span>   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Has specific neighborhood/school needs</span></span>
+<span id="cb1-20">]</span></code></pre></div>
+<p>But having these dimensions defined is only half the battle. The real challenge is ensuring your synthetic data actually triggers the scenarios you want to test. This requires two things:</p>
+<ol type="1">
+<li>A test database with enough variety to support your scenarios</li>
+<li>A way to verify that generated queries actually trigger intended scenarios</li>
+</ol>
+<p>For Rechat, we maintained a test database of listings that we knew would trigger different edge cases. Some teams prefer to use an anonymized copy of production data, but either way, you need to ensure your test data has enough variety to exercise the scenarios you care about.</p>
+<p>Here’s an example of how we might use these dimensions with real data to generate test cases for the property search feature (this is just pseudo-code, and very illustrative):</p>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> generate_search_query(scenario, persona, listing_db):</span>
+<span id="cb2-2">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">"""Generate a realistic user query about listings"""</span></span>
+<span id="cb2-3">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Pull real listing data to ground the generation</span></span>
+<span id="cb2-4">    sample_listings <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> listing_db.get_sample_listings(</span>
+<span id="cb2-5">        price_range<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>persona.price_range,</span>
+<span id="cb2-6">        location<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>persona.preferred_areas</span>
+<span id="cb2-7">    )</span>
+<span id="cb2-8">    </span>
+<span id="cb2-9">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Verify we have listings that will trigger our scenario</span></span>
+<span id="cb2-10">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> scenario <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"multiple_matches"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">and</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(sample_listings) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>:</span>
+<span id="cb2-11">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">raise</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">ValueError</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Need multiple listings for this scenario"</span>)</span>
+<span id="cb2-12">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> scenario <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"no_matches"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">and</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(sample_listings) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>:</span>
+<span id="cb2-13">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">raise</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">ValueError</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Found matches when testing no-match scenario"</span>)</span>
+<span id="cb2-14">    </span>
+<span id="cb2-15">    prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"""</span></span>
+<span id="cb2-16"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    You are an expert real estate agent who is searching for listings. You are given a customer type and a scenario.</span></span>
+<span id="cb2-17"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    </span></span>
+<span id="cb2-18"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    Your job is to generate a natural language query you would use to search these listings.</span></span>
+<span id="cb2-19"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    </span></span>
+<span id="cb2-20"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    Context:</span></span>
+<span id="cb2-21"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    - Customer type: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>persona<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>description<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb2-22"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    - Scenario: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>scenario<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb2-23"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    </span></span>
+<span id="cb2-24"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    Use these actual listings as reference:</span></span>
+<span id="cb2-25"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>format_listings(sample_listings)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb2-26"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    </span></span>
+<span id="cb2-27"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    The query should reflect the customer type and the scenario.</span></span>
+<span id="cb2-28"></span>
+<span id="cb2-29"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    Example query: Find homes in the 75019 zip code, 3 bedrooms, 2 bathrooms, price range $750k - $1M for an investor.</span></span>
+<span id="cb2-30"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    """</span></span>
+<span id="cb2-31">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> generate_with_llm(prompt)</span></code></pre></div>
+<p>This produced realistic queries like:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 22%">
+<col style="width: 20%">
+<col style="width: 37%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Scenario</th>
+<th>Persona</th>
+<th>Generated Query</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>property search</td>
+<td>multiple matches</td>
+<td>first_time_buyer</td>
+<td>“Looking for 3-bedroom homes under $500k in the Riverside area. Would love something close to parks since we have young kids.”</td>
+</tr>
+<tr class="even">
+<td>market analysis</td>
+<td>no matches</td>
+<td>investor</td>
+<td>“Need comps for 123 Oak St.&nbsp;Specifically interested in rental yield comparison with similar properties in a 2-mile radius.”</td>
+</tr>
+</tbody>
+</table>
+<p>The key to useful synthetic data is grounding it in real system constraints. For the real-estate AI assistant, this means:</p>
+<ol type="1">
+<li>Using real listing IDs and addresses from their database</li>
+<li>Incorporating actual agent schedules and availability windows</li>
+<li>Respecting business rules like showing restrictions and notice periods</li>
+<li>Including market-specific details like HOA requirements or local regulations</li>
+</ol>
+<p>We then feed these test cases through Lucy and log the interactions. This gives us a rich dataset to analyze, showing exactly how the AI handles different situations with real system constraints. This approach helped us fix issues before they affected real users.</p>
+<p>Sometimes you don’t have access to a production database, especially for new products. In these cases, use LLMs to generate both test queries and the underlying test data. For a real estate AI assistant, this might mean creating synthetic property listings with realistic attributes – prices that match market ranges, valid addresses with real street names, and amenities appropriate for each property type. The key is grounding synthetic data in real-world constraints to make it useful for testing. The specifics of generating robust synthetic databases are beyond the scope of this post.</p>
+</section>
+<section id="guidelines-for-using-synthetic-data" class="level3">
+<h3 class="anchored" data-anchor-id="guidelines-for-using-synthetic-data">Guidelines for Using Synthetic Data</h3>
+<p>When generating synthetic data, follow these key principles to ensure it’s effective:</p>
+<ol type="1">
+<li><p><strong>Diversify your dataset</strong>: Create examples that cover a wide range of features, scenarios, and personas. As I wrote in my <a href="https://hamel.dev/blog/posts/llm-judge/">LLM-as-a-Judge post</a>, this diversity helps you identify edge cases and failure modes you might not anticipate otherwise.</p></li>
+<li><p><strong>Generate user inputs, not outputs</strong>: Use LLMs to generate realistic user queries or inputs, not the expected AI responses. This prevents your synthetic data from inheriting the biases or limitations of the generating model.</p></li>
+<li><p><strong>Incorporate real system constraints</strong>: Ground your synthetic data in actual system limitations and data. For example, when testing a scheduling feature, use real availability windows and booking rules.</p></li>
+<li><p><strong>Verify scenario coverage</strong>: Ensure your generated data actually triggers the scenarios you want to test. A query intended to test “no matches found” should actually return zero results when run against your system.</p></li>
+<li><p><strong>Start simple, then add complexity</strong>: Begin with straightforward test cases before adding nuance. This helps isolate issues and establish a baseline before tackling edge cases.</p></li>
+</ol>
+<p>This approach isn’t just theoretical – it’s been proven in production across dozens of companies. What often starts as a stopgap measure becomes a permanent part of the evaluation infrastructure, even after real user data becomes available.</p>
+<p>Let’s look at how to maintain trust in your evaluation system as you scale…</p>
+</section>
+</section>
+<section id="maintaining-trust-in-evals-is-critical" class="level2">
+<h2 class="anchored" data-anchor-id="maintaining-trust-in-evals-is-critical">6. Maintaining Trust In Evals Is Critical</h2>
+<p>This is a pattern I’ve seen repeatedly: teams build evaluation systems, then gradually lose faith in them. Sometimes it’s because the metrics don’t align with what they observe in production. Other times, it’s because the evaluations become too complex to interpret. Either way, the result is the same – the team reverts to making decisions based on gut feeling and anecdotal feedback, undermining the entire purpose of having evaluations.</p>
+<p>Maintaining trust in your evaluation system is just as important as building it in the first place. Here’s how the most successful teams approach this challenge:</p>
+<section id="understanding-criteria-drift" class="level3">
+<h3 class="anchored" data-anchor-id="understanding-criteria-drift">Understanding Criteria Drift</h3>
+<p>One of the most insidious problems in AI evaluation is “criteria drift” – a phenomenon where evaluation criteria evolve as you observe more model outputs. In their paper <a href="https://arxiv.org/abs/2404.12272">“Who Validates the Validators?”</a>, Shankar et al.&nbsp;describe this phenomenon:</p>
+<blockquote class="blockquote">
+<p>“To grade outputs, people need to externalize and define their evaluation criteria; however, the process of grading outputs helps them to define that very criteria.”</p>
+</blockquote>
+<p>This creates a paradox: you can’t fully define your evaluation criteria until you’ve seen a wide range of outputs, but you need criteria to evaluate those outputs in the first place. In other words, <strong>it is impossible to completely determine evaluation criteria prior to human judging of LLM outputs</strong>.</p>
+<p>I’ve observed this firsthand when working with Phillip Carter at Honeycomb on their <a href="https://www.honeycomb.io/blog/introducing-query-assistant">Query Assistant</a> feature. As we evaluated the AI’s ability to generate database queries, Phillip noticed something interesting:</p>
+<blockquote class="blockquote">
+<p>“Seeing how the LLM breaks down its reasoning made me realize I wasn’t being consistent about how I judged certain edge cases.”</p>
+</blockquote>
+<p>The process of reviewing AI outputs helped him articulate his own evaluation standards more clearly. This isn’t a sign of poor planning – it’s an inherent characteristic of working with AI systems that produce diverse and sometimes unexpected outputs.</p>
+<p>The teams that maintain trust in their evaluation systems embrace this reality rather than fighting it. They treat evaluation criteria as living documents that evolve alongside their understanding of the problem space. They also recognize that different stakeholders might have different (sometimes contradictory) criteria, and they work to reconcile these perspectives rather than imposing a single standard.</p>
+</section>
+<section id="creating-trustworthy-evaluation-systems" class="level3">
+<h3 class="anchored" data-anchor-id="creating-trustworthy-evaluation-systems">Creating Trustworthy Evaluation Systems</h3>
+<p>So how do you build evaluation systems that remain trustworthy despite criteria drift? Here are the approaches I’ve found most effective:</p>
+<section id="favor-binary-decisions-over-arbitrary-scales" class="level4">
+<h4 class="anchored" data-anchor-id="favor-binary-decisions-over-arbitrary-scales">1. Favor Binary Decisions Over Arbitrary Scales</h4>
+<p>As I wrote in my <a href="https://hamel.dev/blog/posts/llm-judge/#why-are-simple-passfail-metrics-important">LLM-as-a-Judge post</a>, binary decisions provide clarity that more complex scales often obscure. When faced with a 1-5 scale, evaluators frequently struggle with the difference between a 3 and a 4, introducing inconsistency and subjectivity. What exactly distinguishes “somewhat helpful” from “helpful”? These boundary cases consume disproportionate mental energy and create noise in your evaluation data. And even when businesses use a 1-5 scale, they inevitably ask where to draw the line for “good enough” or to trigger intervention, forcing a binary decision anyway.</p>
+<p>In contrast, a binary pass/fail forces evaluators to make a clear judgment: did this output achieve its purpose or not? This clarity extends to measuring progress – a 10% increase in passing outputs is immediately meaningful, while a 0.5-point improvement on a 5-point scale requires interpretation.</p>
+<p>I’ve found that teams who resist binary evaluation often do so because they want to capture nuance. But nuance isn’t lost – it’s just moved to the qualitative critique that accompanies the judgment. The critique provides rich context about why something passed or failed, and what specific aspects could be improved, while the binary decision creates actionable clarity about whether improvement is needed at all.</p>
+</section>
+<section id="enhance-binary-judgments-with-detailed-critiques" class="level4">
+<h4 class="anchored" data-anchor-id="enhance-binary-judgments-with-detailed-critiques">2. Enhance Binary Judgments With Detailed Critiques</h4>
+<p>While binary decisions provide clarity, they work best when paired with detailed critiques that capture the nuance of why something passed or failed. This combination gives you the best of both worlds: clear, actionable metrics and rich contextual understanding.</p>
+<p>For example, when evaluating a response that correctly answers a user’s question but contains unnecessary information, a good critique might read:</p>
+<blockquote class="blockquote">
+<p>“The AI successfully provided the market analysis requested (PASS), but included excessive detail about neighborhood demographics that wasn’t relevant to the investment question. This makes the response longer than necessary and potentially distracting.”</p>
+</blockquote>
+<p>These critiques serve multiple functions beyond just explanation. They force domain experts to externalize implicit knowledge – I’ve seen legal experts move from vague feelings that something “doesn’t sound right” to articulating specific issues with citation formats or reasoning patterns that can be systematically addressed.</p>
+<p>When included as few-shot examples in judge prompts, these critiques improve the LLM’s ability to reason about complex edge cases. I’ve found this approach often yields 15-20% higher agreement rates between human and LLM evaluations compared to prompts without example critiques. The critiques also provide excellent raw material for generating high-quality synthetic data, creating a flywheel for improvement.</p>
+</section>
+<section id="measure-alignment-between-automated-evals-and-human-judgment" class="level4">
+<h4 class="anchored" data-anchor-id="measure-alignment-between-automated-evals-and-human-judgment">3. Measure Alignment Between Automated Evals and Human Judgment</h4>
+<p>If you’re using LLMs to evaluate outputs (which is often necessary at scale), it’s crucial to regularly check how well these automated evaluations align with human judgment.</p>
+<p>This is particularly important given our natural tendency to over-trust AI systems. As Shankar et al.&nbsp;note in <a href="https://arxiv.org/abs/2404.12272">“Who Validates the Validators?”</a>, the lack of tools to validate evaluator quality is concerning</p>
+<blockquote class="blockquote">
+<p>Research shows people tend to over-rely and over-trust AI systems. For instance, in one high profile incident, researchers from MIT posted a pre-print on arXiv claiming that GPT-4 could ace the MIT EECS exam. Within hours, [the] work [was] debunked … citing problems arising from over-reliance on GPT-4 to grade itself.”</p>
+</blockquote>
+<p>This over-trust problem extends beyond self-evaluation. Research has shown that LLMs can be biased by simple factors like the ordering of options in a set, or even seemingly innocuous formatting changes in prompts. Without rigorous human validation, these biases can silently undermine your evaluation system.</p>
+<p>When working with Honeycomb, we tracked agreement rates between our LLM-as-a-judge and Phillip’s evaluations:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://hamel.dev/blog/posts/field-guide/images/score.png" class="img-fluid figure-img"></p>
+<figcaption>Agreement rates between LLM evaluator and human expert. More details <a href="https://hamel.dev/blog/posts/evals/#automated-evaluation-w-llms">here</a>.</figcaption>
+</figure>
+</div>
+<p>It took three iterations to achieve &gt;90% agreement, but this investment paid off in a system the team could trust. Without this validation step, automated evaluations often drift from human expectations over time, especially as the distribution of inputs changes. You can <a href="https://hamel.dev/blog/posts/evals/#automated-evaluation-w-llms">read more about this here</a>.</p>
+<p>Tools like <a href="https://eugeneyan.com/writing/aligneval/">Eugene Yan’s AlignEval</a> demonstrate this alignment process beautifully. It provides a simple interface where you upload data, label examples with a binary “good” or “bad,” and then evaluate LLM-based judges against those human judgments. What makes it effective is how it streamlines the workflow – you can quickly see where automated evaluations diverge from your preferences, refine your criteria based on these insights, and measure improvement over time. This approach reinforces that alignment isn’t a one-time setup but an ongoing conversation between human judgment and automated evaluation.</p>
+</section>
+</section>
+<section id="scaling-without-losing-trust" class="level3">
+<h3 class="anchored" data-anchor-id="scaling-without-losing-trust">Scaling Without Losing Trust</h3>
+<p>As your AI system grows, you’ll inevitably face pressure to reduce the human effort involved in evaluation. This is where many teams go wrong – they automate too much, too quickly, and lose the human connection that keeps their evaluations grounded.</p>
+<p>The most successful teams take a more measured approach:</p>
+<ol type="1">
+<li><p><strong>Start with high human involvement</strong>: In the early stages, have domain experts evaluate a significant percentage of outputs.</p></li>
+<li><p><strong>Study alignment patterns</strong>: Rather than automating evaluation, focus on understanding where automated evaluations align with human judgment and where they diverge. This helps you identify which types of cases need more careful human attention.</p></li>
+<li><p><strong>Use strategic sampling</strong>: Rather than evaluating every output, use statistical techniques to sample outputs that provide the most information, particularly focusing on areas where alignment is weakest.</p></li>
+<li><p><strong>Maintain regular calibration</strong>: Even as you scale, continue to compare automated evaluations against human judgment regularly, using these comparisons to refine your understanding of when to trust automated evaluations.</p></li>
+</ol>
+<p>Scaling evaluation isn’t just about reducing human effort – it’s about directing that effort where it adds the most value. By focusing human attention on the most challenging or informative cases, you can maintain quality even as your system grows.</p>
+<p>Now that we’ve covered how to maintain trust in your evaluations, let’s talk about a fundamental shift in how you should approach AI development roadmaps…</p>
+</section>
+</section>
+<section id="your-ai-roadmap-should-count-experiments-not-features" class="level2">
+<h2 class="anchored" data-anchor-id="your-ai-roadmap-should-count-experiments-not-features">7. Your AI Roadmap Should Count Experiments, Not Features</h2>
+<p>If you’ve worked in software development, you’re familiar with traditional roadmaps: a list of features with target delivery dates. Teams commit to shipping specific functionality by specific deadlines, and success is measured by how closely they hit those targets.</p>
+<p>This approach fails spectacularly with AI.</p>
+<p>I’ve watched teams commit to roadmaps like “Launch sentiment analysis by Q2” or “Deploy agent-based customer support by end of year,” only to discover that the technology simply isn’t ready to meet their quality bar. They either ship something subpar to hit the deadline or miss the deadline entirely. Either way, trust erodes.</p>
+<p>The fundamental problem is that traditional roadmaps assume we know what’s possible. With conventional software, that’s often true – given enough time and resources, you can build most features reliably. With AI, especially at the cutting edge, you’re constantly testing the boundaries of what’s feasible.</p>
+<section id="experiments-vs.-features" class="level3">
+<h3 class="anchored" data-anchor-id="experiments-vs.-features">Experiments vs.&nbsp;Features</h3>
+<p><a href="https://www.linkedin.com/in/bryan-bischof/">Bryan Bischof</a>, Former Head of AI at Hex, introduced me to what he calls a “capability funnel” approach to AI roadmaps. This strategy reframes how we think about AI development progress.</p>
+<p>Instead of defining success as shipping a feature, the capability funnel breaks down AI performance into progressive levels of utility. At the top of the funnel is the most basic functionality – can the system respond at all? At the bottom is fully solving the user’s job to be done. Between these points are various stages of increasing usefulness.</p>
+<p>For example, in a query assistant, the capability funnel might look like: 1. Can generate syntactically valid queries (basic functionality) 2. Can generate queries that execute without errors 3. Can generate queries that return relevant results 4. Can generate queries that match user intent 5. Can generate optimal queries that solve the user’s problem (complete solution)</p>
+<p>This approach acknowledges that AI progress isn’t binary – it’s about gradually improving capabilities across multiple dimensions. It also provides a framework for measuring progress even when you haven’t reached the final goal.</p>
+<p>The most successful teams I’ve worked with structure their roadmaps around experiments rather than features. Instead of committing to specific outcomes, they commit to a cadence of experimentation, learning, and iteration.</p>
+<p><a href="https://eugeneyan.com/">Eugene Yan</a>, an applied scientist at Amazon, shared how he approaches ML project planning with leadership - a process that, while originally developed for traditional machine learning, applies equally well to modern LLM development:</p>
+<blockquote class="blockquote">
+<p>“Here’s a common timeline. First, I take two weeks to do a data feasibility analysis, i.e”do I have the right data?” […] Then I take an additional month to do a technical feasibility analysis, i.e “can AI solve this?” After that, if it still works I’ll spend six weeks building a prototype we can A/B test.”</p>
+</blockquote>
+<p>While LLMs might not require the same kind of feature engineering or model training as traditional ML, the underlying principle remains the same: time-box your exploration, establish clear decision points, and focus on proving feasibility before committing to full implementation. This approach gives leadership confidence that resources won’t be wasted on open-ended exploration, while giving the team the freedom to learn and adapt as they go.</p>
+</section>
+<section id="the-foundation-evaluation-infrastructure" class="level3">
+<h3 class="anchored" data-anchor-id="the-foundation-evaluation-infrastructure">The Foundation: Evaluation Infrastructure</h3>
+<p>The key to making an experiment-based roadmap work is having robust evaluation infrastructure. Without it, you’re just guessing whether your experiments are working. With it, you can rapidly iterate, test hypotheses, and build on successes.</p>
+<p>I saw this firsthand during the early development of GitHub Copilot. What most people don’t realize is that the team invested heavily in building sophisticated offline evaluation infrastructure. They created systems that could test code completions against a very large corpus of repositories on GitHub, leveraging unit tests that already existed in high-quality codebases as an automated way to verify completion correctness. This was a massive engineering undertaking – they had to build systems that could clone repositories at scale, set up their environments, run their test suites, and analyze the results, all while handling the incredible diversity of programming languages, frameworks, and testing approaches.</p>
+<p>This wasn’t wasted time—it was the foundation that accelerated everything. With solid evaluation in place, the team ran thousands of experiments, quickly identified what worked, and could say with confidence “this change improved quality by X%” instead of relying on gut feelings. While the upfront investment in evaluation feels slow, it prevents endless debates about whether changes help or hurt, and dramatically speeds up innovation later.</p>
+</section>
+<section id="communicating-this-to-stakeholders" class="level3">
+<h3 class="anchored" data-anchor-id="communicating-this-to-stakeholders">Communicating This to Stakeholders</h3>
+<p>The challenge, of course, is that executives often want certainty. They want to know when features will ship and what they’ll do. How do you bridge this gap?</p>
+<p>The key is to shift the conversation from outputs to outcomes. Instead of promising specific features by specific dates, commit to a process that will maximize the chances of achieving the desired business outcomes.</p>
+<p>Eugene shared how he handles these conversations:</p>
+<blockquote class="blockquote">
+<p>“I try to reassure leadership with timeboxes. At the end of three months, if it works out, then we move it to production. At any step of the way, if it doesn’t work out, we pivot.”</p>
+</blockquote>
+<p>This approach gives stakeholders clear decision points while acknowledging the inherent uncertainty in AI development. It also helps manage expectations about timelines – instead of promising a feature in six months, you’re promising a clear understanding of whether that feature is feasible in three months.</p>
+<p>Bryan’s capability funnel approach provides another powerful communication tool. It allows teams to show concrete progress through the funnel stages, even when the final solution isn’t ready. It also helps executives understand where problems are occurring and make informed decisions about where to invest resources.</p>
+</section>
+<section id="build-a-culture-of-experimentation-through-failure-sharing" class="level3">
+<h3 class="anchored" data-anchor-id="build-a-culture-of-experimentation-through-failure-sharing">Build a Culture of Experimentation Through Failure Sharing</h3>
+<p>Perhaps the most counterintuitive aspect of this approach is the emphasis on learning from failures. In traditional software development, failures are often hidden or downplayed. In AI development, they’re the primary source of learning.</p>
+<p>Eugene operationalizes this at his organization through what he calls a “fifteen-five” – a weekly update that takes fifteen minutes to write and five minutes to read:</p>
+<blockquote class="blockquote">
+<p>“In my fifteen-fives, I document my failures and my successes. Within our team, we also have weekly”no-prep sharing sessions” where we discuss what we’ve been working on and what we’ve learned. When I do this, I go out of my way to share failures.”</p>
+</blockquote>
+<p>This practice normalizes failure as part of the learning process. It shows that even experienced practitioners encounter dead ends, and it accelerates team learning by sharing those experiences openly. And by celebrating the process of experimentation rather than just the outcomes, teams create an environment where people feel safe taking risks and learning from failures.</p>
+</section>
+<section id="a-better-way-forward" class="level3">
+<h3 class="anchored" data-anchor-id="a-better-way-forward">A Better Way Forward</h3>
+<p>So what does an experiment-based roadmap look like in practice? Here’s a simplified example from a content moderation project Eugene worked on:</p>
+<blockquote class="blockquote">
+<p>“I was asked to do content moderation. I said, ‘It’s uncertain whether we’ll meet that goal. It’s uncertain even if that goal is feasible with our data, or what machine learning techniques would work. But here’s my experimentation roadmap. Here are the techniques I’m gonna try, and I’m gonna update you at a two-week cadence.’”</p>
+</blockquote>
+<p>The roadmap didn’t promise specific features or capabilities. Instead, it committed to a systematic exploration of possible approaches, with regular check-ins to assess progress and pivot if necessary.</p>
+<p>The results were telling:</p>
+<blockquote class="blockquote">
+<p>“For the first two to three months, nothing worked. […] And then [a breakthrough] came out. […] Within a month, that problem was solved. So you can see that in the first quarter or even four months, it was going nowhere. […] But then you can also see that all of a sudden, some new technology comes along, some new paradigm, some new reframing comes along that just [solves] 80% of [the problem].”</p>
+</blockquote>
+<p>This pattern – long periods of apparent failure followed by breakthroughs – is common in AI development. Traditional feature-based roadmaps would have killed the project after months of “failure,” missing the eventual breakthrough.</p>
+<p>By focusing on experiments rather than features, teams create space for these breakthroughs to emerge. They also build the infrastructure and processes that make breakthroughs more likely – data pipelines, evaluation frameworks, and rapid iteration cycles.</p>
+<p>The most successful teams I’ve worked with start by building evaluation infrastructure before committing to specific features. They create tools that make iteration faster and focus on processes that support rapid experimentation. This approach might seem slower at first, but it dramatically accelerates development in the long run by enabling teams to learn and adapt quickly.</p>
+<p>The key metric for AI roadmaps isn’t features shipped – it’s experiments run. The teams that win are those that can run more experiments, learn faster, and iterate more quickly than their competitors. And the foundation for this rapid experimentation is always the same: robust, trusted evaluation infrastructure that gives everyone confidence in the results.</p>
+<p>By reframing your roadmap around experiments rather than features, you create the conditions for similar breakthroughs in your own organization.</p>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>Throughout this post, I’ve shared patterns I’ve observed across dozens of AI implementations. The most successful teams aren’t the ones with the most sophisticated tools or the most advanced models – they’re the ones that master the fundamentals of measurement, iteration, and learning.</p>
+<p>The core principles are surprisingly simple:</p>
+<ol type="1">
+<li><p><strong>Look at your data.</strong> Nothing replaces the insight gained from examining real examples. Error analysis consistently reveals the highest-ROI improvements.</p></li>
+<li><p><strong>Build simple tools that remove friction.</strong> Custom data viewers that make it easy to examine AI outputs yield more insights than complex dashboards with generic metrics.</p></li>
+<li><p><strong>Empower domain experts.</strong> The people who understand your domain best are often the ones who can most effectively improve your AI, regardless of their technical background.</p></li>
+<li><p><strong>Use synthetic data strategically.</strong> You don’t need real users to start testing and improving your AI. Thoughtfully generated synthetic data can bootstrap your evaluation process.</p></li>
+<li><p><strong>Maintain trust in your evaluations.</strong> Binary judgments with detailed critiques create clarity while preserving nuance. Regular alignment checks ensure automated evaluations remain trustworthy.</p></li>
+<li><p><strong>Structure roadmaps around experiments, not features.</strong> Commit to a cadence of experimentation and learning rather than specific outcomes by specific dates.</p></li>
+</ol>
+<p>These principles apply regardless of your domain, team size, or technical stack. They’ve worked for companies ranging from early-stage startups to tech giants, across use cases from customer support to code generation.</p>
+<section id="resources-for-going-deeper" class="level3">
+<h3 class="anchored" data-anchor-id="resources-for-going-deeper">Resources for Going Deeper</h3>
+<p>If you’d like to explore these topics further, here are some resources that might help:</p>
+<ul>
+<li><p><a href="https://ai.hamel.dev/">My blog</a> for more content on AI evaluation and improvement. My other posts dive into more technical detail on topics such as constructing effective LLM judges, implementing evaluation systems, and other aspects of AI development<sup>1</sup>. Also check out the blogs of <a href="https://www.sh-reya.com/">Shreya Shankar</a> and <a href="https://eugeneyan.com/">Eugene Yan</a> who are also great sources of information on these topics.</p></li>
+<li><p>A course I’m teaching: <strong><a href="https://bit.ly/evals-ai">Rapidly Improve AI Products With Evals</a></strong>, with Shreya Shankar. The course provides hands-on experience with techniques such as error analysis, synthetic data generation, and building trustworthy evaluation systems. It includes practical exercises and personalized instruction through office hours.</p></li>
+<li><p>If you’re looking for hands-on guidance specific to your organization’s needs, you can learn more about working with me at <a href="https://parlance-labs.com/">Parlance Labs</a>.</p></li>
+</ul>
+
+
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>I write more broadly about machine learning, AI, and software development. Some posts that expand on these topics include <a href="https://hamel.dev/blog/posts/evals/">Your AI Product Needs Evals</a>, <a href="https://hamel.dev/blog/posts/llm-judge/">Creating a LLM-as-a-Judge That Drives Business Results</a>, and <a href="https://applied-llms.org/">What We’ve Learned From A Year of Building with LLMs</a>. You can see all my posts at <a href="https://hamel.dev/">hamel.dev</a>.↩︎</p></li>
+</ol>
+</section></div> ]]></description>
+  <category>LLMs</category>
+  <category>AI</category>
+  <guid>https://hamel.dev/blog/posts/field-guide/</guid>
+  <pubDate>Mon, 24 Mar 2025 07:00:00 GMT</pubDate>
+  <media:content url="https://hamel.dev/blog/posts/field-guide/images/field_guide.png" medium="image" type="image/png" height="81" width="144"/>
+</item>
 <item>
   <title>Thoughts On A Month With Devin</title>
   <link>https://hamel.dev/</link>
@@ -1403,7 +2131,7 @@ font-style: inherit;">}</span></span></code></pre></div>
 <li>Your data for <a href="../../../blog/posts/evals/index.html">evaluations</a> are materially different from the inputs your model receives in production, causing your evaluations to be misleading.</li>
 <li>Updates to prompts, functions, RAG, and similar elements aren’t incorporated into your fine-tuning or training data, leading to unexpected model behavior in production.</li>
 </ol>
-<p>No matter how careful you are, bugs can still slip through the cracks. A high-value activity is to routinely audit all your AI/ML projects for drift.</p>
+<p>No matter how careful you are, bugs can still slip through the cracks. A a high ROI activity is to routinely audit all your AI/ML projects for drift.</p>
 <section id="how-it-works" class="level2">
 <h2 class="anchored" data-anchor-id="how-it-works">How It Works</h2>
 <div class="callout callout-style-default callout-warning callout-titled">
@@ -1459,9 +2187,7 @@ Warning
 <h2 class="anchored" data-anchor-id="minimal-example-ft_drift">Minimal Example: <code>ft_drift</code></h2>
 <p>I work with lots of folks who are fine-tuning models using the OpenAI API. I’ve created a small CLI tool, <a href="https://github.com/hamelsmu/ft-drift/"><code>ft_drift</code></a>, that detects drift between two <a href="https://platform.openai.com/docs/guides/fine-tuning/preparing-your-dataset">multi-turn chat formatted</a> jsonl files. Currently, <code>ft_drift</code> only detects drift in prompt templates, schemas and other token-based drift (as opposed to semantic drift). However, this is a good starting point to understand the general concept of adversarial validation. Here is a demo of this tool at work:</p>
 <p><img src="https://hamel.dev/blog/posts/drift/images/drift_cli.gif" class="img-fluid"></p>
-<p>The demo shows the tool detecting a difference between two datasets, <code>file_a.jsonl</code> and <code>file_b.jsonl</code>. Afterward, a table of important tokens that account for the drift are shown, such as <code>END-UI-FORMAT</code>, <code>UI-FORMAT</code>, etc.</p>
-<p>This demo is from a real-world example where an unintentional change in a prompt template caused unexpected behavior in a model. We were able to apply the tool and quickly find the root cause of the issue. The modeling code is embarrassingly simple and located at <a href="https://github.com/hamelsmu/ft-drift/blob/main/ft_drift/model.py"><code>ft_drift/model.py</code></a>. The point is you don’t need sophisticated techniques to get started.</p>
-<p>You can take this approach further by adding embeddings to your features to also detect semantic drift. Similarly, you could add additional features by hand like the number of conversation turns, length of messages, etc.</p>
+<p>The demo is from a real-world example where an unintentional change in a prompt template caused unexpected behavior in a model. The demo shows the tool detecting a difference between two datasets, <code>file_a.jsonl</code> and <code>file_b.jsonl</code>. Afterward, a table of important tokens that account for the drift are shown, such as <code>END-UI-FORMAT</code>, <code>UI-FORMAT</code>, etc. We were able to apply the tool and quickly find the root cause of the issue. The modeling code is embarrassingly simple and located at <a href="https://github.com/hamelsmu/ft-drift/blob/main/ft_drift/model.py"><code>ft_drift/model.py</code></a>. The point is you don’t need sophisticated techniques to get started. You can then take this approach further by adding embeddings to your features to also detect semantic drift. Similarly, you could add additional features by hand like the number of conversation turns, length of messages, etc.</p>
 
 
 </section>
@@ -3041,7 +3767,7 @@ font-style: inherit;">}</span></span></code></pre></div>
 </section>
 <section id="validation" class="level4">
 <h4 class="anchored" data-anchor-id="validation">Validation</h4>
-<p>However, instructor has other APIs that are more agressive and write prompts for you. For example, consider this <a href="https://jxnl.github.io/instructor/tutorials/4-validation/">validation example</a>. Running through that example should trigger similar questions to the exploration of Langchain’s SmartLLMChain above. In this example, you will observe 3 LLM API calls to get the right answer, with the final payload looking like this:</p>
+<p>However, instructor has other APIs that are more agressive and write prompts for you. For example, consider this <a href="https://python.useinstructor.com/tutorials/4-validation/">validation example</a>. Running through that example should trigger similar questions to the exploration of Langchain’s SmartLLMChain above. In this example, you will observe 3 LLM API calls to get the right answer, with the final payload looking like this:</p>
 <div class="sourceCode" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb17-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">{</span></span>
@@ -4795,7 +5521,7 @@ font-style: inherit;">ssh</span> dokku@rechat.co repo:purge-cache llm-eval</span
 <p>Sometimes you want to rebuild without pushing. There are <a href="https://dokku.com/docs/processes/process-management/">many ways to do this</a>, but one way is like this:</p>
 <div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">ssh</span> dokku@rehcat.co ps:rebuild llm-eval</span></code></pre></div>
+font-style: inherit;">ssh</span> dokku@rechat.co ps:rebuild llm-eval</span></code></pre></div>
 </section>
 </section>
 <section id="why-did-i-write-this" class="level1">
@@ -5498,16 +6224,6 @@ K8s For Data Scientists Course
   <category>nbdev</category>
   <guid>https://hamel.dev/</guid>
   <pubDate>Thu, 28 Jul 2022 07:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Notebooks in production with Metaflow</title>
-  <link>https://hamel.dev/</link>
-  <description>Introduces a new Metaflow feature that allows users to use notebooks in production ML workflows.
-</description>
-  <category>Metaflow</category>
-  <category>Jupyter</category>
-  <guid>https://hamel.dev/</guid>
-  <pubDate>Wed, 09 Feb 2022 08:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
