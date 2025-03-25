@@ -65,7 +65,6 @@ ME
 <p>This isn’t surprising. With new tools and frameworks emerging weekly, it’s natural to focus on tangible things we can control – which vector database to use, which LLM provider to choose, which agent framework to adopt. But after helping 30+ companies build AI products, I’ve discovered the teams who succeed barely talk about tools at all. Instead, they obsess over measurement and iteration.</p>
 <p>In this post, I’ll show you exactly how these successful teams operate. You’ll learn:</p>
 <ol type="1">
-<li>Why focusing on tools over process is killing your AI projects</li>
 <li>How error analysis consistently reveals the highest-ROI improvements</li>
 <li>Why a simple data viewer is your most important AI investment</li>
 <li>How to empower domain experts (not just engineers) to improve your AI</li>
@@ -75,39 +74,35 @@ ME
 </ol>
 <p>I’ll explain each of these topics with real examples. While every situation is unique, you’ll see patterns that apply regardless of your domain or team size.</p>
 <p>Let’s start by examining the most common mistake I see teams make – one that derails AI projects before they even begin.</p>
-<section id="the-most-common-mistake-focus-on-tools-over-process" class="level2">
-<h2 class="anchored" data-anchor-id="the-most-common-mistake-focus-on-tools-over-process">1. The Most Common Mistake: Focus on Tools Over Process</h2>
-<p>The “tools first” mindset runs deep in AI development. It’s not just about architecture diagrams and frameworks – even when teams try to be data-driven, they often reach for tools instead of process. Let me show you what this looks like in practice.</p>
+<section id="the-most-common-mistake-skipping-error-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="the-most-common-mistake-skipping-error-analysis">1. The Most Common Mistake: Skipping Error Analysis</h2>
+<p>The “tools first” mindset is the most common mistake in AI development. Teams get caught up in architecture diagrams, frameworks, and dashboards while neglecting the process of actually understanding what’s working and what isn’t.</p>
 <p>One client proudly showed me this evaluation dashboard:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://hamel.dev/blog/posts/field-guide/images/dashboard.png" class="img-fluid figure-img"></p>
-<figcaption>The kind of dashboard that foreshadows failure. I’ve <a href="https://hamel.dev/blog/posts/llm-judge/" target="_blank">written about this before</a>.</figcaption>
+<figcaption>The kind of dashboard that foreshadows failure.</figcaption>
 </figure>
 </div>
-<p>This is what I call the “tools trap” – the belief that adopting the right tools or frameworks (in this case, generic metrics) will solve your AI problems. It’s particularly dangerous because it feels like progress. But without meaningful measurement, you’re flying blind.</p>
-<p>Generic metrics are worse than useless – they actively impede progress in three ways:</p>
+<p>This is the “tools trap” – the belief that adopting the right tools or frameworks (in this case, generic metrics) will solve your AI problems. Generic metrics are worse than useless – they actively impede progress in two ways:</p>
 <p>First, they create a <strong>false sense of measurement and progress</strong>. Teams think they’re data-driven because they have dashboards, but they’re tracking vanity metrics that don’t correlate with real user problems. I’ve seen teams celebrate improving their “helpfulness score” by 10% while their actual users were still struggling with basic tasks. It’s like optimizing your website’s load time while your checkout process is broken – you’re getting better at the wrong thing.</p>
 <p>Second, too many metrics fragment your attention. Instead of focusing on the few metrics that matter for your specific use case, you’re trying to optimize multiple dimensions simultaneously. When everything is important, nothing is.</p>
-<p>What’s the alternative? Building your own metrics and methods of evaluation in a data-driven way.</p>
-<p>Many people are skeptical when I suggest they need custom metrics. “Look at your data” sounds simple, but what does it actually mean in practice? Let me share a story from Jacob, the founder of <a href="https://nurtureboss.io/">Nurture Boss</a>, a company building AI assistants for the apartment industry.</p>
-<p>Jacob built a simple viewer that let his development team examine conversations between their AI and users. Next to each conversation was a space where they could add notes, listing all the failure modes they observed in an open-ended way. By parallelizing this work across developers, Jacob’s team quickly annotated dozens of conversations.</p>
-<p>As team members scanned through these notes, clear patterns emerged. Through this process of error analysis, they discovered their AI was struggling with date handling – a seemingly simple task that was failing 66% of the time. Users would say “let’s schedule a tour two weeks from now” and the AI would suggest random dates, sometimes even in past years.</p>
-<p>Instead of immediately reaching for new tools, they looked at actual conversation logs, categorized the types of date-handling failures, built specific tests to catch these issues, and measured improvement on these metrics.</p>
-<p>The result? They improved their date handling success rate from 33% to 95%. The solution didn’t require new tools – it required understanding the problem.</p>
-<p>So what does focusing on this annotation process give you? - Metrics specific to your task that you can actually measure - Systematic ways of improving those metrics - A sense of progress throughout every step of the way</p>
-<p>I recommend watching Jacob explain this process himself:</p>
+<p>The alternative? Error analysis - the single most valuable activity in AI development and consistently the highest-ROI activity. Let me show you what effective error analysis looks like in practice.</p>
+<section id="the-error-analysis-process" class="level3">
+<h3 class="anchored" data-anchor-id="the-error-analysis-process">The Error Analysis Process</h3>
+<p>When Jacob, the founder of <a href="https://nurtureboss.io/">Nurture Boss</a>, needed to improve their apartment-industry AI assistant, his team built a simple viewer to examine conversations between their AI and users. Next to each conversation was a space for open-ended notes about failure modes.</p>
+<p>After annotating dozens of conversations, clear patterns emerged. Their AI was struggling with date handling – failing 66% of the time when users said things like “let’s schedule a tour two weeks from now.”</p>
+<p>Instead of reaching for new tools, they: 1. Looked at actual conversation logs 2. Categorized the types of date-handling failures 3. Built specific tests to catch these issues 4. Measured improvement on these metrics</p>
+<p>The result? Their date handling success rate improved from 33% to 95%.</p>
+<p>Here’s Jacob explaining this process himself:</p>
 <div class="quarto-video"><iframe data-external="1" src="https://www.youtube.com/embed/e2i6JbU2R-s" width="800" height="450" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
-<p>Your job is no longer about wrangling tools to work in your stack; it’s about creating processes that work for you and your team. And the most powerful process – the one that consistently delivers the highest ROI – is structured error analysis.</p>
 </section>
-<section id="everyone-skips-error-analysis-and-its-the-highest-roi-activity" class="level2">
-<h2 class="anchored" data-anchor-id="everyone-skips-error-analysis-and-its-the-highest-roi-activity">2. Everyone Skips Error Analysis (And It’s The Highest ROI Activity)</h2>
-<p>Now let’s dive deeper into how to conduct effective error analysis. It sounds boring – it’s not as exciting as trying the latest LLM or implementing a new agent framework. <strong>But it’s the single most valuable activity in AI development, and I’ve never seen a team regret investing in it.</strong> Let me show you how this played out at NurtureBoss.</p>
-<p>When thinking about potential error types, you can take one of two approaches: “top-down” or “bottom-up.”</p>
-<p>With a top-down approach, you start with evaluation metrics common in the AI community like “hallucination” or “toxicity,” plus metrics unique to your task. At NurtureBoss, they might have wanted to measure customer frustration since their AI chatbot interacts directly with apartment seekers.</p>
-<p>Top-down is ok, but I find it’s better to start with a bottom-up approach. A bottom-up approach forces you to look at actual data and let the metrics naturally emerge. Let me describe how Jacob’s team implemented their bottom-up approach at NurtureBoss.</p>
-<p>We started with a simple spreadsheet where each row represented a conversation. In one column, team members wrote open-ended notes on anything good or bad the AI did in that conversation, with each row annotated independently. This process revealed latent evaluation criteria that wouldn’t have emerged in a top-down approach.</p>
-<p>Next, we fed annotations into a LLM and asked it to build a taxonomy of common failure modes. A second LLM call then mapped each row to a specific failure mode label. Finally, we created a pivot table of failure modes and counts. The results were striking: just three issues accounted for over 60% of all problems:</p>
+<section id="bottom-up-vs.-top-down-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="bottom-up-vs.-top-down-analysis">Bottom-Up vs.&nbsp;Top-Down Analysis</h3>
+<p>When identifying error types, you can take either a “top-down” or “bottom-up” approach.</p>
+<p>The <strong>top-down</strong> approach starts with common metrics like “hallucination” or “toxicity” plus metrics unique to your task. While convenient, it often misses domain-specific issues.</p>
+<p>The more effective <strong>bottom-up</strong> approach forces you to look at actual data and let metrics naturally emerge. At NurtureBoss, we started with a spreadsheet where each row represented a conversation. We wrote open-ended notes on any undesired behavior. Then we used an LLM to build a taxonomy of common failure modes. Finally, we mapped each row to specific failure mode labels and counted the frequency of each issue.</p>
+<p>The results were striking - just three issues accounted for over 60% of all problems:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://hamel.dev/blog/posts/field-guide/images/pivot.png" class="img-fluid figure-img" width="200"></p>
@@ -115,20 +110,17 @@ ME
 </figure>
 </div>
 <ul>
-<li>Conversation flow issues: The AI would miss context or respond awkwardly to user queries or go off topic.</li>
-<li>Handoff failures: The AI wasn’t recognizing when to transfer conversations to human agents</li>
-<li>Rescheduling problems: The AI struggled with date handling and appointment modifications</li>
+<li>Conversation flow issues (missing context, awkward responses)</li>
+<li>Handoff failures (not recognizing when to transfer to humans)</li>
+<li>Rescheduling problems (struggling with date handling)</li>
 </ul>
-<p>The impact was immediate. Jacob paused our evaluation work – not because it wasn’t valuable, but because they had uncovered so many actionable insights that his team needed several weeks just to implement fixes for the problems we’d already found. This simple exercise had revealed more concrete opportunities for improvement than they had discovered in all their previous attempts at measurement.</p>
-<p>The key is combining systematic analysis with domain expertise. Technical teams often miss crucial business context, while business teams may lack the tools to analyze patterns systematically. The magic happens when you bring these perspectives together.</p>
-<p>Let me share a concrete story about how top-down metrics in isolation can lead you astray, even when they feel perfectly customized to your use case.</p>
-<p>A recruiting platform I consulted with was using AI to generate initial outreach emails to candidates. They tracked success using edit distance – measuring how much recruiters modified the AI’s output. This seemed like an ideal custom metric for their specific needs: less editing should mean better AI performance.</p>
-<p>But when we conducted error analysis on specific examples with the goal of reducing edit distance, we discovered something startling: many recruiters on this platform were non-native speakers who were introducing grammatical errors and awkward phrasing into AI-generated text. When we showed both versions to hiring managers (the ultimate judges of quality), they consistently rated the less-edited AI versions as significantly better (which surprised me too). No dashboard or pre-defined metric would have caught this fundamental misalignment.</p>
+<p>The impact was immediate. Jacob’s team had uncovered so many actionable insights that they needed several weeks just to implement fixes for the problems we’d already found.</p>
 <p>If you’d like to see error analysis in action, we recorded a <a href="https://youtu.be/qH1dZ8JLLdU">live walkthrough here</a>.</p>
 <p>This brings us to a crucial question: How do you make it easy for teams to look at their data? The answer leads us to what I consider the most important investment any AI team can make…</p>
 </section>
+</section>
 <section id="the-most-important-ai-investment-a-simple-data-viewer" class="level2">
-<h2 class="anchored" data-anchor-id="the-most-important-ai-investment-a-simple-data-viewer">3. The Most Important AI Investment: A Simple Data Viewer</h2>
+<h2 class="anchored" data-anchor-id="the-most-important-ai-investment-a-simple-data-viewer">2. The Most Important AI Investment: A Simple Data Viewer</h2>
 <p>The single most impactful investment I’ve seen AI teams make isn’t a fancy evaluation dashboard – it’s building a customized interface that lets anyone examine what their AI is actually doing. I emphasize <em>customized</em> because every domain has unique needs that off-the-shelf tools rarely address. When reviewing apartment leasing conversations, you need to see the full chat history and scheduling context. For real estate queries, you need the property details and source documents right there. Even small UX decisions – like where to place metadata or which filters to expose – can make the difference between a tool people actually use and one they avoid.</p>
 <p>I’ve watched teams struggle with generic labeling interfaces, hunting through multiple systems just to understand a single interaction. The friction adds up: clicking through to different systems to see context, copying error descriptions into separate tracking sheets, switching between tools to verify information. This friction doesn’t just slow teams down – it actively discourages the kind of systematic analysis that catches subtle issues.</p>
 <p>Teams with thoughtfully designed data viewers iterate 10x faster than those without them. And here’s the thing: <strong>these tools can be built in hours using AI-assisted development</strong> (like Cursor or Loveable). The investment is minimal compared to the returns.</p>
@@ -180,7 +172,7 @@ ME
 <p>This brings us to another counter-intuitive lesson: the people best positioned to improve your AI system are often the ones who know the least about AI.</p>
 </section>
 <section id="empower-domain-experts-to-write-prompts" class="level2">
-<h2 class="anchored" data-anchor-id="empower-domain-experts-to-write-prompts">4. Empower Domain Experts To Write Prompts</h2>
+<h2 class="anchored" data-anchor-id="empower-domain-experts-to-write-prompts">3. Empower Domain Experts To Write Prompts</h2>
 <p>I recently worked with an education startup building an interactive learning platform with LLMs. Their product manager, a learning design expert, would create detailed PowerPoint decks explaining pedagogical principles and example dialogues. She’d present these to the engineering team, who would then translate her expertise into prompts.</p>
 <p>But here’s the thing: prompts are just English. Having a learning expert communicate teaching principles through PowerPoint, only for engineers to translate that back into English prompts, created unnecessary friction. The most successful teams flip this model by giving domain experts tools to write and iterate on prompts directly.</p>
 <section id="build-bridges-not-gatekeepers" class="level3">
@@ -280,7 +272,7 @@ ME
 </section>
 </section>
 <section id="bootstrapping-your-ai-with-synthetic-data-is-effective-even-with-zero-users" class="level2">
-<h2 class="anchored" data-anchor-id="bootstrapping-your-ai-with-synthetic-data-is-effective-even-with-zero-users">5. Bootstrapping Your AI With Synthetic Data Is Effective (Even With Zero Users)</h2>
+<h2 class="anchored" data-anchor-id="bootstrapping-your-ai-with-synthetic-data-is-effective-even-with-zero-users">4. Bootstrapping Your AI With Synthetic Data Is Effective (Even With Zero Users)</h2>
 <p>One of the most common roadblocks I hear from teams is: “We can’t do proper evaluation because we don’t have enough real user data yet.” This creates a chicken-and-egg problem – you need data to improve your AI, but you need a decent AI to get users who generate that data.</p>
 <p>Fortunately, there’s a solution that works surprisingly well: synthetic data. LLMs can generate realistic test cases that cover the range of scenarios your AI will encounter.</p>
 <p>As I wrote in my <a href="https://hamel.dev/blog/posts/llm-judge/#generating-data">LLM-as-a-Judge blog post</a>, synthetic data can be remarkably effective for evaluation. <a href="https://www.linkedin.com/in/bryan-bischof/">Bryan Bischof</a>, the former Head of AI at Hex, put it perfectly:</p>
@@ -575,7 +567,7 @@ font-style: inherit;">return</span> generate_with_llm(prompt)</span></code></pre
 </section>
 </section>
 <section id="maintaining-trust-in-evals-is-critical" class="level2">
-<h2 class="anchored" data-anchor-id="maintaining-trust-in-evals-is-critical">6. Maintaining Trust In Evals Is Critical</h2>
+<h2 class="anchored" data-anchor-id="maintaining-trust-in-evals-is-critical">5. Maintaining Trust In Evals Is Critical</h2>
 <p>This is a pattern I’ve seen repeatedly: teams build evaluation systems, then gradually lose faith in them. Sometimes it’s because the metrics don’t align with what they observe in production. Other times, it’s because the evaluations become too complex to interpret. Either way, the result is the same – the team reverts to making decisions based on gut feeling and anecdotal feedback, undermining the entire purpose of having evaluations.</p>
 <p>Maintaining trust in your evaluation system is just as important as building it in the first place. Here’s how the most successful teams approach this challenge:</p>
 <section id="understanding-criteria-drift" class="level3">
@@ -645,7 +637,7 @@ font-style: inherit;">return</span> generate_with_llm(prompt)</span></code></pre
 </section>
 </section>
 <section id="your-ai-roadmap-should-count-experiments-not-features" class="level2">
-<h2 class="anchored" data-anchor-id="your-ai-roadmap-should-count-experiments-not-features">7. Your AI Roadmap Should Count Experiments, Not Features</h2>
+<h2 class="anchored" data-anchor-id="your-ai-roadmap-should-count-experiments-not-features">6. Your AI Roadmap Should Count Experiments, Not Features</h2>
 <p>If you’ve worked in software development, you’re familiar with traditional roadmaps: a list of features with target delivery dates. Teams commit to shipping specific functionality by specific deadlines, and success is measured by how closely they hit those targets.</p>
 <p>This approach fails spectacularly with AI.</p>
 <p>I’ve watched teams commit to roadmaps like “Launch sentiment analysis by Q2” or “Deploy agent-based customer support by end of year,” only to discover that the technology simply isn’t ready to meet their quality bar. They either ship something subpar to hit the deadline or miss the deadline entirely. Either way, trust erodes.</p>
