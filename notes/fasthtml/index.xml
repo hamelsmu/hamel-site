@@ -15,7 +15,84 @@
 <link>https://hamel.dev/notes/fasthtml/</link>
 </image>
 <generator>quarto-1.7.31</generator>
-<lastBuildDate>Fri, 11 Oct 2024 07:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 29 May 2025 07:00:00 GMT</lastBuildDate>
+<item>
+  <title>Building Annotation Apps with FastHTML</title>
+  <link>https://hamel.dev/notes/fasthtml/annotation-apps.html</link>
+  <description><![CDATA[ 
+
+<!-- Content inserted at the beginning of body tag -->
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+
+
+
+<p><strong>Notes from “Building annotation apps in FastHTML” from the <a href="https://bit.ly/evals_ai">LLM evals course</a>.</strong></p>
+<section id="how-do-i-handle-ai-coding-assistance-when-fasthtml-isnt-as-well-known-as-reactnext.js" class="level2">
+<h2 class="anchored" data-anchor-id="how-do-i-handle-ai-coding-assistance-when-fasthtml-isnt-as-well-known-as-reactnext.js">How do I handle AI coding assistance when FastHTML isn’t as well-known as React/Next.js?</h2>
+<blockquote class="blockquote">
+<p>Developers worry about “swimming upstream” by choosing FastHTML when AI assistants like Claude and GPT-4 have much better training on mainstream frameworks.</p>
+</blockquote>
+<p>The solution is investing in good cursor rules and context files. Isaac shared that he uses <a href="https://github.com/ai-evals-course/isaac-fasthtml-workshop/tree/main/.cursor/rules">detailed cursor rules for FastHTML</a> that provide examples and patterns. He notes: “if you give the right context to the model…it does a lot better.” The companion repo includes these cursor rule files that help AI understand FastHTML patterns.</p>
+<p>Wade from the Discord added another perspective: “Cursor + good cursor rules has proven to be a good combo for me personally.” The key is that with FastHTML, you’re working with ~80 lines of code for a functional annotation app versus hundreds more with other frameworks. This smaller codebase is easier to understand and debug when AI suggestions go wrong.</p>
+<p>As Isaac put it: “I find that with pure vibe coding, I start out with super fast progress then my iteration speed slowly gets worse over time until I get really frustrated.” With FastHTML plus good context, you maintain consistent development velocity.</p>
+</section>
+<section id="should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf" class="level2">
+<h2 class="anchored" data-anchor-id="should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf">Should I build a custom annotation tool or use something off-the-shelf?</h2>
+<p>At the moment there is a narrow gap between how long it takes you to build your own labeling thing and configuring an off the shelf tool (Argilla, Prodigy, etc.). There is a non-trivial amount of things that you have to sort through to configure all the settings with an off-the-shelf tool, as well as some limitations.</p>
+<p>Custom tools make sense when:</p>
+<ul>
+<li>You have domain-specific workflows (like the medical flashcard example Isaac showed)</li>
+<li>You need tight integration with your data pipeline</li>
+<li>Your annotation needs will evolve based on what you learn</li>
+</ul>
+<p>However, existing tools have advantages for:</p>
+<ul>
+<li>Large-scale team collaboration with many distributed annotators</li>
+<li>When you need enterprise features like detailed access controls</li>
+<li>If you have standard annotation needs that fit the tool’s paradigm</li>
+</ul>
+<p><a href="https://youtu.be/fA4pe9bE0LY">Isaac’s Anki flashcard annotation app</a> demonstrates when custom makes sense - they needed to handle 400+ results per query with keyboard navigation, multi-step review processes, and domain-specific evaluation criteria that would be difficult to configure in a generic tool.</p>
+</section>
+<section id="how-should-i-handle-disagreements-between-annotators-in-my-annotation-app" class="level2">
+<h2 class="anchored" data-anchor-id="how-should-i-handle-disagreements-between-annotators-in-my-annotation-app">How should I handle disagreements between annotators in my annotation app?</h2>
+<blockquote class="blockquote">
+<p>Annotation disagreements are inevitable, but the workflow for resolving them depends on whether you’re refining the rubric or just collecting labels. Many teams struggle with when to show annotations to other reviewers.</p>
+</blockquote>
+<p><strong>Answer</strong>: The approach depends on your goals. Shreya explains: “If you truly want independent annotations from annotators, yes you might want to hide comments. But sometimes the annotators are jointly working together to review a large amount of traces…and showing the comments standardizes interpretations of good and bad between annotators.”</p>
+<p>Isaac’s implementation takes a pragmatic approach: “Eventually we need to decide what score to assign to it. We could do a second round where annotators cannot peek at other comments. However, in the AnkiHub case, they found that annotator disagreements often stemed from incomplete rubrics.” This highlights a key principle - if you’re still defining what “good” looks like, facilitating discussion between annotators helps refine the rubric. Once the rubric is stable, you might want more independent annotation.</p>
+<p>The FastHTML app Isaac built handles this with a “finalized” step where disagreements trigger a review process with comments, allowing annotators to explain their reasoning and reach consensus.</p>
+</section>
+<section id="when-should-i-use-fasthtml-vs-streamlit-for-annotation-apps" class="level2">
+<h2 class="anchored" data-anchor-id="when-should-i-use-fasthtml-vs-streamlit-for-annotation-apps">When should I use FastHTML vs Streamlit for annotation apps?</h2>
+<p>Isaac recommends FastHTML when you need flexibility beyond simple dashboards. Isaac elaborated that “FastHTML is more flexible and a full web app. If you feel like you have some really custom or unusual things that might be tricky to get right, maybe not streamlit.”</p>
+<p>The key differentiator is state management complexity. As discussed in the Discord, “state management in streamlit is a nightmare if you have anything a bit complex.” For simple annotation interfaces with minimal state, Streamlit works fine. But once you need features like multi-step workflows, keyboard shortcuts for rapid annotation, or custom UI components, FastHTML’s flexibility becomes valuable.</p>
+<p>The choice depends on your needs - start with Streamlit if it meets your requirements, but be prepared to switch to FastHTML if you hit limitations.</p>
+</section>
+<section id="resources" class="level2">
+<h2 class="anchored" data-anchor-id="resources">Resources</h2>
+<section id="isaacs-talk" class="level3">
+<h3 class="anchored" data-anchor-id="isaacs-talk">Isaac’s Talk</h3>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/fA4pe9bE0LY?si=LX2GVDViNoSJjj9W" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+</section>
+<section id="isaacs-code-slides" class="level3">
+<h3 class="anchored" data-anchor-id="isaacs-code-slides">Isaac’s Code &amp; Slides</h3>
+<ol type="1">
+<li><p><a href="https://github.com/ai-evals-course/isaac-fasthtml-workshop">Isaac’s Anki flashcard annotation app</a></p></li>
+<li><p><a href="https://ai-evals-course.github.io/isaac-fasthtml-workshop/presentation/talk.html#/title-slide">Issac’s Slides</a></p></li>
+</ol>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <guid>https://hamel.dev/notes/fasthtml/annotation-apps.html</guid>
+  <pubDate>Thu, 29 May 2025 07:00:00 GMT</pubDate>
+  <media:content url="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png" medium="image" type="image/png"/>
+</item>
 <item>
   <title>Concurrency For Starlette Apps (e.g FastAPI / FastHTML)</title>
   <link>https://hamel.dev/notes/fasthtml/concurrency.html</link>
