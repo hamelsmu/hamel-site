@@ -17,7 +17,144 @@
 <width>144</width>
 </image>
 <generator>quarto-1.7.31</generator>
-<lastBuildDate>Mon, 24 Mar 2025 07:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 29 May 2025 06:38:33 GMT</lastBuildDate>
+<item>
+  <title>LLM Eval FAQ</title>
+  <dc:creator>Hamel Husain</dc:creator>
+  <dc:creator>Shreya Shankar</dc:creator>
+  <link>https://hamel.dev/blog/posts/evals-faq/</link>
+  <description><![CDATA[ 
+
+<!-- Content inserted at the beginning of body tag -->
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+
+
+
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Our Course On AI Evals
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I’m teaching a <a href="https://bit.ly/evals_ai">course on AI Evals</a> with Shreya Shankar. Here are some of the most common questions we’ve been asked. <strong>We’ll be updating this list frequently.</strong></p>
+</div>
+</div>
+<div class="toc">
+
+</div>
+<section id="q-is-rag-dead" class="level2">
+<h2 class="anchored" data-anchor-id="q-is-rag-dead">Q: Is RAG dead?</h2>
+<p>Question: Should I avoid using RAG for my AI application after reading that <a href="https://pashpashpash.substack.com/p/why-i-no-longer-recommend-rag-for">“RAG is dead”</a> for coding agents?</p>
+<blockquote class="blockquote">
+<p>Many developers are confused about when and how to use RAG after reading articles claiming “RAG is dead.” Understanding what RAG actually means versus the narrow marketing definitions will help you make better architectural decisions for your AI applications.</p>
+</blockquote>
+<p>The viral article claiming RAG is dead specifically argues against using <em>naive vector database retrieval</em> for autonomous coding agents, not RAG as a whole. This is a crucial distinction that many developers miss due to misleading marketing.</p>
+<p>RAG simply means Retrieval-Augmented Generation - using retrieval to provide relevant context that improves your model’s output. The core principle remains essential: your LLM needs the right context to generate accurate answers. The question isn’t whether to use retrieval, but how to retrieve effectively.</p>
+<p>For coding applications, naive vector similarity search often fails because code relationships are complex and contextual. Instead of abandoning retrieval entirely, modern coding assistants like Claude Code <a href="https://x.com/pashmerepat/status/1926717705660375463?s=46">still uses retrieval</a> —they just employ agentic search instead of relying solely on vector databases.similar to how human developers work.</p>
+<p>You have multiple retrieval strategies available, ranging from simple keyword matching to embedding similarity to LLM-powered relevance filtering. The optimal approach depends on your specific use case, data characteristics, and performance requirements. Many production systems combine multiple strategies or use multi-hop retrieval guided by LLM agents.</p>
+<p>Unforunately, “RAG” has become a buzzword with no shared definition. Some people use it to mean any retrieval system, others restrict it to vector databases. Focus on the fundamental goal: getting your LLM the context it needs to succeed. Whether that’s through vector search, agentic exploration, or hybrid approaches is a product and engineering decision that requires understanding your users’ failure modes and usage patterns.</p>
+<p>Rather than following categorical advice to avoid or embrace RAG, experiment with different retrieval approaches and measure what works best for your application.</p>
+</section>
+<section id="q-can-i-use-the-same-model-for-both-the-main-task-and-evaluation" class="level2">
+<h2 class="anchored" data-anchor-id="q-can-i-use-the-same-model-for-both-the-main-task-and-evaluation">Q: Can I use the same model for both the main task and evaluation?</h2>
+<p>For LLM-as-Judge selection, using the same model is fine because the judge is doing a different task than your main LLM pipeline. The judge is doing a narrowly scoped binary classification task. So actually you don’t have to worry about the judge not being able to do the main task…since it doesn’t have to. Focus on achieving high TPR and TNR with your judge rather than avoiding the same model family.</p>
+<p>When selecting judge models, start with the most capable models available to establish strong alignment with human judgments. Start with the most powerful LLMs for your judge models and work on aligning them with human annotators. You can optimize for cost later once you’ve established reliable evaluation criteria.</p>
+</section>
+<section id="q-how-much-time-should-i-spend-on-model-selection" class="level2">
+<h2 class="anchored" data-anchor-id="q-how-much-time-should-i-spend-on-model-selection">Q: How much time should I spend on model selection?</h2>
+<p>Many developers fixate on model selection as the primary way to improve their LLM applications. Start with error analysis to understand your failure modes before considering model switching. As Hamel noted in office hours, “I suggest not thinking of switching model as the main axes of how to improve your system off the bat without evidence. Does error analysis suggest that your model is the problem?”</p>
+<!-- # FAQ: Binary vs. Likert Scale Evaluations
+
+## Question: Why do you recommend binary (Pass/Fail) evaluations instead of more nuanced scales like 1-5 ratings?
+
+> Engineers often believe that Likert scales (1-5 ratings) provide more information than binary evaluations, allowing them to track gradual improvements. However, this added complexity often creates more problems than it solves in practice.
+
+**Answer**: Binary evaluations force clearer thinking and more consistent labeling. As Hamel explained in his video response, Likert scales introduce significant challenges: the difference between adjacent points (like 3 vs 4) is subjective and inconsistent across annotators, detecting statistical differences requires larger sample sizes, and annotators often default to middle values to avoid making hard decisions.
+
+Connie elaborated that "having binary options actually forces people to make a decision" rather than hiding uncertainty in middle values. Binary decisions are also faster to make during error analysis - you don't waste time debating whether something is a 3 or 4.
+
+For tracking gradual improvements, consider measuring specific sub-components with their own binary checks rather than using a scale. As Viktor's example showed, instead of rating factual accuracy 1-5, you could track "4 out of 5 expected facts included" as separate binary checks. This preserves the ability to measure progress while maintaining clear, objective criteria.
+
+The key insight from Hamel: "Start with binary labels to understand what 'bad' looks like. Numeric labels are advanced and usually not necessary."
+
+# FAQ: Prioritizing Evaluation Efforts
+
+## Question: How do I decide which failure modes deserve automated evaluators versus quick prompt fixes?
+
+> Teams often fall into the trap of building elaborate evaluation systems for every identified failure mode, including those that could be resolved with simple prompt clarifications. This wastes valuable engineering resources and delays product improvements.
+
+**Answer**: Focus automated evaluators on generalization failures, not specification failures. As Shreya emphasized, "many teams have preferences that they never communicated to the LLM at all in the prompt" - like wanting concise responses or specific formatting - then spend time building evals for these easily-fixed issues.
+
+Hamel's guidance: Look for "really obvious things" first. For example, if users ask about store hours but that information isn't in the prompt or available to your LLM, that's a specification error to fix immediately. Only build evaluators for issues that persist after clear specification.
+
+The cost-benefit calculation matters. As David noted after Lesson 3, there's a "hidden cost" to features requiring LLM-as-Judge evaluation, involving development teams, product teams, and expert annotators. Each judge requires ongoing maintenance as Shreya recommends "re-running the alignment process regularly (e.g., weekly)."
+
+When deciding whether to proceed, consider the gradient of progress. Hamel advises: "If you feel like you're hitting a plateau with regards to improving the prompt, I would say it's time to move on. If you still see large gains every time you iterate on the prompt, that is a good signal that there's a lot of juice left on the table."
+
+# FAQ: Debugging Multi-Turn Conversation Traces
+
+## Question: How should I approach error analysis for multi-turn conversations where failures might only appear after several exchanges?
+
+> Multi-turn conversations introduce complexity because failures can cascade - an upstream error in turn 2 might only manifest as a user-visible problem in turn 5. Many practitioners struggle with whether to analyze individual turns or entire conversations.
+
+**Answer**: Start by evaluating at the session level with simple binary judgments of whether the conversation achieved the user's goal. As Shreya recommended, "look at the entire trace as a whole and note the first (most upstream) failure observed." This helps identify root causes rather than downstream symptoms.
+
+Hamel's practical approach: "I will first read only the user-visible things to get an idea of the high-level conversation and see if anything is wrong. Then I might look into the details from there." Focus on finding independent failures - use judgment to distinguish cascading errors from separate issues.
+
+For generating multi-turn test cases, Hamel suggests two approaches: either simulate users with another LLM, or use "N-1 testing" where you provide the first N-1 turns of a conversation to test specific failure modes. The N-1 approach is often more reliable because it uses real conversation prefixes rather than fully synthetic interactions.
+
+When logging multi-turn traces, ensure you capture everything the LLM sees at each step, including any retrieved memories or context. As Shreya noted, "it's important to log whatever the LLM 'sees' in any step in the trace" to enable proper debugging.
+
+# FAQ: Generating Synthetic Test Data with Dimensions, Tuples, and Queries
+
+## Question: I'm confused about the dimension → tuple → query generation process. Why use an LLM for this, and how exactly does it work?
+
+> The two-step process of first generating structured combinations (tuples) from dimensions, then converting them to natural language queries confuses many practitioners. Some wonder why not just ask an LLM for queries directly, while others question why use an LLM at all for structured combinations.
+
+**Answer**: The structured approach ensures diversity and coverage of failure modes. As Shreya explained, directly asking an LLM for queries "often leads to repetitive phrasing" and misses edge cases. The dimension-based approach forces systematic thinking about where your application might fail.
+
+First, define 3-4 dimensions representing potential failure points. For a real estate bot: Feature (property search, scheduling), Client Persona (first-time buyer, investor), and Scenario (well-specified, ambiguous). Then use an LLM to generate tuples - but not randomly. As Hamel emphasized, "make your dimensions such that you generate that thing you have in mind" that will trigger errors.
+
+Why use an LLM for tuples? Shreya notes it filters out nonsensical combinations like "a college student looking for a large mansion." Alternatively, "do it deterministically and take the cross product...then use an LLM to filter out tuples that don't make sense."
+
+The second LLM call converts tuples to natural queries because each tuple needs different phrasing. An investor's "vague property search" sounds different from a first-time buyer's. This two-step process "leads to more diverse and realistic results than simply asking an LLM to generate synthetic data."
+
+# FAQ: Putting on Your Product Hat for Evaluation
+
+## Question: As an engineer, how do I think like a product manager when doing error analysis?
+
+> Engineers often focus on technical correctness while missing user experience issues and business priorities. The evaluation process requires thinking beyond code to consider what users actually need and value.
+
+**Answer**: Focus on user goals and business value, not just technical accuracy. During error analysis, Shreya demonstrated this by noting preferences like "I'd like to see a photo of the pool" - these aren't technical failures but product improvements that create your competitive advantage. As she explained, "our preferences are the evals! taste/preferences are your product's moat."
+
+Hugo's practical advice: "Write a 1 page product spec of what you want it to do! (hint: it's not EVERYTHING)." Start with clear constraints about what your product should and shouldn't do before diving into implementation.
+
+For collaborative evaluation, Hamel strongly advises PMs to own the process: "Be super careful that you aren't offloading the annotation process to developers. Make sure you are driving the annotations as a PM." Your role brings crucial skepticism about user frustrations that engineers might miss.
+
+When prioritizing failures, think beyond frequency. Consider business impact - a rare failure affecting high-value customers might matter more than common minor annoyances. As discussed regarding whack-a-mole problems, "trust the iterative process" but let product priorities guide which moles to whack first.
+
+The key is remembering that "evals are too closely tied to user value and business viability" to be treated as purely technical exercises. Every evaluation decision should connect back to user outcomes. -->
+<!-- ## Shameless Plug
+
+The next course is in July.  [Find out more here](https://bit.ly/evals_ai). -->
+
+
+</section>
+
+ ]]></description>
+  <category>LLMs</category>
+  <category>evals</category>
+  <guid>https://hamel.dev/blog/posts/evals-faq/</guid>
+  <pubDate>Thu, 29 May 2025 06:38:33 GMT</pubDate>
+  <media:content url="https://hamel.dev/blog/posts/evals-faq/images/eval_faq.png" medium="image" type="image/png" height="96" width="144"/>
+</item>
 <item>
   <title>A Field Guide to Rapidly Improving AI Products</title>
   <dc:creator>Hamel Husain</dc:creator>
@@ -6284,17 +6421,6 @@ K8s For Data Scientists Course
   <guid>https://hamel.dev/blog/posts/k8s/</guid>
   <pubDate>Mon, 16 Jan 2023 08:00:00 GMT</pubDate>
   <media:content url="https://user-images.githubusercontent.com/1483922/209075410-b31ad913-282c-4619-87ad-3a7679e92baf.png" medium="image" type="image/png"/>
-</item>
-<item>
-  <title>nbdev + Quarto: A new secret weapon for productivity</title>
-  <link>https://hamel.dev/</link>
-  <description>Our favorite tool for software engineering productivity–nbdev, now re-written with Quarto.
-</description>
-  <category>Jupyter</category>
-  <category>Quarto</category>
-  <category>nbdev</category>
-  <guid>https://hamel.dev/</guid>
-  <pubDate>Thu, 28 Jul 2022 07:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
