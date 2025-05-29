@@ -251,11 +251,11 @@
     ]
   },
   {
-    "objectID": "notes/fasthtml/annotation-apps.html#how-do-i-handle-ai-coding-assistance-when-fasthtml-isnt-as-well-known-as-reactnext.js",
-    "href": "notes/fasthtml/annotation-apps.html#how-do-i-handle-ai-coding-assistance-when-fasthtml-isnt-as-well-known-as-reactnext.js",
+    "objectID": "notes/fasthtml/annotation-apps.html#notes",
+    "href": "notes/fasthtml/annotation-apps.html#notes",
     "title": "Building Annotation Apps with FastHTML",
-    "section": "How do I handle AI coding assistance when FastHTML isn’t as well-known as React/Next.js?",
-    "text": "How do I handle AI coding assistance when FastHTML isn’t as well-known as React/Next.js?\n\nDevelopers worry about “swimming upstream” by choosing FastHTML when AI assistants like Claude and GPT-4 have much better training on mainstream frameworks.\n\nThe solution is investing in good cursor rules and context files. Isaac shared that he uses detailed cursor rules for FastHTML that provide examples and patterns. He notes: “if you give the right context to the model…it does a lot better.” The companion repo includes these cursor rule files that help AI understand FastHTML patterns.\nWade from the Discord added another perspective: “Cursor + good cursor rules has proven to be a good combo for me personally.” The key is that with FastHTML, you’re working with ~80 lines of code for a functional annotation app versus hundreds more with other frameworks. This smaller codebase is easier to understand and debug when AI suggestions go wrong.\nAs Isaac put it: “I find that with pure vibe coding, I start out with super fast progress then my iteration speed slowly gets worse over time until I get really frustrated.” With FastHTML plus good context, you maintain consistent development velocity.",
+    "section": "Notes",
+    "text": "Notes\n\nHow do I handle AI coding assistance when FastHTML isn’t as well-known as React/Next.js?\n\nDevelopers worry about “swimming upstream” by choosing FastHTML when AI assistants like Claude and GPT-4 have much better training on mainstream frameworks.\n\nThe solution is investing in good cursor rules and context files. Isaac shared that he uses detailed cursor rules for FastHTML that provide examples and patterns. He notes: “if you give the right context to the model…it does a lot better.” The companion repo includes these cursor rule files that help AI understand FastHTML patterns.\nWade from the Discord added another perspective: “Cursor + good cursor rules has proven to be a good combo for me personally.” The key is that with FastHTML, you’re working with ~80 lines of code for a functional annotation app versus hundreds more with other frameworks. This smaller codebase is easier to understand and debug when AI suggestions go wrong.\nAs Isaac put it: “I find that with pure vibe coding, I start out with super fast progress then my iteration speed slowly gets worse over time until I get really frustrated.” With FastHTML plus good context, you maintain consistent development velocity.\n\n\nShould I build a custom annotation tool or use something off-the-shelf?\nAt the moment there is a narrow gap between how long it takes you to build your own labeling thing and configuring an off the shelf tool (Argilla, Prodigy, etc.). There is a non-trivial amount of things that you have to sort through to configure all the settings with an off-the-shelf tool, as well as some limitations.\nCustom tools make sense when:\n\nYou have domain-specific workflows (like the medical flashcard example Isaac showed)\nYou need tight integration with your data pipeline\nYour annotation needs will evolve based on what you learn\n\nHowever, existing tools have advantages for:\n\nLarge-scale team collaboration with many distributed annotators\nWhen you need enterprise features like detailed access controls\nIf you have standard annotation needs that fit the tool’s paradigm\n\nIsaac’s Anki flashcard annotation app demonstrates when custom makes sense - they needed to handle 400+ results per query with keyboard navigation, multi-step review processes, and domain-specific evaluation criteria that would be difficult to configure in a generic tool.\n\n\nHow should I handle disagreements between annotators in my annotation app?\n\nAnnotation disagreements are inevitable, but the workflow for resolving them depends on whether you’re refining the rubric or just collecting labels. Many teams struggle with when to show annotations to other reviewers.\n\nAnswer: The approach depends on your goals. Shreya explains: “If you truly want independent annotations from annotators, yes you might want to hide comments. But sometimes the annotators are jointly working together to review a large amount of traces…and showing the comments standardizes interpretations of good and bad between annotators.”\nIsaac’s implementation takes a pragmatic approach: “Eventually we need to decide what score to assign to it. We could do a second round where annotators cannot peek at other comments. However, in the AnkiHub case, they found that annotator disagreements often stemed from incomplete rubrics.” This highlights a key principle - if you’re still defining what “good” looks like, facilitating discussion between annotators helps refine the rubric. Once the rubric is stable, you might want more independent annotation.\nThe FastHTML app Isaac built handles this with a “finalized” step where disagreements trigger a review process with comments, allowing annotators to explain their reasoning and reach consensus.\n\n\nWhen should I use FastHTML vs Streamlit for annotation apps?\nIsaac recommends FastHTML when you need flexibility beyond simple dashboards. Isaac elaborated that “FastHTML is more flexible and a full web app. If you feel like you have some really custom or unusual things that might be tricky to get right, maybe not streamlit.”\nThe key differentiator is state management complexity. As discussed in the Discord, “state management in streamlit is a nightmare if you have anything a bit complex.” For simple annotation interfaces with minimal state, Streamlit works fine. But once you need features like multi-step workflows, keyboard shortcuts for rapid annotation, or custom UI components, FastHTML’s flexibility becomes valuable.\nThe choice depends on your needs - start with Streamlit if it meets your requirements, but be prepared to switch to FastHTML if you hit limitations.",
     "crumbs": [
       "Notes",
       "📚 Hamel's Notes",
@@ -264,50 +264,11 @@
     ]
   },
   {
-    "objectID": "notes/fasthtml/annotation-apps.html#should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf",
-    "href": "notes/fasthtml/annotation-apps.html#should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf",
+    "objectID": "notes/fasthtml/annotation-apps.html#isaacs-code-slides",
+    "href": "notes/fasthtml/annotation-apps.html#isaacs-code-slides",
     "title": "Building Annotation Apps with FastHTML",
-    "section": "Should I build a custom annotation tool or use something off-the-shelf?",
-    "text": "Should I build a custom annotation tool or use something off-the-shelf?\nAt the moment there is a narrow gap between how long it takes you to build your own labeling thing and configuring an off the shelf tool (Argilla, Prodigy, etc.). There is a non-trivial amount of things that you have to sort through to configure all the settings with an off-the-shelf tool, as well as some limitations.\nCustom tools make sense when:\n\nYou have domain-specific workflows (like the medical flashcard example Isaac showed)\nYou need tight integration with your data pipeline\nYour annotation needs will evolve based on what you learn\n\nHowever, existing tools have advantages for:\n\nLarge-scale team collaboration with many distributed annotators\nWhen you need enterprise features like detailed access controls\nIf you have standard annotation needs that fit the tool’s paradigm\n\nIsaac’s Anki flashcard annotation app demonstrates when custom makes sense - they needed to handle 400+ results per query with keyboard navigation, multi-step review processes, and domain-specific evaluation criteria that would be difficult to configure in a generic tool.",
-    "crumbs": [
-      "Notes",
-      "📚 Hamel's Notes",
-      "FastHTML",
-      "Building Annotation Apps with FastHTML"
-    ]
-  },
-  {
-    "objectID": "notes/fasthtml/annotation-apps.html#how-should-i-handle-disagreements-between-annotators-in-my-annotation-app",
-    "href": "notes/fasthtml/annotation-apps.html#how-should-i-handle-disagreements-between-annotators-in-my-annotation-app",
-    "title": "Building Annotation Apps with FastHTML",
-    "section": "How should I handle disagreements between annotators in my annotation app?",
-    "text": "How should I handle disagreements between annotators in my annotation app?\n\nAnnotation disagreements are inevitable, but the workflow for resolving them depends on whether you’re refining the rubric or just collecting labels. Many teams struggle with when to show annotations to other reviewers.\n\nAnswer: The approach depends on your goals. Shreya explains: “If you truly want independent annotations from annotators, yes you might want to hide comments. But sometimes the annotators are jointly working together to review a large amount of traces…and showing the comments standardizes interpretations of good and bad between annotators.”\nIsaac’s implementation takes a pragmatic approach: “Eventually we need to decide what score to assign to it. We could do a second round where annotators cannot peek at other comments. However, in the AnkiHub case, they found that annotator disagreements often stemed from incomplete rubrics.” This highlights a key principle - if you’re still defining what “good” looks like, facilitating discussion between annotators helps refine the rubric. Once the rubric is stable, you might want more independent annotation.\nThe FastHTML app Isaac built handles this with a “finalized” step where disagreements trigger a review process with comments, allowing annotators to explain their reasoning and reach consensus.",
-    "crumbs": [
-      "Notes",
-      "📚 Hamel's Notes",
-      "FastHTML",
-      "Building Annotation Apps with FastHTML"
-    ]
-  },
-  {
-    "objectID": "notes/fasthtml/annotation-apps.html#when-should-i-use-fasthtml-vs-streamlit-for-annotation-apps",
-    "href": "notes/fasthtml/annotation-apps.html#when-should-i-use-fasthtml-vs-streamlit-for-annotation-apps",
-    "title": "Building Annotation Apps with FastHTML",
-    "section": "When should I use FastHTML vs Streamlit for annotation apps?",
-    "text": "When should I use FastHTML vs Streamlit for annotation apps?\nIsaac recommends FastHTML when you need flexibility beyond simple dashboards. Isaac elaborated that “FastHTML is more flexible and a full web app. If you feel like you have some really custom or unusual things that might be tricky to get right, maybe not streamlit.”\nThe key differentiator is state management complexity. As discussed in the Discord, “state management in streamlit is a nightmare if you have anything a bit complex.” For simple annotation interfaces with minimal state, Streamlit works fine. But once you need features like multi-step workflows, keyboard shortcuts for rapid annotation, or custom UI components, FastHTML’s flexibility becomes valuable.\nThe choice depends on your needs - start with Streamlit if it meets your requirements, but be prepared to switch to FastHTML if you hit limitations.",
-    "crumbs": [
-      "Notes",
-      "📚 Hamel's Notes",
-      "FastHTML",
-      "Building Annotation Apps with FastHTML"
-    ]
-  },
-  {
-    "objectID": "notes/fasthtml/annotation-apps.html#resources",
-    "href": "notes/fasthtml/annotation-apps.html#resources",
-    "title": "Building Annotation Apps with FastHTML",
-    "section": "Resources",
-    "text": "Resources\n\nIsaac’s Talk\n\n\n\nIsaac’s Code & Slides\n\nIsaac’s Anki flashcard annotation app\nIssac’s Slides",
+    "section": "Isaac’s Code & Slides",
+    "text": "Isaac’s Code & Slides\n\nIsaac’s Anki flashcard annotation app\nIssac’s Slides",
     "crumbs": [
       "Notes",
       "📚 Hamel's Notes",
