@@ -23,9 +23,7 @@ website:
 I'm teaching a [course on AI Evals](https://bit.ly/evals_ai) with Shreya Shankar.  Here are some of the most common questions we've been asked.  **We'll be updating this list frequently.** 
 :::
 
-:::{.toc}
-
-:::
+_Warning: These are sharp opinions about what works in most cases.  They are not universal truths. Use your judgment._
 
 ## Q: Is RAG dead?
 
@@ -85,37 +83,32 @@ For tracking gradual improvements, consider measuring specific sub-components wi
 
 Start with binary labels to understand what 'bad' looks like. Numeric labels are advanced and usually not necessary.
 
+## Q: How do I debug multi-turn conversation traces?
+
+Start simple. Check if the whole conversation met the user's goal with a pass/fail judgment. Look at the entire trace and focus on the first upstream failure. Read the user-visible parts first to understand if something went wrong. Only then dig into the technical details like tool calls and intermediate steps.
+
+When you find a failure, reproduce it with the simplest possible test case. Here's a example: suppose a shopping bot gives the wrong return policy on turn 4 of a conversation. Before diving into the full multi-turn complexity, simplify it to a single turn: "What is the return window for product X1000?" If it still fails, you've proven the error isn't about conversation context - it's likely a basic retrieval or knowledge issue you can debug more easily.
+
+For generating test cases, you have two main approaches. First, you can simulate users with another LLM to create realistic multi-turn conversations. Second, use "N-1 testing" where you provide the first N-1 turns of a real conversation and test what happens next. The N-1 approach often works better since it uses actual conversation prefixes rather than fully synthetic interactions (but is less flexible and doesn't test the full conversation). User simulation is getting better as models improve.  Keep an eye on this space.
+
+The key is balancing thoroughness with efficiency. Not every multi-turn failure requires multi-turn analysis.
+
 ### ... more to come ...
 
 I'll be updating this FAQ daily!
+
 <!-- 
-# FAQ: Prioritizing Evaluation Efforts
 
-## Question: How do I decide which failure modes deserve automated evaluators versus quick prompt fixes?
+## Q: How do I decide which failure modes deserve automated evaluators versus quick prompt fixes?
 
-> Teams often fall into the trap of building elaborate evaluation systems for every identified failure mode, including those that could be resolved with simple prompt clarifications. This wastes valuable engineering resources and delays product improvements.
+It can be tempting to build evals for every identified failure mode, including those that could be resolved with simple prompt clarifications. The cost-benefit calculation matters. There's a "hidden cost" to features requiring LLM-as-Judge evaluation, involving engineering, product, and annotators. Each judge requires ongoing maintenance and alignment.
 
-**Answer**: Focus automated evaluators on generalization failures, not specification failures. As Shreya emphasized, "many teams have preferences that they never communicated to the LLM at all in the prompt" - like wanting concise responses or specific formatting - then spend time building evals for these easily-fixed issues.
+Focus automated evaluators on generalization failures, not specification (prompt)failures. As Shreya emphasized, "many teams have preferences that they never communicated to the LLM at all in the prompt" - like wanting concise responses or specific formatting - then spend time building evals for these easily-fixed issues.
 
 Hamel's guidance: Look for "really obvious things" first. For example, if users ask about store hours but that information isn't in the prompt or available to your LLM, that's a specification error to fix immediately. Only build evaluators for issues that persist after clear specification.
 
-The cost-benefit calculation matters. As David noted after Lesson 3, there's a "hidden cost" to features requiring LLM-as-Judge evaluation, involving development teams, product teams, and expert annotators. Each judge requires ongoing maintenance as Shreya recommends "re-running the alignment process regularly (e.g., weekly)."
-
 When deciding whether to proceed, consider the gradient of progress. Hamel advises: "If you feel like you're hitting a plateau with regards to improving the prompt, I would say it's time to move on. If you still see large gains every time you iterate on the prompt, that is a good signal that there's a lot of juice left on the table."
 
-# FAQ: Debugging Multi-Turn Conversation Traces
-
-## Question: How should I approach error analysis for multi-turn conversations where failures might only appear after several exchanges?
-
-> Multi-turn conversations introduce complexity because failures can cascade - an upstream error in turn 2 might only manifest as a user-visible problem in turn 5. Many practitioners struggle with whether to analyze individual turns or entire conversations.
-
-**Answer**: Start by evaluating at the session level with simple binary judgments of whether the conversation achieved the user's goal. As Shreya recommended, "look at the entire trace as a whole and note the first (most upstream) failure observed." This helps identify root causes rather than downstream symptoms.
-
-Hamel's practical approach: "I will first read only the user-visible things to get an idea of the high-level conversation and see if anything is wrong. Then I might look into the details from there." Focus on finding independent failures - use judgment to distinguish cascading errors from separate issues.
-
-For generating multi-turn test cases, Hamel suggests two approaches: either simulate users with another LLM, or use "N-1 testing" where you provide the first N-1 turns of a conversation to test specific failure modes. The N-1 approach is often more reliable because it uses real conversation prefixes rather than fully synthetic interactions.
-
-When logging multi-turn traces, ensure you capture everything the LLM sees at each step, including any retrieved memories or context. As Shreya noted, "it's important to log whatever the LLM 'sees' in any step in the trace" to enable proper debugging.
 
 # FAQ: Generating Synthetic Test Data with Dimensions, Tuples, and Queries
 
@@ -145,7 +138,7 @@ For collaborative evaluation, Hamel strongly advises PMs to own the process: "Be
 
 When prioritizing failures, think beyond frequency. Consider business impact - a rare failure affecting high-value customers might matter more than common minor annoyances. As discussed regarding whack-a-mole problems, "trust the iterative process" but let product priorities guide which moles to whack first.
 
-The key is remembering that "evals are too closely tied to user value and business viability" to be treated as purely technical exercises. Every evaluation decision should connect back to user outcomes. --> -->
+The key is remembering that "evals are too closely tied to user value and business viability" to be treated as purely technical exercises. Every evaluation decision should connect back to user outcomes. --> 
 
 <!-- ## Shameless Plug
 
