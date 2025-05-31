@@ -8,7 +8,7 @@
 
 <meta name="author" content="Hamel Husain">
 <meta name="author" content="Shreya Shankar">
-<meta name="dcterms.date" content="2025-05-30">
+<meta name="dcterms.date" content="2025-05-31">
 <meta name="description" content="FAQ from our course on AI Evals.">
 
 <title>LLM Eval FAQ – Hamel's Blog</title>
@@ -318,7 +318,8 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   <li><a href="#qshould-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf" id="toc-qshould-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf" class="nav-link" data-scroll-target="#qshould-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf">Q:Should I build a custom annotation tool or use something off-the-shelf?</a></li>
   <li><a href="#q-why-do-you-recommend-binary-passfail-evaluations-instead-of-1-5-ratings-likert-scales" id="toc-q-why-do-you-recommend-binary-passfail-evaluations-instead-of-1-5-ratings-likert-scales" class="nav-link" data-scroll-target="#q-why-do-you-recommend-binary-passfail-evaluations-instead-of-1-5-ratings-likert-scales">Q: Why do you recommend binary (pass/fail) evaluations instead of 1-5 ratings (Likert scales)?</a></li>
   <li><a href="#q-how-do-i-debug-multi-turn-conversation-traces" id="toc-q-how-do-i-debug-multi-turn-conversation-traces" class="nav-link" data-scroll-target="#q-how-do-i-debug-multi-turn-conversation-traces">Q: How do I debug multi-turn conversation traces?</a></li>
-  <li><a href="#q-should-i-build-automated-evaluators-for-every-failure-mode-i-find" id="toc-q-should-i-build-automated-evaluators-for-every-failure-mode-i-find" class="nav-link" data-scroll-target="#q-should-i-build-automated-evaluators-for-every-failure-mode-i-find">Q: Should I build automated evaluators for every failure mode I find?</a>
+  <li><a href="#q-should-i-build-automated-evaluators-for-every-failure-mode-i-find" id="toc-q-should-i-build-automated-evaluators-for-every-failure-mode-i-find" class="nav-link" data-scroll-target="#q-should-i-build-automated-evaluators-for-every-failure-mode-i-find">Q: Should I build automated evaluators for every failure mode I find?</a></li>
+  <li><a href="#q-how-many-people-should-annotate-my-llm-outputs---one-domain-expert-or-a-team" id="toc-q-how-many-people-should-annotate-my-llm-outputs---one-domain-expert-or-a-team" class="nav-link" data-scroll-target="#q-how-many-people-should-annotate-my-llm-outputs---one-domain-expert-or-a-team">Q: How many people should annotate my LLM outputs - one domain expert or a team?</a>
   <ul class="collapse">
   <li><a href="#more-to-come" id="toc-more-to-come" class="nav-link" data-scroll-target="#more-to-come">… more to come …</a></li>
   </ul></li>
@@ -366,7 +367,7 @@ Subscribe To My Newsletter
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">May 30, 2025</p>
+      <p class="date">May 31, 2025</p>
     </div>
   </div>
   
@@ -453,6 +454,13 @@ Our Course On AI Evals
 <p>Focus automated evaluators on failures that persist after fixing your prompts. Many teams discover their LLM doesn’t meet preferences they never actually specified - like wanting short responses, specific formatting, or step-by-step reasoning. Fix these obvious gaps first before building complex evaluation infrastructure.</p>
 <p>Consider the cost hierarchy of different evaluator types. Simple assertions and reference-based checks (comparing against known correct answers) are cheap to build and maintain. LLM-as-Judge evaluators require 100+ labeled examples, ongoing weekly maintenance, and coordination between developers, PMs, and domain experts. This cost difference should shape your evaluation strategy.</p>
 <p>Only build expensive evaluators for problems you’ll iterate on repeatedly. Since LLM-as-Judge comes with significant overhead, save it for persistent generalization failures - not issues you can fix trivially. Start with cheap code-based checks where possible: regex patterns, structural validation, or execution tests. Reserve complex evaluation for subjective qualities that can’t be captured by simple rules.</p>
+</section>
+<section id="q-how-many-people-should-annotate-my-llm-outputs---one-domain-expert-or-a-team" class="level2">
+<h2 class="anchored" data-anchor-id="q-how-many-people-should-annotate-my-llm-outputs---one-domain-expert-or-a-team">Q: How many people should annotate my LLM outputs - one domain expert or a team?</h2>
+<p>For most small to medium-sized companies, appointing a single domain expert as a “benevolent dictator” is the most effective approach. This person—whether it’s a psychologist for a mental health chatbot, a lawyer for legal document analysis, or a customer service director for support automation—becomes the definitive voice on quality standards.</p>
+<p>A single expert eliminates annotation conflicts and prevents the paralysis that comes from “too many cooks in the kitchen”. The benevolent dictator can incorporate input and feedback from others, but they drive the process. If you feel like you need five subject matter experts to judge a single interaction, it’s a sign your product scope might be too broad.</p>
+<p>However, larger organizations or those operating across multiple domains (like a multinational company with different cultural contexts) may need multiple annotators. When you do use multiple people, you’ll need to measure their agreement using metrics like Cohen’s Kappa, which accounts for agreement beyond chance. However, use your judgment. Even in larger companies, a single expert is often enough.</p>
+<p>Start with a benevolent dictator whenever feasible. Only add complexity when your domain demands it.</p>
 <section id="more-to-come" class="level3">
 <h3 class="anchored" data-anchor-id="more-to-come">… more to come …</h3>
 <p>I’ll be updating this FAQ daily!</p>
