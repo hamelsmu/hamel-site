@@ -53,23 +53,19 @@ When selecting judge models, start with the most capable models available to est
 
 Many developers fixate on model selection as the primary way to improve their LLM applications. Start with error analysis to understand your failure modes before considering model switching. As Hamel noted in office hours, "I suggest not thinking of switching model as the main axes of how to improve your system off the bat without evidence. Does error analysis suggest that your model is the problem?"
 
-## Q:Should I build a custom annotation tool or use something off-the-shelf?
+## Q: Should I build a custom annotation tool or use something off-the-shelf?
 
-At the moment there is a narrow gap between how long it takes you to build your own labeling thing and configuring an off the shelf tool (Argilla, Prodigy, etc.). There is a non-trivial amount of things that you have to sort through to configure all the settings with an off-the-shelf tool, as well as some limitations.
+Build a custom annotation tool. This is the single most impactful investment you can make for your AI evaluation workflow. With AI-assisted development tools like Cursor or Lovable, you can build a tailored interface in hours. I often find that teams with custom annotation tools iterate ~10x faster.
 
-Custom tools make sense when:
+Custom tools excel because:
 
-- You have domain-specific workflows (like the medical flashcard example Isaac showed)
-- You need tight integration with your data pipeline
-- Your annotation needs will evolve based on what you learn
+- They show all your context from multiple systems in one place
+- They can render your data in a product specific way (images, widgets, markdown, buttons, etc.)
+- They're designed for your specific workflow (custom filters, sorting, progress bars, etc.)
 
-However, existing tools have advantages for:
+Off-the-shelf tools may be justified when you need to coordinate dozens of distributed annotators with enterprise access controls. Even then, many teams find the configuration overhead and limitations aren't worth it.
 
-- Large-scale team collaboration with many distributed annotators
-- When you need enterprise features like detailed access controls
-- If you have standard annotation needs that fit the tool's paradigm
-
-[Isaac's Anki flashcard annotation app](https://youtu.be/fA4pe9bE0LY) demonstrates when custom makes sense - they needed to handle 400+ results per query with keyboard navigation, multi-step review processes, and domain-specific evaluation criteria that would be difficult to configure in a generic tool.
+[Isaac's Anki flashcard annotation app](https://youtu.be/fA4pe9bE0LY) shows the power of custom tools—handling 400+ results per query with keyboard navigation and domain-specific evaluation criteria that would be nearly impossible to configure in a generic tool.
 
 ## Q: Why do you recommend binary (pass/fail) evaluations instead of 1-5 ratings (Likert scales)?
 
@@ -110,6 +106,32 @@ A single expert eliminates annotation conflicts and prevents the paralysis that 
 However, larger organizations or those operating across multiple domains (like a multinational company with different cultural contexts) may need multiple annotators. When you do use multiple people, you'll need to measure their agreement using metrics like Cohen's Kappa, which accounts for agreement beyond chance. However, use your judgment. Even in larger companies, a single expert is often enough.
 
 Start with a benevolent dictator whenever feasible. Only add complexity when your domain demands it. 
+
+## Q: What gaps in eval tooling should I be prepared to fill myself?
+
+Most eval tools handle the basics well: logging complete traces, tracking metrics, prompt playgrounds, and annotation queues. These are table stakes. Here are four areas where you'll likely need to supplement existing tools. 
+
+Watch for vendors addressing these gaps—it's a strong signal they understand practitioner needs.
+
+### 1. Error Analysis and Pattern Discovery
+
+After reviewing traces where your AI fails, can your tooling automatically cluster similar issues? For instance, if multiple traces show the assistant using casual language for luxury clients, you need something that recognizes this broader "persona-tone mismatch" pattern. We recommend building capabilities that use AI to suggest groupings, rewrite your observations into clearer failure taxonomies, help find similar cases through semantic search, etc.
+
+### 2. AI-Powered Assistance Throughout the Workflow
+
+The most effective workflows use AI to accelerate every stage of evaluation. During error analysis, you want an LLM helping categorize your open-ended observations into coherent failure modes. For example, you might annotate several traces with notes like "wrong tone for investor," "too casual for luxury buyer," etc. Your tooling should recognize these as the same underlying pattern and suggest a unified "persona-tone mismatch" category.
+
+You'll also want AI assistance in proposing fixes. After identifying 20 cases where your assistant omits pet policies from property summaries, can your workflow analyze these failures and suggest specific prompt modifications? Can it draft refinements to your SQL generation instructions when it notices patterns of missing WHERE clauses? 
+
+Additionally, good workflows help you conduct data analysis of your annotations and traces.  I like using notebooks with AI in-the-loop like [Julius](https://julius.ai/),[Hex](https://hex.tech) or [SolveIt](https://solveit.fast.ai/).  These help me discover insights like "location ambiguity errors spike 3x when users mention neighborhood names" or "tone mismatches occur 80% more often in email generation than other modalities."
+
+### 3. Custom Evaluators Over Generic Metrics
+
+Be prepared to build most of your evaluators from scratch. Generic metrics like "hallucination score" or "helpfulness rating" rarely capture what actually matters for your application—like proposing unavailable showing times or omitting budget constraints from emails. In our experience, successful teams spend most of their effort on application-specific metrics.
+
+### 4. APIs That Support Custom Annotation Apps
+
+Custom annotation interfaces [work best for most teams](#q-should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf). This requires observability platforms with thoughtful APIs. I often have to build my own libraries and abstractions just to make bulk data export manageable. You shouldn't have to paginate through thousands of requests or handle timeout-prone endpoints just to get your data. Look for platforms that provide true bulk export capabilities and, crucially, APIs that let you write annotations back efficiently.
 
 ### ... more to come ...
 
