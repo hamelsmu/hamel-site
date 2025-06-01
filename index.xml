@@ -16,15 +16,14 @@
 <height>86</height>
 <width>144</width>
 </image>
-<generator>quarto-1.7.31</generator>
-<lastBuildDate>Sat, 31 May 2025 18:29:12 GMT</lastBuildDate>
+<generator>quarto-1.5.57</generator>
+<lastBuildDate>Sun, 01 Jun 2025 18:05:11 GMT</lastBuildDate>
 <item>
   <title>LLM Eval FAQ</title>
   <dc:creator>Hamel Husain</dc:creator>
   <dc:creator>Shreya Shankar</dc:creator>
   <link>https://hamel.dev/blog/posts/evals-faq/</link>
   <description><![CDATA[ 
-
 <!-- Content inserted at the beginning of body tag -->
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -69,22 +68,17 @@ Our Course On AI Evals
 <h2 class="anchored" data-anchor-id="q-how-much-time-should-i-spend-on-model-selection">Q: How much time should I spend on model selection?</h2>
 <p>Many developers fixate on model selection as the primary way to improve their LLM applications. Start with error analysis to understand your failure modes before considering model switching. As Hamel noted in office hours, “I suggest not thinking of switching model as the main axes of how to improve your system off the bat without evidence. Does error analysis suggest that your model is the problem?”</p>
 </section>
-<section id="qshould-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf" class="level2">
-<h2 class="anchored" data-anchor-id="qshould-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf">Q:Should I build a custom annotation tool or use something off-the-shelf?</h2>
-<p>At the moment there is a narrow gap between how long it takes you to build your own labeling thing and configuring an off the shelf tool (Argilla, Prodigy, etc.). There is a non-trivial amount of things that you have to sort through to configure all the settings with an off-the-shelf tool, as well as some limitations.</p>
-<p>Custom tools make sense when:</p>
+<section id="q-should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf" class="level2">
+<h2 class="anchored" data-anchor-id="q-should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf">Q: Should I build a custom annotation tool or use something off-the-shelf?</h2>
+<p>Build a custom annotation tool. This is the single most impactful investment you can make for your AI evaluation workflow. With AI-assisted development tools like Cursor or Lovable, you can build a tailored interface in hours. I often find that teams with custom annotation tools iterate ~10x faster.</p>
+<p>Custom tools excel because:</p>
 <ul>
-<li>You have domain-specific workflows (like the medical flashcard example Isaac showed)</li>
-<li>You need tight integration with your data pipeline</li>
-<li>Your annotation needs will evolve based on what you learn</li>
+<li>They show all your context from multiple systems in one place</li>
+<li>They can render your data in a product specific way (images, widgets, markdown, buttons, etc.)</li>
+<li>They’re designed for your specific workflow (custom filters, sorting, progress bars, etc.)</li>
 </ul>
-<p>However, existing tools have advantages for:</p>
-<ul>
-<li>Large-scale team collaboration with many distributed annotators</li>
-<li>When you need enterprise features like detailed access controls</li>
-<li>If you have standard annotation needs that fit the tool’s paradigm</li>
-</ul>
-<p><a href="https://youtu.be/fA4pe9bE0LY">Isaac’s Anki flashcard annotation app</a> demonstrates when custom makes sense - they needed to handle 400+ results per query with keyboard navigation, multi-step review processes, and domain-specific evaluation criteria that would be difficult to configure in a generic tool.</p>
+<p>Off-the-shelf tools may be justified when you need to coordinate dozens of distributed annotators with enterprise access controls. Even then, many teams find the configuration overhead and limitations aren’t worth it.</p>
+<p><a href="https://youtu.be/fA4pe9bE0LY">Isaac’s Anki flashcard annotation app</a> shows the power of custom tools—handling 400+ results per query with keyboard navigation and domain-specific evaluation criteria that would be nearly impossible to configure in a generic tool.</p>
 </section>
 <section id="q-why-do-you-recommend-binary-passfail-evaluations-instead-of-1-5-ratings-likert-scales" class="level2">
 <h2 class="anchored" data-anchor-id="q-why-do-you-recommend-binary-passfail-evaluations-instead-of-1-5-ratings-likert-scales">Q: Why do you recommend binary (pass/fail) evaluations instead of 1-5 ratings (Likert scales)?</h2>
@@ -115,6 +109,29 @@ Our Course On AI Evals
 <p>A single expert eliminates annotation conflicts and prevents the paralysis that comes from “too many cooks in the kitchen”. The benevolent dictator can incorporate input and feedback from others, but they drive the process. If you feel like you need five subject matter experts to judge a single interaction, it’s a sign your product scope might be too broad.</p>
 <p>However, larger organizations or those operating across multiple domains (like a multinational company with different cultural contexts) may need multiple annotators. When you do use multiple people, you’ll need to measure their agreement using metrics like Cohen’s Kappa, which accounts for agreement beyond chance. However, use your judgment. Even in larger companies, a single expert is often enough.</p>
 <p>Start with a benevolent dictator whenever feasible. Only add complexity when your domain demands it.</p>
+</section>
+<section id="q-what-gaps-in-eval-tooling-should-i-be-prepared-to-fill-myself" class="level2">
+<h2 class="anchored" data-anchor-id="q-what-gaps-in-eval-tooling-should-i-be-prepared-to-fill-myself">Q: What gaps in eval tooling should I be prepared to fill myself?</h2>
+<p>Most eval tools handle the basics well: logging complete traces, tracking metrics, prompt playgrounds, and annotation queues. These are table stakes. Here are four areas where you’ll likely need to supplement existing tools.</p>
+<p>Watch for vendors addressing these gaps—it’s a strong signal they understand practitioner needs.</p>
+<section id="error-analysis-and-pattern-discovery" class="level3">
+<h3 class="anchored" data-anchor-id="error-analysis-and-pattern-discovery">1. Error Analysis and Pattern Discovery</h3>
+<p>After reviewing traces where your AI fails, can your tooling automatically cluster similar issues? For instance, if multiple traces show the assistant using casual language for luxury clients, you need something that recognizes this broader “persona-tone mismatch” pattern. We recommend building capabilities that use AI to suggest groupings, rewrite your observations into clearer failure taxonomies, help find similar cases through semantic search, etc.</p>
+</section>
+<section id="ai-powered-assistance-throughout-the-workflow" class="level3">
+<h3 class="anchored" data-anchor-id="ai-powered-assistance-throughout-the-workflow">2. AI-Powered Assistance Throughout the Workflow</h3>
+<p>The most effective workflows use AI to accelerate every stage of evaluation. During error analysis, you want an LLM helping categorize your open-ended observations into coherent failure modes. For example, you might annotate several traces with notes like “wrong tone for investor,” “too casual for luxury buyer,” etc. Your tooling should recognize these as the same underlying pattern and suggest a unified “persona-tone mismatch” category.</p>
+<p>You’ll also want AI assistance in proposing fixes. After identifying 20 cases where your assistant omits pet policies from property summaries, can your workflow analyze these failures and suggest specific prompt modifications? Can it draft refinements to your SQL generation instructions when it notices patterns of missing WHERE clauses?</p>
+<p>Additionally, good workflows help you conduct data analysis of your annotations and traces. I like using notebooks with AI in-the-loop like <a href="https://julius.ai/">Julius</a>,<a href="https://hex.tech">Hex</a> or <a href="https://solveit.fast.ai/">SolveIt</a>. These help me discover insights like “location ambiguity errors spike 3x when users mention neighborhood names” or “tone mismatches occur 80% more often in email generation than other modalities.”</p>
+</section>
+<section id="custom-evaluators-over-generic-metrics" class="level3">
+<h3 class="anchored" data-anchor-id="custom-evaluators-over-generic-metrics">3. Custom Evaluators Over Generic Metrics</h3>
+<p>Be prepared to build most of your evaluators from scratch. Generic metrics like “hallucination score” or “helpfulness rating” rarely capture what actually matters for your application—like proposing unavailable showing times or omitting budget constraints from emails. In our experience, successful teams spend most of their effort on application-specific metrics.</p>
+</section>
+<section id="apis-that-support-custom-annotation-apps" class="level3">
+<h3 class="anchored" data-anchor-id="apis-that-support-custom-annotation-apps">4. APIs That Support Custom Annotation Apps</h3>
+<p>Custom annotation interfaces work best for most teams. This requires observability platforms with thoughtful APIs. I often have to build my own libraries and abstractions just to make bulk data export manageable. You shouldn’t have to paginate through thousands of requests or handle timeout-prone endpoints just to get your data. Look for platforms that provide true bulk export capabilities and, crucially, APIs that let you write annotations back efficiently.</p>
+</section>
 <section id="more-to-come" class="level3">
 <h3 class="anchored" data-anchor-id="more-to-come">… more to come …</h3>
 <p>I’ll be updating this FAQ daily!</p>
@@ -172,7 +189,7 @@ The next course is in July.  [Find out more here](https://bit.ly/evals_ai). -->
   <category>LLMs</category>
   <category>evals</category>
   <guid>https://hamel.dev/blog/posts/evals-faq/</guid>
-  <pubDate>Sat, 31 May 2025 18:29:12 GMT</pubDate>
+  <pubDate>Sun, 01 Jun 2025 18:05:11 GMT</pubDate>
   <media:content url="https://hamel.dev/blog/posts/evals-faq/images/eval_faq.png" medium="image" type="image/png" height="96" width="144"/>
 </item>
 <item>
@@ -180,7 +197,6 @@ The next course is in July.  [Find out more here](https://bit.ly/evals_ai). -->
   <dc:creator>Hamel Husain</dc:creator>
   <link>https://hamel.dev/blog/posts/field-guide/</link>
   <description><![CDATA[ 
-
 <!-- Content inserted at the beginning of body tag -->
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -287,6 +303,9 @@ ME
 <p>I’ve watched teams struggle with generic labeling interfaces, hunting through multiple systems just to understand a single interaction. The friction adds up: clicking through to different systems to see context, copying error descriptions into separate tracking sheets, switching between tools to verify information. This friction doesn’t just slow teams down – it actively discourages the kind of systematic analysis that catches subtle issues.</p>
 <p>Teams with thoughtfully designed data viewers iterate 10x faster than those without them. And here’s the thing: <strong>these tools can be built in hours using AI-assisted development</strong> (like Cursor or Loveable). The investment is minimal compared to the returns.</p>
 <p>Let me show you what I mean. Here’s the data viewer built for NurtureBoss (which we discussed earlier):</p>
+<div>
+
+</div>
 <div class="quarto-layout-panel" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
@@ -337,6 +356,9 @@ ME
 <section id="build-bridges-not-gatekeepers" class="level3">
 <h3 class="anchored" data-anchor-id="build-bridges-not-gatekeepers">Build Bridges, Not Gatekeepers</h3>
 <p>Prompt playgrounds are a great starting point for this. Tools like Arize, Langsmith and Braintrust let teams quickly test different prompts, feed in example datasets, and compare results. Here are some screenshots of these tools:</p>
+<div>
+
+</div>
 <div class="quarto-layout-panel" data-layout-ncol="3">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
@@ -367,6 +389,9 @@ ME
 </div>
 <p>But there’s a crucial next step that many teams miss: integrating prompt development into their application context. Most AI applications aren’t just prompts – They commonly involve RAG systems pulling from your knowledge base, agent orchestration coordinating multiple steps, and application-specific business logic. The most effective teams I’ve worked with go beyond standalone playgrounds. They build what I call <em><strong>integrated prompt environments</strong></em> – essentially admin versions of their actual user interface that expose prompt editing.</p>
 <p>Here’s an illustration of what an integrated prompt environment might look like for a real estate AI assistant:</p>
+<div>
+
+</div>
 <div class="quarto-layout-panel" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
@@ -914,7 +939,6 @@ font-style: inherit;">return</span> generate_with_llm(prompt)</span></code></pre
   <dc:creator>Hamel Husain</dc:creator>
   <link>https://hamel.dev/blog/posts/audience/</link>
   <description><![CDATA[ 
-
 <!-- Content inserted at the beginning of body tag -->
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -1019,7 +1043,6 @@ font-style: inherit;">return</span> generate_with_llm(prompt)</span></code></pre
   <dc:creator>Hamel Husain</dc:creator>
   <link>https://hamel.dev/blog/posts/llm-judge/</link>
   <description><![CDATA[ 
-
 <!-- Content inserted at the beginning of body tag -->
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -2130,7 +2153,6 @@ font-style: inherit;">}</span></span></code></pre></div>
   <dc:creator>Hamel Husain</dc:creator>
   <link>https://hamel.dev/blog/posts/course/</link>
   <description><![CDATA[ 
-
 <!-- Content inserted at the beginning of body tag -->
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -2151,7 +2173,7 @@ font-style: inherit;">}</span></span></code></pre></div>
 <p>We have organized and annotated the talks from our popular paid course.<sup>1</sup> This is a survey course for technical ICs (including engineers and data scientists) who have some experience with LLMs and need guidance on how to improve AI products.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="https://parlance-labs.com/education/" target="_blank"><img src="https://hamel.dev/blog/posts/course/course.png" class="img-fluid figure-img"></a></p>
+<p><a href="https://parlance-labs.com/education/" target="_blank"><img src="https://hamel.dev/blog/posts/course/course.png" class="img-fluid figure-img" alt="Speakers include Jeremy Howard, Sophia Yang, Simon Willison, JJ Allaire, Wing Lian, Mark Saroufim, Jane Xu, Jason Liu, Emmanuel Ameisen, Hailey Schoelkopf, Johno Whitaker, Zach Mueller, John Berryman, Ben Clavié, Abhishek Thakur, Kyle Corbitt, Ankur Goyal, Freddy Boulton, Jo Bergum, Eugene Yan, Shreya Shankar, Charles Frye, Hamel Husain, Dan Becker and more"></a></p>
 <figcaption><em>Speakers include Jeremy Howard, Sophia Yang, Simon Willison, JJ Allaire, Wing Lian, Mark Saroufim, Jane Xu, Jason Liu, Emmanuel Ameisen, Hailey Schoelkopf, Johno Whitaker, Zach Mueller, John Berryman, Ben Clavié, Abhishek Thakur, Kyle Corbitt, Ankur Goyal, Freddy Boulton, Jo Bergum, Eugene Yan, Shreya Shankar, Charles Frye, Hamel Husain, Dan Becker and more</em></figcaption>
 </figure>
 </div>
@@ -2281,7 +2303,6 @@ font-style: inherit;">}</span></span></code></pre></div>
   <dc:creator>Hamel Husain</dc:creator>
   <link>https://hamel.dev/blog/posts/drift/</link>
   <description><![CDATA[ 
-
 <!-- Content inserted at the beginning of body tag -->
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -2376,7 +2397,6 @@ Warning
   <dc:creator>Hamel Husain</dc:creator>
   <link>https://hamel.dev/blog/posts/evals/</link>
   <description><![CDATA[ 
-
 <!-- Content inserted at the beginning of body tag -->
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -2814,7 +2834,6 @@ Output should be a JSON code block array. Example:
   <dc:creator>Hamel Husain</dc:creator>
   <link>https://hamel.dev/blog/posts/fine_tuning_valuable.html</link>
   <description><![CDATA[ 
-
 <!-- Content inserted at the beginning of body tag -->
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -2864,7 +2883,6 @@ There are a growing number of voices expressing disillusionment with fine-tuning
   <dc:creator>Hamel Husain</dc:creator>
   <link>https://hamel.dev/blog/posts/prompt/</link>
   <description><![CDATA[ 
-
 <!-- Content inserted at the beginning of body tag -->
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -2983,7 +3001,7 @@ Important
 <p>Make sure you set these environment variables before running any of the code snippets in this blog post.</p>
 </div>
 </div>
-<div id="07c4617c-1d52-4c99-9bed-645efd73ba71" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="07c4617c-1d52-4c99-9bed-645efd73ba71" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> os</span>
@@ -3014,7 +3032,7 @@ background-color: null;
 font-style: inherit;">'http://127.0.0.1:8080'</span></span></code></pre></div>
 </div>
 <p>You can do a minimal test by running the following code:</p>
-<div id="faf4a70a-bde5-47c0-b649-3179c233c189" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="faf4a70a-bde5-47c0-b649-3179c233c189" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> requests</span>
@@ -3042,7 +3060,7 @@ font-style: inherit;">'value'</span>})</span></code></pre></div>
 <section id="guardrails" class="level3">
 <h3 class="anchored" data-anchor-id="guardrails">Guardrails</h3>
 <p>Guardrails allows you specify structure and types, which it uses to validate and correct the outputs of large language models. This is a hello world example from the <a href="https://github.com/guardrails-ai/guardrails"><code>guardrails-ai/guardrails</code> README</a>:</p>
-<div id="c746dbe7-e96f-4ea0-89d5-ca9b0b0685e8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="c746dbe7-e96f-4ea0-89d5-ca9b0b0685e8" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> pydantic <span class="im" style="color: #00769E;
@@ -3176,7 +3194,7 @@ font-style: inherit;">"</span>)</span></code></pre></div>
 <section id="guidance" class="level3">
 <h3 class="anchored" data-anchor-id="guidance">Guidance</h3>
 <p>Guidance offers constrained generation and programming constructs for writing prompts. Let’s dive into a <a href="https://github.com/guidance-ai/guidance/blob/main/notebooks/tutorials/chat.ipynb">chat example from their tutorials</a>:</p>
-<div id="cfe6882f-e22c-4666-9a66-6ce41262c6ea" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="cfe6882f-e22c-4666-9a66-6ce41262c6ea" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> guidance</span>
@@ -3216,19 +3234,7 @@ font-style: inherit;">def</span> parse_best(prosandcons, options):</span>
 background-color: null;
 font-style: inherit;">=</span> re.search(<span class="vs" style="color: #20794D;
 background-color: null;
-font-style: inherit;">r'Best=</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\d</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">)</span><span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'</span>, prosandcons)</span>
+font-style: inherit;">r'Best=(\d+)'</span>, prosandcons)</span>
 <span id="cb8-13">        <span class="cf" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -3240,23 +3246,7 @@ font-style: inherit;">not</span> best:</span>
 background-color: null;
 font-style: inherit;">=</span>  re.search(<span class="vs" style="color: #20794D;
 background-color: null;
-font-style: inherit;">r'Best</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">.</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*?</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">(</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\d</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">)</span><span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'</span>, <span class="st" style="color: #20794D;
+font-style: inherit;">r'Best.*?(\d+)'</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'Best= option is 3'</span>)</span>
 <span id="cb8-15">        <span class="cf" style="color: #003B4F;
@@ -3313,7 +3303,7 @@ font-style: inherit;">=</span> lm <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span> <span class="ss" style="color: #20794D;
 background-color: null;
-font-style: inherit;">f"""</span><span class="op" style="color: #5E5E5E;
+font-style: inherit;">f"""</span><span class="ch" style="color: #20794D;
 background-color: null;
 font-style: inherit;">\</span></span>
 <span id="cb8-29"><span class="ss" style="color: #20794D;
@@ -3383,7 +3373,7 @@ font-style: inherit;">with</span> user():</span>
 background-color: null;
 font-style: inherit;">+=</span> <span class="ss" style="color: #20794D;
 background-color: null;
-font-style: inherit;">f"""</span><span class="op" style="color: #5E5E5E;
+font-style: inherit;">f"""</span><span class="ch" style="color: #20794D;
 background-color: null;
 font-style: inherit;">\</span></span>
 <span id="cb8-43"><span class="ss" style="color: #20794D;
@@ -3434,7 +3424,7 @@ font-style: inherit;">"</span></span>
 background-color: null;
 font-style: inherit;">+=</span> <span class="ss" style="color: #20794D;
 background-color: null;
-font-style: inherit;">f"""</span><span class="op" style="color: #5E5E5E;
+font-style: inherit;">f"""</span><span class="ch" style="color: #20794D;
 background-color: null;
 font-style: inherit;">\</span></span>
 <span id="cb8-50"><span class="ss" style="color: #20794D;
@@ -3497,7 +3487,7 @@ font-style: inherit;">with</span> user():</span>
 background-color: null;
 font-style: inherit;">+=</span> <span class="ss" style="color: #20794D;
 background-color: null;
-font-style: inherit;">f"""</span><span class="op" style="color: #5E5E5E;
+font-style: inherit;">f"""</span><span class="ch" style="color: #20794D;
 background-color: null;
 font-style: inherit;">\</span></span>
 <span id="cb8-61"><span class="ss" style="color: #20794D;
@@ -3546,7 +3536,7 @@ background-color: null;
 font-weight: bold;
 font-style: inherit;">return</span> lm</span></code></pre></div>
 </div>
-<div id="7cbd50af-7689-426c-8779-1b0d5e9bfe7a" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="7cbd50af-7689-426c-8779-1b0d5e9bfe7a" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">results <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> gpt35 <span class="op" style="color: #5E5E5E;
@@ -3585,7 +3575,7 @@ Please elaborate on this plan, and tell me how to best accomplish it.</div></div
 </div>
 </div>
 <p>This looks pretty neat! But what is it doing exactly? <strong>This makes a total of 7 calls to OpenAI</strong>, which I have put in <a href="https://gist.github.com/hamelsmu/d0d75bf702e56987f35cb715f7da4d6a">this gist</a>. <strong>5 of 7 of these API calls are “internal” thoughts asking the LLM to generate ideas.</strong> Even though the temperature is set to 1.0, <strong>these “ideas” are mostly redundant.</strong> The penultimate call to OpenAI enumerates these “ideas” which I’ve included below:</p>
-<div id="a3a0664f-577d-4a0c-96e7-74527036a0be" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="a3a0664f-577d-4a0c-96e7-74527036a0be" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="cell-output cell-output-stdout">
 <pre><code>I want to read more books
 Can you please comment on the pros and cons of each of the following options, and then pick the best option?
@@ -3604,7 +3594,7 @@ Please discuss each option very briefly (one line for pros, one for cons), and e
 <section id="langchain" class="level3">
 <h3 class="anchored" data-anchor-id="langchain">Langchain</h3>
 <p>Langchain is a multi-tool for all things LLM. Lots of people rely on Langchain when get started with LLMs. The core LangChain library doesn’t generally hide prompts from you, however there are experimental features that do. Let’s take a look at one of these features called <a href="https://api.python.langchain.com/en/latest/smart_llm/langchain_experimental.smart_llm.base.SmartLLMChain.html">SmartLLMChain</a>:</p>
-<div id="600b1e60-6c01-429e-834b-470730b5ea26" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="600b1e60-6c01-429e-834b-470730b5ea26" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> langchain.prompts <span class="im" style="color: #00769E;
@@ -3625,7 +3615,7 @@ font-style: inherit;">import</span> ChatOpenAI</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"I have a 12 liter jug and a 6 liter jug.</span><span class="op" style="color: #5E5E5E;
+font-style: inherit;">"I have a 12 liter jug and a 6 liter jug.</span><span class="ch" style="color: #20794D;
 background-color: null;
 font-style: inherit;">\</span></span>
 <span id="cb11-6"><span class="st" style="color: #20794D;
@@ -3646,7 +3636,7 @@ font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"gpt-3.5-turbo"</span>)</span></code></pre></div>
 </div>
-<div id="bdb002f1-5f1b-40a7-ad4f-c9052813ef1f" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="bdb002f1-5f1b-40a7-ad4f-c9052813ef1f" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">chain <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> SmartLLMChain(llm<span class="op" style="color: #5E5E5E;
@@ -3668,7 +3658,7 @@ font-style: inherit;">True</span>)</span>
 background-color: null;
 font-style: inherit;">=</span> chain.run({})</span></code></pre></div>
 </div>
-<div id="13be7600-e9eb-4ed2-91d9-a8182858ca83" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="13be7600-e9eb-4ed2-91d9-a8182858ca83" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">print</span>(result)</span></code></pre></div>
@@ -3718,7 +3708,7 @@ To measure 6 liters using a 12 liter jug and a 6 liter jug, follow these steps:
 <section id="structred-data-extraction-with-pydantic" class="level4">
 <h4 class="anchored" data-anchor-id="structred-data-extraction-with-pydantic">Structred data extraction with Pydantic</h4>
 <p>Here is a basic example from the project’s <a href="https://github.com/jxnl/instructor">README</a> that allows you to extract structured data by using Pydantic to define your schema.</p>
-<div id="8469f9f6-6998-4de7-8551-c073929e385c" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="8469f9f6-6998-4de7-8551-c073929e385c" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> instructor</span>
@@ -4367,7 +4357,7 @@ Note
 <h3 class="anchored" data-anchor-id="dspy">DSPy</h3>
 <p><a href="https://github.com/stanfordnlp/dspy">DSPy</a> is the framework that helps you optimize your prompts to optimize any arbitrary metric. There is a fairly steep learning curve to DSPy, partly because it introduces many new technical terms specific to its framework like compilers and teleprompters. However, we can quickly peel back the complexity by looking at the API calls that it makes!</p>
 <p>Let’s run the <a href="https://dspy-docs.vercel.app/docs/quick-start/minimal-example">minimal working example</a>:</p>
-<div id="a3e9870b-741b-4b48-8dd4-c7b619fe8693" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="a3e9870b-741b-4b48-8dd4-c7b619fe8693" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> time</span>
@@ -4411,7 +4401,7 @@ font-style: inherit;">=</span> GSM8K()</span>
 background-color: null;
 font-style: inherit;">=</span> gms8k.train, gms8k.dev</span></code></pre></div>
 </div>
-<div id="fba9a01d-da36-43ba-a2be-2c6801f9154e" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="fba9a01d-da36-43ba-a2be-2c6801f9154e" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -4452,7 +4442,7 @@ font-style: inherit;">self</span>.prog(question<span class="op" style="color: #5
 background-color: null;
 font-style: inherit;">=</span>question)</span></code></pre></div>
 </div>
-<div id="95f7feaf-0ad0-4691-9488-a6214abc2bcd" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="95f7feaf-0ad0-4691-9488-a6214abc2bcd" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> dspy.teleprompt <span class="im" style="color: #00769E;
@@ -4561,7 +4551,6 @@ font-style: inherit;">1</span>)</span></code></pre></div>
   <dc:creator>Hamel Husain</dc:creator>
   <link>https://hamel.dev/blog/posts/axolotl/</link>
   <description><![CDATA[ 
-
 <!-- Content inserted at the beginning of body tag -->
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -5263,7 +5252,6 @@ font-style: inherit;">'.[flash-attn,deepspeed]'</span></span></code></pre></div>
   <dc:creator>Hamel Husain</dc:creator>
   <link>https://hamel.dev/blog/posts/dokku/</link>
   <description><![CDATA[ 
-
 <!-- Content inserted at the beginning of body tag -->
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -5760,7 +5748,6 @@ font-style: inherit;">ssh</span> dokku@rechat.co ps:rebuild llm-eval</span></cod
   <title>Tokenization Gotchas</title>
   <link>https://hamel.dev/notes/llm/finetuning/tokenizer_gotchas.html</link>
   <description><![CDATA[ 
-
 <!-- Content inserted at the beginning of body tag -->
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -5784,7 +5771,7 @@ Unironically I found this to be very helpful when prompting LLMs. Giving them sp
 <section id="example" class="level2">
 <h2 class="anchored" data-anchor-id="example">Example</h2>
 <p>The below example demonstrates how things can get confusing and can drift between training and inference time.</p>
-<div id="a14be044-f279-4856-8980-e7b15912f6a5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="a14be044-f279-4856-8980-e7b15912f6a5" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
@@ -5804,7 +5791,7 @@ font-style: inherit;">'Open-Orca/Mistral-7B-OpenOrca'</span></span>
 background-color: null;
 font-style: inherit;">=</span> AutoTokenizer.from_pretrained(model_id)</span></code></pre></div>
 </div>
-<div id="e0817615-1661-4fda-8757-4d0c7c51a2a6" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="e0817615-1661-4fda-8757-4d0c7c51a2a6" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">enc <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> partial(tok.encode, add_special_tokens<span class="op" style="color: #5E5E5E;
@@ -5820,7 +5807,7 @@ font-style: inherit;">=</span> partial(tok.decode)</span></code></pre></div>
 <h3 class="anchored" data-anchor-id="many-frameworks-do-prompt-construction-by-concatenating-tokens">Many frameworks do prompt construction by concatenating tokens</h3>
 <p>Popular frameworks like <a href="https://github.com/OpenAccess-AI-Collective/axolotl">axolotl</a> construct prompts by concatenating tokens instead of strings.<sup>1</sup> It is reasonable to decode the training data to check what the prompt template is:</p>
 <p>For example, a prompt may be constructed like this:</p>
-<div id="9c960919-7671-4493-b9c5-381da8d77ac6" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="9c960919-7671-4493-b9c5-381da8d77ac6" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">axolotl <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> enc(<span class="st" style="color: #20794D;
@@ -5846,7 +5833,7 @@ font-style: inherit;">print</span>(dec(axolotl))</span></code></pre></div>
 <section id="lets-say-you-have-an-inference-server" class="level3">
 <h3 class="anchored" data-anchor-id="lets-say-you-have-an-inference-server">Let’s say you have an inference server</h3>
 <p>It’s common for inference servers to assemble the prompt for you. The below looks like it should be fine, right?</p>
-<div id="f93f0316-971e-44fd-8c97-a5c8df57f610" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="f93f0316-971e-44fd-8c97-a5c8df57f610" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -5883,7 +5870,7 @@ font-style: inherit;">print</span>(srv)</span></code></pre></div>
 <section id="drift-between-your-server-and-the-way-the-model-is-trained" class="level3">
 <h3 class="anchored" data-anchor-id="drift-between-your-server-and-the-way-the-model-is-trained">Drift between your server and the way the model is trained</h3>
 <p>Wrong! Notice the difference in the decoding of the prompt vs the training data. This is a subtle problem that can be hard to debug.</p>
-<div id="7870389c-4a67-4542-bedb-e506e55993df" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="7870389c-4a67-4542-bedb-e506e55993df" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
@@ -5918,7 +5905,7 @@ your server's decoding: [6504, 32001]</code></pre>
 <section id="decode-your-inference-data" class="level3">
 <h3 class="anchored" data-anchor-id="decode-your-inference-data">1. Decode your inference data</h3>
 <p>Decode your inference data right before your forward pass. For example, you’ll notice the newline is missing if you do this. This is one way to tell that something fishy is going on.</p>
-<div id="246702e3-1282-4250-80c4-5976db96e42e" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="246702e3-1282-4250-80c4-5976db96e42e" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">dec(enc(srv))</span></code></pre></div>
 <div class="cell-output cell-output-display">
 <pre><code>'Ok&lt;|im_start|&gt;'</code></pre>
@@ -5935,7 +5922,7 @@ your server's decoding: [6504, 32001]</code></pre>
 <p>This is real example of how tokenization drift can bite you.</p>
 <section id="chat-template-from-huggingface" class="level3">
 <h3 class="anchored" data-anchor-id="chat-template-from-huggingface">Chat Template From HuggingFace</h3>
-<div id="d8375302-88c3-43f4-863d-2240283cb3c4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="d8375302-88c3-43f4-863d-2240283cb3c4" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
@@ -6015,7 +6002,7 @@ abc [/INST] ipsum&lt;/s&gt;&lt;s&gt;[INST] 123 [/INST] sit&lt;/s&gt;</code></pre
 <section id="same-thing-decoded-from-axolotl-with-a-space-after-s" class="level3">
 <h3 class="anchored" data-anchor-id="same-thing-decoded-from-axolotl-with-a-space-after-s">Same thing decoded from Axolotl (with a space after <code>&lt;s&gt;</code>)</h3>
 <p>Got the token ids from <a href="https://github.com/OpenAccess-AI-Collective/axolotl/pull/952/files#diff-e2bb558861fee0a2caf4307a1613cd7f19e01e206f771ce7ec4644488acdfd2fR133-R146">this test</a>.</p>
-<div id="f3cd6a66-3bc0-4575-8f52-6e425ad901be" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="f3cd6a66-3bc0-4575-8f52-6e425ad901be" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">axolotl_ids <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> [<span class="dv" style="color: #AD0000;
@@ -6117,7 +6104,7 @@ abc [/INST] ipsum&lt;/s&gt;&lt;s&gt; [INST] 123 [/INST] sit&lt;/s&gt;</code></pr
 </section>
 <section id="lets-decode-hf-tokens-one-at-a-time" class="level3">
 <h3 class="anchored" data-anchor-id="lets-decode-hf-tokens-one-at-a-time">Let’s decode HF tokens one at a time</h3>
-<div id="dcbc326c-802b-42f3-a173-19aedc31baaf" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="dcbc326c-802b-42f3-a173-19aedc31baaf" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -6163,7 +6150,7 @@ font-style: inherit;">'</span>)</span></code></pre></div>
 <section id="lets-decode-axolotl-tokens-one-at-a-time" class="level3">
 <h3 class="anchored" data-anchor-id="lets-decode-axolotl-tokens-one-at-a-time">Let’s decode Axolotl tokens one at a time</h3>
 <p>See the second token <code>518</code> this is a mismatch with the HF Chat template which is <code>29961</code></p>
-<div id="1409ec09-89eb-429b-a846-c30a802a8647" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="1409ec09-89eb-429b-a846-c30a802a8647" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -6210,7 +6197,7 @@ font-style: inherit;">'</span>)</span></code></pre></div>
 <section id="why-does-this-happen" class="level2">
 <h2 class="anchored" data-anchor-id="why-does-this-happen">Why does this happen?</h2>
 <p>Axolotl assembles prompts in token space rather than string space.</p>
-<div id="c00acd59-7f69-49ad-ada7-286ca7b13c63" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="c00acd59-7f69-49ad-ada7-286ca7b13c63" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1">tokenizer.encode(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'&lt;s&gt;'</span>, add_special_tokens<span class="op" style="color: #5E5E5E;
@@ -6231,7 +6218,7 @@ font-style: inherit;">False</span>)</span></code></pre></div>
 </div>
 </div>
 <p>HF Chat templates interpolate strings instead</p>
-<div id="db856a19-cbdb-4ae7-a515-675ee31ff21f" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div id="db856a19-cbdb-4ae7-a515-675ee31ff21f" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
 <div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">tokenizer.encode(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'&lt;s&gt;[INST]'</span>, add_special_tokens<span class="op" style="color: #5E5E5E;
@@ -6302,7 +6289,6 @@ font-style: inherit;">False</span>)</span></code></pre></div>
   <dc:creator>Hamel Husain</dc:creator>
   <link>https://hamel.dev/blog/posts/k8s/</link>
   <description><![CDATA[ 
-
 <!-- Content inserted at the beginning of body tag -->
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
