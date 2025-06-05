@@ -151,6 +151,17 @@ A common mistake is prompting an LLM to `"give me test queries"` without structu
 
 After iterating on your tuples and prompts, **run these synthetic queries through your actual system to capture full traces**. Sample 100 traces for error analysis. This number provides enough traces to manually review and identify failure patterns without being overwhelming. Rather than generating thousands of similar queries, ensure your 100 traces cover diverse combinations across your dimensions—this variety will reveal more failure modes than sheer volume.
 
+## Q: How do I approach evaluation when my system handles diverse user queries?
+
+> Complex applications often support vastly different query patterns—from "What's the return policy?" to "Compare pricing trends across regions for products matching these criteria." Each query type exercises different system capabilities, leading to confusion on how to design eval criteria.
+
+**Your evaluation strategy should emerge from observed failure patterns (e.g. [error analysis](https://youtu.be/e2i6JbU2R-s?si=8p5XVxbBiioz69Xc)), not predetermined query classifications.** Rather than creating a massive evaluation matrix covering every query type you can imagine, let your system's actual behavior guide where you invest evaluation effort.
+
+During error analysis, you'll likely discover that certain query categories share failure patterns. For instance, all queries requiring temporal reasoning might struggle regardless of whether they're simple lookups or complex aggregations. Similarly, queries that need to combine information from multiple sources might fail in consistent ways. These patterns discovered through error analysis should drive your evaluation priorities.  It could be that query category is a fine way to group failures, but you don't know that until you've analyzed your data.
+
+To see an example of basic error analysis in action, [see this video](https://youtu.be/e2i6JbU2R-s?si=8p5XVxbBiioz69Xc).
+
+
 ## ... more to come ...
 
 I'll be updating this FAQ daily!
