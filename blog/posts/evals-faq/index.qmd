@@ -161,54 +161,39 @@ During error analysis, you'll likely discover that certain query categories shar
 
 To see an example of basic error analysis in action, [see this video](https://youtu.be/e2i6JbU2R-s?si=8p5XVxbBiioz69Xc).
 
+Thanks, that's helpful context. I’ll review and critique the explanation on optimal chunk sizing for document processing with LLMs, focusing on clarity and precision for an engineering audience familiar with prompt engineering. I’ll suggest revisions where it can be made clearer, more actionable, or more grounded in practical usage patterns.
+
+I’ll get back to you shortly with a revised and annotated version.
+
+
+## Q: How do I choose the right chunk size for my document processing tasks?
+
+Unlike RAG, where chunks are optimized for retrieval, document processing assumes the model will see every chunk. The goal is to split text so the model can reason effectively without being overwhelmed. Even if a document fits within the context window, it might be better to break it up. Long inputs can degrade performance due to attention bottlenecks, especially in the middle of the context. Two task types require different strategies:
+
+### 1. Fixed-Output Tasks → Large Chunks
+
+These are tasks where the output length doesn’t grow with input: extracting a number, answering a specific question, classifying a section. For example:
+
+* “What’s the penalty clause in this contract?”
+* “What was the CEO’s salary in 2023?”
+
+Use the largest chunk (with caveats) that likely contains the answer. This reduces the number of queries and avoids context fragmentation. However, avoid adding irrelevant text. Models are sensitive to distraction, especially with large inputs. The middle parts of a long input might be under-attended. Furthermore, if cost and latency are a bottleneck, you should consider preprocessing or filtering the document (via keyword search or a lightweight retriever) to isolate relevant sections before feeding a huge chunk.
+
+### 2. Expansive-Output Tasks → Smaller Chunks
+
+These include summarization, exhaustive extraction, or any task where output grows with input. For example:
+
+* “Summarize each section”
+* “List all customer complaints”
+
+In these cases, smaller chunks help preserve reasoning quality and output completeness. The standard approach is to process each chunk independently, then aggregate results (e.g., map-reduce). When sizing your chunks, try to respect content boundaries like paragraphs, sections, or chapters. Chunking also helps mitigate output limits. By breaking the task into pieces, each piece’s output can stay within limits.
+
+### General Guidance
+
+It’s important to recognize **why chunk size affects results**. A larger chunk means the model has to reason over more information in one go – essentially, a heavier cognitive load. LLMs have limited capacity to **retain and correlate details across a long text**. If too much is packed in, the model might prioritize certain parts (commonly the beginning or end) and overlook or “forget” details in the middle. This can lead to overly coarse summaries or missed facts. In contrast, a smaller chunk bounds the problem: the model can pay full attention to that section. You are trading off **global context for local focus**. 
+
+No rule of thumb can perfectly determine the best chunk size for your use case – **you should validate with experiments**. The optimal chunk size can vary by domain and model. I treat chunk size as a hyper parameter to tune.
 
 ## ... more to come ...
 
 I'll be updating this FAQ daily!
-
-<!-- 
-
-## Q: How do I decide which failure modes deserve automated evaluators versus quick prompt fixes?
-
-It can be tempting to build evals for every identified failure mode, including those that could be resolved with simple prompt clarifications. The cost-benefit calculation matters. There's a "hidden cost" to features requiring LLM-as-Judge evaluation, involving engineering, product, and annotators. Each judge requires ongoing maintenance and alignment.
-
-Focus automated evaluators on generalization failures, not specification (prompt)failures. As Shreya emphasized, "many teams have preferences that they never communicated to the LLM at all in the prompt" - like wanting concise responses or specific formatting - then spend time building evals for these easily-fixed issues.
-
-Hamel's guidance: Look for "really obvious things" first. For example, if users ask about store hours but that information isn't in the prompt or available to your LLM, that's a specification error to fix immediately. Only build evaluators for issues that persist after clear specification.
-
-When deciding whether to proceed, consider the gradient of progress. Hamel advises: "If you feel like you're hitting a plateau with regards to improving the prompt, I would say it's time to move on. If you still see large gains every time you iterate on the prompt, that is a good signal that there's a lot of juice left on the table."
-
-
-# FAQ: Generating Synthetic Test Data with Dimensions, Tuples, and Queries
-
-## Question: I'm confused about the dimension → tuple → query generation process. Why use an LLM for this, and how exactly does it work?
-
-> The two-step process of first generating structured combinations (tuples) from dimensions, then converting them to natural language queries confuses many practitioners. Some wonder why not just ask an LLM for queries directly, while others question why use an LLM at all for structured combinations.
-
-**Answer**: The structured approach ensures diversity and coverage of failure modes. As Shreya explained, directly asking an LLM for queries "often leads to repetitive phrasing" and misses edge cases. The dimension-based approach forces systematic thinking about where your application might fail.
-
-First, define 3-4 dimensions representing potential failure points. For a real estate bot: Feature (property search, scheduling), Client Persona (first-time buyer, investor), and Scenario (well-specified, ambiguous). Then use an LLM to generate tuples - but not randomly. As Hamel emphasized, "make your dimensions such that you generate that thing you have in mind" that will trigger errors.
-
-Why use an LLM for tuples? Shreya notes it filters out nonsensical combinations like "a college student looking for a large mansion." Alternatively, "do it deterministically and take the cross product...then use an LLM to filter out tuples that don't make sense."
-
-The second LLM call converts tuples to natural queries because each tuple needs different phrasing. An investor's "vague property search" sounds different from a first-time buyer's. This two-step process "leads to more diverse and realistic results than simply asking an LLM to generate synthetic data."
-
-# FAQ: Putting on Your Product Hat for Evaluation
-
-## Question: As an engineer, how do I think like a product manager when doing error analysis?
-
-> Engineers often focus on technical correctness while missing user experience issues and business priorities. The evaluation process requires thinking beyond code to consider what users actually need and value.
-
-**Answer**: Focus on user goals and business value, not just technical accuracy. During error analysis, Shreya demonstrated this by noting preferences like "I'd like to see a photo of the pool" - these aren't technical failures but product improvements that create your competitive advantage. As she explained, "our preferences are the evals! taste/preferences are your product's moat."
-
-Hugo's practical advice: "Write a 1 page product spec of what you want it to do! (hint: it's not EVERYTHING)." Start with clear constraints about what your product should and shouldn't do before diving into implementation.
-
-For collaborative evaluation, Hamel strongly advises PMs to own the process: "Be super careful that you aren't offloading the annotation process to developers. Make sure you are driving the annotations as a PM." Your role brings crucial skepticism about user frustrations that engineers might miss.
-
-When prioritizing failures, think beyond frequency. Consider business impact - a rare failure affecting high-value customers might matter more than common minor annoyances. As discussed regarding whack-a-mole problems, "trust the iterative process" but let product priorities guide which moles to whack first.
-
-The key is remembering that "evals are too closely tied to user value and business viability" to be treated as purely technical exercises. Every evaluation decision should connect back to user outcomes. --> 
-
-<!-- ## Shameless Plug
-
-The next course is in July.  [Find out more here](https://bit.ly/evals_ai). -->
