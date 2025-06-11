@@ -16,8 +16,8 @@
 <height>86</height>
 <width>144</width>
 </image>
-<generator>quarto-1.7.29</generator>
-<lastBuildDate>Sun, 08 Jun 2025 18:43:52 GMT</lastBuildDate>
+<generator>quarto-1.7.31</generator>
+<lastBuildDate>Wed, 11 Jun 2025 00:20:29 GMT</lastBuildDate>
 <item>
   <title>LLM Eval FAQ</title>
   <dc:creator>Hamel Husain</dc:creator>
@@ -184,6 +184,16 @@ Our Course On AI Evals
 <p>No rule of thumb can perfectly determine the best chunk size for your use case – <strong>you should validate with experiments</strong>. The optimal chunk size can vary by domain and model. I treat chunk size as a hyper parameter to tune.</p>
 </section>
 </section>
+<section id="q-how-should-i-approach-evaluating-my-rag-system" class="level2">
+<h2 class="anchored" data-anchor-id="q-how-should-i-approach-evaluating-my-rag-system">Q: How should I approach evaluating my RAG system?</h2>
+<p>RAG systems have two distinct components that require different evaluation approaches: retrieval and generation.</p>
+<p>The retrieval component is a search problem. Evaluate it using traditional information retrieval (IR) metrics. Common examples include Recall@k (of all relevant documents, how many did you retrieve in the top k?), Precision@k (of the k documents retrieved, how many were relevant?), or MRR (how high up was the first relevant document?). The specific metrics you choose depend on your use case. These metrics are pure search metrics that measure whether you’re finding the right documents (more on this below).</p>
+<p>To evaluate retrieval, create a dataset of queries paired with their relevant documents. Generate this synthetically by taking documents from your corpus, extracting key facts, then generating questions those facts would answer. This reverse process gives you query-document pairs for measuring retrieval performance without manual annotation.</p>
+<p>For the generation component—how well the LLM uses retrieved context, whether it hallucinates, whether it answers the question—use the same evaluation procedures covered throughout this course: error analysis to identify failure modes, collecting human labels, building LLM-as-judge evaluators, and validating those judges against human annotations.</p>
+<p>Jason Liu’s <a href="https://jxnl.co/writing/2025/05/19/there-are-only-6-rag-evals/">“There Are Only 6 RAG Evals”</a> provides a framework that maps well to this separation. His Tier 1 covers traditional IR metrics for retrieval that don’t require LLMs. Tiers 2 and 3 evaluate relationships between Question, Context, and Answer—like whether the context is relevant (C|Q), whether the answer is faithful to context (A|C), and whether the answer addresses the question (A|Q).</p>
+<p>When implementing Liu’s Tier 2 and 3 metrics, you can’t just use prompts off the shelf. Follow the standard LLM-as-judge process: create labeled examples, measure your judge’s True Positive and True Negative rates against human labels, and optionally apply the <a href="https://influentialpoints.com/Training/estimating_true_prevalence.html">Rogan-Gladen correction</a> when estimating failure rates in production. Skip this validation and your judges may not reflect your actual quality criteria.</p>
+<p>In summary, debug retrieval first using IR metrics, then tackle generation quality using properly validated LLM judges.</p>
+</section>
 <section id="more-to-come" class="level2">
 <h2 class="anchored" data-anchor-id="more-to-come">… more to come …</h2>
 <p>I’ll be updating this FAQ daily!</p>
@@ -195,7 +205,7 @@ Our Course On AI Evals
   <category>LLMs</category>
   <category>evals</category>
   <guid>https://hamel.dev/blog/posts/evals-faq/</guid>
-  <pubDate>Sun, 08 Jun 2025 18:43:52 GMT</pubDate>
+  <pubDate>Wed, 11 Jun 2025 00:20:29 GMT</pubDate>
   <media:content url="https://hamel.dev/blog/posts/evals-faq/images/eval_faq.png" medium="image" type="image/png" height="96" width="144"/>
 </item>
 <item>
