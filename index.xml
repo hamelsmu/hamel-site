@@ -17,7 +17,7 @@
 <width>144</width>
 </image>
 <generator>quarto-1.7.31</generator>
-<lastBuildDate>Wed, 11 Jun 2025 03:59:28 GMT</lastBuildDate>
+<lastBuildDate>Thu, 19 Jun 2025 03:35:00 GMT</lastBuildDate>
 <item>
   <title>LLM Eval FAQ</title>
   <dc:creator>Hamel Husain</dc:creator>
@@ -195,6 +195,42 @@ Our Course On AI Evals
 <p>Finally, when implementing Jason’s Tier 2 and 3 metrics, don’t just use prompts off the shelf. The standard LLM-as-judge process requires several steps: error analysis, prompt iteration, creating labeled examples, and measuring your judge’s accuracy against human labels. Once you know your judge’s True Positive and True Negative rates, you can correct its estimates to determine the actual failure rate in your system. Skip this validation and your judges may not reflect your actual quality criteria.</p>
 <p>In summary, debug retrieval first using IR metrics, then tackle generation quality using properly validated LLM judges.</p>
 </section>
+<section id="q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs" class="level2">
+<h2 class="anchored" data-anchor-id="q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs">Q: What makes a good custom interface for reviewing LLM outputs?</h2>
+<p>Great interfaces make human review fast, clear, and motivating. We recommend building your own annotation tool customized to your domain. The following features are possible enhancements we’ve seen work well, but you don’t need all of them. The screenshots shown are illustrative examples to clarify concepts. In practice, I rarely implement all these features in a single app. It’s ultimately a judgment call based on your specific needs and constraints.</p>
+<p><strong>1. Render Traces Intelligently, Not Generically</strong>: Present the trace in a way that’s intuitive for the domain. If you’re evaluating generated emails, render them to look like emails. If the output is code, use syntax highlighting. Allow the reviewer to see the full trace (user input, tool calls, and LLM reasoning), but keep less important details in collapsed sections that can be expanded. Here is an example of a custom annotation tool for reviewing real estate assistant emails:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://hamel.dev/blog/posts/evals-faq/2025-06-18-17-28-27.png" class="img-fluid figure-img"></p>
+<figcaption>A custom interface for reviewing emails for a real estate assistant.</figcaption>
+</figure>
+</div>
+<p><strong>2. Show Progress and Support Keyboard Navigation</strong>: Keep reviewers in a state of flow by minimizing friction and motivating completion. Include progress indicators (e.g., “Trace 45 of 100”) to keep the review session bounded and encourage completion. Enable hotkeys for navigating between traces (e.g., N for next), applying labels, and saving notes quickly. Below is an illustration of these features:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://hamel.dev/blog/posts/evals-faq/2025-06-18-19-44-34.png" class="img-fluid figure-img"></p>
+<figcaption>An annotation interface with a progress bar and hotkey guide</figcaption>
+</figure>
+</div>
+<p><strong>4. Trace navigation through clustering, filtering, and search</strong>: Allow reviewers to filter traces by metadata or search by keywords. Semantic search helps find conceptually similar problems. Clustering similar traces (like grouping by user persona) lets reviewers spot recurring issues and explore hypotheses. Below is an illustration of these features:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://hamel.dev/blog/posts/evals-faq/2025-06-18-17-31-12.png" class="img-fluid figure-img"></p>
+<figcaption>Cluster view showing groups of emails, such as property-focused or client-focused examples. Reviewers can drill into a group to see individual traces.</figcaption>
+</figure>
+</div>
+<p><strong>5. Bring action closer to review.</strong> Send traces flagged by failed guardrails, CI failures, or automated evaluator disagreement to the front. Make it one click to “send to dataset,” file a bug, or re-trigger a pipeline run. Show pipeline/code version, eval scores, and reviewer info and any other relevant info inline. Below is an illustration of these ideas:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://hamel.dev/blog/posts/evals-faq/2025-06-18-19-58-24.png" class="img-fluid figure-img"></p>
+<figcaption>A trace with a flag for CI, auto-evaluator verdicts, and pipeline version</figcaption>
+</figure>
+</div>
+<section id="general-principle-keep-it-minimal" class="level3">
+<h3 class="anchored" data-anchor-id="general-principle-keep-it-minimal">General Principle: Keep it minimal</h3>
+<p>Keep your data annotation interface minimal and only add features as you need them. These guidelines are items to consider, but should only be used if they provide a noticeable benefit that justifies the additional complexity and maintenance overhead.</p>
+</section>
+</section>
 <section id="more-to-come" class="level2">
 <h2 class="anchored" data-anchor-id="more-to-come">… more to come …</h2>
 <p>I’ll be updating this FAQ daily!</p>
@@ -206,7 +242,7 @@ Our Course On AI Evals
   <category>LLMs</category>
   <category>evals</category>
   <guid>https://hamel.dev/blog/posts/evals-faq/</guid>
-  <pubDate>Wed, 11 Jun 2025 03:59:28 GMT</pubDate>
+  <pubDate>Thu, 19 Jun 2025 03:35:00 GMT</pubDate>
   <media:content url="https://hamel.dev/blog/posts/evals-faq/images/eval_faq.png" medium="image" type="image/png" height="96" width="144"/>
 </item>
 <item>
