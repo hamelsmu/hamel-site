@@ -210,105 +210,27 @@ In summary, debug retrieval first using IR metrics, then tackle generation quali
 
 ## Q: What makes a good custom interface for reviewing LLM outputs?
 
-Great interfaces make human review fast, clear, and motivating. We recommend [building your own](#q-should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf) for your specific product and workflow.  Here are some features to keep in mind:
+Great interfaces make human review fast, clear, and motivating. We recommend [building your own annotation tool](#q-should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf) customized to your domain. The following features are possible enhancements we've seen work well, but you don't need all of them. The screenshots shown are illustrative examples to clarify concepts. In practice, I rarely implement all these features in a single app. It's ultimately a judgment call based on your specific needs and constraints.
 
-**1. Render Traces Intelligently, Not Generically**: Don't just dump a raw JSON or conversation turns inside rectanges. Present the trace in a way that’s intuitive for the domain.  If you’re evaluating generated emails, render them to look like emails. If the output is code, use syntax highlighting. Show the full trace context—user input, tool calls, and LLM reasoning—but keep less important details in collapsed sections that are easy to expand.
+**1. Render Traces Intelligently, Not Generically**: Present the trace in a way that’s intuitive for the domain.  If you’re evaluating generated emails, render them to look like emails. If the output is code, use syntax highlighting. Allow the reviewer to see the full trace (user input, tool calls, and LLM reasoning), but keep less important details in collapsed sections that can be expanded. Here is an example of a custom annotation tool for reviewing real estate assistant emails:
 
-<!-- IMAGE: Example trace review panel, with product-specific highlighting. -->
+![A custom interface for reviewing emails for a real estate assistant.](2025-06-18-17-28-27.png)
 
-**2. Blend structure and flexibility in feedback.**  
-Reviewers should not have to type unless they want to. Provide single-click (or hotkey) Pass/Fail, tags for common failure modes, and "Defer" to skip uncertain traces. Still offer open-notes for unexpected or nuanced findings. The UI should default to tagging—writing open notes is for edge cases and new classes of error.
+**2. Show Progress and Support Keyboard Navigation**: Keep reviewers in a state of flow by minimizing friction and motivating completion. Include progress indicators (e.g., "Trace 45 of 100") to keep the review session bounded and encourage completion. Enable hotkeys for navigating between traces (e.g., N for next), applying labels, and saving notes quickly.  Below is an illustration of these features:
 
-<!-- IMAGE: Actions sidebar with hotkeys shown, tag buttons, open-code notes box, Defer. -->
+![An annotation interface with a progress bar and hotkey guide](2025-06-18-19-44-34.png)
 
-2. Make Annotation Fast and Flexible
-The easier it is to provide feedback, the higher the quality of the annotations. Optimize the UI for speed and consistency.
+**4. Trace navigation through clustering, filtering, and search**: Allow reviewers to filter traces by metadata or search by keywords. Semantic search helps find conceptually similar problems. Clustering similar traces (like grouping by user persona) lets reviewers spot recurring issues and explore hypotheses.  Below is an illustration of these features:
 
-Structured Tags: Provide buttons or checkboxes for your main failure modes (e.g., Tone Mismatch, Hallucinated Fact).
-Open-Ended Notes: Always include a free-text field to capture new or nuanced issues that don't fit a predefined tag.
-Defer Ambiguous Cases: A prominent "Defer/Skip" button is critical. It prevents reviewers from making low-confidence judgments that pollute your dataset.
-<!-- IMAGE: A close-up of an annotation sidebar with clickable failure-mode tags and a "Defer" button. -->
+![Cluster view showing groups of emails, such as property-focused or client-focused examples. Reviewers can drill into a group to see individual traces.](2025-06-18-17-31-12.png)
 
-**3. Show Progress and Support Keyboard Navigation**:
-Keep reviewers in a state of flow. Small user experience details have a huge impact on throughput and motivation.
+**5. Bring action closer to review.**  Send traces flagged by failed guardrails, CI failures, or automated evaluator disagreement to the front. Make it one click to “send to dataset,” file a bug, or re-trigger a pipeline run. Show pipeline/code version, eval scores, and reviewer info and any other relevant info inline. Below is an illustration of these ideas:
 
-Progress Indicators: A simple progress bar (e.g., "Trace 45 of 100") keeps the review session bounded and encourages completion.
-Hotkeys for Everything: Navigating between traces (e.g., N for next), applying labels, and saving notes should all be possible without touching the mouse.
-<!-- IMAGE: A UI element showing a progress bar like "75/100 Reviewed" and a small hotkey guide overlay (e.g., "N: Next, P: Previous, T: Tone Mismatch"). -->
+![A trace with a flag for CI, auto-evaluator verdicts, and pipeline version](2025-06-18-19-58-24.png)
 
-4. Empower Pattern Discovery with Clustering, Filtering, and Search
-Help reviewers move from fixing individual errors to understanding systemic issues.
+### General Principle: Keep it minimal
 
-Filter and Search: Allow reviewers to filter traces by metadata (e.g., pipeline_version, user_segment) or search by keywords in the notes or trace content. Semantic search is even better for finding conceptually similar problems.
-Cluster Similar Traces: Automatically group traces that share features, like the same tool call or client persona. This allows reviewers to spot recurring issues quickly and use bulk-labeling actions to handle repetitive failures in one go.
----
-
-**Image guide:**  
-- Trace review with structured and open feedback.  
-- Progress/keyboard/cluster navigation view.  
-- Filters/search (esp. semantic search).  
-- Escalate/send-to-ci workflow.  
-- “Vibe” lightweight UI with rapid prototyping aesthetic.
-
----
-
-**Bottom line:**  
-Custom interfaces should keep review snappy, product-shaped, and tuneable as you learn where your AI fails. Nothing beats seeing clusters, searching for similar mistakes, reviewing what matters, and pushing improvements straight downstream. If your team dreads review, the UI isn't doing its job—fix that before adding more “features.”
-
----
-
-*Semantic search means looking not just for literal word matches but for conceptual similarity—helping reviewers find traces with similar meaning even if phrasing is different.Certainly! Here’s a version that further incorporates your feedback—especially the focus on clustering, filtering, and (semantic) search as the core of a good review interface.
-
----
-
-## Q: What makes a good custom interface for reviewing LLM outputs?
-
-Great human review interfaces are lightweight, product-shaped, and built for speed and discovery. They surface patterns—not just individual mistakes—and let SMEs and engineers move from error-labeling to continuous improvement.
-
-**1. Prioritize clarity, not clutter.**  
-Show full traces (input, output, all steps/tool calls) in a format that matches the product: emails as emails, tables as tables, relevant context expanded. Unneeded details auto-collapsed but easily opened. Immediate context beats deep nesting or thick logs.
-
-<!-- IMAGE: Single trace view, output rendered in product style, nested tool calls collapsible. -->
-
-**2. Structure and flexibility, side by side.**  
-Offer single-click (and hotkey) Pass/Fail, structured error tags for frequent failure modes, and "Defer" for ambiguous cases. Always provide a freeform note field for open codes or new findings. Labels come first, typing is reserved for deeper issues.
-
-<!-- IMAGE: Actions panel: tag buttons, Pass/Fail, Defer, open note. -->
-
-**3. Track progress and motivate.**  
-Show reviewers exactly where they are (progress bar, “17/100 labeled”). Support fast navigation—jump, next, skip via keyboard. If reviewers see the end in sight, they finish more and burnout less.
-
-<!-- IMAGE: Progress indicator, keyboard hint overlay. -->
-
-**4. Cluster, filter, search, and (ideally) semantic search.**  
-Group traces by persona, query type, tool, error, reviewer—whatever matters. Let users see all traces in a specific group or segment at once; bulk annotation or batch review enables rapid labeling for repeat issues.  
-Expose rich filters and text search. If possible, offer semantic search: let reviewers find conceptually similar errors even if wording varies. This powers discovery, not just labeling.
-
-<!-- IMAGE: Cluster/segment view, tag filter, search bar with semantic/keyword options, batch selection. -->
-
-**5. Bring action closer to review.**  
-Send traces flagged by failed guardrails, CI failures, or automated evaluator disagreement to the front. Make it one click to “send to CI,” file a bug, or re-trigger a pipeline run. Show pipeline version, model/eval scores, and reviewer info inline.
-
-<!-- IMAGE: Trace with “flag for CI” and auto-evaluator verdicts side by side. -->
-
-**6. Tune the interface as failure modes change.**  
-Admin can add/rename error tags or labels, update reviewer instructions, and export full annotations/rationales—without code changes. Review tools must adjust as products and errors drift.
-
-**7. Vibe-code changes and borrow from the best.**  
-Build the simplest functional UI first, leveraging AI and fast web tools (like Gradio, JS, or Streamlit). Evolve it quickly as review needs mature. Copy robust patterns from EvalGen, DocWrangler, and any team tooling that makes review fun and fast.
-
----
-
-**Images:**  
-- Focused trace review (product-shaped, with the right highlight).
-- Cluster/batch filter/search UI mockup (incl. semantic search).
-- Reviewer progress/progress bar.
-- Action control/flag/escalate in context.
-- “Vibe-coded” minimal custom review UI.
-
----
-
-Custom review interfaces are for finding and fixing failure modes, not for showcasing “features.” Make review product-shaped, frictionless, and discoverable—let SMEs focus on labeling what matters, not fighting the UI. Cluster, filter, and semantic search are the force multipliers: spot widespread errors and fix once, not a hundred times. If your labeling and error analysis aren’t getting faster, your interface is due for an update.
+Keep your data annotation interface minimal and only add features as you need them. These guidelines are items to consider, but should only be used if they provide a noticeable benefit that justifies the additional complexity and maintenance overhead.
 
 ## ... more to come ...
 
