@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.29">
+<meta name="generator" content="quarto-1.7.31">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -40,8 +40,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-748b535e376f14d4692bf2b2e5fd6380.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../../site_libs/bootstrap/bootstrap-8b04340bcbb0e02d6c1b691864fa86bb.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
@@ -261,6 +261,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       toggleColorMode(toAlternate);
       setStyleSentinel(toAlternate);
       toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
     };
     // Switch to dark mode if need be
     if (hasAlternateSentinel()) {
@@ -326,6 +327,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   <li><a href="#q-how-do-i-choose-the-right-chunk-size-for-my-document-processing-tasks" id="toc-q-how-do-i-choose-the-right-chunk-size-for-my-document-processing-tasks" class="nav-link" data-scroll-target="#q-how-do-i-choose-the-right-chunk-size-for-my-document-processing-tasks">Q: How do I choose the right chunk size for my document processing tasks?</a></li>
   <li><a href="#q-how-should-i-approach-evaluating-my-rag-system" id="toc-q-how-should-i-approach-evaluating-my-rag-system" class="nav-link" data-scroll-target="#q-how-should-i-approach-evaluating-my-rag-system">Q: How should I approach evaluating my RAG system?</a></li>
   <li><a href="#q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs" id="toc-q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs" class="nav-link" data-scroll-target="#q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs">Q: What makes a good custom interface for reviewing LLM outputs?</a></li>
+  <li><a href="#q-how-much-of-my-development-budget-should-i-allocate-to-evals" id="toc-q-how-much-of-my-development-budget-should-i-allocate-to-evals" class="nav-link" data-scroll-target="#q-how-much-of-my-development-budget-should-i-allocate-to-evals">Q: How much of my development budget should I allocate to evals?</a></li>
   <li><a href="#more-to-come" id="toc-more-to-come" class="nav-link" data-scroll-target="#more-to-come">… more to come …</a></li>
   </ul>
 <div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/blog/posts/evals-faq/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
@@ -580,6 +582,14 @@ Our Course On AI Evals
 <h3 class="anchored" data-anchor-id="general-principle-keep-it-minimal">General Principle: Keep it minimal</h3>
 <p>Keep your annotation interface minimal. Only incorporate these ideas if they provide a benefit that outweighs the additional complexity and maintenance overhead.</p>
 </section>
+</section>
+<section id="q-how-much-of-my-development-budget-should-i-allocate-to-evals" class="level2">
+<h2 class="anchored" data-anchor-id="q-how-much-of-my-development-budget-should-i-allocate-to-evals">Q: How much of my development budget should I allocate to evals?</h2>
+<p>It’s important to recognize that evaluation is part of the development process rather than a distinct line item, similar to how debugging is part of software development.</p>
+<p>You should always be doing <a href="https://www.youtube.com/watch?v=qH1dZ8JLLdU">error analysis</a>. When you discover issues through error analysis, many will be straightforward bugs you’ll fix immediately. These fixes don’t require separate evaluation infrastructure as they’re just part of development.</p>
+<p>The decision to build automated evaluators comes down to <a href="#q-should-i-build-automated-evaluators-for-every-failure-mode-i-find">cost-benefit analysis</a>. If you can catch an error with a simple assertion or regex check, the cost is minimal and probably worth it. But if you need to align an LLM-as-judge evaluator, consider whether the failure mode warrants that investment.</p>
+<p>In the projects we’ve worked on, <strong>we’ve spent 60-80% of our development time on error analysis and evaluation</strong>. Expect most of your effort to go toward understanding failures (i.e.&nbsp;looking at data) rather than building automated checks.</p>
+<p>Be <a href="https://ai-execs.com/2_intro.html#a-case-study-in-misleading-ai-advice">wary of optimizing for high eval pass rates</a>. If you’re passing 100% of your evals, you’re likely not challenging your system enough. A 70% pass rate might indicate a more meaningful evaluation that’s actually stress-testing your application. Focus on evals that help you catch real issues, not ones that make your metrics look good.</p>
 </section>
 <section id="more-to-come" class="level2">
 <h2 class="anchored" data-anchor-id="more-to-come">… more to come …</h2>
