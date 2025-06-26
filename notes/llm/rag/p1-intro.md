@@ -1,6 +1,7 @@
 ---
 title: "P1: I don't use RAG, I just retrieve documents"
 description: "Ben Clavié's introduction to advanced retrieval techniques"
+image: p1-images/slide_12.png
 date: 2025-06-25
 ---
 
