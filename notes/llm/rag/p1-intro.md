@@ -150,7 +150,7 @@ The final talk features [Bryan Bischof and Ayush Chaurasia](https://maven.com/p/
 
 *([Timestamp: 00:24:54](https://youtu.be/Evlk9J-B_uc?t=1494s){target="_blank"})*
 
-Ben concludes his introduction, thanking the audience and teasing the much more interesting and in-depth sessions to come.
+Ben concludes his talk. You can sign up for the series with the links above, or here: [p2: Evals](https://maven.com/p/fae749/modern-ir-evaluation-in-the-generative-rag-era){target="_blank"}, [p3: Reasoning](https://maven.com/p/d6c44b/reasoning-opens-up-new-retrieval-frontiers){target="_blank"}, [p4: Late-Interaction](https://maven.com/p/1973fe/going-further-late-interaction-beats-single-vector-limits){target="_blank"}, and [p5: Multimodal](https://maven.com/p/f9eb59/the-map-is-not-the-territory-highly-multimodal-search){target="_blank"}.
 
 ---
 
