@@ -5,9 +5,9 @@ image: p1-images/slide_12.png
 date: 2025-06-25
 ---
 
-As part of our [LLM Evals course](https://bit.ly/evals-ai){target="_blank"}, I had the pleasure of hosting [Benjamin Clavié](https://ben.clavie.eu/){target="_blank"} to kick off a 5-part mini-series on evaluating and optimizing RAG. Ben is a retrieval and MLresearcher and one of the most insightful people in the subject. His talk focused on the most important developments in RAG and where you should be paying attention (late-interaction, reasoning, evals, multimodal, etc.).
+As part of our [LLM Evals course](https://bit.ly/evals-ai){target="_blank"}, I hosted [Benjamin Clavié](https://ben.clavie.eu/){target="_blank"} to kick off a 5-part mini-series on evaluating and optimizing RAG. Ben is a retrieval and MLresearcher and one of the most insightful people in the subject. His talk focused on important developments in RAG and where you should be paying attention (late-interaction, reasoning, evals, multimodal, etc.).
 
-Below is an annotated version of the presentation, with timestamped links to the relevant parts of the presentation for each slide.
+Below is an annotated version of the presentation, with timestamped links for each slide.
 
 ---
 
@@ -22,7 +22,7 @@ Below is an annotated version of the presentation, with timestamped links to the
 
 *([Timestamp: 00:00:00](https://youtu.be/Evlk9J-B_uc?t=0s){target="_blank"})*
 
-This is the title of the talk, which sets a provocative tone right from the start, challenging the common understanding of RAG.
+The cheeky title of the talk.
 
 ![](p1-images/slide_2.png)
 
@@ -34,19 +34,19 @@ Ben introduces himself, noting his base in Musashino City, Japan (home of the Gh
 
 *([Timestamp: 00:02:05](https://youtu.be/Evlk9J-B_uc?t=125s){target="_blank"})*
 
-This slide, a parody of the "Who Framed Roger Rabbit" poster, humorously introduces the central, controversial theme of the talk: the idea that "RAG is dead." Ben immediately clarifies that while he doesn't necessarily disagree, the statement only applies to a very narrow, and often misunderstood, definition of RAG that was popularized by marketing efforts.
+Ben discusses the controversial idea that "RAG is dead." Ben explains that the statement only applies to a very narrow, and often misunderstood, definition of RAG that was popularized by marketing efforts.
 
 ![](p1-images/slide_4.png)
 
 *([Timestamp: 00:02:33](https://youtu.be/Evlk9J-B_uc?t=153s){target="_blank"})*
 
-Here, Ben makes a critical distinction. The "RAG" that many people came to know in 2023—the simplistic, single-vector semantic search approach—may be obsolete. However, the underlying concept of **retrieval** is more alive and relevant than ever.
+The "RAG" that many people came to know in 2023: simplistic, single-vector semantic search approach may be obsolete. However, the underlying concept of **retrieval** is still relevant.
 
 ![](p1-images/slide_5.png)
 
 *([Timestamp: 00:02:45](https://youtu.be/Evlk9J-B_uc?t=165s){target="_blank"})*
 
-Ben breaks down the acronym: **R**etrieval **A**ugmented **G**eneration. He points out that the original RAG paper actually described a process quite different from today's common interpretation, but the name stuck. At its core, the pipeline is simple: you **somehow** retrieve documents and pass them to a generative model to **augment** its output. He argues that this core concept is immortal because there will always be a need to provide models with external information they weren't trained on.
+Ben breaks down the acronym: **R**etrieval **A**ugmented **G**eneration. He points out that the original RAG paper actually described a process quite different from today's common interpretation, but the name stuck. At its core, the pipeline is simple: you **somehow** retrieve documents and pass them to a generative model to **augment** its output. He argues that there will always be a need to provide models with external information they weren't trained on.
 
 ![](p1-images/slide_6.png)
 
@@ -64,72 +64,72 @@ With RAG, a new step is inserted: "Context Documents." Ben emphasizes that the "
 
 *([Timestamp: 00:05:10](https://youtu.be/Evlk9J-B_uc?t=310s){target="_blank"})*
 
-Ben addresses the common argument that since tools like Claude Code don't use "RAG," RAG must be dead. He uses the famous Scooby-Doo meme to illustrate his point: what people often call "RAG" is actually just the most naive approach—brute-force, single-vector semantic search. This definition was pushed heavily by marketing in 2023-2024 because it was simple to sell. Claiming RAG is dead because we're now using better retrieval tools is, in his words, "akin to claiming HTML is dead because we are now using CSS."
+Ben addresses the common argument that since tools like Claude Code don't use "RAG," RAG must be dead. What people often call "RAG" is a naive brute force, single-vector semantic search. This definition was pushed heavily by marketing in 2023-2024 because it was simple to sell. Claiming RAG is dead because we're now using better retrieval tools is, in his words, "akin to claiming HTML is dead because we are now using CSS."
 
 ![](p1-images/slide_9.png)
 
 *([Timestamp: 00:06:46](https://youtu.be/Evlk9J-B_uc?t=406s){target="_blank"})*
 
-Ben explains the inherent limitations of single-vector search. It must compress the meaning of an entire document or chunk into a single, relatively small vector (e.g., ~1000 dimensions). This compression inevitably leads to information loss. The model is trained to prioritize information it assumes will be useful for matching queries to documents based on its training data (like Bing search data), which most likely does not look like your specific, domain-heavy data (e.g., a unique codebase). This mismatch is why general-purpose embedding models often struggle with specialized domains like code retrieval.
+Ben explains the limitations of single-vector search. It must compress the meaning of an entire document or chunk into a single, relatively small vector (e.g., ~1000 dimensions). This compression inevitably leads to information loss. The model is trained to prioritize information it assumes will be useful for matching queries to documents based on its training data (like Bing search data), which most likely does not look like your specific, domain-heavy data (e.g., a unique codebase). This mismatch is why general-purpose embedding models often struggle with specialized domains like code retrieval.
 
 ![](p1-images/slide_10.png)
 
 *([Timestamp: 00:09:45](https://youtu.be/Evlk9J-B_uc?t=585s){target="_blank"})*
 
-Here, Ben tackles the argument that massive context windows (e.g., Gemini's 1M or hypothetical 10M token windows) will make RAG obsolete. He uses an analogy: it's like someone in 1999 claiming hard drives are dead because 512MB RAM sticks are coming soon. The reality is that even 10M tokens is a small amount of space for many enterprise knowledge bases or large datasets. Furthermore, the cost and inefficiency of stuffing everything into the context for every query makes it impractical. RAG remains the natural and efficient abstraction for providing external information.
+Ben tackles the argument that massive context windows (e.g., Gemini's 1M or hypothetical 10M token windows) make RAG obsolete. He uses an analogy: it's like someone in 1999 claiming hard drives are dead because 512MB RAM sticks are coming soon. The reality is that even 10M tokens is a small amount of space for many enterprise knowledge bases or large datasets. Furthermore, the cost and inefficiency of stuffing everything into the context for every query makes it impractical.
 
 ![](p1-images/slide_11.png)
 
 *([Timestamp: 00:12:15](https://youtu.be/Evlk9J-B_uc?t=735s){target="_blank"})*
 
-This slide reinforces why retrieval is essential. LLM weights are inherently frozen at a point in time. They don't know about your new internal project, your updated company policy, or that "really cool new fasthtml library you want to try." Training a model on every new piece of information is complex and inefficient. Ben argues we wouldn't want models to store all this one-off information permanently anyway; we want their finite weight space to be used for intelligence, not just knowledge storage. Retrieval is the natural and necessary way to inject this external, up-to-date information precisely when needed.
+Retrieval is never going away. LLM weights are frozen at a point in time. They don't know about your new internal project, your updated company policy, or that "really cool new [fasthtml](https://www.fastht.ml/) library you want to try." Training a model on every new piece of information is complex and inefficient. Ben argues we wouldn't want models to store all this one-off information permanently anyway; we want their finite weight space to be used for intelligence, not just knowledge storage. Retrieval is necessary to inject this external, up-to-date information.
 
 ![](p1-images/slide_12.png)
 
 *([Timestamp: 00:14:32](https://youtu.be/Evlk9J-B_uc?t=872s){target="_blank"})*
 
-A concise summary of the first part of the talk. The key takeaways are:
--   RAG as a concept isn't going away.
+Ben summarizes takeaways so far:
+-   RAG isn't going away.
 -   Naive methods (like basic cosine similarity) are showing their limits, pushing us toward better, more sophisticated retrieval techniques.
 -   RAG is the best way to provide models with up-to-date information.
 -   Long context windows are not a replacement for retrieval.
-The Venn diagram cleverly illustrates that what's "dead" is the oversimplified idea of brute-forcing everything with a single vector, not the broader concept of RAG.
+The Venn diagram illustrates that what's "dead" is the oversimplified idea of brute-forcing everything with a single vector, not RAG generally.
 
 ![](p1-images/slide_13.png)
 
 *([Timestamp: 00:15:31](https://youtu.be/Evlk9J-B_uc?t=931s){target="_blank"})*
 
-A simple transition slide to pivot to the next section of the talk.
+Classic Ben - more surprises coming!
 
 ![](p1-images/slide_14.png)
 
 *([Timestamp: 00:15:52](https://youtu.be/Evlk9J-B_uc?t=952s){target="_blank"})*
 
-Confirms that there is more to discuss, setting the stage to introduce better retrieval methods.
+There is more to discuss re: better retrieval methods.
 
 ![](p1-images/slide_15.png)
 
 *([Timestamp: 00:15:54](https://youtu.be/Evlk9J-B_uc?t=954s){target="_blank"})*
 
-Ben returns to his analogy. While more RAM didn't kill hard drives, SSDs did (for consumers). An SSD is just a "better hard drive." Similarly, what killed "2023 RAG" is simply **better RAG**.
+Ben returns to his analogy. While more RAM didn't kill hard drives, SSDs did (for consumers). An SSD is just a "better hard drive." Similarly, what killed "2023 RAG" is simply **better RAG** (and concretely, better forms of retrieval).
 
 ![](p1-images/slide_16.png)
 
 *([Timestamp: 00:17:03](https://youtu.be/Evlk9J-B_uc?t=1023s){target="_blank"})*
 
-To showcase the breadth of retrieval, Ben lists a wide variety of tools: `grep`, `wget`, agentic search, `BM25`, `ColBERT`, web search, and even reasoning. The point is that these are all valid retrieval methods, and the best approach often involves using them in combination.
+To showcase the breadth of retrieval, Ben lists a variety of tools: `grep`, `wget`, agentic search, `BM25`, `ColBERT`, web search, and even reasoning. These are all valid retrieval methods. **The best approach often involves using them in combination.**
 
 ![](p1-images/slide_17.png)
 
 *([Timestamp: 00:18:20](https://youtu.be/Evlk9J-B_uc?t=1100s){target="_blank"})*
 
-Ben acknowledges the overwhelming landscape of retrieval techniques. He emphasizes that Retrieval is more relevant than ever, but it's no longer the simple, one-trick pony it was once marketed as. To help navigate this, he introduces the upcoming speakers who will cover specific "hot topics."
+Ben acknowledges the overwhelming landscape of retrieval techniques. It's no longer the simple, one-trick pony it was once marketed as. To help navigate this, he introduces the upcoming speakers who will cover specific "hot topics."
 
 ![](p1-images/slide_18.png)
 
 *([Timestamp: 00:19:34](https://youtu.be/Evlk9J-B_uc?t=1174s){target="_blank"})*
 
-The first guest expert introduced is [Nandan Thakur](https://maven.com/p/fae749/modern-ir-evaluation-in-the-generative-rag-era){target="_blank"}. With thousands of retrieval approaches available, trustworthy benchmarks are essential. However, popular benchmarks like BEIR and MTEB are now part of the training data for all base models, leading to data contamination and giving a weaker signal. Nandan, who led the design of BEIR, will discuss his new approaches to creating non-overfitted, trustable benchmarks, such as the continuously updated `FreshStack`.
+The first guest expert introduced is [Nandan Thakur](https://maven.com/p/fae749/modern-ir-evaluation-in-the-generative-rag-era){target="_blank"}. With thousands of retrieval approaches available, trustworthy benchmarks are important. However, popular benchmarks like BEIR and MTEB are now part of the training data for all base models, leading to data contamination and giving a weaker signal. Nandan, who led the design of BEIR, will discuss his new approaches to creating non-overfitted, trustable benchmarks, such as the continuously updated `FreshStack`.
 
 ![](p1-images/slide_19.png)
 *([Timestamp: 00:21:15](https://youtu.be/Evlk9J-B_uc?t=1275s){target="_blank"})*
@@ -151,7 +151,7 @@ The final talk features [Bryan Bischof and Ayush Chaurasia](https://maven.com/p/
 
 *([Timestamp: 00:24:54](https://youtu.be/Evlk9J-B_uc?t=1494s){target="_blank"})*
 
-Ben concludes his talk. You can sign up for the series with the links above, or here: [p2: Evals](https://maven.com/p/fae749/modern-ir-evaluation-in-the-generative-rag-era){target="_blank"}, [p3: Reasoning](https://maven.com/p/d6c44b/reasoning-opens-up-new-retrieval-frontiers){target="_blank"}, [p4: Late-Interaction](https://maven.com/p/1973fe/going-further-late-interaction-beats-single-vector-limits){target="_blank"}, and [p5: Multimodal](https://maven.com/p/f9eb59/the-map-is-not-the-territory-highly-multimodal-search){target="_blank"}.
+You can sign up for the series with the links above, or here: [p2: Evals](https://maven.com/p/fae749/modern-ir-evaluation-in-the-generative-rag-era){target="_blank"}, [p3: Reasoning](https://maven.com/p/d6c44b/reasoning-opens-up-new-retrieval-frontiers){target="_blank"}, [p4: Late-Interaction](https://maven.com/p/1973fe/going-further-late-interaction-beats-single-vector-limits){target="_blank"}, and [p5: Multimodal](https://maven.com/p/f9eb59/the-map-is-not-the-territory-highly-multimodal-search){target="_blank"}.
 
 ---
 
