@@ -5,7 +5,7 @@ image: p1-images/slide_12.png
 date: 2025-06-25
 ---
 
-As part of our [LLM Evals course](https://bit.ly/evals-ai){target="_blank"}, I hosted [Benjamin Clavié](https://ben.clavie.eu/){target="_blank"} to kick off a 5-part mini-series on evaluating and optimizing RAG. Ben is a retrieval and MLresearcher and one of the most insightful people in the subject. His talk focused on important developments in RAG and where you should be paying attention (late-interaction, reasoning, evals, multimodal, etc.).
+As part of our [LLM Evals course](https://bit.ly/evals-ai){target="_blank"}, I hosted [Benjamin Clavié](https://ben.clavie.eu/){target="_blank"} to kick off a 5-part mini-series on evaluating and optimizing RAG. Ben is a retrieval researcher who has built widely used tools like [RAGatouille](https://github.com/answerdotai/ragatouille) and [rerankers](https://github.com/answerdotai/rerankers) among other things. His talk focused on important developments in RAG and where you should be paying attention (late-interaction, reasoning, evals, multimodal, etc.).
 
 Below is an annotated version of the presentation, with timestamped links for each slide.
 
