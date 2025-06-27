@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.31">
+<meta name="generator" content="quarto-1.7.29">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Hamel Husain">
 <meta name="author" content="Shreya Shankar">
-<meta name="dcterms.date" content="2025-06-23">
+<meta name="dcterms.date" content="2025-06-27">
 <meta name="description" content="FAQ from our course on AI Evals.">
 
 <title>LLM Eval FAQ – Hamel’s Blog</title>
@@ -40,8 +40,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-748b535e376f14d4692bf2b2e5fd6380.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../../site_libs/bootstrap/bootstrap-5fe69a9b4bc42592cd576b32745a524f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
@@ -262,7 +262,6 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       toggleColorMode(toAlternate);
       setStyleSentinel(toAlternate);
       toggleGiscusIfUsed(toAlternate, darkModeDefault);
-      window.dispatchEvent(new Event('resize'));
     };
     queryPrefersDark.addEventListener("change", e => {
       if(window.localStorage.getItem("quarto-color-scheme") !== null)
@@ -337,6 +336,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   <li><a href="#q-how-should-i-approach-evaluating-my-rag-system" id="toc-q-how-should-i-approach-evaluating-my-rag-system" class="nav-link" data-scroll-target="#q-how-should-i-approach-evaluating-my-rag-system">Q: How should I approach evaluating my RAG system?</a></li>
   <li><a href="#q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs" id="toc-q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs" class="nav-link" data-scroll-target="#q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs">Q: What makes a good custom interface for reviewing LLM outputs?</a></li>
   <li><a href="#q-how-much-of-my-development-budget-should-i-allocate-to-evals" id="toc-q-how-much-of-my-development-budget-should-i-allocate-to-evals" class="nav-link" data-scroll-target="#q-how-much-of-my-development-budget-should-i-allocate-to-evals">Q: How much of my development budget should I allocate to evals?</a></li>
+  <li><a href="#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed" id="toc-q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed" class="nav-link" data-scroll-target="#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed">Q: Why is “error analysis” so important in LLM evals, and how is it performed?</a></li>
   <li><a href="#more-to-come" id="toc-more-to-come" class="nav-link" data-scroll-target="#more-to-come">… more to come …</a></li>
   </ul>
 <div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/blog/posts/evals-faq/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
@@ -382,7 +382,7 @@ Subscribe To My Newsletter
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 23, 2025</p>
+      <p class="date">June 27, 2025</p>
     </div>
   </div>
   
@@ -594,6 +594,18 @@ Subscribe To My Newsletter
 <div class="cta" style="text-align: center;">
 <p><strong>👉 <em>We are teaching our last and final cohort of our <a href="https://bit.ly/evals-ai">AI Evals course</a> next month</em></strong><em> (we have to get back to building). Here is a <a href="https://bit.ly/evals-ai">35% discount code</a> for readers of this post.</em> 👈</p>
 </div>
+</section>
+<section id="q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed" class="level2">
+<h2 class="anchored" data-anchor-id="q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed">Q: Why is “error analysis” so important in LLM evals, and how is it performed?</h2>
+<p>Error analysis is <strong>the most important activity in evals</strong>. Error analysis helps you decide what evals to write in the first place. It allows you to identify failure modes unique to your application and data. The process involves:</p>
+<ol type="1">
+<li><p><strong>Creating a Dataset</strong>: Gathering representative traces of user interactions with the LLM. If you do not have any data, you can <a href="#q-what-is-the-best-approach-for-generating-synthetic-data">generate synthetic data</a> to get started.</p></li>
+<li><p><strong>Open Coding</strong>: Human annotator(s) (ideally a <a href="#q-how-many-people-should-annotate-my-llm-outputs">benevolent dictator</a>) review and write open-ended notes about traces, noting any issues. This process is akin to “journaling” and is adapted from qualitative research methodologies. When beginning, it is recommended to focus on noting the <a href="#q-how-do-i-debug-multi-turn-conversation-traces">first failure</a> observed in a trace, as upstream errors can cause downstream issues, though you can also tag all independent failures if feasible. A <a href="http://localhost:5600/blog/posts/field-guide/#empower-domain-experts-to-write-prompts">domain expert</a> should be performing this step.</p></li>
+<li><p><strong>Axial Coding</strong>: Categorize the open-ended notes into a “failure taxonomy.”. In other words, group similar failures into distinct categories. This is the most important step. At the end, count the number of failures in each category. You can use a LLM to help with this step.</p></li>
+<li><p><strong>Iterative Refinement</strong>: Keep iterating on more traces until you reach <a href="https://delvetool.com/blog/theoreticalsaturation">theoretical saturation</a>, meaning new traces do not seem to reveal new failure modes or information to you. As a rule of thumb, you should aim to review at least 100 traces.</p></li>
+</ol>
+<p>You should frequently revisit this process. There are advanced ways to sample data more efficiently, like clustering, sorting by user feedback, and sorting by high probability failure patterns. Over time, you’ll develop a “nose” for where to look for failures in your data.</p>
+<p>Do not skip error analysis. It ensures that the evaluation metrics you develop are supported by real application behaviors instead of counter-productive generic metrics (which most platforms nudge you to use). For a live example of how error analysis can be helpful, see <a href="https://www.youtube.com/watch?v=e2i6JbU2R-s">this video</a>.</p>
 </section>
 <section id="more-to-come" class="level2">
 <h2 class="anchored" data-anchor-id="more-to-come">… more to come …</h2>
