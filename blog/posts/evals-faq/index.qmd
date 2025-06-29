@@ -189,6 +189,12 @@ It's important to recognize **why chunk size affects results**. A larger chunk m
 
 No rule of thumb can perfectly determine the best chunk size for your use case – **you should validate with experiments**. The optimal chunk size can vary by domain and model. I treat chunk size as a hyper parameter to tune.
 
+<hr>
+<div class="cta" style="text-align: center;">
+<strong>👉 <em>We are teaching our last and final cohort of our [AI Evals course](https://bit.ly/evals-ai) next month</strong> (we have to get back to building). Here is a [35% discount code](https://bit.ly/evals-ai) for readers of this post.</em> 👈
+</div>
+<hr>
+
 ## Q: How should I approach evaluating my RAG system?
 
 RAG systems have two distinct components that require different evaluation approaches: retrieval and generation.
@@ -243,11 +249,6 @@ In the projects we've worked on, **we've spent 60-80% of our development time on
 
 Be [wary of optimizing for high eval pass rates](https://ai-execs.com/2_intro.html#a-case-study-in-misleading-ai-advice). If you're passing 100% of your evals, you're likely not challenging your system enough. A 70% pass rate might indicate a more meaningful evaluation that's actually stress-testing your application. Focus on evals that help you catch real issues, not ones that make your metrics look good. 
 
-<hr>
-<div class="cta" style="text-align: center;">
-<strong>👉 <em>We are teaching our last and final cohort of our [AI Evals course](https://bit.ly/evals-ai) next month</strong> (we have to get back to building). Here is a [35% discount code](https://bit.ly/evals-ai) for readers of this post.</em> 👈
-</div>
-
 ## Q: Why is "error analysis" so important in LLM evals, and how is it performed?
 
 Error analysis is **the most important activity in evals**.  Error analysis helps you decide what evals to write in the first place.  It allows you to identify failure modes unique to your application and data. The process involves:
@@ -264,7 +265,7 @@ You should frequently revisit this process.  There are advanced ways to sample d
 
 Do not skip error analysis.  It ensures that the evaluation metrics you develop are supported by real application behaviors instead of counter-productive generic metrics (which most platforms nudge you to use). For examples of how error analysis can be helpful, see [this video](https://www.youtube.com/watch?v=e2i6JbU2R-s), or this [blog post](https://hamel.dev/blog/posts/field-guide/).
 
-## Q: What's the difference between guardrails and evaluators?
+## Q: What's the difference between guardrails & evaluators?
 
 Guardrails are **inline safety checks** that sit directly in the request/response path. They validate inputs or outputs _before_ anything reaches a user, so they typically are:
 
@@ -280,12 +281,47 @@ Evaluators are usually run asynchronously or in batch to afford heavier computat
 
 Apply guardrails for immediate protection against objective failures requiring intervention. Use evaluators for monitoring and improving subjective or nuanced criteria. Together, they create layered protection.
 
-## Q: What's the minimum viable evaluation setup?
+## Q: What's a minimum viable evaluation setup?
 
 Start with [error analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed), not infrastructure. Spend 30 minutes manually reviewing 20-50 LLM outputs whenever you make significant changes. Use one [domain expert](#q-how-many-people-should-annotate-my-llm-outputs) who understands your users as your quality decision maker (a "[benevolent dictator](#q-how-many-people-should-annotate-my-llm-outputs)").
 
 If possible, **use notebooks** to help you review traces and analyze data. In our opinion, this is the single most effective tool for evals because you can write arbitrary code, visualize data, and iterate quickly. You can even build your own [custom annotation interface](#q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs) right inside notebooks, as shown in this [video](https://youtu.be/aqKUwPKBkB0?si=5KDmMQnRzO_Ce9xH).
 
+## Q: How do I evaluate agentic or tool-using LLMs?
+
+We recommend evaluating agentic workflows in two phases:
+
+**1. End-to-end task success.** Treat the agent as a black box and ask "did we meet the user's goal?". Define a precise success rule per task (exact answer, correct side-effect, etc.) and measure with human or [aligned LLM judges](https://hamel.dev/blog/posts/llm-judge/).  Take note of the first upstream failure when conducting [error analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed).  
+
+Once error analysis reveals which workflows fail most often, move to step-level diagnostics to understand why they're failing.
+
+**2. Step-level diagnostics.** Assuming that you have sufficiently [insturmented your system](https://hamel.dev/blog/posts/evals/#logging-traces) with details of tool calls and responses, you can score individual components such as:
+- *Tool choice*: was the selected tool appropriate?
+- *Parameter extraction*: were inputs complete and well-formed?
+- *Error handling*: did the agent recover from empty results or API failures?
+- *Context retention*: did it preserve earlier constraints?
+- *Efficiency*: how many steps, seconds, and tokens were spent?
+- *Goal checkpoints*: for long workflows verify key milestones.
+
+Example: "Find Berkeley homes under $1M and schedule viewings" breaks into: parameters extracted correctly, relevant listings retrieved, availability checked, and calendar invites sent. Each checkpoint can pass or fail independently, making debugging tractable.
+
+**Use transition failure matrices to understand error patterns.** Create a matrix where rows represent the last successful state and columns represent where the first failure occurred.  This is a great way to understand where the most failures occur.
+
+![Transition failure matrix showing hotspots in text-to-SQL agent workflow](images/shreya_matrix.png){width=75%}
+
+Transition matrices transform overwhelming agent complexity into actionable insights. Instead of drowning in individual trace reviews, you can immediately see that GenSQL → ExecSQL transitions cause 12 failures while DecideTool → PlanCal causes only 2. This data-driven approach guides where to invest debugging effort. Here is another [example](https://www.figma.com/deck/nwRlh5renu4s4olaCsf9lG/Failure-is-a-Funnel?node-id=2009-927&t=GJlTtxQ8bLJaQ92A-1) from Bryan Bischof, that is also a text-to-SQL agent:
+
+![Bischof, Bryan "Failure is A Funnel - Data Council, 2025"](images/bischof_matrix.png){width=75%}
+
+**Creating Test Cases for Agent Failures**
+
+Creating test cases for agent failures follows the same principles as our previous FAQ on [debugging multi-turn conversation traces](#q-how-do-i-debug-multi-turn-conversation-traces) (i.e. try to reproduce the error in the simplest way possible, only use multi-turn tests when the failure actually requires conversation context, etc.).
+
 ## ... more to come ...
 
 I'll be updating this FAQ daily!
+
+<hr>
+<div class="cta" style="text-align: center;">
+<strong>👉 <em>We are teaching our last and final cohort of our [AI Evals course](https://bit.ly/evals-ai) next month</strong> (we have to get back to building). Here is a [35% discount code](https://bit.ly/evals-ai) for readers of this post.</em> 👈
+</div>
