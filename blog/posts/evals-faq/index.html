@@ -8,7 +8,7 @@
 
 <meta name="author" content="Hamel Husain">
 <meta name="author" content="Shreya Shankar">
-<meta name="dcterms.date" content="2025-06-28">
+<meta name="dcterms.date" content="2025-06-29">
 <meta name="description" content="FAQ from our course on AI Evals.">
 
 <title>LLM Eval FAQ – Hamel’s Blog</title>
@@ -342,6 +342,9 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   <li><a href="#q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs" id="toc-q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs" class="nav-link" data-scroll-target="#q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs">Q: What makes a good custom interface for reviewing LLM outputs?</a></li>
   <li><a href="#q-how-much-of-my-development-budget-should-i-allocate-to-evals" id="toc-q-how-much-of-my-development-budget-should-i-allocate-to-evals" class="nav-link" data-scroll-target="#q-how-much-of-my-development-budget-should-i-allocate-to-evals">Q: How much of my development budget should I allocate to evals?</a></li>
   <li><a href="#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed" id="toc-q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed" class="nav-link" data-scroll-target="#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed">Q: Why is “error analysis” so important in LLM evals, and how is it performed?</a></li>
+  <li><a href="#q-whats-the-difference-between-guardrails-evaluators" id="toc-q-whats-the-difference-between-guardrails-evaluators" class="nav-link" data-scroll-target="#q-whats-the-difference-between-guardrails-evaluators">Q: What’s the difference between guardrails &amp; evaluators?</a></li>
+  <li><a href="#q-whats-a-minimum-viable-evaluation-setup" id="toc-q-whats-a-minimum-viable-evaluation-setup" class="nav-link" data-scroll-target="#q-whats-a-minimum-viable-evaluation-setup">Q: What’s a minimum viable evaluation setup?</a></li>
+  <li><a href="#q-how-do-i-evaluate-agentic-or-tool-using-llms" id="toc-q-how-do-i-evaluate-agentic-or-tool-using-llms" class="nav-link" data-scroll-target="#q-how-do-i-evaluate-agentic-or-tool-using-llms">Q: How do I evaluate agentic or tool-using LLMs?</a></li>
   <li><a href="#more-to-come" id="toc-more-to-come" class="nav-link" data-scroll-target="#more-to-come">… more to come …</a></li>
   </ul>
 <div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/blog/posts/evals-faq/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
@@ -387,7 +390,7 @@ Subscribe To My Newsletter
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 28, 2025</p>
+      <p class="date">June 29, 2025</p>
     </div>
   </div>
   
@@ -539,6 +542,11 @@ Subscribe To My Newsletter
 <h3 class="anchored" data-anchor-id="general-guidance">General Guidance</h3>
 <p>It’s important to recognize <strong>why chunk size affects results</strong>. A larger chunk means the model has to reason over more information in one go – essentially, a heavier cognitive load. LLMs have limited capacity to <strong>retain and correlate details across a long text</strong>. If too much is packed in, the model might prioritize certain parts (commonly the beginning or end) and overlook or “forget” details in the middle. This can lead to overly coarse summaries or missed facts. In contrast, a smaller chunk bounds the problem: the model can pay full attention to that section. You are trading off <strong>global context for local focus</strong>.</p>
 <p>No rule of thumb can perfectly determine the best chunk size for your use case – <strong>you should validate with experiments</strong>. The optimal chunk size can vary by domain and model. I treat chunk size as a hyper parameter to tune.</p>
+<hr>
+<div class="cta" style="text-align: center;">
+<p><strong>👉 <em>We are teaching our last and final cohort of our <a href="https://bit.ly/evals-ai">AI Evals course</a> next month</em></strong><em> (we have to get back to building). Here is a <a href="https://bit.ly/evals-ai">35% discount code</a> for readers of this post.</em> 👈</p>
+</div>
+<hr>
 </section>
 </section>
 <section id="q-how-should-i-approach-evaluating-my-rag-system" class="level2">
@@ -595,10 +603,6 @@ Subscribe To My Newsletter
 <p>The decision to build automated evaluators comes down to <a href="#q-should-i-build-automated-evaluators-for-every-failure-mode-i-find">cost-benefit analysis</a>. If you can catch an error with a simple assertion or regex check, the cost is minimal and probably worth it. But if you need to align an LLM-as-judge evaluator, consider whether the failure mode warrants that investment.</p>
 <p>In the projects we’ve worked on, <strong>we’ve spent 60-80% of our development time on error analysis and evaluation</strong>. Expect most of your effort to go toward understanding failures (i.e.&nbsp;looking at data) rather than building automated checks.</p>
 <p>Be <a href="https://ai-execs.com/2_intro.html#a-case-study-in-misleading-ai-advice">wary of optimizing for high eval pass rates</a>. If you’re passing 100% of your evals, you’re likely not challenging your system enough. A 70% pass rate might indicate a more meaningful evaluation that’s actually stress-testing your application. Focus on evals that help you catch real issues, not ones that make your metrics look good.</p>
-<hr>
-<div class="cta" style="text-align: center;">
-<p><strong>👉 <em>We are teaching our last and final cohort of our <a href="https://bit.ly/evals-ai">AI Evals course</a> next month</em></strong><em> (we have to get back to building). Here is a <a href="https://bit.ly/evals-ai">35% discount code</a> for readers of this post.</em> 👈</p>
-</div>
 </section>
 <section id="q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed" class="level2">
 <h2 class="anchored" data-anchor-id="q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed">Q: Why is “error analysis” so important in LLM evals, and how is it performed?</h2>
@@ -612,9 +616,55 @@ Subscribe To My Newsletter
 <p>You should frequently revisit this process. There are advanced ways to sample data more efficiently, like clustering, sorting by user feedback, and sorting by high probability failure patterns. Over time, you’ll develop a “nose” for where to look for failures in your data.</p>
 <p>Do not skip error analysis. It ensures that the evaluation metrics you develop are supported by real application behaviors instead of counter-productive generic metrics (which most platforms nudge you to use). For examples of how error analysis can be helpful, see <a href="https://www.youtube.com/watch?v=e2i6JbU2R-s">this video</a>, or this <a href="https://hamel.dev/blog/posts/field-guide/">blog post</a>.</p>
 </section>
+<section id="q-whats-the-difference-between-guardrails-evaluators" class="level2">
+<h2 class="anchored" data-anchor-id="q-whats-the-difference-between-guardrails-evaluators">Q: What’s the difference between guardrails &amp; evaluators?</h2>
+<p>Guardrails are <strong>inline safety checks</strong> that sit directly in the request/response path. They validate inputs or outputs <em>before</em> anything reaches a user, so they typically are:</p>
+<ul>
+<li><strong>Fast and deterministic</strong> – typically a few milliseconds of latency budget.</li>
+<li><strong>Simple and explainable</strong> – regexes, keyword block-lists, schema or type validators, lightweight classifiers.</li>
+<li><strong>Targeted at clear-cut, high-impact failures</strong> – PII leaks, profanity, disallowed instructions, SQL injection, malformed JSON, invalid code syntax, etc.</li>
+</ul>
+<p>If a guardrail triggers, the system can redact, refuse, or regenerate the response. Because these checks are user-visible when they fire, false positives are treated as production bugs; teams version guardrail rules, log every trigger, and monitor rates to keep them conservative.</p>
+<p>On the other hand, evaluators typically run <strong>after</strong> a response is produced. Evaluators measure qualities that simple rules cannot, such as factual correctness, completeness, etc. Their verdicts feed dashboards, regression tests, and model-improvement loops, but they do not block the original answer.</p>
+<p>Evaluators are usually run asynchronously or in batch to afford heavier computation such as a <a href="https://hamel.dev/blog/posts/llm-judge/">LLM-as-a-Judge</a>. Inline use of an LLM-as-Judge is possible <em>only</em> when the latency budget and reliability targets allow it. Slow LLM judges might be feasible in a cascade that runs on the minority of borderline cases.</p>
+<p>Apply guardrails for immediate protection against objective failures requiring intervention. Use evaluators for monitoring and improving subjective or nuanced criteria. Together, they create layered protection.</p>
+</section>
+<section id="q-whats-a-minimum-viable-evaluation-setup" class="level2">
+<h2 class="anchored" data-anchor-id="q-whats-a-minimum-viable-evaluation-setup">Q: What’s a minimum viable evaluation setup?</h2>
+<p>Start with <a href="#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed">error analysis</a>, not infrastructure. Spend 30 minutes manually reviewing 20-50 LLM outputs whenever you make significant changes. Use one <a href="#q-how-many-people-should-annotate-my-llm-outputs">domain expert</a> who understands your users as your quality decision maker (a “<a href="#q-how-many-people-should-annotate-my-llm-outputs">benevolent dictator</a>”).</p>
+<p>If possible, <strong>use notebooks</strong> to help you review traces and analyze data. In our opinion, this is the single most effective tool for evals because you can write arbitrary code, visualize data, and iterate quickly. You can even build your own <a href="#q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs">custom annotation interface</a> right inside notebooks, as shown in this <a href="https://youtu.be/aqKUwPKBkB0?si=5KDmMQnRzO_Ce9xH">video</a>.</p>
+</section>
+<section id="q-how-do-i-evaluate-agentic-or-tool-using-llms" class="level2">
+<h2 class="anchored" data-anchor-id="q-how-do-i-evaluate-agentic-or-tool-using-llms">Q: How do I evaluate agentic or tool-using LLMs?</h2>
+<p>We recommend evaluating agentic workflows in two phases:</p>
+<p><strong>1. End-to-end task success.</strong> Treat the agent as a black box and ask “did we meet the user’s goal?”. Define a precise success rule per task (exact answer, correct side-effect, etc.) and measure with human or <a href="https://hamel.dev/blog/posts/llm-judge/">aligned LLM judges</a>. Take note of the first upstream failure when conducting <a href="#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed">error analysis</a>.</p>
+<p>Once error analysis reveals which workflows fail most often, move to step-level diagnostics to understand why they’re failing.</p>
+<p><strong>2. Step-level diagnostics.</strong> Assuming that you have sufficiently <a href="https://hamel.dev/blog/posts/evals/#logging-traces">insturmented your system</a> with details of tool calls and responses, you can score individual components such as: - <em>Tool choice</em>: was the selected tool appropriate? - <em>Parameter extraction</em>: were inputs complete and well-formed? - <em>Error handling</em>: did the agent recover from empty results or API failures? - <em>Context retention</em>: did it preserve earlier constraints? - <em>Efficiency</em>: how many steps, seconds, and tokens were spent? - <em>Goal checkpoints</em>: for long workflows verify key milestones.</p>
+<p>Example: “Find Berkeley homes under $1M and schedule viewings” breaks into: parameters extracted correctly, relevant listings retrieved, availability checked, and calendar invites sent. Each checkpoint can pass or fail independently, making debugging tractable.</p>
+<p><strong>Use transition failure matrices to understand error patterns.</strong> Create a matrix where rows represent the last successful state and columns represent where the first failure occurred. This is a great way to understand where the most failures occur.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/shreya_matrix.png" class="img-fluid figure-img" style="width:75.0%"></p>
+<figcaption>Transition failure matrix showing hotspots in text-to-SQL agent workflow</figcaption>
+</figure>
+</div>
+<p>Transition matrices transform overwhelming agent complexity into actionable insights. Instead of drowning in individual trace reviews, you can immediately see that GenSQL → ExecSQL transitions cause 12 failures while DecideTool → PlanCal causes only 2. This data-driven approach guides where to invest debugging effort. Here is another <a href="https://www.figma.com/deck/nwRlh5renu4s4olaCsf9lG/Failure-is-a-Funnel?node-id=2009-927&amp;t=GJlTtxQ8bLJaQ92A-1">example</a> from Bryan Bischof, that is also a text-to-SQL agent:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/bischof_matrix.png" class="img-fluid figure-img" style="width:75.0%"></p>
+<figcaption>Bischof, Bryan “Failure is A Funnel - Data Council, 2025”</figcaption>
+</figure>
+</div>
+<p><strong>Creating Test Cases for Agent Failures</strong></p>
+<p>Creating test cases for agent failures follows the same principles as our previous FAQ on <a href="#q-how-do-i-debug-multi-turn-conversation-traces">debugging multi-turn conversation traces</a> (i.e.&nbsp;try to reproduce the error in the simplest way possible, only use multi-turn tests when the failure actually requires conversation context, etc.).</p>
+</section>
 <section id="more-to-come" class="level2">
 <h2 class="anchored" data-anchor-id="more-to-come">… more to come …</h2>
 <p>I’ll be updating this FAQ daily!</p>
+<hr>
+<div class="cta" style="text-align: center;">
+<p><strong>👉 <em>We are teaching our last and final cohort of our <a href="https://bit.ly/evals-ai">AI Evals course</a> next month</em></strong><em> (we have to get back to building). Here is a <a href="https://bit.ly/evals-ai">35% discount code</a> for readers of this post.</em> 👈</p>
+</div>
 
 
 </section>
