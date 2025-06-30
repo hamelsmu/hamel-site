@@ -40,11 +40,11 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap-dark.min.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -172,6 +172,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   <li><a href="#q-whats-a-minimum-viable-evaluation-setup" id="toc-q-whats-a-minimum-viable-evaluation-setup" class="nav-link" data-scroll-target="#q-whats-a-minimum-viable-evaluation-setup">Q: What’s a minimum viable evaluation setup?</a></li>
   <li><a href="#q-how-do-i-evaluate-agentic-workflows" id="toc-q-how-do-i-evaluate-agentic-workflows" class="nav-link" data-scroll-target="#q-how-do-i-evaluate-agentic-workflows">Q: How do I evaluate agentic workflows?</a></li>
   <li><a href="#q-seriously-hamel.-stop-the-bullshit.-whats-your-favorite-eval-vendor" id="toc-q-seriously-hamel.-stop-the-bullshit.-whats-your-favorite-eval-vendor" class="nav-link" data-scroll-target="#q-seriously-hamel.-stop-the-bullshit.-whats-your-favorite-eval-vendor">Q: Seriously Hamel. Stop the bullshit. What’s your favorite eval vendor?</a></li>
+  <li><a href="#q-how-are-evaluations-used-differently-in-cicd-vs.-monitoring-production" id="toc-q-how-are-evaluations-used-differently-in-cicd-vs.-monitoring-production" class="nav-link" data-scroll-target="#q-how-are-evaluations-used-differently-in-cicd-vs.-monitoring-production">Q: How are evaluations used differently in CI/CD vs.&nbsp;monitoring production?</a></li>
   <li><a href="#more-to-come" id="toc-more-to-come" class="nav-link" data-scroll-target="#more-to-come">… more to come …</a></li>
   </ul>
 <div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/blog/posts/evals-faq/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
@@ -493,6 +494,13 @@ Subscribe To My Newsletter
 <p>I have no favorite vendor. At the core, their features are very similar - and I often build <a href="https://hamel.dev/blog/posts/evals/#q-should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf">custom tools</a> on top of them to fit my needs.</p>
 <p>My suggestion is to explore the vendors and see which one you like the most.</p>
 </section>
+<section id="q-how-are-evaluations-used-differently-in-cicd-vs.-monitoring-production" class="level2">
+<h2 class="anchored" data-anchor-id="q-how-are-evaluations-used-differently-in-cicd-vs.-monitoring-production">Q: How are evaluations used differently in CI/CD vs.&nbsp;monitoring production?</h2>
+<p>The most important difference between CI vs.&nbsp;production evaluation is the data used for testing.</p>
+<p>Test datasets for CI are small (in many cases 100+ examples) and purpose-built. Examples cover core features, regression tests for past bugs, and known edge cases. Since CI tests are run frequently, the cost of each test has to be carefully considered (that’s why you carefully curate the dataset). Favor assertions or other deterministic checks over LLM-as-judge evaluators.</p>
+<p>For evaluating production traffic, you can sample live traces and run evaluators against them asynchronously. Since you usually lack reference outputs on production data, you might rely more on on more expensive reference-free evaluators like LLM-as-judge. Additionally, track confidence intervals for production metrics. If the lower bound crosses your threshold, investigate further.</p>
+<p>These two systems are complementary: when production monitoring reveals new failure patterns through error analysis and evals, add representative examples to your CI dataset. This mitigates regressions on new issues.</p>
+</section>
 <section id="more-to-come" class="level2">
 <h2 class="anchored" data-anchor-id="more-to-come">… more to come …</h2>
 <p>I’ll be updating this FAQ daily!</p>
@@ -641,7 +649,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return localAlternateSentinel;
     }
   }
-  const darkModeDefault = false;
+  const darkModeDefault = true;
   let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
   // Dark / light mode switch
   window.quartoToggleColorScheme = () => {

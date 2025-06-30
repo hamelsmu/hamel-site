@@ -3348,6 +3348,13 @@
     "text": "Q: Seriously Hamel. Stop the bullshit. What’s your favorite eval vendor?\nEval tools are in an intensely competitive space. It would be futile to compare their features. If I tried to do such an analysis, it would be invalidated in a week! Vendors I encounter the most organically in my work are: Langsmith, Arize and Braintrust.\nWhen I help clients with vendor selection, the decision weighs heavily towards who can offer the best support, as opposed to purely features. This changes depending on size of client, use case, etc. Yes - its mainly the human factor that matters, and dare I say, vibes.\nI have no favorite vendor. At the core, their features are very similar - and I often build custom tools on top of them to fit my needs.\nMy suggestion is to explore the vendors and see which one you like the most."
   },
   {
+    "objectID": "blog/posts/evals-faq/index.html#q-how-are-evaluations-used-differently-in-cicd-vs.-monitoring-production",
+    "href": "blog/posts/evals-faq/index.html#q-how-are-evaluations-used-differently-in-cicd-vs.-monitoring-production",
+    "title": "LLM Eval FAQ",
+    "section": "Q: How are evaluations used differently in CI/CD vs. monitoring production?",
+    "text": "Q: How are evaluations used differently in CI/CD vs. monitoring production?\nThe most important difference between CI vs. production evaluation is the data used for testing.\nTest datasets for CI are small (in many cases 100+ examples) and purpose-built. Examples cover core features, regression tests for past bugs, and known edge cases. Since CI tests are run frequently, the cost of each test has to be carefully considered (that’s why you carefully curate the dataset). Favor assertions or other deterministic checks over LLM-as-judge evaluators.\nFor evaluating production traffic, you can sample live traces and run evaluators against them asynchronously. Since you usually lack reference outputs on production data, you might rely more on on more expensive reference-free evaluators like LLM-as-judge. Additionally, track confidence intervals for production metrics. If the lower bound crosses your threshold, investigate further.\nThese two systems are complementary: when production monitoring reveals new failure patterns through error analysis and evals, add representative examples to your CI dataset. This mitigates regressions on new issues."
+  },
+  {
     "objectID": "blog/posts/evals-faq/index.html#more-to-come",
     "href": "blog/posts/evals-faq/index.html#more-to-come",
     "title": "LLM Eval FAQ",
