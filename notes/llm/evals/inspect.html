@@ -1,0 +1,2004 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.31">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="A look at Inspect AI with its creator, JJ Allaire.">
+
+<title>Inspect AI, An OSS Python Library For LLM Evals – Hamel’s Blog</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-473cd3fdae26158324e3fa026112ebdf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark-5c21931d6ed7008fd1b1d77c416f53fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-ZSZXL3KFR5"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
+</script>
+<!-- Custom head content for all pages -->
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-PKGWQMKL');</script>
+<!-- End Google Tag Manager -->
+
+
+<link rel="stylesheet" href="../../../styles.css">
+<meta property="og:title" content="Inspect AI, An OSS Python Library For LLM Evals – Hamel’s Blog">
+<meta property="og:description" content="A look at Inspect AI with its creator, JJ Allaire.">
+<meta property="og:image" content="https://hamel.dev/notes/llm/evals/inspect_images/inspect_cover.png">
+<meta property="og:site_name" content="Hamel's Blog">
+<meta property="og:image:height" content="720">
+<meta property="og:image:width" content="1280">
+<meta name="twitter:title" content="Inspect AI, An OSS Python Library For LLM Evals – Hamel’s Blog">
+<meta name="twitter:description" content="A look at Inspect AI with its creator, JJ Allaire.">
+<meta name="twitter:image" content="https://hamel.dev/notes/llm/evals/inspect_images/inspect_cover.png">
+<meta name="twitter:creator" content="@HamelHusain">
+<meta name="twitter:site" content="@HamelHusain">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image-height" content="720">
+<meta name="twitter:image-width" content="1280">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-dark"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = true;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+          <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../index.html" target="_blank"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../../../notes/index.html" target="_blank" aria-current="page"> 
+<span class="menu-text">Notes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://parlance-labs.com/" target="_blank"> 
+<span class="menu-text">Hire Me</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../oss/opensource.html" target="_blank"> 
+<span class="menu-text">OSS</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../talks.html" target="_blank"> 
+<span class="menu-text">Teaching</span></a>
+  </li>  
+</ul>
+          <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/index.html">Notes</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/evals/index.html">Evals</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/evals/inspect.html">Inspect AI, An OSS Python Library For LLM Evals</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Notes</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/concurrency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Python Concurrency</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/cuda.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CUDA Version Management</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/how-to-learn/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">How to learn</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/pandoc/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">pandoc filters</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/docker/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Docker</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/dbt/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">dbt</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/programming-languages/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">programming languages</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/video_editing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Video Editing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/llm/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LLMs</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/llm/inference/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inference</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/inference/inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Optimizing latency</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/inference/max_engine.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Max Inference Engine</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/inference/big_inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">vLLM &amp; large models</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/llm/openai/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">OpenAI</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/openai/func_template.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Function prompts</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/llm/evals/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Evals</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth3 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/evals/inspect.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Inspect AI, An OSS Python Library For LLM Evals</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/llm/tools/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Function Calling</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/tools/llama3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Llama-3 Func Calling</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/llm/finetuning/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fine-tuning</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/finetuning/datasets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Dataset Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/finetuning/langchain_connectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LangChain <code>DocumentLoaders</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/finetuning/estimating_vram.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Estimating vRAM</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/finetuning/data_cleaning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Curating LLM data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/finetuning/tokenizer_gotchas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tokenization Gotchas</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/finetuning/template_free.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Template-free axolotl</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/llm/rag/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">RAG</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/rag/p1-intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">P1: I don’t use RAG, I just retrieve documents</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/llm/officehours/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Open Office Hours</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/officehours/erroranalysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Evals: Doing Error Analysis Before Writing Tests</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/officehours/evalmultiturn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multi-Turn Chat Evals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/officehours/observability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Observability in LLM Applications</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/officehours/scoping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tame Complexity By Scoping LLM Evals</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/serving/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ML Serving</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/serving/tfserving/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TF Serving</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/serving/tfserving/tf-serving-basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/serving/tfserving/gpu.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GPUs &amp; Batching</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/serving/torchserve/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TorchServe</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/serving/torchserve/basic-torchserve.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/serving/torchserve/hf.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Serving Your Own Model</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/serving/fastapi/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FastAPI</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/k8s/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">K8s</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/02-Basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/03-Secrets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Secrets</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/k8s/storage/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Storage</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/storage/04-Basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Storage Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/storage/05-Dynamic Provisioning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Dynamic Provisioning</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/k8s/scaling/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scaling</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/scaling/06-ReplicaSets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ReplicaSets</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/scaling/07- Scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scaling</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/12-StatefulSet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">StatefulSet</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/13-JobsCron.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Jobs &amp; CronJobs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/14-RolloutsRollbacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Rollouts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/k8s/multi_container_pods/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multi-Container Pods</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/multi_container_pods/08-Multi-Container-Pods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multi-Container Pods</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/multi_container_pods/09-Ambassador Sidecars.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Ambassador Sidecars</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/multi_container_pods/10-Downsides of MC Pods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Restart Conditions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/multi_container_pods/11-Sharing Processes in MC Pods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sharing Processes in MC Pods</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/k8s/helm/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Helm</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/helm/15-Helm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Helm Intro</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/helm/16-Creating Your Own Helm Charts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Creating Helm Charts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/helm/17-Helm Upgrade &amp; Rollbacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Helm Upgrades &amp; Rollbacks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/helm/21-Testing-With-Helm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Testing With Helm</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/18-Developer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Developer tips</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/19-Pod-Lifecycle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pod restart vs.&nbsp;replacement</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/20-Health-Check.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Probes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/22-Resource-Limits.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Resource Limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/22a-Resource-Requests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Requesting resources</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/23-Logging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Logging</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/24-monitoring.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Monitoring</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/25-Ingress.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Ingress</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/26-cluster.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Cluster Components</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/k8s/security/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Security</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/security/26-network-security.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Network Security</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/security/27-container-security.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Securing Containers</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/security/28-workloads.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Webhooks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/security/29-cluster-updates.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Updating a K8s Cluster</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/security/30-rbac.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">RBAC</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/27-workload-placement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Workload Placement</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/28-auto-scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Auto Scaling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/29-preemption.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preemption</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/99-Random.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Random TILs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/k8s/Open Questions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Open Questions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/fastai/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">fastai</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-19" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/fastai/fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fundamentals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/fastai/cv.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Image Classification</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/fastai/data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/fastai/batch_predicitions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Batch Predictions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/linux/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Linux</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-20" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-20" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/linux/bash_scripting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Cheatsheet</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/linux/cookbook.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Cookbook</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/linux/misc_utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Misc Utilities</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/linux/osx.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">OSX Shell Tips</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/linux/permprocdata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Processes, Permissions and Moving Data</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/actions/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GitHub Actions</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-21" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-21" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/actions/ocotkit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ocotokit.js</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/actions/resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Resources</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/prompt-eng/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prompt engineering</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-22" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-22" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/prompt-eng/course/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-23" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-23" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/01_guidelines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Guidelines for Prompting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/02_iterative.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Iterative Prompt Development</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/03_summarizing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Summarizing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/04_inferring.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inferring</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/05_transforming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Transforming</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/06_expanding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Expanding</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/prompt-eng/course/07_chatbot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">The Chat Format</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/web-scraping/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Web Scraping</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-24" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-24" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/web-scraping/browser-to-python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Browser requests to code</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/web-scraping/transcribe-diarize.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Transcribe &amp; Diarize Videos</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/fasthtml/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FastHTML</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-25" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-25" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/fasthtml/annotation-apps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Building Annotation Apps with FastHTML</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/fasthtml/concurrency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Concurrency For Starlette Apps (e.g FastAPI / FastHTML)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/quarto/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quarto</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-26" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-26" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/quarto/highlighting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Syntax Highlighting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/quarto/listings-from-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Listings from data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/quarto/merging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Merge listings</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../notes/jupyter/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Jupyter</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-27" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-27" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/jupyter/Best Way To Launch Jupyter On A Remote Server.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Launch Jupyter on a remote server</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/jupyter/Fix Jupyter CUDA cache.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fix Jupyter CUDA cache</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/jupyter/remote_browser.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Remote Browser For Jupyter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/jupyter/shortcuts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">My Jupyter Shortcuts</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#video" id="toc-video" class="nav-link active" data-scroll-target="#video">Video</a></li>
+  <li><a href="#annotated-presentation" id="toc-annotated-presentation" class="nav-link" data-scroll-target="#annotated-presentation">Annotated Presentation</a>
+  <ul class="collapse">
+  <li><a href="#inspect-overview" id="toc-inspect-overview" class="nav-link" data-scroll-target="#inspect-overview">1. Inspect Overview</a></li>
+  <li><a href="#motivation" id="toc-motivation" class="nav-link" data-scroll-target="#motivation">2. Motivation</a></li>
+  <li><a href="#core-concepts" id="toc-core-concepts" class="nav-link" data-scroll-target="#core-concepts">3. Core Concepts</a></li>
+  <li><a href="#hello-world-example" id="toc-hello-world-example" class="nav-link" data-scroll-target="#hello-world-example">4. Hello, World Example</a></li>
+  <li><a href="#two-views-of-inspect" id="toc-two-views-of-inspect" class="nav-link" data-scroll-target="#two-views-of-inspect">5. Two Views of Inspect</a></li>
+  <li><a href="#high-level-api-examples" id="toc-high-level-api-examples" class="nav-link" data-scroll-target="#high-level-api-examples">6. High Level API Examples</a></li>
+  <li><a href="#low-level-api" id="toc-low-level-api" class="nav-link" data-scroll-target="#low-level-api">7. Low Level API</a></li>
+  <li><a href="#solvers" id="toc-solvers" class="nav-link" data-scroll-target="#solvers">8. Solvers</a></li>
+  <li><a href="#baseline-solvers" id="toc-baseline-solvers" class="nav-link" data-scroll-target="#baseline-solvers">9. Baseline Solvers</a></li>
+  <li><a href="#multiple-choice-solver" id="toc-multiple-choice-solver" class="nav-link" data-scroll-target="#multiple-choice-solver">10. Multiple Choice Solver</a></li>
+  <li><a href="#self-critique-solver" id="toc-self-critique-solver" class="nav-link" data-scroll-target="#self-critique-solver">11. Self Critique Solver</a></li>
+  <li><a href="#composition" id="toc-composition" class="nav-link" data-scroll-target="#composition">12. Composition</a></li>
+  <li><a href="#composition-example" id="toc-composition-example" class="nav-link" data-scroll-target="#composition-example">13. Composition Example</a></li>
+  <li><a href="#tool-use" id="toc-tool-use" class="nav-link" data-scroll-target="#tool-use">14. Tool Use</a></li>
+  <li><a href="#agents-and-tools" id="toc-agents-and-tools" class="nav-link" data-scroll-target="#agents-and-tools">15. Agents and Tools</a></li>
+  <li><a href="#agent-api" id="toc-agent-api" class="nav-link" data-scroll-target="#agent-api">16. Agent API</a></li>
+  <li><a href="#agent-tools" id="toc-agent-tools" class="nav-link" data-scroll-target="#agent-tools">17. Agent Tools</a></li>
+  <li><a href="#agent-approval" id="toc-agent-approval" class="nav-link" data-scroll-target="#agent-approval">18. Agent Approval</a></li>
+  <li><a href="#agent-evals" id="toc-agent-evals" class="nav-link" data-scroll-target="#agent-evals">19. Agent Evals</a></li>
+  <li><a href="#scoring" id="toc-scoring" class="nav-link" data-scroll-target="#scoring">20. Scoring</a></li>
+  <li><a href="#custom-scorer-example" id="toc-custom-scorer-example" class="nav-link" data-scroll-target="#custom-scorer-example">21. Custom Scorer Example</a></li>
+  <li><a href="#production-parallelism" id="toc-production-parallelism" class="nav-link" data-scroll-target="#production-parallelism">22. Production: Parallelism</a></li>
+  <li><a href="#production-eval-sets" id="toc-production-eval-sets" class="nav-link" data-scroll-target="#production-eval-sets">23. Production: Eval Sets</a></li>
+  <li><a href="#production-logging" id="toc-production-logging" class="nav-link" data-scroll-target="#production-logging">24. Production: Logging</a></li>
+  <li><a href="#evallog-structure" id="toc-evallog-structure" class="nav-link" data-scroll-target="#evallog-structure">25. EvalLog Structure</a></li>
+  <li><a href="#log-viewer-screenshot" id="toc-log-viewer-screenshot" class="nav-link" data-scroll-target="#log-viewer-screenshot">26. Log Viewer Screenshot</a></li>
+  <li><a href="#sample-detail-view" id="toc-sample-detail-view" class="nav-link" data-scroll-target="#sample-detail-view">27. Sample Detail View</a></li>
+  <li><a href="#message-history-view" id="toc-message-history-view" class="nav-link" data-scroll-target="#message-history-view">28. Message History View</a></li>
+  <li><a href="#assistant-thinking-view" id="toc-assistant-thinking-view" class="nav-link" data-scroll-target="#assistant-thinking-view">29. Assistant Thinking View</a></li>
+  <li><a href="#inspect-view-ide" id="toc-inspect-view-ide" class="nav-link" data-scroll-target="#inspect-view-ide">30. Inspect View IDE</a></li>
+  <li><a href="#sandbox-environments" id="toc-sandbox-environments" class="nav-link" data-scroll-target="#sandbox-environments">32. Sandbox Environments</a></li>
+  <li><a href="#tool-environment-types" id="toc-tool-environment-types" class="nav-link" data-scroll-target="#tool-environment-types">33. Tool Environment Types</a></li>
+  <li><a href="#learning-more" id="toc-learning-more" class="nav-link" data-scroll-target="#learning-more">34. Learning More</a></li>
+  </ul></li>
+  <li><a href="#qa-session" id="toc-qa-session" class="nav-link" data-scroll-target="#qa-session">Q&amp;A Session</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/llm/evals/inspect.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+    <div class="quarto-margin-footer"><div class="margin-footer-item">
+<p><br> <button onclick="window.location.href='https://hamel.ck.page/7d15a4b6e7'" style="background-color: #447099; color: white; padding: 12px 24px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; transition: background-color 0.3s ease;">Subscribe To My Newsletter</button></p>
+</div></div></div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<!-- Content inserted at the beginning of body tag -->
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/index.html">Notes</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/evals/index.html">Evals</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/evals/inspect.html">Inspect AI, An OSS Python Library For LLM Evals</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Inspect AI, An OSS Python Library For LLM Evals</h1>
+</div>
+
+<div>
+  <div class="description">
+    A look at Inspect AI with its creator, JJ Allaire.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>A few weeks ago, I had the pleasure of hosting <a href="https://en.wikipedia.org/wiki/Joseph_J._Allaire">JJ Allaire</a> for a guest lecture in our <a href="https://bit.ly/evals-ai">LLM Evals course</a>. For those who might not know, JJ is a legend in the developer tools space. He’s the founder of RStudio (now <a href="https://posit.co/">Posit</a>), the company behind the RStudio IDE and many foundational packages in the R and Python data science ecosystems. When someone like JJ turns their attention to a new problem, it’s worth paying close attention.</p>
+<p>His latest endeavor is <a href="https://inspect.ai-safety-institute.org.uk/">Inspect AI</a>, an open-source framework for building and running LLM evaluations. He developed it during a sabbatical with the UK’s AI Safety Institute (AISI), an organization that runs thousands of evaluations on frontier models. Since then, its been adopted as the framework of choice for many of the largest AI labs including Anthropic, DeepMind, and Grok.</p>
+<p>The talk was an overview of Inspect’s philosophy, architecture, and features. This is an annotated version of his presentation inspired by Simon Willison’s <a href="https://simonwillison.net/tags/annotated-talks/">annotated presentations</a>.</p>
+<section id="video" class="level2">
+<h2 class="anchored" data-anchor-id="video">Video</h2>
+<p>Here is the full video:</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/_UY49Q_qFhs" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<hr>
+<div class="cta" style="text-align: center;">
+<p><strong>👉 <em>We are teaching our last and final cohort of our <a href="https://bit.ly/evals-ai">AI Evals course</a> next month</em></strong><em> (we have to get back to building). Here is a <a href="https://bit.ly/evals-ai">35% discount code</a> for readers of this post.</em> 👈</p>
+</div>
+<hr>
+</section>
+<section id="annotated-presentation" class="level2">
+<h2 class="anchored" data-anchor-id="annotated-presentation">Annotated Presentation</h2>
+<p>Below is an annotated version of the presentation, with timestamped links to the relevant parts of the presentation for each slide.</p>
+<section id="inspect-overview" class="level3">
+<h3 class="anchored" data-anchor-id="inspect-overview">1. Inspect Overview</h3>
+<p><img src="inspect_images/2025-06-23-13-32-29.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=110s">Timestamp: 01:50</a>)</em></p>
+<p>Inspect is a Python package (<code>inspect-ai</code>) designed to bridge the gap between research and production for LLM evals. JJ emphasizes that it’s already used for nearly all of the UK AISI’s automated evaluations and has seen broad adoption from major AI labs like Anthropic, DeepMind, Grok, and others.</p>
+</section>
+<section id="motivation" class="level3">
+<h3 class="anchored" data-anchor-id="motivation">2. Motivation</h3>
+<p><img src="inspect_images/2025-06-23-13-38-23.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=83s">Timestamp: 01:23</a>)</em></p>
+<p>The motivation behind Inspect is to improve the reproducibility of evals, especially for large-scale evaluations of frontier models. Inspect achieves this by providing common tools and a simple entry point to run almost any benchmark with a single command. In addition to making benchmarks reproducible, Inspect provides a framework that helps with domain-specific and custom evals.</p>
+<p>Inspect is open source and actively welcomes external contributions.</p>
+</section>
+<section id="core-concepts" class="level3">
+<h3 class="anchored" data-anchor-id="core-concepts">3. Core Concepts</h3>
+<p><img src="inspect_images/2025-06-23-13-42-22.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=172s">Timestamp: 03:52</a>)</em></p>
+<p>JJ breaks down Inspect into three core concepts: the <strong>Dataset</strong>, the <strong>Solver</strong>, and the <strong>Scorer</strong>. * <strong>Dataset</strong>: This is your set of test cases, each with an <code>input</code> (the prompt for the model) and a <code>target</code> (the correct answer or grading guidance). * <strong>Solver</strong>: This is the heart of the operation. It’s a Python function that defines the logic for how the model should generate its output. This can range from a simple model call to complex chains involving prompt engineering, self-critique, or using tools and agents. * <strong>Scorer</strong>: This function evaluates the model’s output against the target. It can be a simple text comparison, a more complex model-graded evaluation (e.g., using an LLM as a judge), or a completely custom validation scheme.</p>
+<p>JJ clarifies that the “Solver” is where you can implement more complex reasoning techniques. He gives the examples of using “critique and regenerate” cycles or an “agent scaffold with tool use” to define how the model arrives at its answer.</p>
+</section>
+<section id="hello-world-example" class="level3">
+<h3 class="anchored" data-anchor-id="hello-world-example">4. Hello, World Example</h3>
+<p><img src="inspect_images/2025-06-23-13-43-13.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=284s">Timestamp: 04:44</a>)</em></p>
+<p>This code example demonstrates the main components of the framework. In this example, the plan is to first use a chain_of_thought prompt, then a standard generate call, and finally a self_critique round before producing the final output that gets score.</p>
+<p>A task (<code>theory_of_mind</code>) is defined using the <code>@task</code> decorator. Inside, it returns a <code>Task</code> object that specifies the <code>dataset</code>, a <code>plan</code> (a list of solvers like <code>chain_of_thought</code> and <code>self_critique</code>), and a <code>scorer</code>. The final <code>eval()</code> call runs the entire evaluation against a specified model (<code>openai/gpt-4</code>).</p>
+</section>
+<section id="two-views-of-inspect" class="level3">
+<h3 class="anchored" data-anchor-id="two-views-of-inspect">5. Two Views of Inspect</h3>
+<p><img src="inspect_images/2025-06-23-13-45-37.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=422s">Timestamp: 07:02</a>)</em></p>
+<p>JJ presents two ways to think about and use Inspect. The <strong>High Level</strong> view is about using pre-built building blocks (solvers, scorers, etc.) to quickly compose evaluations. The <strong>Low Level</strong> view exposes a collection of utilities like a universal LLM interface with caching, logging, metrics, tools, and parallel execution.</p>
+<p>The “Low Level” view is described as a “very deep universal LLM interface.” This means it provides a consistent way to interact with different model providers and different ways of calling tools, whether they are internal functions or external web searches.</p>
+</section>
+<section id="high-level-api-examples" class="level3">
+<h3 class="anchored" data-anchor-id="high-level-api-examples">6. High Level API Examples</h3>
+<p><img src="inspect_images/2025-06-23-13-47-36.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=486s">Timestamp: 08:06</a>)</em></p>
+<p>The gpqa_diamond task is a straightforward multiple-choice eval. The intercode_ctf task is a more advanced “agentic eval” based on a Capture the Flag challenge. For this task, the model is given access to bash and python tools inside a docker container and must figure out how to complete the challenge.</p>
+</section>
+<section id="low-level-api" class="level3">
+<h3 class="anchored" data-anchor-id="low-level-api">7. Low Level API</h3>
+<p><img src="inspect_images/2025-06-23-13-49-02.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=587s">Timestamp: 09:47</a>)</em></p>
+<p>This slide contrasts the high-level API with its low-level equivalent. Instead of a declarative <code>plan</code>, you can write an <code>async</code> Python function (<code>solve</code>) that gives you full control. Here, you can manually append messages, manage tools, call the model in a loop, and resolve tool calls etc.</p>
+<p>This low-level approach is what you would use to build more “advanced agents” or implement “really tailored processing.” It gives you direct control over the “mechanics of generation and tool calling,” such as managing the conversation state in a loop.</p>
+</section>
+<section id="solvers" class="level3">
+<h3 class="anchored" data-anchor-id="solvers">8. Solvers</h3>
+<p><img src="inspect_images/2025-06-23-13-55-46.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=687s">Timestamp: 11:27</a>)</em></p>
+<p>A solver is formally defined as a Python function that takes a <code>TaskState</code> object and transforms it.</p>
+</section>
+<section id="baseline-solvers" class="level3">
+<h3 class="anchored" data-anchor-id="baseline-solvers">9. Baseline Solvers</h3>
+<p><img src="inspect_images/2025-06-23-13-58-00.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=712s">Timestamp: 11:52</a>)</em></p>
+<p>Inspect comes with several baseline solvers. <code>prompt_template()</code> is a solver that modifies the current prompt by passing it through a template. The generate() solver is the core component that handles the model call. An important detail is that it automatically resolves tool calls and will repeat the generation-tool call loop if necessary.</p>
+</section>
+<section id="multiple-choice-solver" class="level3">
+<h3 class="anchored" data-anchor-id="multiple-choice-solver">10. Multiple Choice Solver</h3>
+<p><img src="inspect_images/2025-06-23-13-58-42.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=744s">Timestamp: 12:24</a>)</em></p>
+<p>This is a more specialized solver designed for multiple-choice questions. It intelligently rewrites the prompt to include the choices (e.g., A, B, C), optionally shuffles them to prevent positional bias, and then maps the model’s single-token output (like “A”) back to the correct choice index for scoring.</p>
+</section>
+<section id="self-critique-solver" class="level3">
+<h3 class="anchored" data-anchor-id="self-critique-solver">11. Self Critique Solver</h3>
+<p><img src="inspect_images/2025-06-23-13-59-02.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=842s">Timestamp: 14:02</a>)</em></p>
+<p>The <code>self_critique</code> solver first generates a response, then uses a critique template to ask the model (or even a different, more powerful model) to critique its own answer. This critique is then added to the conversation history, and the model is asked to generate a improved response.</p>
+</section>
+<section id="composition" class="level3">
+<h3 class="anchored" data-anchor-id="composition">12. Composition</h3>
+<p><img src="inspect_images/2025-06-23-14-00-30.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=874s">Timestamp: 14:34</a>)</em></p>
+<p>An important design principle of Inspect is composition. Custom solvers and scorers can be created and packaged into standard Python packages. This allows them to be easily shared and reused across many different evaluations. The sheppard package mentioned is an internal tool used at the UK AISI that contains various jailbreaking techniques. These are implemented as solvers that apply different kinds of prompt engineering.</p>
+</section>
+<section id="composition-example" class="level3">
+<h3 class="anchored" data-anchor-id="composition-example">13. Composition Example</h3>
+<p><img src="inspect_images/2025-06-23-14-01-15.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=903s">Timestamp: 15:03</a>)</em></p>
+<p>This slide provides an example of composition. It shows a security evaluation that imports the <code>pap_jailbreak</code> solver from the <code>sheppard</code> package. This jailbreak solver is then inserted into the <code>plan</code> before the final <code>generate</code> step.</p>
+</section>
+<section id="tool-use" class="level3">
+<h3 class="anchored" data-anchor-id="tool-use">14. Tool Use</h3>
+<p><img src="inspect_images/2025-06-23-14-02-06.png" class="img-fluid"></p>
+<p>Inspect has first-class support for tool use. The <code>TaskState</code> object can contain a list of available <code>ToolDef</code>s. The <code>use_tools()</code> solver is the primary way to make these tools available to the <code>generate()</code> function, which then handles the full tool-calling loop.</p>
+</section>
+<section id="agents-and-tools" class="level3">
+<h3 class="anchored" data-anchor-id="agents-and-tools">15. Agents and Tools</h3>
+<p><img src="inspect_images/2025-06-23-14-04-05.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=956s">Timestamp: 15:56</a>)</em></p>
+<p>JJ outlines several ways to implement and evaluate agents. You can use the built-in <code>use_tools()</code> with a ReAct-style prompt for simple “autopilot” agents. For more complex scenarios, you can write bespoke agent logic inside a custom solver.</p>
+<p>Inspect also provides <a href="https://inspect.aisi.org.uk/agent-bridge.html">bridges</a> that integrate with popular external libraries like LangChain and Autogen. These bridges are a great way to leverage inspect without having to rewrite your agent code. The Agent Bridge works by “monkey-patching” the underlying openai API client. When your external agent makes a standard OpenAI API call, Inspect intercepts it, routes it to the currently configured model for the eval task, and logs the entire interaction. It essentially acts as a proxy.</p>
+</section>
+<section id="agent-api" class="level3">
+<h3 class="anchored" data-anchor-id="agent-api">16. Agent API</h3>
+<p><img src="inspect_images/2025-06-23-14-06-29.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=1018s">Timestamp: 16:58</a>)</em></p>
+<p>The Agent API provides tools for Linux and web tasks, state sharing across components, forking <code>TaskState</code> to sub-agents for complex flows, detailed observability, sandboxing for untrusted code execution, and a configurable approval system for risky actions.</p>
+</section>
+<section id="agent-tools" class="level3">
+<h3 class="anchored" data-anchor-id="agent-tools">17. Agent Tools</h3>
+<p><img src="inspect_images/2025-06-23-14-10-43.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=1200s">Timestamp: 20:00</a>)</em></p>
+<p>Inspect provides a suite of pre-built agent tools. These include <code>Web Search</code>, <code>Bash and Python</code> execution, a <code>Text Editor</code>, a <code>Web Browser</code> (using headless Chromium), and even a <code>Computer</code> tool that lets the agent interact with a desktop environment via screenshots. The <code>Think</code> tool also allows the model to explicitly output its reasoning steps.</p>
+<p>I thought these looked quite nice for use in your main LLM calls, but JJ insisted that these are for Evals only. JJ commented that “Inspect has almost all the same tools as LangChain, but our users are focused on evals - I don’t want to steer people towards using them for other things.” As clarification, you don’t want to use separate tools for your main LLM calls and your evals (you should be running the same pipeline where possible). These are just tools for evals incase your eval flow needs them.</p>
+</section>
+<section id="agent-approval" class="level3">
+<h3 class="anchored" data-anchor-id="agent-approval">18. Agent Approval</h3>
+<p><img src="inspect_images/2025-06-23-14-12-39.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=1269s">Timestamp: 21:09</a>)</em></p>
+<p>This slide showcases the interactive agent approval system. When an agent wants to execute a potentially sensitive tool call (like submitting a form on a website), the evaluation can pause and prompt the human operator for approval. The operator can approve, reject, or terminate the task, providing a critical safety layer for agentic evaluations.</p>
+<p>This slide shows a <a href="https://inspect.aisi.org.uk/tools-standard.html#sec-web-browser">browser use tool</a> that looked quite good. At this point JJ relented and said maybe its ok to use this for things outside evals :)</p>
+<p>JJ noted that as more LLM agents are deployed, websites are getting better at bot detection, so make sure you test the browser tools for your eval tasks before you deploy them.</p>
+</section>
+<section id="agent-evals" class="level3">
+<h3 class="anchored" data-anchor-id="agent-evals">19. Agent Evals</h3>
+<p><img src="inspect_images/2025-06-23-14-39-51.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=1312s">Timestamp: 21:52</a>)</em></p>
+<p>Inspect comes with implementations of several well-known agent-based benchmarks. This includes <strong>GAIA</strong> for general AI assistants, <strong>GDM Dangerous Capabilities</strong> which involves Capture the Flag cybersecurity challenges, and <strong>SWE-Bench</strong> for resolving GitHub issues.</p>
+</section>
+<section id="scoring" class="level3">
+<h3 class="anchored" data-anchor-id="scoring">20. Scoring</h3>
+<p><img src="inspect_images/2025-06-23-14-39-51.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=1433s">Timestamp: 23:53</a>)</em></p>
+<p>Scoring is flexible in Inspect. It has built-in scorers for conventional pattern matching and templated answers. The model-graded scorer is also built-in and can be heavily customized. Scorers are pluggable, so you can easily provide them from other packages, and JJ notes they expect a lot of innovation in this area. There is also full support for offline/human scoring workflows.</p>
+</section>
+<section id="custom-scorer-example" class="level3">
+<h3 class="anchored" data-anchor-id="custom-scorer-example">21. Custom Scorer Example</h3>
+<p><img src="inspect_images/2025-06-23-14-44-59.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=1448s">Timestamp: 24:08</a>)</em></p>
+<p>This example shows the implementation of a custom scorer, <code>expression_equivalence</code>. It uses a regular expression to extract an answer, then prompts an LLM to judge if the model’s answer is mathematically equivalent to the target expression.</p>
+</section>
+<section id="production-parallelism" class="level3">
+<h3 class="anchored" data-anchor-id="production-parallelism">22. Production: Parallelism</h3>
+<p><img src="inspect_images/2025-06-23-14-45-16.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=1472s">Timestamp: 24:32</a>)</em></p>
+<p>Inspect is designed for massive scale. It can run concurrently against multiple models and tasks. You can configure <code>max_connections</code> for API concurrency and <code>max_subprocesses</code> for Docker container concurrency. Because of its async architecture, a single node can run dozens of evaluations in parallel with minimal resource usage.</p>
+</section>
+<section id="production-eval-sets" class="level3">
+<h3 class="anchored" data-anchor-id="production-eval-sets">23. Production: Eval Sets</h3>
+<p><img src="inspect_images/2025-06-23-14-45-32.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=1485s">Timestamp: 24:45</a>)</em></p>
+<p>To handle the unreliability of large-scale systems (e.g., model rate limits, network errors), Inspect has the concept of “Eval Sets”. This command-line tool employs best practices for robustness, including automatic retries with configurable strategies, re-using samples from failed tasks so work isn’t repeated, and the ability to re-run a command and have it pick up exactly where the last one left off.</p>
+</section>
+<section id="production-logging" class="level3">
+<h3 class="anchored" data-anchor-id="production-logging">24. Production: Logging</h3>
+<p><img src="inspect_images/2025-06-23-14-45-53.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=1489s">Timestamp: 24:49</a>)</em></p>
+<p>Comprehensive logging is a cornerstone of the framework. Inspect captures all the context required to debug, analyze, and, most importantly, reproduce an evaluation. It provides a Python API for computing on the log files and a log viewer for interactive exploration of the results.</p>
+</section>
+<section id="evallog-structure" class="level3">
+<h3 class="anchored" data-anchor-id="evallog-structure">25. EvalLog Structure</h3>
+<p><img src="inspect_images/2025-06-23-14-46-13.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=1491s">Timestamp: 24:51</a>)</em></p>
+<p>Each evaluation run produces a structured <code>EvalLog</code> file. This slide details its contents, which includes the overall status, details about the eval task and model, the solver plan used, a list of every sample evaluated (with its input, output, and score), aggregated results, token usage stats, and any logging messages or errors.</p>
+</section>
+<section id="log-viewer-screenshot" class="level3">
+<h3 class="anchored" data-anchor-id="log-viewer-screenshot">26. Log Viewer Screenshot</h3>
+<p><img src="inspect_images/2025-06-23-14-46-38.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=1494s">Timestamp: 24:54</a>)</em></p>
+<p>This is the main view of the Inspect log viewer, <code>inspect-view</code>. It shows a table of all the samples in an evaluation run. You can see the input, target, the model’s answer, and the final score (Correct/Incorrect). At the top, it displays the overall accuracy and other metrics like the bootstrap standard deviation.</p>
+</section>
+<section id="sample-detail-view" class="level3">
+<h3 class="anchored" data-anchor-id="sample-detail-view">27. Sample Detail View</h3>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=1500s">Timestamp: 25:00</a>)</em></p>
+<p>When you click on a sample in the log viewer, you get a detailed view. This drill-down shows the full input prompt, the target, the complete answer from the model, and the score, providing a clear way to inspect individual successes and failures.</p>
+</section>
+<section id="message-history-view" class="level3">
+<h3 class="anchored" data-anchor-id="message-history-view">28. Message History View</h3>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=1502s">Timestamp: 25:02</a>)</em></p>
+<p>For more complex, multi-turn evaluations, the viewer displays the entire message history. This includes the initial user prompt, the assistant’s “thinking” process, any tool calls, and the final response, giving you a complete transcript of the agent’s interaction.</p>
+</section>
+<section id="assistant-thinking-view" class="level3">
+<h3 class="anchored" data-anchor-id="assistant-thinking-view">29. Assistant Thinking View</h3>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=1505s">Timestamp: 25:05</a>)</em></p>
+<p>This view shows the rich detail captured during an agent’s execution. We can see the assistant’s internal monologue or “thinking” process, where it breaks down the problem and formulates a plan. This is followed by the actual tool calls it decides to make, like compiling and disassembling a file.</p>
+</section>
+<section id="inspect-view-ide" class="level3">
+<h3 class="anchored" data-anchor-id="inspect-view-ide">30. Inspect View IDE</h3>
+<p><img src="inspect_images/2025-06-23-14-48-53.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=1512s">Timestamp: 25:12</a>)</em></p>
+<p>The VS Code plugin allows you to write your evaluation code, run it from the integrated terminal, and immediately see the detailed, interactive results in the <code>Inspect View</code> pane without leaving your editor.</p>
+<p>JJ mentions a command, inspect view bundle, which takes your evaluation results and creates a standalone, static website that you can publish anywhere, such as on GitHub Pages. This allows for easy sharing of detailed, interactive evaluation reports.</p>
+</section>
+<section id="sandbox-environments" class="level3">
+<h3 class="anchored" data-anchor-id="sandbox-environments">32. Sandbox Environments</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="inspect_images/2025-06-23-14-49-28.png" class="img-fluid figure-img"></p>
+<figcaption>Sandbox Environments</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=1603s">Timestamp: 26:04</a>)</em></p>
+<p>A critical feature for safety and security evaluations is sandboxing. Inspect provides a <code>SandboxEnvironment</code> abstraction that allows tool code (e.g., Python or shell scripts generated by the LLM) to be executed in an isolated environment. This prevents potentially malicious code from affecting the host system.</p>
+</section>
+<section id="tool-environment-types" class="level3">
+<h3 class="anchored" data-anchor-id="tool-environment-types">33. Tool Environment Types</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="inspect_images/2025-06-23-14-49-43.png" class="img-fluid figure-img"></p>
+<figcaption>Tool Environment Types</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=1614s">Timestamp: 26:54</a>)</em></p>
+<p>Inspect has several built-in implementations for these sandbox environments. The local tool environment runs commands in the same file system as the evaluation. JJ explicitly warns that this should only be used if you are already running your entire evaluation inside another, outer sandbox.</p>
+</section>
+<section id="learning-more" class="level3">
+<h3 class="anchored" data-anchor-id="learning-more">34. Learning More</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="inspect_images/2025-06-23-14-49-59.png" class="img-fluid figure-img"></p>
+<figcaption>Learning More</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://youtu.be/_UY49Q_qFhs?si=t9-YfrS4JN_UAbpM&amp;t=1693s">Timestamp: 28:13</a>)</em></p>
+<p>JJ emphasized that Inspect is a open project with over 100 external contributors. He promises that if you put effort into a pull request, they will work with you to get it merged.</p>
+<p>JJ wraps up by pointing to several resources for learning more:</p>
+<ul>
+<li><strong>Documentation</strong>: <code>https://inspect.ai-safety-institute.org.uk/</code> - The documentation for Inspect</li>
+<li><strong>Evals</strong>: <code>https://inspect.ai-safety-institute.org.uk/evals/</code> - Implementations of widely used benchmarks</li>
+<li><strong>Development</strong>: <code>https://github.com/ukgovernmentbeis/inspect_ai</code> - The source code for Inspect</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="qa-session" class="level2">
+<h2 class="anchored" data-anchor-id="qa-session">Q&amp;A Session</h2>
+<p>After the presentation, we had a Q&amp;A session. Here are the highlights:</p>
+<ul>
+<li><strong>Can you use Inspect to evaluate existing agents, like those built with LangChain or Claude Code?</strong>
+<ul>
+<li>Yes, absolutely. The Agent Bridge feature is designed for this. You can essentially wrap your existing agent (as long as it has a basic message-in, message-out API) and evaluate it within the Inspect framework, getting all the benefits of its logging, scoring, and observability. We are planning on adding an example for Claude Code soon.</li>
+</ul></li>
+<li><strong>Does jailbreaking a model to bypass safety refusals also improve its performance on useful benchmarks like SWE-Bench?</strong>
+<ul>
+<li>Generally, no. Jailbreaks are designed to bypass refusal mechanisms, which are common in safety-related evals (e.g., asking for dangerous information). They don’t typically improve performance on capability benchmarks like coding or reasoning, where refusals are not the primary failure mode.</li>
+</ul></li>
+<li><strong>What are your thoughts on annotation tools for creating evaluation datasets?</strong>
+<ul>
+<li>This is definitely on the roadmap. Building good annotation UIs and workflows to help humans create high-quality datasets and evaluate model-graded judges is a key area of interest. It’s a complex problem, but there’s a lot of potential to build tools that are either data-driven (generating a UI from a schema) or integrate with existing vibe coding tools.</li>
+</ul></li>
+<li><strong>Does Inspect track experiment metadata like cost and latency?</strong>
+<ul>
+<li>Yes. Latency is tracked in detail, even accounting for retries to give an accurate “working time.” Token usage is tracked meticulously for every step, which serves as an excellent proxy for cost. A feature to calculate the exact dollar cost based on token counts and public pricing is in a PR and will be available soon.</li>
+</ul></li>
+</ul>
+<hr>
+<div class="cta" style="text-align: center;">
+<p><strong>👉 <em>We are teaching our last and final cohort of our <a href="https://bit.ly/evals-ai">AI Evals course</a> next month</em></strong><em> (we have to get back to building). Here is a <a href="https://bit.ly/evals-ai">35% discount code</a> for readers of this post.</em> 👈</p>
+</div>
+<hr>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/hamel\.dev\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/hamelhusain/">
+      <i class="bi bi-linkedin" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/HamelHusain">
+      <i class="bi bi-twitter" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/hamelsmu">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/llm/evals/inspect.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

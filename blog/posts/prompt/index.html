@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.31">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Hamel Husain">
+<meta name="dcterms.date" content="2024-02-14">
+<meta name="description" content="Quickly understand inscrutable LLM frameworks by intercepting API calls.">
+
+<title>Fuck You, Show Me The Prompt. – Hamel's Blog</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-473cd3fdae26158324e3fa026112ebdf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark-5c21931d6ed7008fd1b1d77c416f53fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-ZSZXL3KFR5"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
+</script>
+<!-- Custom head content for all pages -->
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-PKGWQMKL');</script>
+<!-- End Google Tag Manager -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../../../styles.css">
+<meta property="og:title" content="Fuck You, Show Me The Prompt. –">
+<meta property="og:description" content="Quickly understand inscrutable LLM frameworks by intercepting API calls.">
+<meta property="og:image" content="https://hamel.dev/blog/posts/prompt/slap_3.png">
+<meta property="og:image:height" content="254">
+<meta property="og:image:width" content="508">
+<meta name="twitter:title" content="Fuck You, Show Me The Prompt. –">
+<meta name="twitter:description" content="Quickly understand inscrutable LLM frameworks by intercepting API calls.">
+<meta name="twitter:image" content="https://hamel.dev/blog/posts/prompt/slap_3.png">
+<meta name="twitter:creator" content="@HamelHusain">
+<meta name="twitter:site" content="@HamelHusain">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image-height" content="254">
+<meta name="twitter:image-width" content="508">
+</head>
+
+<body class="nav-fixed quarto-dark"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = true;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+          <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../index.html" target="_blank"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../notes/index.html" target="_blank"> 
+<span class="menu-text">Notes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://parlance-labs.com/" target="_blank"> 
+<span class="menu-text">Hire Me</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../oss/opensource.html" target="_blank"> 
+<span class="menu-text">OSS</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../talks.html" target="_blank"> 
+<span class="menu-text">Teaching</span></a>
+  </li>  
+</ul>
+          <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table Of Contents</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#motivation-minimize-accidental-complexity" id="toc-motivation-minimize-accidental-complexity" class="nav-link" data-scroll-target="#motivation-minimize-accidental-complexity">Motivation: Minimize accidental complexity</a></li>
+  <li><a href="#intercepting-llm-api-calls" id="toc-intercepting-llm-api-calls" class="nav-link" data-scroll-target="#intercepting-llm-api-calls">Intercepting LLM API calls</a>
+  <ul class="collapse">
+  <li><a href="#setting-up-mitmproxy" id="toc-setting-up-mitmproxy" class="nav-link" data-scroll-target="#setting-up-mitmproxy">Setting Up mitmproxy</a></li>
+  <li><a href="#environment-variables-for-python" id="toc-environment-variables-for-python" class="nav-link" data-scroll-target="#environment-variables-for-python">Environment variables for Python</a></li>
+  </ul></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a>
+  <ul class="collapse">
+  <li><a href="#guardrails" id="toc-guardrails" class="nav-link" data-scroll-target="#guardrails">Guardrails</a></li>
+  <li><a href="#guidance" id="toc-guidance" class="nav-link" data-scroll-target="#guidance">Guidance</a></li>
+  <li><a href="#langchain" id="toc-langchain" class="nav-link" data-scroll-target="#langchain">Langchain</a></li>
+  <li><a href="#instructor" id="toc-instructor" class="nav-link" data-scroll-target="#instructor">Instructor</a></li>
+  <li><a href="#dspy" id="toc-dspy" class="nav-link" data-scroll-target="#dspy">DSPy</a></li>
+  </ul></li>
+  <li><a href="#my-personal-experience" id="toc-my-personal-experience" class="nav-link" data-scroll-target="#my-personal-experience">My Personal Experience</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.dev/hamelsmu/hamel-site/blob/master/blog/posts/prompt/index.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+    <div class="quarto-margin-footer"><div class="margin-footer-item">
+<button onclick="window.location.href='https://hamel.ck.page/7d15a4b6e7'" style="background-color: #447099; color: white; padding: 12px 24px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; transition: background-color 0.3s ease;">
+Subscribe To My Newsletter
+</button>
+</div></div></div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<!-- Content inserted at the beginning of body tag -->
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Fuck You, Show Me The Prompt.</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">llms</div>
+    <div class="quarto-category">ml</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    Quickly understand inscrutable LLM frameworks by intercepting API calls.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Hamel Husain </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 14, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+<nav id="TOC-body" role="doc-toc">
+    <h2 id="toc-title">Table Of Contents</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background">Background</a></li>
+  <li><a href="#motivation-minimize-accidental-complexity" id="toc-motivation-minimize-accidental-complexity">Motivation: Minimize accidental complexity</a></li>
+  <li><a href="#intercepting-llm-api-calls" id="toc-intercepting-llm-api-calls">Intercepting LLM API calls</a>
+  <ul>
+  <li><a href="#setting-up-mitmproxy" id="toc-setting-up-mitmproxy">Setting Up mitmproxy</a></li>
+  <li><a href="#environment-variables-for-python" id="toc-environment-variables-for-python">Environment variables for Python</a></li>
+  </ul></li>
+  <li><a href="#examples" id="toc-examples">Examples</a>
+  <ul>
+  <li><a href="#guardrails" id="toc-guardrails">Guardrails</a></li>
+  <li><a href="#guidance" id="toc-guidance">Guidance</a></li>
+  <li><a href="#langchain" id="toc-langchain">Langchain</a></li>
+  <li><a href="#instructor" id="toc-instructor">Instructor</a></li>
+  <li><a href="#dspy" id="toc-dspy">DSPy</a></li>
+  </ul></li>
+  <li><a href="#my-personal-experience" id="toc-my-personal-experience">My Personal Experience</a></li>
+  </ul>
+</nav>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>There are many libraries that aim to make the output of your LLMs better by <strong>re-writing or constructing the prompt for you</strong>. These libraries purport to make the output of your LLMs:</p>
+<ul>
+<li>safer <a href="https://github.com/guardrails-ai/guardrails">(ex: guardrails)</a></li>
+<li>deterministic <a href="https://github.com/guidance-ai/guidance">(ex: guidance)</a></li>
+<li>structured <a href="https://github.com/jxnl/instructor">(ex: instructor)</a></li>
+<li>resilient <a href="https://www.langchain.com/">(ex: langchain)</a></li>
+<li>… or even optimized for an arbitrary metric <a href="https://github.com/stanfordnlp/dspy">(ex: DSPy)</a>.</li>
+</ul>
+<p>A common theme among <em>some</em> of these tools is they encourage users to disintermediate themselves from prompting.</p>
+<blockquote class="blockquote">
+<p><a href="https://github.com/stanfordnlp/dspy">DSPy</a>: “This is a new paradigm in which LMs and their prompts fade into the background …. you can compile your program again DSPy will create new effective prompts”</p>
+</blockquote>
+<blockquote class="blockquote">
+<p><a href="https://github.com/guidance-ai/guidance">guidance</a> “guidance is a programming paradigm that offers superior control and efficiency compared to conventional prompting …”</p>
+</blockquote>
+<p>Even when tools don’t discourage prompting, I’ve often found it difficult to retrieve the final prompt(s) these tools send to the language model. <strong>The prompts sent by these tools to the LLM is a natural language description of what these tools are doing, and is the fastest way to understand how they work.</strong> Furthermore, some tools have <a href="https://github.com/stanfordnlp/dspy?tab=readme-ov-file#4-two-powerful-concepts-signatures--teleprompters">dense terminology</a> to describe internal constructs which can further obfuscate what they are doing.</p>
+<p>For reasons I’ll explain below, I think most people would benefit from the following mindset:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="slap_3.jpeg" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>In this blog post, I’ll show you how you can <strong>intercept API calls w/prompts for any tool, without having to fumble through docs or read source code.</strong> I’ll show you how to setup and operate <a href="https://mitmproxy.org/">mitmproxy</a> with examples from the LLM the tools I previously mentioned.</p>
+</section>
+<section id="motivation-minimize-accidental-complexity" class="level2">
+<h2 class="anchored" data-anchor-id="motivation-minimize-accidental-complexity">Motivation: Minimize accidental complexity</h2>
+<p>Before adopting an abstraction, its important to consider the dangers of taking on <a href="https://dev.to/alexbunardzic/software-complexity-essential-accidental-and-incidental-3i4d">accidental complexity</a>. This danger is acute for LLM abstractions relative to programming abstractions. With LLM abstractions, we often force the user to regress towards writing code instead of conversing with the AI in natural language, which can run counter to the purpose of LLMs:</p>
+<center>
+<blockquote class="twitter-tweet blockquote">
+<p lang="en" dir="ltr">
+Programming abstraction -&gt; a human-like language you can use to translate your task into machine code<br><br>LLM abstraction -&gt; an unintelligible framework you can use to translate your task into human language
+</p>
+— Hamel Husain (<span class="citation" data-cites="HamelHusain">@HamelHusain</span>) <a href="https://twitter.com/HamelHusain/status/1754315254413361553">February 5, 2024</a>
+</blockquote>
+<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</center>
+<p>While this is a cheeky comment, it’s worth keeping this in mind while evaluating tools. There are two primary types of automation that tools provide:</p>
+<ul>
+<li><strong>Interleaving code and LLMs:</strong> Expressing this automation is often best done through code, since code must be run to carry out the task. Examples include routing, executing functions, retries, chaining, etc.</li>
+<li><strong>Re-Writing and constructing prompts</strong>: Expressing your intent is often best done through natural language. However, there are exceptions! For example, it is convenient to express a function definition or schema from code instead of natural language.</li>
+</ul>
+<p>Many frameworks offer both types of automation. However, going too far with the second type can have negative consequences. Seeing the prompt allows you decide:</p>
+<ol type="1">
+<li>Is this framework really necessary?</li>
+<li>Should I just steal the final prompt (a string) and jettison the framework?</li>
+<li>Can we write a better prompt than this (shorter, aligned with your intent, etc)?</li>
+<li>Is this the best approach (do the # of API calls seem appropriate)?</li>
+</ol>
+<p>In my experience, seeing the prompts and API calls are essential to making informed decisions.</p>
+</section>
+<section id="intercepting-llm-api-calls" class="level2">
+<h2 class="anchored" data-anchor-id="intercepting-llm-api-calls">Intercepting LLM API calls</h2>
+<p>There are many possible ways to intercept LLM API calls, such as monkey patching source code or finding a user-facing option. I’ve found that those approaches take far too much time since the quality of source code and documentation can vary greatly. After all, I just want to see API calls without worrying about how the code works!</p>
+<p>A framework agnostic way to see API calls is to setup a proxy that logs your outgoing API requests. This is easy to do with <a href="https://mitmproxy.org/">mitmproxy</a>, an free, open-source HTTPS proxy.</p>
+<section id="setting-up-mitmproxy" class="level3">
+<h3 class="anchored" data-anchor-id="setting-up-mitmproxy">Setting Up mitmproxy</h3>
+<p>This is an opinionated way to setup <code>mitmproxy</code>that’s beginner-friendly for our intended purposes:</p>
+<ol type="1">
+<li><p>Follow the installation instructions <a href="https://mitmproxy.org/">on the website</a></p></li>
+<li><p>Start the interactive UI by running <code>mitmweb</code> in the terminal. Pay attention to the url of the interactive UI in the logs which will look something like this: <code>Web server listening at http://127.0.0.1:8081/</code></p></li>
+<li><p>Next, you need to configure your device (i.e.&nbsp;your laptop) to route all traffic through <code>mitproxy</code>, which listens on <code>http://localhost:8080</code>. Per the documentation:</p>
+<blockquote class="blockquote">
+<p>We recommend to simply search the web on how to configure an HTTP proxy for your system. Some operating system have a global settings, some browser have their own, other applications use environment variables, etc.</p>
+</blockquote>
+<p>In my case, A <a href="https://www.google.com/search?q=set+proxy+for+macos&amp;sca_esv=c51a80de1a7d45f0&amp;rlz=1C5CHFA_enUS1048US1049&amp;sxsrf=ACQVn0_ysjr6Kma2_lX8WbB06iPbDi5gUQ%3A1707764982232&amp;ei=9mzKZYXoDcfy0PEPpJqb2Ao&amp;ved=0ahUKEwiFu4CpwKaEAxVHOTQIHSTNBqsQ4dUDCBA&amp;uact=5&amp;oq=set+proxy+for+macos&amp;gs_lp=Egxnd3Mtd2l6LXNlcnAiE3NldCBwcm94eSBmb3IgbWFjb3MyBBAjGCcyBhAAGBYYHjIGEAAYFhgeMgYQABgWGB4yBhAAGBYYHjILEAAYgAQYigUYhgMyCxAAGIAEGIoFGIYDSMk-UMU7WMU7cAd4AZABAJgBVaABVaoBATG4AQPIAQD4AQHCAgoQABhHGNYEGLAD4gMEGAAgQYgGAZAGCA&amp;sclient=gws-wiz-serp">google search for “set proxy for macos”</a> returned these results:</p>
+<blockquote class="blockquote">
+<p>choose Apple menu &gt; System Settings, click Network in the sidebar, click a network service on the right, click Details, then click Proxies.</p>
+</blockquote>
+<p>I then insert <code>localhost</code> and <code>8080</code> in the following places in the UI:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="mac.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div></li>
+<li><p>Next, navigate to <a href="http://mitm.it">http://mitm.it</a> and it will give you instructions on how to install the mitmproxy Certificate Authority (CA), which you will need for intercepting HTTPS requests. (You can also do this manually <a href="https://docs.mitmproxy.org/stable/concepts-certificates/#quick-setup">here</a>.) Also, take note of the location of the CA file as we will reference it later.</p></li>
+<li><p>You can test that everything works by browsing to a website like <a href="https://mitmproxy.org/">https://mitmproxy.org/</a>, and seeing the corresponding output in the mtimweb UI which for me is located at <a href="http://127.0.0.1:8081/">http://127.0.0.1:8081/</a> (look at the logs in your terminal to get the URL).</p></li>
+<li><p>Now that you set everything up, you can disable the proxy that you previously enabled on your network. I do this on my mac by toggling the proxy buttons in the screenshot I showed above. This is because we want to scope the proxy to only the python program to eliminate unnecessary noise.</p></li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Networking related software commonly allows you to proxy outgoing requests by setting environment variables. This is the approach we will use to scope our proxy to specific Python programs. However, I encourage you to play with other types of programs to see what you find after you are comfortable!</p>
+</div>
+</div>
+</section>
+<section id="environment-variables-for-python" class="level3">
+<h3 class="anchored" data-anchor-id="environment-variables-for-python">Environment variables for Python</h3>
+<p>We need to set the following environment variables so that the <code>requests</code> and <code>httpx</code> libraries will direct traffic to the proxy and reference the CA file for HTTPS traffic:</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Make sure you set these environment variables before running any of the code snippets in this blog post.</p>
+</div>
+</div>
+<div id="07c4617c-1d52-4c99-9bed-645efd73ba71" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The location of my CA File</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>cert_file <span class="op">=</span> <span class="st">'/Users/hamel/Downloads/mitmproxy-ca-cert.pem'</span> </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>os.environ[<span class="st">'REQUESTS_CA_BUNDLE'</span>] <span class="op">=</span> cert_file</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>os.environ[<span class="st">'SSL_CERT_FILE'</span>] <span class="op">=</span> cert_file</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>os.environ[<span class="st">'HTTPS_PROXY'</span>] <span class="op">=</span> <span class="st">'http://127.0.0.1:8080'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You can do a minimal test by running the following code:</p>
+<div id="faf4a70a-bde5-47c0-b649-3179c233c189" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>requests.post(<span class="st">'https://httpbin.org/post'</span>, </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>              data<span class="op">=</span>{<span class="st">'key'</span>: <span class="st">'value'</span>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;Response [200]&gt;</code></pre>
+</div>
+</div>
+<p>This will appear in the UI like so:</p>
+<p><img src="mitm_01.png" class="img-fluid"></p>
+</section>
+</section>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<p>Now for the fun part, let’s run through some examples of LLM libraries and intercept their API calls!</p>
+<section id="guardrails" class="level3">
+<h3 class="anchored" data-anchor-id="guardrails">Guardrails</h3>
+<p>Guardrails allows you specify structure and types, which it uses to validate and correct the outputs of large language models. This is a hello world example from the <a href="https://github.com/guardrails-ai/guardrails"><code>guardrails-ai/guardrails</code> README</a>:</p>
+<div id="c746dbe7-e96f-4ea0-89d5-ca9b0b0685e8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pydantic <span class="im">import</span> BaseModel, Field</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> guardrails <span class="im">import</span> Guard</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> openai</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Pet(BaseModel):</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    pet_type: <span class="bu">str</span> <span class="op">=</span> Field(description<span class="op">=</span><span class="st">"Species of pet"</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    name: <span class="bu">str</span> <span class="op">=</span> Field(description<span class="op">=</span><span class="st">"a unique pet name"</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>prompt <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="st">    What kind of pet should I get and what should I name it?</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="st">    $</span><span class="sc">{gr.complete_json_suffix_v2}</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>guard <span class="op">=</span> Guard.from_pydantic(output_class<span class="op">=</span>Pet, prompt<span class="op">=</span>prompt)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>validated_output, <span class="op">*</span>rest <span class="op">=</span> guard(</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    llm_api<span class="op">=</span>openai.completions.create,</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">"gpt-3.5-turbo-instruct"</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>validated_output<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{
+    "pet_type": "dog",
+    "name": "Buddy</code></pre>
+</div>
+</div>
+<p>What is happening here? How is this structured output and validation working? Looking at the mitmproxy UI, I can see that the above code resulted in two LLM API calls, the first one with this prompt:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode txt code-overflow-wrap code-with-copy"><code class="sourceCode default"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>What kind of pet should I get and what should I name it?</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>Given below is XML that describes the information to extract from this document and the tags to extract it into.</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>&lt;output&gt;</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    &lt;string name="pet_type" description="Species of pet"/&gt;</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    &lt;string name="name" description="a unique pet name"/&gt;</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>&lt;/output&gt;</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>ONLY return a valid JSON object (no other text is necessary), where the key of the field in JSON is the `name` attribute of the corresponding XML, and the value is of the type specified by the corresponding XML's tag. The JSON MUST conform to the XML format, including any types and format requests e.g. requests for lists, objects and specific types. Be correct and concise.</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>Here are examples of simple (XML, JSON) pairs that show the expected behavior:</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>- `&lt;string name='foo' format='two-words lower-case' /&gt;` =&gt; `{'foo': 'example one'}`</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>- `&lt;list name='bar'&gt;&lt;string format='upper-case' /&gt;&lt;/list&gt;` =&gt; `{"bar": ['STRING ONE', 'STRING TWO', etc.]}`</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>- `&lt;object name='baz'&gt;&lt;string name="foo" format="capitalize two-words" /&gt;&lt;integer name="index" format="1-indexed" /&gt;&lt;/object&gt;` =&gt; `{'baz': {'foo': 'Some String', 'index': 1}}`</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Followed by another call with this prompt:</strong></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode txt code-overflow-wrap code-with-copy"><code class="sourceCode default"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>I was given the following response, which was not parseable as JSON.</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>"{\n    \"pet_type\": \"dog\",\n    \"name\": \"Buddy"</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>Help me correct this by making it valid JSON.</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>Given below is XML that describes the information to extract from this document and the tags to extract it into.</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>&lt;output&gt;</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    &lt;string name="pet_type" description="Species of pet"/&gt;</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    &lt;string name="name" description="a unique pet name"/&gt;</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>&lt;/output&gt;</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>ONLY return a valid JSON object (no other text is necessary), where the key of the field in JSON is the `name` attribute of the corresponding XML, and the value is of the type specified by the corresponding XML's tag. The JSON MUST conform to the XML format, including any types and format requests e.g. requests for lists, objects and specific types. Be correct and concise. If you are unsure anywhere, enter `null`.</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Woof. That’s a whole lot of ceremony to get structured output! We learned that this library’s approach to structured output uses XML schemas (while others use function calling). It’s worth considering if you can fashion a better or simpler approach now that the magic has been lifted. Either way, we now have insight into how it works without dragging you into unnecessary complexity, which is a win.</p>
+</section>
+<section id="guidance" class="level3">
+<h3 class="anchored" data-anchor-id="guidance">Guidance</h3>
+<p>Guidance offers constrained generation and programming constructs for writing prompts. Let’s dive into a <a href="https://github.com/guidance-ai/guidance/blob/main/notebooks/tutorials/chat.ipynb">chat example from their tutorials</a>:</p>
+<div id="cfe6882f-e22c-4666-9a66-6ce41262c6ea" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> guidance</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>gpt35 <span class="op">=</span> guidance.models.OpenAI(<span class="st">"gpt-3.5-turbo"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> guidance <span class="im">import</span> gen, select, system, user, assistant</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="at">@guidance</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plan_for_goal(lm, goal: <span class="bu">str</span>):</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># This is a helper function which we will use below</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> parse_best(prosandcons, options):</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        best <span class="op">=</span> re.search(<span class="vs">r'Best=</span><span class="kw">(</span><span class="dv">\d</span><span class="op">+</span><span class="kw">)</span><span class="vs">'</span>, prosandcons)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> best:</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>            best <span class="op">=</span>  re.search(<span class="vs">r'Best</span><span class="dv">.</span><span class="op">*?</span><span class="kw">(</span><span class="dv">\d</span><span class="op">+</span><span class="kw">)</span><span class="vs">'</span>, <span class="st">'Best= option is 3'</span>)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> best:</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>            best <span class="op">=</span> <span class="bu">int</span>(best.group(<span class="dv">1</span>))</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>            best <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> options[best]</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Some general instruction to the model</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> system():</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>        lm <span class="op">+=</span> <span class="st">"You are a helpful assistant."</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Simulate a simple request from the user</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Note that we switch to using 'lm2' here, because these are intermediate steps (so we don't want to overwrite the current lm object)</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> user():</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>        lm2 <span class="op">=</span> lm <span class="op">+</span> <span class="ss">f"""</span><span class="op">\</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="ss">        I want to </span><span class="sc">{</span>goal<span class="sc">}</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="ss">        Can you please generate one option for how to accomplish this?</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="ss">        Please make the option very short, at most one line."""</span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Generate several options. Note that this means several sequential generation requests</span></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>    n_options <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> assistant():</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>        options <span class="op">=</span> []</span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_options):</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>            options.append((lm2 <span class="op">+</span> gen(name<span class="op">=</span><span class="st">'option'</span>, temperature<span class="op">=</span><span class="fl">1.0</span>, max_tokens<span class="op">=</span><span class="dv">50</span>))[<span class="st">"option"</span>])</span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Have the user request pros and cons</span></span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> user():</span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>        lm2 <span class="op">+=</span> <span class="ss">f"""</span><span class="op">\</span></span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a><span class="ss">        I want to </span><span class="sc">{</span>goal<span class="sc">}</span></span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a><span class="ss">        Can you please comment on the pros and cons of each of the following options, and then pick the best option?</span></span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a><span class="ss">        ---</span></span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a><span class="ss">        """</span></span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i, opt <span class="kw">in</span> <span class="bu">enumerate</span>(options):</span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>            lm2 <span class="op">+=</span> <span class="ss">f"Option </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>opt<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span></span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>        lm2 <span class="op">+=</span> <span class="ss">f"""</span><span class="op">\</span></span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a><span class="ss">        ---</span></span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a><span class="ss">        Please discuss each option very briefly (one line for pros, one for cons), and end by saying Best=X, where X is the number of the best option."""</span></span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Get the pros and cons from the model</span></span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> assistant():</span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a>        lm2 <span class="op">+=</span> gen(name<span class="op">=</span><span class="st">'prosandcons'</span>, temperature<span class="op">=</span><span class="fl">0.0</span>, max_tokens<span class="op">=</span><span class="dv">600</span>, stop<span class="op">=</span><span class="st">"Best="</span>) <span class="op">+</span> <span class="st">"Best="</span> <span class="op">+</span> gen(<span class="st">"best"</span>, regex<span class="op">=</span><span class="st">"[0-9]+"</span>) </span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The user now extracts the one selected as the best, and asks for a full plan</span></span>
+<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a>    <span class="co"># We switch back to 'lm' because this is the final result we want</span></span>
+<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> user():</span>
+<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a>        lm <span class="op">+=</span> <span class="ss">f"""</span><span class="op">\</span></span>
+<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a><span class="ss">        I want to </span><span class="sc">{</span>goal<span class="sc">}</span></span>
+<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a><span class="ss">        Here is my plan: </span><span class="sc">{</span>options[<span class="bu">int</span>(lm2[<span class="st">"best"</span>])]<span class="sc">}</span></span>
+<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a><span class="ss">        Please elaborate on this plan, and tell me how to best accomplish it."""</span></span>
+<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The plan is generated</span></span>
+<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> assistant():</span>
+<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a>        lm <span class="op">+=</span> gen(name<span class="op">=</span><span class="st">'plan'</span>, max_tokens<span class="op">=</span><span class="dv">500</span>)</span>
+<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> lm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="7cbd50af-7689-426c-8779-1b0d5e9bfe7a" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> gpt35 <span class="op">+</span> plan_for_goal(goal<span class="op">=</span><span class="st">"read more books"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre style="margin: 0px; padding: 0px; vertical-align: middle; padding-left: 8px; margin-left: -8px; border-radius: 0px; border-left: 1px solid rgba(127, 127, 127, 0.2); white-space: pre-wrap; font-family: ColfaxAI, Arial; font-size: 15px; line-height: 23px;"><div style="display: flex; border-bottom: 1px solid rgba(127, 127, 127, 0.2); align-items: center;"><div style="flex: 0 0 80px; opacity: 0.5;">system</div><div style="flex-grow: 1; padding: 5px; padding-top: 10px; padding-bottom: 10px; margin-top: 0px; white-space: pre-wrap; margin-bottom: 0px;">You are a helpful assistant.</div></div><div style="display: flex; border-bottom: 1px solid rgba(127, 127, 127, 0.2); align-items: center;"><div style="flex: 0 0 80px; opacity: 0.5;">user</div><div style="flex-grow: 1; padding: 5px; padding-top: 10px; padding-bottom: 10px; margin-top: 0px; white-space: pre-wrap; margin-bottom: 0px;">I want to read more books
+Here is my plan: Set aside 30 minutes of dedicated reading time each day.
+Please elaborate on this plan, and tell me how to best accomplish it.</div></div><div style="display: flex; border-bottom: 1px solid rgba(127, 127, 127, 0.2); align-items: center;"><div style="flex: 0 0 80px; opacity: 0.5;">assistant</div><div style="flex-grow: 1; padding: 5px; padding-top: 10px; padding-bottom: 10px; margin-top: 0px; white-space: pre-wrap; margin-bottom: 0px;"><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">Setting</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> aside</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> </span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">30</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> minutes</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> of</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> dedicated</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reading</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> time</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> each</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> day</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> is</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> great</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> plan</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> to</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> read</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> more</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> books</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Here</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> are</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> some</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> tips</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> to</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> help</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> you</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> accomplish</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> this</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> goal</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">:
+
+</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">1</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Establish</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> routine</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">:</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Choose</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> specific</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> time</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> of</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> day</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> that</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> works</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> best</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> for</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> you</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> whether</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> it</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">'s</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> in</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> the</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> morning</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> during</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> lunch</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> break</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> or</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> before</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> bed</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Cons</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">istency</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> is</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> key</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> to</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> forming</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> habit</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.
+
+</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">2</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Create</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reading</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">-friendly</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> environment</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">:</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Find</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> quiet</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> and</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> comfortable</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> spot</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> where</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> you</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> can</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> focus</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> on</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> your</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reading</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> without</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> distractions</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> It</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> could</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> be</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> cozy</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> corner</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> in</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> your</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> home</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> park</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> bench</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> or</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> local</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> library</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.
+
+</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">3</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Mini</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">mi</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">ze</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> distractions</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">:</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Put</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> away</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> your</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> phone</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> turn</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> off</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> the</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> TV</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> and</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> avoid</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> any</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> other</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> potential</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> interruptions</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> during</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> your</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> dedicated</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reading</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> time</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> This</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> will</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> help</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> you</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> stay</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> focused</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> and</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> fully</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> immer</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">se</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> yourself</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> in</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> the</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> book</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.
+
+</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">4</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Choose</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> books</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> that</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> interest</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> you</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">:</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Select</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> books</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> that</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> align</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> with</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> your</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> personal</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> interests</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> hobbies</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> or</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> goals</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> When</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> you</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">'re</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> genuinely</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> interested</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> in</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> the</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> subject</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> matter</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> you</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">'ll</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> be</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> more</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> motivated</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> to</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> read</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> regularly</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.
+
+</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">5</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Start</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> with</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> manageable</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> goals</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">:</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> If</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> you</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">'re</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> new</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> to</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reading</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> or</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> have</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> busy</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> schedule</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> start</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> with</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> smaller</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> time</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> commitment</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> such</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> as</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> </span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">15</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> minutes</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> and</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> gradually</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> increase</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> it</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> to</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> </span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">30</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> minutes</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> or</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> more</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> as</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> you</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> become</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> more</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> comfortable</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.
+
+</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">6</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Set</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> timer</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">:</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Use</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> timer</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> or</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reading</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> app</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> that</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> allows</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> you</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> to</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> track</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> your</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reading</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> time</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> This</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> will</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> help</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> you</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> stay</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> accountable</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> and</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> ensure</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> that</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> you</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> dedicate</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> the</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> full</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> </span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">30</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> minutes</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> to</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reading</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.
+
+</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">7</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Make</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reading</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> enjoyable</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">:</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Create</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> cozy</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reading</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> atmosphere</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> by</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> lighting</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> candle</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> sip</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">ping</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> cup</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> of</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> tea</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> or</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> playing</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> soft</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> background</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> music</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Eng</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">aging</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> all</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> your</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> senses</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> can</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> enhance</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> your</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reading</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> experience</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.
+
+</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">8</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Join</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> book</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> club</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> or</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reading</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> group</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">:</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Consider</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> joining</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> book</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> club</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> or</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> participating</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> in</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reading</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> group</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> to</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> connect</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> with</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> fellow</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> book</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> lovers</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> This</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> can</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> provide</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> additional</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> motivation</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> discussion</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> opportunities</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> and</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> book</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> recommendations</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.
+
+</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">9</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Keep</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reading</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> log</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">:</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Maintain</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> record</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> of</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> the</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> books</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> you</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">'ve</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> read</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> along</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> with</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> your</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> thoughts</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> and</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reflections</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> This</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> can</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> help</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> you</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> track</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> your</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> progress</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> discover</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> patterns</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> in</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> your</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reading</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> preferences</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> and</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> serve</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> as</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> source</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> of</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> inspiration</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> for</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> future</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reading</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.
+
+</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">10</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Be</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> flexible</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">:</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> While</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> it</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">'s</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> important</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> to</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> have</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> dedicated</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reading</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> time</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> be</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> flexible</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> and</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> adaptable</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Life</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> can</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> sometimes</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> get</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> busy</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> so</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> if</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> you</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> miss</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> day</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> don</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">'t</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> be</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> discouraged</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Simply</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> pick</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> up</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> where</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> you</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> left</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> off</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> and</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> continue</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> with</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> your</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reading</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> routine</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.
+
+</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">Remember</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">,</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> the</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> goal</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> is</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> to</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> enjoy</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> the</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> process</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> of</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reading</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> and</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> make</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> it</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> a</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> regular</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> part</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> of</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> your</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> life</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">.</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> Happy</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0"> reading</span><span style="background-color: rgba(0.0, 165.0, 0, 0.15); border-radius: 3px;" title="1.0">!</span></div></div></pre>
+</div>
+</div>
+<p>This looks pretty neat! But what is it doing exactly? <strong>This makes a total of 7 calls to OpenAI</strong>, which I have put in <a href="https://gist.github.com/hamelsmu/d0d75bf702e56987f35cb715f7da4d6a">this gist</a>. <strong>5 of 7 of these API calls are “internal” thoughts asking the LLM to generate ideas.</strong> Even though the temperature is set to 1.0, <strong>these “ideas” are mostly redundant.</strong> The penultimate call to OpenAI enumerates these “ideas” which I’ve included below:</p>
+<div id="a3a0664f-577d-4a0c-96e7-74527036a0be" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div class="cell-output cell-output-stdout">
+<pre><code>I want to read more books
+Can you please comment on the pros and cons of each of the following options, and then pick the best option?
+---
+Option 0: Set aside dedicated time each day for reading.
+Option 1: Set aside 30 minutes of dedicated reading time each day.
+Option 2: Set aside dedicated time each day for reading.
+Option 3: Set aside dedicated time each day for reading.
+Option 4: Join a book club.
+---
+Please discuss each option very briefly (one line for pros, one for cons), and end by saying Best=X, where X is the number of the best option.</code></pre>
+</div>
+</div>
+<p>I know from experience that you are likely to get better results if you tell the language model to generate ideas in one shot. That way, the LLM can reference previous ideas and achieve more diversity. This is a good example of accidental complexity: its very tempting to take this design pattern and apply it blindly. This is less of a critique of this particular framework, since the code makes it clear that 5 independent calls will happen. Either way, its good idea to check your work by inspecting API calls!.</p>
+</section>
+<section id="langchain" class="level3">
+<h3 class="anchored" data-anchor-id="langchain">Langchain</h3>
+<p>Langchain is a multi-tool for all things LLM. Lots of people rely on Langchain when get started with LLMs. The core LangChain library doesn’t generally hide prompts from you, however there are experimental features that do. Let’s take a look at one of these features called <a href="https://api.python.langchain.com/en/latest/smart_llm/langchain_experimental.smart_llm.base.SmartLLMChain.html">SmartLLMChain</a>:</p>
+<div id="600b1e60-6c01-429e-834b-470730b5ea26" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> langchain.prompts <span class="im">import</span> PromptTemplate</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> langchain_experimental.smart_llm <span class="im">import</span> SmartLLMChain</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> langchain_openai <span class="im">import</span> ChatOpenAI</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>hard_question <span class="op">=</span> <span class="st">"I have a 12 liter jug and a 6 liter jug.</span><span class="op">\</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="st">I want to measure 6 liters. How do I do it?"</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>prompt <span class="op">=</span> PromptTemplate.from_template(hard_question)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>llm <span class="op">=</span> ChatOpenAI(temperature<span class="op">=</span><span class="dv">0</span>, model_name<span class="op">=</span><span class="st">"gpt-3.5-turbo"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="bdb002f1-5f1b-40a7-ad4f-c9052813ef1f" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>chain <span class="op">=</span> SmartLLMChain(llm<span class="op">=</span>llm, prompt<span class="op">=</span>prompt, </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                      n_ideas<span class="op">=</span><span class="dv">2</span>, </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>                      verbose<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> chain.run({})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="13be7600-e9eb-4ed2-91d9-a8182858ca83" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Idea 1: 1. Fill the 12 liter jug completely.
+2. Pour the contents of the 12 liter jug into the 6 liter jug. This will leave you with 6 liters in the 12 liter jug.
+3. Empty the 6 liter jug.
+4. Pour the remaining 6 liters from the 12 liter jug into the now empty 6 liter jug.
+5. You now have 6 liters in the 6 liter jug.
+
+Idea 2: 1. Fill the 12 liter jug completely.
+2. Pour the contents of the 12 liter jug into the 6 liter jug. This will leave you with 6 liters in the 12 liter jug.
+3. Empty the 6 liter jug.
+4. Pour the remaining 6 liters from the 12 liter jug into the now empty 6 liter jug.
+5. You now have 6 liters in the 6 liter jug.
+
+Improved Answer:
+1. Fill the 12 liter jug completely.
+2. Pour the contents of the 12 liter jug into the 6 liter jug until the 6 liter jug is full. This will leave you with 6 liters in the 12 liter jug and the 6 liter jug completely filled.
+3. Empty the 6 liter jug.
+4. Pour the remaining 6 liters from the 12 liter jug into the now empty 6 liter jug.
+5. You now have 6 liters in the 6 liter jug.
+
+Full Answer:
+To measure 6 liters using a 12 liter jug and a 6 liter jug, follow these steps:
+1. Fill the 12 liter jug completely.
+2. Pour the contents of the 12 liter jug into the 6 liter jug until the 6 liter jug is full. This will leave you with 6 liters in the 12 liter jug and the 6 liter jug completely filled.
+3. Empty the 6 liter jug.
+4. Pour the remaining 6 liters from the 12 liter jug into the now empty 6 liter jug.
+5. You now have 6 liters in the 6 liter jug.</code></pre>
+</div>
+</div>
+<p>Neat! So what happened exactly? While this API emits logs that show you a lot of information (available on <a href="https://gist.github.com/hamelsmu/abfb14b0af4c70e8532f9d4e0ef3e54e">this gist</a>), the API request pattern is interesting:</p>
+<ol type="1">
+<li><p>Two <em>seperate</em> api calls for each “idea”.</p></li>
+<li><p>Another API call that incorporates the two ideas as context, with the prompt:</p>
+<blockquote class="blockquote">
+<p>You are a researcher tasked with investigating the 2 response options provided. List the flaws and faulty logic of each answer options. Let’w work this out in a step by step way to be sure we have all the errors:”</p>
+</blockquote></li>
+<li><p>A final API call that that takes the critique from step 2 and generates an answer.</p></li>
+</ol>
+<p>Its not clear that this approach is optimal. I am not sure it should take 4 separate API calls to accomplish this task. Perhaps the critique and the final answer could be generated in one step? Furthermore, the prompt has a spelling error (<code>Let'w</code>) and also overly focuses on the negative about identifying errors - which makes me skeptical that this prompt has been optimized or tested.</p>
+</section>
+<section id="instructor" class="level3">
+<h3 class="anchored" data-anchor-id="instructor">Instructor</h3>
+<p><a href="https://github.com/jxnl/instructor">Instructor</a> is a framework for structured outputs.</p>
+<section id="structred-data-extraction-with-pydantic" class="level4">
+<h4 class="anchored" data-anchor-id="structred-data-extraction-with-pydantic">Structred data extraction with Pydantic</h4>
+<p>Here is a basic example from the project’s <a href="https://github.com/jxnl/instructor">README</a> that allows you to extract structured data by using Pydantic to define your schema.</p>
+<div id="8469f9f6-6998-4de7-8551-c073929e385c" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> instructor</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> openai <span class="im">import</span> OpenAI</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pydantic <span class="im">import</span> BaseModel</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> instructor.patch(OpenAI())</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> UserDetail(BaseModel):</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    name: <span class="bu">str</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    age: <span class="bu">int</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>user <span class="op">=</span> client.chat.completions.create(</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span><span class="st">"gpt-3.5-turbo"</span>,</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    response_model<span class="op">=</span>UserDetail,</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    messages<span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="st">"Extract Jason is 25 years old"</span>}])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can see how this works by inspecting the API call logged to mitmproxy:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode json code-overflow-wrap code-with-copy"><code class="sourceCode json"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"function_call"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>        <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"UserDetail"</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">},</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"functions"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"Correctly extracted `UserDetail` with all the required parameters with correct types"</span><span class="fu">,</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"UserDetail"</span><span class="fu">,</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"parameters"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>                <span class="dt">"properties"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">"age"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"title"</span><span class="fu">:</span> <span class="st">"Age"</span><span class="fu">,</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"integer"</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">},</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">"name"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"title"</span><span class="fu">:</span> <span class="st">"Name"</span><span class="fu">,</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"string"</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">}</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>                <span class="fu">},</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>                <span class="dt">"required"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"age"</span><span class="ot">,</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"name"</span></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>                <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>                <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"object"</span></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>            <span class="fu">}</span></span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"messages"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"content"</span><span class="fu">:</span> <span class="st">"Extract Jason is 25 years old"</span><span class="fu">,</span></span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"role"</span><span class="fu">:</span> <span class="st">"user"</span></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"model"</span><span class="fu">:</span> <span class="st">"gpt-3.5-turbo"</span></span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This is great. For structured output - <strong>It does exactly what I want, and it correctly uses the OpenAI API the way I would use it</strong> if I were writing this manually (by defining a function schema). I would consider this specific API a zero-cost abstraction, meaning it does exactly what I expect it to with a minimal surface area.</p>
+</section>
+<section id="validation" class="level4">
+<h4 class="anchored" data-anchor-id="validation">Validation</h4>
+<p>However, instructor has other APIs that are more agressive and write prompts for you. For example, consider this <a href="https://python.useinstructor.com/tutorials/4-validation/">validation example</a>. Running through that example should trigger similar questions to the exploration of <a href="#SmartLLMChain">Langchain’s SmartLLMChain</a> above. In this example, you will observe 3 LLM API calls to get the right answer, with the final payload looking like this:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"function_call"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>        <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"Validator"</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">},</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"functions"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"Validate if an attribute is correct and if not,</span><span class="ch">\n</span><span class="st">return a new value with an error message"</span><span class="fu">,</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"Validator"</span><span class="fu">,</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"parameters"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>                <span class="dt">"properties"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">"fixed_value"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"anyOf"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">{</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>                                <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"string"</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">{</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>                                <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"null"</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">}</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>                        <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"default"</span><span class="fu">:</span> <span class="kw">null</span><span class="fu">,</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"If the attribute is not valid, suggest a new value for the attribute"</span><span class="fu">,</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"title"</span><span class="fu">:</span> <span class="st">"Fixed Value"</span></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">},</span></span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">"is_valid"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"default"</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"Whether the attribute is valid based on the requirements"</span><span class="fu">,</span></span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"title"</span><span class="fu">:</span> <span class="st">"Is Valid"</span><span class="fu">,</span></span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"boolean"</span></span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">},</span></span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">"reason"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"anyOf"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">{</span></span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>                                <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"string"</span></span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">{</span></span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a>                                <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"null"</span></span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">}</span></span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a>                        <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"default"</span><span class="fu">:</span> <span class="kw">null</span><span class="fu">,</span></span>
+<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"The error message if the attribute is not valid, otherwise None"</span><span class="fu">,</span></span>
+<span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a>                        <span class="dt">"title"</span><span class="fu">:</span> <span class="st">"Reason"</span></span>
+<span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">}</span></span>
+<span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a>                <span class="fu">},</span></span>
+<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a>                <span class="dt">"required"</span><span class="fu">:</span> <span class="ot">[]</span><span class="fu">,</span></span>
+<span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a>                <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"object"</span></span>
+<span id="cb17-46"><a href="#cb17-46" aria-hidden="true" tabindex="-1"></a>            <span class="fu">}</span></span>
+<span id="cb17-47"><a href="#cb17-47" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb17-48"><a href="#cb17-48" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb17-49"><a href="#cb17-49" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"messages"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb17-50"><a href="#cb17-50" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb17-51"><a href="#cb17-51" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"content"</span><span class="fu">:</span> <span class="st">"You are a world class validation model. Capable to determine if the following value is valid for the statement, if it is not, explain why and suggest a new value."</span><span class="fu">,</span></span>
+<span id="cb17-52"><a href="#cb17-52" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"role"</span><span class="fu">:</span> <span class="st">"system"</span></span>
+<span id="cb17-53"><a href="#cb17-53" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb17-54"><a href="#cb17-54" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb17-55"><a href="#cb17-55" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"content"</span><span class="fu">:</span> <span class="st">"Does `According to some perspectives, the meaning of life is to find purpose, happiness, and fulfillment. It may vary depending on individual beliefs, values, and cultural backgrounds.` follow the rules: don't say objectionable things"</span><span class="fu">,</span></span>
+<span id="cb17-56"><a href="#cb17-56" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"role"</span><span class="fu">:</span> <span class="st">"user"</span></span>
+<span id="cb17-57"><a href="#cb17-57" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb17-58"><a href="#cb17-58" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb17-59"><a href="#cb17-59" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"model"</span><span class="fu">:</span> <span class="st">"gpt-3.5-turbo"</span><span class="fu">,</span></span>
+<span id="cb17-60"><a href="#cb17-60" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"temperature"</span><span class="fu">:</span> <span class="dv">0</span></span>
+<span id="cb17-61"><a href="#cb17-61" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Concretely, I’m curious if these steps could be collapsed into two LLM calls instead of three. Furthermore, I wonder if generic validation functions (as supplied in the above payload) are the right way to critique output? I don’t know the answer, but this is an interesting design pattern that is worth poking at.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>As far as LLM frameworks go, I really like this one. The core functionality of defining schemas with Pydantic is very convenient. The code is also very readable and easy to understand. Despite this, I still found it helpful to intercept instructor’s API calls to get another perspective.</p>
+<p>There is a way to set a logging level in instructor to see the raw API calls, however, I like using a framework agnostic approach :)</p>
+</div>
+</div>
+</section>
+</section>
+<section id="dspy" class="level3">
+<h3 class="anchored" data-anchor-id="dspy">DSPy</h3>
+<p><a href="https://github.com/stanfordnlp/dspy">DSPy</a> is the framework that helps you optimize your prompts to optimize any arbitrary metric. There is a fairly steep learning curve to DSPy, partly because it introduces many new technical terms specific to its framework like compilers and teleprompters. However, we can quickly peel back the complexity by looking at the API calls that it makes!</p>
+<p>Let’s run the <a href="https://dspy-docs.vercel.app/docs/quick-start/minimal-example">minimal working example</a>:</p>
+<div id="a3e9870b-741b-4b48-8dd4-c7b619fe8693" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dspy</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dspy.datasets.gsm8k <span class="im">import</span> GSM8K, gsm8k_metric</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>start_time <span class="op">=</span> time.time()</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up the LM</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>turbo <span class="op">=</span> dspy.OpenAI(model<span class="op">=</span><span class="st">'gpt-3.5-turbo-instruct'</span>, max_tokens<span class="op">=</span><span class="dv">250</span>)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>dspy.settings.configure(lm<span class="op">=</span>turbo)</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Load math questions from the GSM8K dataset</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>gms8k <span class="op">=</span> GSM8K()</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>trainset, devset <span class="op">=</span> gms8k.train, gms8k.dev</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="fba9a01d-da36-43ba-a2be-2c6801f9154e" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> CoT(dspy.Module):</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.prog <span class="op">=</span> dspy.ChainOfThought(<span class="st">"question -&gt; answer"</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, question):</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.prog(question<span class="op">=</span>question)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="95f7feaf-0ad0-4691-9488-a6214abc2bcd" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;python&quot;}}">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dspy.teleprompt <span class="im">import</span> BootstrapFewShotWithRandomSearch</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up the optimizer: we want to "bootstrap" (i.e., self-generate) 8-shot examples of our CoT program.</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># The optimizer will repeat this 10 times (plus some initial attempts) before selecting its best attempt on the devset.</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> <span class="bu">dict</span>(max_bootstrapped_demos<span class="op">=</span><span class="dv">8</span>, max_labeled_demos<span class="op">=</span><span class="dv">8</span>, num_candidate_programs<span class="op">=</span><span class="dv">10</span>, num_threads<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Optimize! Use the `gms8k_metric` here. In general, the metric is going to tell the optimizer how well it's doing.</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>teleprompter <span class="op">=</span> BootstrapFewShotWithRandomSearch(metric<span class="op">=</span>gsm8k_metric, <span class="op">**</span>config)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>optimized_cot <span class="op">=</span> teleprompter.<span class="bu">compile</span>(CoT(), trainset<span class="op">=</span>trainset, valset<span class="op">=</span>devset)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+This was not very minimal
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Despite this being the official <a href="https://dspy-docs.vercel.app/docs/quick-start/minimal-example">quick-start/minimal working</a> example, this code took <strong>more than 30 minutes to run, and made hundreds of calls to OpenAI!</strong> This cost non-trivial time (and money), especially as an entry-point to the library for someone trying to take a look. There was no prior warning that this would happen.</p>
+</div>
+</div>
+<p>DSPy made 100s of API calls because it was iteratively sampling examples for a few-shot prompt and selecting the best ones according to the <code>gsm8k_metric</code> on a validation set. I was able to quickly understand this by scanning through the API requests logged to mitmproxy.</p>
+<p>DSPy offers an <code>inspect_history</code> method which allows you to see the the last <code>n</code> prompts and their completions:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>turbo.inspect_history(n<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>I was able to verify that these prompts matched the last few API calls being made in mitmproxy. Overall, I would be motivated to potentially keep the prompt and and jettison the library. That being said, I think I am curious to see how this library evolves.</p>
+</section>
+</section>
+<section id="my-personal-experience" class="level2">
+<h2 class="anchored" data-anchor-id="my-personal-experience">My Personal Experience</h2>
+<p>Do I hate LLM libraries? No! I think many of the libraries in this blog post could be helpful if used thoughtfully in the right situations. However, I’ve witnessed too many people fall into the trap of using these libraries without understanding what they are doing.</p>
+<p>One thing I focus on as an independent consultant is to make sure my clients don’t take on accidental complexity. It’s very tempting to adopt additional tools given all the excitement around LLMs. Looking at prompts is one way to mitigate that temptation.</p>
+<p>I’m wary of frameworks that distance the human too far from LLMs. By whispering <em>“Fuck you, show me the prompt!”</em> when using these tools, you are empowered to decide for yourself.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p><br> <br></p>
+<div class="acknowledgments">
+<p><em>Acknowledgments: Thanks to <a href="https://twitter.com/jeremyphoward">Jeremy Howard</a> and <a href="https://twitter.com/bclavie">Ben Clavie</a> for thoughtfully reviewing this post.</em></p>
+</div>
+
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>You don’t have to whisper. Saying it out loud is fine too - let others know!<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/hamel\.dev\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/hamelhusain/">
+      <i class="bi bi-linkedin" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/HamelHusain">
+      <i class="bi bi-twitter" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/hamelsmu">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.dev/hamelsmu/hamel-site/blob/master/blog/posts/prompt/index.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
