@@ -5,7 +5,7 @@ image: p2-images/slide_19.png
 date: 2025-07-02
 ---
 
-As part of our [LLM Evals course](https://bit.ly/evals-ai), I hosted [Nandan Thakur](https://thakur-nandan.github.io/){target="_blank"} for the second part of our 5-part mini-series on evaluating and optimizing RAG. Nandan is a researcher at the University of Waterloo and a key contributor to major Information Retrieval (IR) benchmarks, including BEIR and the new FreshStack. His talk explains why traditional IR evals designed for search engines may be insufficient for RAG systems. He argues that LLM-generated answers often carry different retrieval goals which neccesitate different IR metrics.
+As part of our [LLM Evals course](https://bit.ly/evals-ai), I hosted [Nandan Thakur](https://thakur-nandan.github.io/){target="_blank"} for the second part of our 5-part mini-series on evaluating and optimizing RAG. Nandan is a researcher at the University of Waterloo and a key contributor to major Information Retrieval (IR) benchmarks, including BEIR and the new FreshStack. His talk explains why traditional IR evals designed for search engines may be insufficient for RAG systems. He argues that LLM-generated answers often carry different retrieval goals which necessitate different IR metrics.
 
 Below is an annotated version of his presentation, with timestamped links for each slide.
 
