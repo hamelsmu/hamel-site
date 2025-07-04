@@ -2,12 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.31">
+<meta name="generator" content="quarto-1.7.29">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2025-07-02">
+<meta name="description" content="Nandan Thakur on why traditional IR evals are insufficient for RAG and how new benchmarks like FreshStack provide a better path forward.">
 
-<title>untitled – Hamel's Blog</title>
+<title>P2: Modern IR Evals For RAG – Hamel’s Blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -36,14 +38,12 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-748b535e376f14d4692bf2b2e5fd6380.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap-e52038516e5d9cb106fef1ea778482b9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../../site_libs/bootstrap/bootstrap-dark-17ac83da12a7ce2544d04aaa4cd7dde0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="../../../site_libs/bootstrap/bootstrap-e52038516e5d9cb106fef1ea778482b9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-473cd3fdae26158324e3fa026112ebdf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark-5c21931d6ed7008fd1b1d77c416f53fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -90,19 +90,24 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <!-- End Google Tag Manager -->
 
 
-<meta property="og:title" content="Hamel’s Blog">
-<meta property="og:description" content="A collection of blogs and talks on machine learning and data science.">
-<meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
+<link rel="stylesheet" href="../../../styles.css">
+<meta property="og:title" content="P2: Modern IR Evals For RAG – Hamel’s Blog">
+<meta property="og:description" content="Nandan Thakur on why traditional IR evals are insufficient for RAG and how new benchmarks like FreshStack provide a better path forward.">
+<meta property="og:image" content="https://hamel.dev/notes/llm/rag/p2-images/slide_19.png">
 <meta property="og:site_name" content="Hamel's Blog">
-<meta name="twitter:title" content="Hamel’s Blog">
-<meta name="twitter:description" content="A collection of blogs and talks on machine learning and data science.">
-<meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
+<meta property="og:image:height" content="1125">
+<meta property="og:image:width" content="1500">
+<meta name="twitter:title" content="P2: Modern IR Evals For RAG – Hamel’s Blog">
+<meta name="twitter:description" content="Nandan Thakur on why traditional IR evals are insufficient for RAG and how new benchmarks like FreshStack provide a better path forward.">
+<meta name="twitter:image" content="https://hamel.dev/notes/llm/rag/p2-images/slide_19.png">
 <meta name="twitter:creator" content="@HamelHusain">
 <meta name="twitter:site" content="@HamelHusain">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image-height" content="1125">
+<meta name="twitter:image-width" content="1500">
 </head>
 
-<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+<body class="nav-sidebar docked nav-fixed quarto-dark"><script id="quarto-html-before-body" type="application/javascript">
     const toggleBodyColorMode = (bsSheetEl) => {
       const mode = bsSheetEl.getAttribute("data-mode");
       const bodyEl = window.document.querySelector("body");
@@ -244,11 +249,9 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
         changeGiscusTheme();
       }
     };
-    const authorPrefersDark = false;
+    const authorPrefersDark = true;
     const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
     const darkModeDefault = queryPrefersDark.matches;
-      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
-      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
     let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
     // Dark / light mode switch
     window.quartoToggleColorScheme = () => {
@@ -257,7 +260,6 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       toggleColorMode(toAlternate);
       setStyleSentinel(toAlternate);
       toggleGiscusIfUsed(toAlternate, darkModeDefault);
-      window.dispatchEvent(new Event('resize'));
     };
     queryPrefersDark.addEventListener("change", e => {
       if(window.localStorage.getItem("quarto-color-scheme") !== null)
@@ -281,19 +283,19 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <div class="navbar-container container-fluid">
           <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../../index.html"> 
+    <a class="nav-link" href="../../../index.html" target="_blank"> 
 <span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="../../../notes/index.html" aria-current="page"> 
+    <a class="nav-link active" href="../../../notes/index.html" target="_blank" aria-current="page"> 
 <span class="menu-text">Notes</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="https://parlance-labs.com/"> 
+    <a class="nav-link" href="https://parlance-labs.com/" target="_blank"> 
 <span class="menu-text">Hire Me</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../../oss/opensource.html"> 
+    <a class="nav-link" href="../../../oss/opensource.html" target="_blank"> 
 <span class="menu-text">OSS</span></a>
   </li>  
   <li class="nav-item">
@@ -312,7 +314,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/index.html">Notes</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/rag/index.html">RAG</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/rag/Untitled.html">Untitled</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/index.html">Notes</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/rag/index.html">RAG</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/rag/p2-evals.html">P2: Modern IR Evals For RAG</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -534,8 +536,8 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../notes/llm/rag/Untitled.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Untitled</span></a>
+  <a href="../../../notes/llm/rag/p2-evals.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">P2: Modern IR Evals For RAG</span></a>
   </div>
 </li>
       </ul>
@@ -1203,24 +1205,358 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#annotated-presentation" id="toc-annotated-presentation" class="nav-link active" data-scroll-target="#annotated-presentation">Annotated Presentation</a></li>
+  <li><a href="#reflections" id="toc-reflections" class="nav-link" data-scroll-target="#reflections">Reflections</a></li>
+  <li><a href="#qa-session" id="toc-qa-session" class="nav-link" data-scroll-target="#qa-session">Q&amp;A Session</a></li>
+  <li><a href="#video" id="toc-video" class="nav-link" data-scroll-target="#video">Video</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/llm/rag/p2-evals.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     <div class="quarto-margin-footer"><div class="margin-footer-item">
-<p><br> <button onclick="window.location.href='https://hamel.ck.page/7d15a4b6e7'" style="background-color: #C75C56; color: white; padding: 12px 24px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; transition: background-color 0.3s ease;">Subscribe To My Newsletter</button></p>
+<p><br> <button onclick="window.location.href='https://hamel.ck.page/7d15a4b6e7'" style="background-color: #447099; color: white; padding: 12px 24px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; transition: background-color 0.3s ease;">Subscribe To My Newsletter</button></p>
 </div></div></div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/index.html">Notes</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/rag/index.html">RAG</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/rag/Untitled.html">Untitled</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content">
 
 <!-- Content inserted at the beginning of body tag -->
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
 
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/index.html">Notes</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/rag/index.html">RAG</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/rag/p2-evals.html">P2: Modern IR Evals For RAG</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">P2: Modern IR Evals For RAG</h1>
+</div>
+
+<div>
+  <div class="description">
+    Nandan Thakur on why traditional IR evals are insufficient for RAG and how new benchmarks like FreshStack provide a better path forward.
+  </div>
+</div>
 
 
+<div class="quarto-title-meta">
 
-<p>Hello! I’m solveit, ready to help you with whatever you need - whether it’s coding, analysis, math, writing, or any other task. What would you like to work on today?</p>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 2, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
 
 
+</header>
+
+
+<p>As part of our <a href="https://bit.ly/evals-ai">LLM Evals course</a>, I hosted <a href="https://thakur-nandan.github.io/" target="_blank">Nandan Thakur</a> for the second part of our 5-part mini-series on evaluating and optimizing RAG. Nandan is a researcher at the University of Waterloo and a key contributor to major Information Retrieval (IR) benchmarks, including BEIR and the new FreshStack. His talk explains why traditional IR evals designed for search engines may be insufficient for RAG systems. He argues that LLM-generated answers often carry different retrieval goals which neccesitate different IR metrics.</p>
+<p>Below is an annotated version of his presentation, with timestamped links for each slide.</p>
+<div class="cta" style="text-align: center;">
+<p><strong>👉 <em>We are teaching our last and final cohort of our <a href="https://bit.ly/evals-ai">AI Evals course</a> next month</em></strong><em> (we have to get back to building). Here is a <a href="https://bit.ly/evals-ai">35% discount code</a> for readers of this post.</em> 👈</p>
+</div>
+<hr>
+<section id="annotated-presentation" class="level2">
+<h2 class="anchored" data-anchor-id="annotated-presentation">Annotated Presentation</h2>
+<p><img src="p2-images/slide_1.png" class="img-fluid"></p>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=0s">Timestamp: 00:00:00</a>)</em></p>
+<p>The title slide for Nandan’s talk, “Modern IR Evaluation in the RAG Era.”</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_2.png" class="img-fluid figure-img"></p>
+<figcaption>Speaker Introduction</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=14s">Timestamp: 00:00:14</a>)</em></p>
+<p>Nandan introduces himself as a fourth-year Ph.D.&nbsp;student at the University of Waterloo. He outlines his background, including research at UKP-TU and internships at Google Research and Databricks. He highlights his work on the BEIR, MIRACL, and FreshStack benchmarks, and the TREC RAG track.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_3.png" class="img-fluid figure-img"></p>
+<figcaption>Overview of the Talk</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=69s">Timestamp: 00:01:09</a>)</em></p>
+<p>Nandan outlines the presentation’s three parts: a history of traditional IR evaluation, an explanation of why evaluation needs to change for RAG, and a deep dive into the FreshStack benchmark as a modern solution.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_4.png" class="img-fluid figure-img"></p>
+<figcaption>History of Traditional IR</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=105s">Timestamp: 00:01:45</a>)</em></p>
+<p>This slide provides historical context. While RAG is new, Information Retrieval is a field with over 60 years of history. The slide contrasts an early Google interface with a modern one to show the evolution of web search.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_5.png" class="img-fluid figure-img"></p>
+<figcaption>IR’s 60-Year History</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=110s">Timestamp: 00:01:50</a>)</em></p>
+<p>Nandan emphasizes IR’s history by showing a 1965 paper on the SMART Retrieval System, an early automated document retrieval system. He also introduces the Text Retrieval Conference (TREC), an influential conference since the 1990s that continues to produce IR benchmarks and standards.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_6.png" class="img-fluid figure-img"></p>
+<figcaption>TREC Conference Tracks</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=180s">Timestamp: 00:03:00</a>)</em></p>
+<p>A diagram from NIST illustrates the breadth of TREC’s evaluation tasks from 1992 to 2020. These tracks range from classic ad-hoc retrieval to specialized areas like multilingual search and human-in-the-loop evaluation, demonstrating the field’s ongoing evolution.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_7.png" class="img-fluid figure-img"></p>
+<figcaption>The Cranfield Paradigm</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=234s">Timestamp: 00:03:54</a>)</em></p>
+<p>Nandan introduces the <strong>Cranfield Paradigm</strong>, the foundation of traditional IR evaluation developed in the 1960s. It established the concept of a <strong>test collection</strong>, comprising three components:</p>
+<ol type="1">
+<li><strong>Topics:</strong> A fixed set of user queries.</li>
+<li><strong>Corpus:</strong> A fixed collection of documents.</li>
+<li><strong>Relevance Judgments:</strong> Human-annotated labels indicating which documents are relevant to which queries.</li>
+</ol>
+<p>This three-part structure remains the basis for most IR benchmarks today.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_8.png" class="img-fluid figure-img"></p>
+<figcaption>Examples of Test Collections</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=360s">Timestamp: 00:06:00</a>)</em></p>
+<p>Nandan shows examples of modern test collections. He highlights <strong>BEIR</strong> for its diversity of tasks, <strong>MIRACL</strong> for multilingual retrieval, and the typical <strong>TREC</strong> query structure, which includes a <code>title</code>, <code>description</code>, and detailed <code>narrative</code>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_9.png" class="img-fluid figure-img"></p>
+<figcaption>Introducing the BEIR Benchmark</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=440s">Timestamp: 00:07:20</a>)</em></p>
+<p>This slide introduces the BEIR (Benchmarking-IR) benchmark, which was among the first to popularize zero-shot evaluation for retrieval models.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_10.png" class="img-fluid figure-img"></p>
+<figcaption>What is Zero-Shot Evaluation?</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=458s">Timestamp: 00:07:38</a>)</em></p>
+<p>Nandan explains <strong>zero-shot evaluation</strong>, where a model is tested on a domain or task it has not seen during training. This contrasts with <em>in-domain</em> evaluation (training and testing on similar data). Zero-shot evaluation is more realistic because high-quality, labeled training data for niche use cases is scarce and expensive to create.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_11.png" class="img-fluid figure-img"></p>
+<figcaption>The Problem BEIR Solved: Overfitting</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=609s">Timestamp: 00:10:09</a>)</em></p>
+<p>Nandan explains the motivation for BEIR. Around 2020-2021, the field focused heavily on the MSMARCO dataset, leading to <strong>saturation</strong> (performance plateaus) and <strong>overfitting</strong>. BEIR was created to combat this by providing a diverse set of datasets to test a model’s generalization ability beyond a single domain.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_12.png" class="img-fluid figure-img"></p>
+<figcaption>The Problem with BEIR Today</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=670s">Timestamp: 00:11:10</a>)</em></p>
+<p>Nandan explains that BEIR is no longer a truly “zero-shot” benchmark. Researchers now often include BEIR’s training sets in their model development pipelines. This, along with private models using unknown training data, repeats the overfitting problem that BEIR was designed to solve.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_13.png" class="img-fluid figure-img"></p>
+<figcaption>Leaderboard Saturation</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=800s">Timestamp: 00:13:20</a>)</em></p>
+<p>Nandan highlights a practical issue: leaderboards are now too crowded to be useful. The MTEB leaderboard contains over 400 models, with the top contenders separated by marginal scores. This makes it difficult for practitioners to select a model and raises the question of how these models perform on other, more specialized tasks.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_14.png" class="img-fluid figure-img"></p>
+<figcaption>Summary of Challenges</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=883s">Timestamp: 00:14:43</a>)</em></p>
+<p>This slide summarizes the limitations of existing test collections like BEIR. They are often static, leading to data contamination risk. They can suffer from incomplete “shallow labeling” from human annotators. They may also lack realistic question distributions, prompting even the creators of benchmarks like HotpotQA to advise against their use for modern agentic systems.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_15.png" class="img-fluid figure-img"></p>
+<figcaption>The Evolution of Search</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=1048s">Timestamp: 00:17:28</a>)</em></p>
+<p>Nandan contrasts the old and new search paradigms. “Search back then” shows a ranked list of links, while “Search now” shows a generated answer block with citations, characteristic of RAG systems.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_16.png" class="img-fluid figure-img"></p>
+<figcaption>Information Retrieval: Before and After RAG</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=1100s">Timestamp: 00:18:20</a>)</em></p>
+<p>This slide diagrams the architectural shift. Before RAG, a search model returned a ranked list of documents to the user. In the RAG era, the search model provides retrieved documents as context to an LLM, which then generates a response for the user.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_17.png" class="img-fluid figure-img"></p>
+<figcaption>Traditional vs.&nbsp;Modern Day RAG Users</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=1150s">Timestamp: 00:19:10</a>)</em></p>
+<p>Nandan contrasts the two user types. A traditional search user is impatient, asks short queries, and scans a ranked list to click the first relevant link. A modern RAG user is patient, asks longer queries, and waits for a synthesized summary with citations, which they may use for verification.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_18.png" class="img-fluid figure-img"></p>
+<figcaption>The Mismatch in Evaluation Objectives</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=1268s">Timestamp: 00:21:08</a>)</em></p>
+<p>This slide presents the talk’s central argument. Traditional metrics like <strong>MRR</strong> (Mean Reciprocal Rank) and <strong>NDCG</strong> (Normalized Discounted Cumulative Gain) were designed for the traditional objective: “Did we rank the relevant page at #1?” The new RAG objective is: “Did we fetch <em>every piece of evidence</em> needed for the LLM to answer this question?” For this new goal, MRR and NDCG may be insufficient on their own, as they do not measure comprehensive evidence collection or redundancy (more on that later).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_19.png" class="img-fluid figure-img"></p>
+<figcaption>Why RAG Metrics Need to Change</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=1400s">Timestamp: 00:23:20</a>)</em></p>
+<p>The argument is not to discard traditional relevance but to expand the evaluation criteria for RAG. While <strong>Relevancy is [still] important</strong>, it must now be balanced with new goals like finding a <strong>minimal spanning document set</strong>. This concept captures the need for a set of documents that is not only relevant but also comprehensively covers all aspects of an answer without being redundant.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_20.png" class="img-fluid figure-img"></p>
+<figcaption>Introducing FreshStack</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=1490s">Timestamp: 00:24:50</a>)</em></p>
+<p>Nandan introduces <strong>FreshStack</strong>, a modern IR benchmark developed with Databricks. It is designed to evaluate retrieval for RAG on technical documents.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_21.png" class="img-fluid figure-img"></p>
+<figcaption>Motivation for FreshStack</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=1500s">Timestamp: 00:25:00</a>)</em></p>
+<p>The motivation for FreshStack was to create a realistic RAG benchmark that overcomes the limitations of existing academic benchmarks, which are often static and artificially easy. The framework was designed to use real user questions, ground answers in real-time documents, be scalable, and be new to avoid data contamination.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_22.png" class="img-fluid figure-img"></p>
+<figcaption>FreshStack Queries: Stack Overflow</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=1576s">Timestamp: 00:26:16</a>)</em></p>
+<p>FreshStack sources its queries from <strong>Stack Overflow</strong>, an ideal source for long, complex, real-world questions with community-vetted answers. To mitigate data contamination, the benchmark uses questions from five recent and niche topics asked primarily in 2023 and 2024.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_23.png" class="img-fluid figure-img"></p>
+<figcaption>FreshStack Corpus: GitHub Repositories</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=1650s">Timestamp: 00:27:30</a>)</em></p>
+<p>The document corpus comes from the <strong>GitHub Repositories</strong> of the corresponding topics. This provides a constantly updated source of technical documentation and code. An interesting finding is that for technical queries, the questions can be significantly longer than the answers.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_24.png" class="img-fluid figure-img"></p>
+<figcaption>The FreshStack Pipeline</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=1698s">Timestamp: 00:28:18</a>)</em></p>
+<p>Nandan explains the three-step automated pipeline for building FreshStack:</p>
+<ol type="1">
+<li><strong>Nuggetization:</strong> A Stack Overflow answer is broken down by GPT-4o into essential, atomic facts or “nuggets.”</li>
+<li><strong>Oracle Retrieval:</strong> A diverse pool of candidate documents is retrieved from the corpus using a hybrid of models.</li>
+<li><strong>Support w/ Nuggets:</strong> A GPT-4o judge checks which retrieved document chunks support each individual nugget, creating fine-grained relevance judgments.</li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_25.png" class="img-fluid figure-img"></p>
+<figcaption>Step I: Nuggetization Example</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=1790s">Timestamp: 00:29:50</a>)</em></p>
+<p>This slide shows a concrete example of nuggetization. An answer to a <code>Chroma.from_documents</code> error is broken down into four key facts: the cause of the error, the required import, the initialization step, and the function call.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_26.png" class="img-fluid figure-img"></p>
+<figcaption>Step II &amp; III: Oracle Retrieval &amp; Nugget Support</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=1850s">Timestamp: 00:30:50</a>)</em></p>
+<p>This slide illustrates the final steps. After a document is retrieved, the system checks which of the four nuggets it supports. This process creates nugget-level relevance labels, forming the basis for the new evaluation metrics.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_27.png" class="img-fluid figure-img"></p>
+<figcaption>FreshStack Evaluation Metrics</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=1886s">Timestamp: 00:31:26</a>)</em></p>
+<p>Nandan introduces the three metrics used in FreshStack, which provide a holistic view of RAG retrieval performance (for this specific use case):</p>
+<ol type="1">
+<li><strong>Diversity (alpha-nDCG@10):</strong> Measures non-redundancy, penalizing the retrieval of multiple documents that support the same fact.</li>
+<li><strong>Grounding (Coverage@20):</strong> Measures the percentage of unique nuggets supported by the retrieved documents, directly evaluating evidence collection.</li>
+<li><strong>Relevance (Recall@50):</strong> A traditional metric that serves as a foundational check on whether the retrieved documents are on-topic. This multi-faceted approach augments traditional relevance with metrics tailored to the specific goals of RAG.</li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_28.png" class="img-fluid figure-img"></p>
+<figcaption>FreshStack Results &amp; Takeaways</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=1999s">Timestamp: 00:33:19</a>)</em></p>
+<p>Nandan presents results from the benchmark. Key findings include that current retrieval techniques struggle on these realistic tasks, and no single model performs best across all topics. The large gap between current model performance and the theoretical “Oracle” maximum indicates significant room for improvement.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_29.png" class="img-fluid figure-img"></p>
+<figcaption>The FreshStack Leaderboard &amp; Colab</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=2095s">Timestamp: 00:34:55</a>)</em></p>
+<p>Nandan shares the public FreshStack leaderboard and a Google Colab notebook. The notebook provides a script for users to evaluate their own models on FreshStack using its multi-dimensional metrics.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_30.png" class="img-fluid figure-img"></p>
+<figcaption>What Did We Learn Today?</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=2161s">Timestamp: 00:36:01</a>)</em></p>
+<p>This slide summarizes the talk’s main points. Traditional IR evaluation may be insufficient for RAG depending on the use case. Benchmarks like BEIR are now suffering from overfitting. Often, the goal of RAG retrieval is evidence collection, requiring metrics that evaluate diversity, informativeness, and correctness in addition to relevance.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p2-images/slide_31.png" class="img-fluid figure-img"></p>
+<figcaption>Thank You</figcaption>
+</figure>
+</div>
+<p><em>(<a href="https://www.youtube.com/watch?v=Trps2swgeOg&amp;t=2235s">Timestamp: 00:37:15</a>)</em></p>
+<p>Nandan concludes by thanking his collaborators. The slide’s meme reinforces his message: good evaluations are essential for developing better models.</p>
+<hr>
+</section>
+<section id="reflections" class="level2">
+<h2 class="anchored" data-anchor-id="reflections">Reflections</h2>
+<p>Nandan’s message was to consider other retrieval metrics beyond relevance based on your product’s needs. He argued that we must sometimes reconsider what “good” retrieval means. For the stack overflow use case, he considered multiple dimensions of performance:</p>
+<ul>
+<li><strong>Grounding (or Coverage):</strong> Did the retrieval system fetch <em>all</em> the evidence needed to construct a complete and accurate answer? A missing fact can lead to an incomplete or incorrect generation, even if the retrieved documents are otherwise highly relevant.</li>
+<li><strong>Diversity:</strong> Are the retrieved documents efficiently informative? Retrieving multiple documents that repeat the same information is less valuable than retrieving a set of documents that each contribute a unique and essential fact.</li>
+<li><strong>Relevance:</strong> Is the retrieved information on-topic? This remains a fundamental check. A diverse and well-grounded set of documents is useless if it pertains to the wrong subject.</li>
+</ul>
+<p>This is not a call to discard traditional metrics but to <strong>augment</strong> them. The FreshStack benchmark, with its blend of Recall, Coverage, and Diversity metrics, is an example of this.</p>
+</section>
+<section id="qa-session" class="level2">
+<h2 class="anchored" data-anchor-id="qa-session">Q&amp;A Session</h2>
+<ul>
+<li><p><strong>How well does FreshStack generalize outside of coding-related domains?</strong> Nandan feels that FreshStack approach should generalize well outside of coding-related domains, but more experiments are needed. The pipeline of nuggetization, retrieval, and grounding can be applied to any domain with a corpus and question-answer pairs, allowing for the creation of a “FreshStack” for finance, law, or other areas.</p></li>
+<li><p><strong>For domain-specific RAG, should people build their own evaluations mimicking this approach?</strong> Yes, but the relative importance of each dimension (Diversity, Grounding, Relevance) depends on the use case. For patent search, recall is critical. For a comparative question, coverage of all viewpoints is important. Weighting thiese metrics into a combined score according to the product needs is a reasonable approach.</p></li>
+<li><p><strong>Does the FreshStack leaderboard align with intuitions about the best retrieval models?</strong> The leaderboard shows that some popular proprietary models can underperform classic baselines like BM25 on this benchmark. It also highlights that recent open-source models (e.g., Qwen3, Stella) are now highly competitive with top closed-source offerings, and that performance does not always scale with model size.</p></li>
+<li><p><strong>How does this evaluation framework interact with advanced retrieval methods?</strong> The evaluation framework is method-agnostic. While current models on the leaderboard use single-step retrieval, more complex methods like multi-query decomposition or late-interaction models can be evaluated using the same principles. The final set of retrieved documents can still be measured for its diversity, coverage, and recall, regardless of how it was generated.</p></li>
+<li><p><strong>What are you working on next?</strong> Nandan is focusing on generating high-quality synthetic training data for RAG systems. He is also an organizer for the TREC RAG track, where he plans to introduce the diversity and grounding metrics from FreshStack to help push the community toward more robust evaluation standards.</p></li>
+</ul>
+<hr>
+<div class="cta" style="text-align: center;">
+<p><strong>👉 <em>We are teaching our last and final cohort of our <a href="https://bit.ly/evals-ai">AI Evals course</a> next month</em></strong><em> (we have to get back to building). Here is a <a href="https://bit.ly/evals-ai">35% discount code</a> for readers of this post.</em> 👈</p>
+</div>
+<hr>
+</section>
+<section id="video" class="level2">
+<h2 class="anchored" data-anchor-id="video">Video</h2>
+<p>Here is the full video:</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/Trps2swgeOg" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+
+
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1662,7 +1998,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
     </a>
   </li>  
 </ul>
-    <div class="toc-actions"><ul><li><a href="https://github.dev/hamelsmu/hamel-site/blob/master/notes/llm/rag/Untitled.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/llm/rag/p2-evals.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
