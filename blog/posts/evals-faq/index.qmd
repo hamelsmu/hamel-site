@@ -16,7 +16,7 @@ date: last-modified
 image: images/eval_faq.png
 ---
 
-This post curates the most common questions Shreya and I have recieved from [teaching 700+](https://bit.ly/evals-ai){target="_blank"} engineers & PMs in AI Evals.  _Warning: These are sharp opinions about what works in most cases.  They are not universal truths. Use your judgment._
+This post curates the most common questions Shreya and I received while teaching 700+ engineers & PMs AI Evals.  _Warning: These are sharp opinions about what works in most cases.  They are not universal truths. Use your judgment._
 
 <hr>
 <div class="cta" style="text-align: center;"> 
@@ -38,11 +38,11 @@ The viral article claiming RAG is dead specifically argues against using *naive 
 
 RAG simply means Retrieval-Augmented Generation - using retrieval to provide relevant context that improves your model's output. The core principle remains essential: your LLM needs the right context to generate accurate answers. The question isn't whether to use retrieval, but how to retrieve effectively.
 
-For coding applications, naive vector similarity search often fails because code relationships are complex and contextual. Instead of abandoning retrieval entirely, modern coding assistants like Claude Code [still uses retrieval](https://x.com/pashmerepat/status/1926717705660375463?s=46) —they just employ agentic search instead of relying solely on vector databases.similar to how human developers work.
+For coding applications, naive vector similarity search often fails because code relationships are complex and contextual. Instead of abandoning retrieval entirely, modern coding assistants like Claude Code [still uses retrieval](https://x.com/pashmerepat/status/1926717705660375463?s=46) —they just employ agentic search instead of relying solely on vector databases, similar to how human developers work.
 
 You have multiple retrieval strategies available, ranging from simple keyword matching to embedding similarity to LLM-powered relevance filtering. The optimal approach depends on your specific use case, data characteristics, and performance requirements. Many production systems combine multiple strategies or use multi-hop retrieval guided by LLM agents.
 
-Unforunately, "RAG" has become a buzzword with no shared definition. Some people use it to mean any retrieval system, others restrict it to vector databases. Focus on the fundamental goal: getting your LLM the context it needs to succeed. Whether that's through vector search, agentic exploration, or hybrid approaches is a product and engineering decision that requires understanding your users' failure modes and usage patterns.
+Unfortunately, "RAG" has become a buzzword with no shared definition. Some people use it to mean any retrieval system, others restrict it to vector databases. Focus on the ultimate goal: getting your LLM the context it needs to succeed. Whether that's through vector search, agentic exploration, or hybrid approaches is a product and engineering decision.
 
 Rather than following categorical advice to avoid or embrace RAG, experiment with different retrieval approaches and measure what works best for your application.
 
@@ -86,7 +86,7 @@ Start with binary labels to understand what 'bad' looks like. Numeric labels are
 
 Start simple. Check if the whole conversation met the user's goal with a pass/fail judgment. Look at the entire trace and focus on the first upstream failure. Read the user-visible parts first to understand if something went wrong. Only then dig into the technical details like tool calls and intermediate steps.
 
-When you find a failure, reproduce it with the simplest possible test case. Here's a example: suppose a shopping bot gives the wrong return policy on turn 4 of a conversation. Before diving into the full multi-turn complexity, simplify it to a single turn: "What is the return window for product X1000?" If it still fails, you've proven the error isn't about conversation context - it's likely a basic retrieval or knowledge issue you can debug more easily.
+When you find a failure, reproduce it with the simplest possible test case. Here's an example: suppose a shopping bot gives the wrong return policy on turn 4 of a conversation. Before diving into the full multi-turn complexity, simplify it to a single turn: "What is the return window for product X1000?" If it still fails, you've proven the error isn't about conversation context - it's likely a basic retrieval or knowledge issue you can debug more easily.
 
 For generating test cases, you have two main approaches. First, you can simulate users with another LLM to create realistic multi-turn conversations. Second, use "N-1 testing" where you provide the first N-1 turns of a real conversation and test what happens next. The N-1 approach often works better since it uses actual conversation prefixes rather than fully synthetic interactions (but is less flexible and doesn't test the full conversation). User simulation is getting better as models improve.  Keep an eye on this space.
 
@@ -197,7 +197,7 @@ In these cases, smaller chunks help preserve reasoning quality and output comple
 
 It's important to recognize **why chunk size affects results**. A larger chunk means the model has to reason over more information in one go – essentially, a heavier cognitive load. LLMs have limited capacity to **retain and correlate details across a long text**. If too much is packed in, the model might prioritize certain parts (commonly the beginning or end) and overlook or "forget" details in the middle. This can lead to overly coarse summaries or missed facts. In contrast, a smaller chunk bounds the problem: the model can pay full attention to that section. You are trading off **global context for local focus**. 
 
-No rule of thumb can perfectly determine the best chunk size for your use case – **you should validate with experiments**. The optimal chunk size can vary by domain and model. I treat chunk size as a hyper parameter to tune.
+No rule of thumb can perfectly determine the best chunk size for your use case – **you should validate with experiments**. The optimal chunk size can vary by domain and model. I treat chunk size as a hyperparameter to tune.
 
 
 ## Q: How should I approach evaluating my RAG system?
@@ -330,7 +330,7 @@ Creating test cases for agent failures follows the same principles as our previo
 
 Eval tools are in an intensely competitive space.  It would be futile to compare their features.  If I tried to do such an analysis, it would be invalidated in a week!  Vendors I encounter the most organically in my work are: [Langsmith](https://www.langchain.com/langsmith), [Arize](https://arize.com/) and [Braintrust](https://www.braintrust.dev/).
 
-When I help clients with vendor selection, the decision weighs heavily towards who can offer the best support, as opposed to purely features.  This changes depending on size of client, use case, etc. Yes - its mainly the human factor that matters, and dare I say, vibes.
+When I help clients with vendor selection, the decision weighs heavily towards who can offer the best support, as opposed to purely features.  This changes depending on size of client, use case, etc. Yes - it's mainly the human factor that matters, and dare I say, vibes.
 
 I have no favorite vendor.  At the core, their features are very similar - and I often build [custom tools](https://hamel.dev/blog/posts/evals/#q-should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf) on top of them to fit my needs. 
 
@@ -348,13 +348,13 @@ These two systems are complementary: when production monitoring reveals new fail
 
 ## Q: Are similarity metrics (BERTScore, ROUGE, etc.) useful for evaluating LLM outputs? 
 
-Generic metrics like BERTScore, ROUGE, cosine similarity, etc. are generally not useful for evaluating LLM outputs. Instead, we recommend using [error analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed) to design metrics specific to your application's behavior. These task-specific metrics are often a [binary pass/fail](#q-why-do-you-recommend-binary-(passfail-evaluations-instead-of-1-5-ratings-(likert-scales)).) metric or a code- based assertion.
+Generic metrics like BERTScore, ROUGE, cosine similarity, etc. are not useful for evaluating LLM outputs in most AI applications. Instead, we recommend using [error analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed) to identify metrics specific to your application's behavior. We recommend designing [binary pass/fail](#q-why-do-you-recommend-binary-(passfail-evaluations-instead-of-1-5-ratings-(likert-scales)).) evals (using LLM-as-judge) or code-based assertions.
 
-As an example, consider a real estate CRM assistant. Suggesting showings that aren't available or confusing client personas is problematic. Generic metrics like similarity or verbosity won't catch this. A relevant quote from the course:
+As an example, consider a real estate CRM assistant. Suggesting showings that aren't available (can be tested with an assertion) or confusing client personas (can be tested with a LLM-as-judge) is problematic . Generic metrics like similarity or verbosity won't catch this. A relevant quote from the course:
 
 > "The abuse of generic metrics is endemic. Many eval vendors promote off the shelf metrics, which ensnare engineers into superfluous tasks."
 
-Similarity metrics aren't always useless. They have utility in domains like search and recommendation and can be useful for [optimizing and debugging retrieval](#q-how-should-i-approach-evaluating-my-rag-system) for RAG). For example, cosine similarity between embeddings can measure semantic closeness in retrieval systems, and average pairwise similarity can assess output diversity (where lower similarity indicates higher diversity).
+Similarity metrics aren't always useless. They have utility in domains like search and recommendation (and therefore can be useful for [optimizing and debugging retrieval](#q-how-should-i-approach-evaluating-my-rag-system) for RAG). For example, cosine similarity between embeddings can measure semantic closeness in retrieval systems, and average pairwise similarity can assess output diversity (where lower similarity indicates higher diversity).
 
 
 <hr>
