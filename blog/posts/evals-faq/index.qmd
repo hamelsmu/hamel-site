@@ -346,6 +346,17 @@ For evaluating production traffic, you can sample live traces and run evaluators
 
 These two systems are complementary: when production monitoring reveals new failure patterns through error analysis and evals, add representative examples to your CI dataset. This mitigates regressions on new issues.
 
+## Q: Are similarity metrics (BERTScore, ROUGE, etc.) useful for evaluating LLM outputs? 
+
+Generic metrics like BERTScore, ROUGE, cosine similarity, etc. are generally not useful for evaluating LLM outputs. Instead, we recommend using [error analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed) to design metrics specific to your application's behavior. These task-specific metrics are often a [binary pass/fail](#q-why-do-you-recommend-binary-(passfail-evaluations-instead-of-1-5-ratings-(likert-scales)).) metric or a code- based assertion.
+
+As an example, consider a real estate CRM assistant. Suggesting showings that aren't available or confusing client personas is problematic. Generic metrics like similarity or verbosity won't catch this. A relevant quote from the course:
+
+> "The abuse of generic metrics is endemic. Many eval vendors promote off the shelf metrics, which ensnare engineers into superfluous tasks."
+
+Similarity metrics aren't always useless. They have utility in domains like search and recommendation and can be useful for [optimizing and debugging retrieval](#q-how-should-i-approach-evaluating-my-rag-system) for RAG). For example, cosine similarity between embeddings can measure semantic closeness in retrieval systems, and average pairwise similarity can assess output diversity (where lower similarity indicates higher diversity).
+
+
 <hr>
 <div class="cta" style="text-align: center;">
 <strong>👉 <em>We are teaching our last and final cohort of our [AI Evals course](https://bit.ly/evals-ai) next month</strong> (we have to get back to building). Here is a [35% discount code](https://bit.ly/evals-ai) for readers of this post.</em> 👈
