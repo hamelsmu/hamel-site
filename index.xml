@@ -17,7 +17,7 @@
 <width>144</width>
 </image>
 <generator>quarto-1.7.31</generator>
-<lastBuildDate>Sat, 05 Jul 2025 05:35:32 GMT</lastBuildDate>
+<lastBuildDate>Mon, 07 Jul 2025 03:57:49 GMT</lastBuildDate>
 <item>
   <title>Frequently Asked Questions (And Answers) About AI Evals</title>
   <dc:creator>Hamel Husain</dc:creator>
@@ -318,6 +318,29 @@
 <p>“The abuse of generic metrics is endemic. Many eval vendors promote off the shelf metrics, which ensnare engineers into superfluous tasks.”</p>
 </blockquote>
 <p>Similarity metrics aren’t always useless. They have utility in domains like search and recommendation (and therefore can be useful for optimizing and debugging retrieval for RAG). For example, cosine similarity between embeddings can measure semantic closeness in retrieval systems, and average pairwise similarity can assess output diversity (where lower similarity indicates higher diversity).</p>
+</section>
+<section id="q-should-i-use-ready-to-use-evaluation-metrics" class="level2">
+<h2 class="anchored" data-anchor-id="q-should-i-use-ready-to-use-evaluation-metrics">Q: Should I use “ready-to-use” evaluation metrics?</h2>
+<p><strong>No.&nbsp;Generic evaluations waste time and create false confidence.</strong> (Unless you’re using them for exploration).</p>
+<p>One instructor noted:</p>
+<blockquote class="blockquote">
+<p>“All you get from using these prefab evals is you don’t know what they actually do and in the best case they waste your time and in the worst case they create an illusion of confidence that is unjustified.”<sup>1</sup></p>
+</blockquote>
+<p>Generic evaluation metrics are everywhere. Eval libraries contain scores like helpfulness, coherence, quality, etc. promising easy evaluation. These metrics measure abstract qualities that may not matter for your use case. Good scores on them don’t mean your system works.</p>
+<p>Instead, conduct error analysis to understand failures. Define [binary failure modes](#q-why-do-you-recommend-binary-(passfail-evaluations-instead-of-1-5-ratings-(likert-scales)) based on real problems. Create custom evaluators for those failures and validate them against human judgment. Essentially, the entire evals process.</p>
+<p>Experienced practitioners may still use these metrics, just not how you’d expect. As Picasso said: “Learn the rules like a pro, so you can break them like an artist.” Once you understand why generic metrics fail as evaluations, you can repurpose them as exploration tools to find interesting traces (explained in the next FAQ).</p>
+<hr>
+</section>
+<section id="q-how-can-i-efficiently-sample-production-traces-for-review" class="level2">
+<h2 class="anchored" data-anchor-id="q-how-can-i-efficiently-sample-production-traces-for-review">Q: How can I efficiently sample production traces for review?</h2>
+<p>It can be cubersome to review traces randomly, especially when most traces don’t have an error. These sampling strategies help you find traces more likely to reveal problems:</p>
+<ul>
+<li><strong>Outlier detection:</strong> Sort by any metric (response length, latency, tool calls) and review extremes.</li>
+<li><strong>User feedback signals:</strong> Prioritize traces with negative feedback, support tickets, or escalations.</li>
+<li><strong>Metric-based sorting:</strong> Even though we advise against using off-the-shelf metrics for evaluation, they can serve as exploration signals to find interesting traces. Review both high and low scores and treat them as exploration signals, not truth. Based on what you learn from looking at these traces, you can build custom evaluators for the failure modes you find.</li>
+<li><strong>Stratified sampling:</strong> Group traces by key dimensions (user type, feature, query category) and sample from each group.</li>
+</ul>
+<p>As you get more sophisticated with how you sample, you can incorporate these tactics into the design of your annotation tools.</p>
 <hr>
 <div class="cta" style="text-align: center;">
 <p><strong>👉 <em>We are teaching our last and final cohort of our <a href="https://bit.ly/evals-ai">AI Evals course</a> next month</em></strong><em> (we have to get back to building). Here is a <a href="https://bit.ly/evals-ai">35% discount code</a> for readers of this post.</em> 👈</p>
@@ -326,11 +349,17 @@
 
 </section>
 
- ]]></description>
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p><a href="https://www.linkedin.com/in/intellectronica/">Eleanor Berger</a>, our wonderful TA.↩︎</p></li>
+</ol>
+</section></div> ]]></description>
   <category>LLMs</category>
   <category>evals</category>
   <guid>https://hamel.dev/blog/posts/evals-faq/</guid>
-  <pubDate>Sat, 05 Jul 2025 05:35:32 GMT</pubDate>
+  <pubDate>Mon, 07 Jul 2025 03:57:49 GMT</pubDate>
   <media:content url="https://hamel.dev/blog/posts/evals-faq/images/eval_faq.png" medium="image" type="image/png" height="96" width="144"/>
 </item>
 <item>
