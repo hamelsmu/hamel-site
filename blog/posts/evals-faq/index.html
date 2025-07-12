@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.29">
+<meta name="generator" content="quarto-1.7.31">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Hamel Husain">
 <meta name="author" content="Shreya Shankar">
-<meta name="dcterms.date" content="2025-07-07">
+<meta name="dcterms.date" content="2025-07-12">
 <meta name="description" content="FAQ from our course on AI Evals.">
 
 <title>Frequently Asked Questions (And Answers) About AI Evals – Hamel’s Blog</title>
@@ -40,8 +40,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-748b535e376f14d4692bf2b2e5fd6380.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../../site_libs/bootstrap/bootstrap-473cd3fdae26158324e3fa026112ebdf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
@@ -262,6 +262,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       toggleColorMode(toAlternate);
       setStyleSentinel(toAlternate);
       toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
     };
     queryPrefersDark.addEventListener("change", e => {
       if(window.localStorage.getItem("quarto-color-scheme") !== null)
@@ -390,7 +391,7 @@ Subscribe To My Newsletter
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 7, 2025</p>
+      <p class="date">July 12, 2025</p>
     </div>
   </div>
   
@@ -709,6 +710,12 @@ Subscribe To My Newsletter
 <li><strong>Stratified sampling:</strong> Group traces by key dimensions (user type, feature, query category) and sample from each group.</li>
 </ul>
 <p>As you get more sophisticated with how you sample, you can incorporate these tactics into the design of your <a href="#q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs">annotation tools</a>.</p>
+<p>Here is a FAQ you have drafted for me. Can you look into objections I might get about this?</p>
+<section id="q-should-i-stop-writing-prompts-manually-in-favor-of-automated-tools" class="level3">
+<h3 class="anchored" data-anchor-id="q-should-i-stop-writing-prompts-manually-in-favor-of-automated-tools">Q: Should I stop writing prompts manually in favor of automated tools?</h3>
+<p>Automating prompt engineering can be tempting, but you should be skeptical of tools that promise to optimize prompts for you, especially in early stages of development. When you write a prompt, you are forced to clarify your assumptions and externalize your requirements. Good writing is good thinking <a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. If you delegate this task to an automated tool too early, you risk never fully understanding your own requirements or the model’s failure modes.</p>
+<p>This is because automated prompt optimization typically hill-climb a predefined evaluation metric. It can refine a prompt to perform better on known failures, but it cannot discover <em>new</em> ones. Discovering new errors requires <a href="#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed">error analysis</a>. Furthermore, research shows that evaluation criteria tends to shift after reviewing a model’s outputs, a phenomenon known as “criteria drift” <a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>. This means that evaluation is an iterative, human-driven sensemaking process, not a static target that can be set once and handed off to an optimizer.</p>
+<p>A pragmatic approach is to use LLMs to improve your prompt based on <a href="#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed">open coding</a> (open-ended notes about traces). This way, you maintain a human in the loop who is looking at the data and externalizing their requirements. Once you have a high-quality set of evals, prompt optimization can be effective for that last mile of performance.</p>
 <hr>
 <div class="cta" style="text-align: center;">
 <p><strong>👉 <em>We are teaching our last and final cohort of our <a href="https://bit.ly/evals-ai">AI Evals course</a> next month</em></strong><em> (we have to get back to building). Here is a <a href="https://bit.ly/evals-ai">35% discount code</a> for readers.</em> 👈</p>
@@ -716,12 +723,15 @@ Subscribe To My Newsletter
 
 
 </section>
+</section>
 
 
 <div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
 <li id="fn1"><p><a href="https://www.linkedin.com/in/intellectronica/">Eleanor Berger</a>, our wonderful TA.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Paul Graham, <a href="https://paulgraham.com/writes.html">“Writes and Write-Nots”</a><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Shreya Shankar, et al., <a href="https://arxiv.org/abs/2404.12272">“Who Validates the Validators? Aligning LLM-Assisted Evaluation of LLM Outputs with Human Preferences”</a><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
