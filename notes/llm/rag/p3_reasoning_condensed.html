@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2025-07-09">
+<meta name="description" content="Orion Weller from Johns Hopkins University on making retrieval systems understand complex instructions and reason about documents, featuring Promptriever and Rank1.">
 
-<title>Batch Predictions – Hamel’s Blog</title>
+<title>P3: Instruction Following and Reasoning in Information Retrieval – Hamel’s Blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,63 +22,28 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../../">
-<link href="../../favicon.ico" rel="icon">
-<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../../site_libs/quarto-html/popper.min.js"></script>
-<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-748b535e376f14d4692bf2b2e5fd6380.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-473cd3fdae26158324e3fa026112ebdf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-5c21931d6ed7008fd1b1d77c416f53fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-748b535e376f14d4692bf2b2e5fd6380.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-473cd3fdae26158324e3fa026112ebdf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark-5c21931d6ed7008fd1b1d77c416f53fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -123,17 +90,21 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <!-- End Google Tag Manager -->
 
 
-<link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Batch Predictions – Hamel’s Blog">
-<meta property="og:description" content="A collection of blogs and talks on machine learning and data science.">
-<meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
+<link rel="stylesheet" href="../../../styles.css">
+<meta property="og:title" content="P3: Instruction Following and Reasoning in Information Retrieval – Hamel’s Blog">
+<meta property="og:description" content="Orion Weller from Johns Hopkins University on making retrieval systems understand complex instructions and reason about documents, featuring Promptriever and Rank1.">
+<meta property="og:image" content="https://hamel.dev/notes/llm/rag/p3-images/slide_64.png">
 <meta property="og:site_name" content="Hamel's Blog">
-<meta name="twitter:title" content="Batch Predictions – Hamel’s Blog">
-<meta name="twitter:description" content="A collection of blogs and talks on machine learning and data science.">
-<meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
+<meta property="og:image:height" content="2250">
+<meta property="og:image:width" content="4000">
+<meta name="twitter:title" content="P3: Instruction Following and Reasoning in Information Retrieval – Hamel’s Blog">
+<meta name="twitter:description" content="Orion Weller from Johns Hopkins University on making retrieval systems understand complex instructions and reason about documents, featuring Promptriever and Rank1.">
+<meta name="twitter:image" content="https://hamel.dev/notes/llm/rag/p3-images/slide_64.png">
 <meta name="twitter:creator" content="@HamelHusain">
 <meta name="twitter:site" content="@HamelHusain">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image-height" content="2250">
+<meta name="twitter:image-width" content="4000">
 </head>
 
 <body class="nav-sidebar docked nav-fixed quarto-dark"><script id="quarto-html-before-body" type="application/javascript">
@@ -312,11 +283,11 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <div class="navbar-container container-fluid">
           <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../index.html" target="_blank"> 
+    <a class="nav-link" href="../../../index.html" target="_blank"> 
 <span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="../../notes/index.html" target="_blank" aria-current="page"> 
+    <a class="nav-link active" href="../../../notes/index.html" target="_blank" aria-current="page"> 
 <span class="menu-text">Notes</span></a>
   </li>  
   <li class="nav-item">
@@ -324,11 +295,11 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <span class="menu-text">Hire Me</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../oss/opensource.html" target="_blank"> 
+    <a class="nav-link" href="../../../oss/opensource.html" target="_blank"> 
 <span class="menu-text">OSS</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../talks.html" target="_blank"> 
+    <a class="nav-link" href="../../../talks.html" target="_blank"> 
 <span class="menu-text">Teaching</span></a>
   </li>  
 </ul>
@@ -343,7 +314,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../notes/index.html">Notes</a></li><li class="breadcrumb-item"><a href="../../notes/fastai/index.html">fastai</a></li><li class="breadcrumb-item"><a href="../../notes/fastai/batch_predicitions.html">Batch Predictions</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/index.html">Notes</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/rag/index.html">RAG</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/rag/p3_reasoning_condensed.html">P3: Instruction Following and Reasoning in Information Retrieval</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -357,7 +328,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Notes</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -366,64 +337,64 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/concurrency.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/concurrency.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Python Concurrency</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/cuda.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/cuda.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">CUDA Version Management</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/how-to-learn/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/how-to-learn/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">How to learn</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/pandoc/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/pandoc/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">pandoc filters</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/docker/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/docker/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Docker</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/dbt/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/dbt/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">dbt</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/programming-languages/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/programming-languages/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">programming languages</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/video_editing.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/video_editing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Video Editing</span></a>
   </div>
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/llm/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">LLMs</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/llm/inference/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/inference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Inference</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -432,19 +403,19 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/inference/inference.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/inference/inference.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Optimizing latency</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/inference/max_engine.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/inference/max_engine.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Max Inference Engine</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/inference/big_inference.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/inference/big_inference.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">vLLM &amp; large models</span></a>
   </div>
 </li>
@@ -452,7 +423,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/llm/openai/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/openai/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">OpenAI</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -461,7 +432,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/openai/func_template.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/openai/func_template.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Function prompts</span></a>
   </div>
 </li>
@@ -469,7 +440,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/llm/evals/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/evals/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Evals</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -478,7 +449,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/evals/inspect.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/evals/inspect.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Inspect AI, An OSS Python Library For LLM Evals</span></a>
   </div>
 </li>
@@ -486,7 +457,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/llm/tools/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/tools/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Function Calling</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -495,7 +466,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/tools/llama3.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/tools/llama3.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Llama-3 Func Calling</span></a>
   </div>
 </li>
@@ -503,7 +474,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/llm/finetuning/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/finetuning/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Fine-tuning</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -512,37 +483,37 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/finetuning/datasets.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/datasets.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Dataset Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/finetuning/langchain_connectors.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/langchain_connectors.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">LangChain <code>DocumentLoaders</code></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/finetuning/estimating_vram.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/estimating_vram.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Estimating vRAM</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/finetuning/data_cleaning.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/data_cleaning.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Curating LLM data</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/finetuning/tokenizer_gotchas.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/tokenizer_gotchas.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Tokenization Gotchas</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/finetuning/template_free.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/finetuning/template_free.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Template-free axolotl</span></a>
   </div>
 </li>
@@ -550,28 +521,28 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/llm/rag/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/rag/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">RAG</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth3 ">  
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth3 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/rag/p1-intro.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/rag/p1-intro.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">P1: I don’t use RAG, I just retrieve documents</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/rag/p2-evals.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/rag/p2-evals.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">P2: Modern IR Evals For RAG</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/rag/p3_reasoning_condensed.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/rag/p3_reasoning_condensed.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">P3: Instruction Following and Reasoning in Information Retrieval</span></a>
   </div>
 </li>
@@ -579,7 +550,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/llm/officehours/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/llm/officehours/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Open Office Hours</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -588,25 +559,25 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/officehours/erroranalysis.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/officehours/erroranalysis.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Evals: Doing Error Analysis Before Writing Tests</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/officehours/evalmultiturn.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/officehours/evalmultiturn.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Multi-Turn Chat Evals</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/officehours/observability.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/officehours/observability.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Observability in LLM Applications</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/llm/officehours/scoping.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/llm/officehours/scoping.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Tame Complexity By Scoping LLM Evals</span></a>
   </div>
 </li>
@@ -616,7 +587,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/serving/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/serving/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">ML Serving</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -625,7 +596,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/serving/tfserving/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/serving/tfserving/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">TF Serving</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -634,13 +605,13 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/serving/tfserving/tf-serving-basics.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/serving/tfserving/tf-serving-basics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/serving/tfserving/gpu.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/serving/tfserving/gpu.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">GPUs &amp; Batching</span></a>
   </div>
 </li>
@@ -648,7 +619,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/serving/torchserve/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/serving/torchserve/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">TorchServe</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -657,13 +628,13 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/serving/torchserve/basic-torchserve.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/serving/torchserve/basic-torchserve.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/serving/torchserve/hf.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/serving/torchserve/hf.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Serving Your Own Model</span></a>
   </div>
 </li>
@@ -671,7 +642,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/serving/fastapi/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/serving/fastapi/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">FastAPI</span></a>
   </div>
 </li>
@@ -679,7 +650,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/k8s/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">K8s</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -688,19 +659,19 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/02-Basics.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/02-Basics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/03-Secrets.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/03-Secrets.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Secrets</span></a>
   </div>
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/k8s/storage/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/storage/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Storage</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -709,13 +680,13 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/storage/04-Basics.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/storage/04-Basics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Storage Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/storage/05-Dynamic Provisioning.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/storage/05-Dynamic Provisioning.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Dynamic Provisioning</span></a>
   </div>
 </li>
@@ -723,7 +694,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/k8s/scaling/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/scaling/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Scaling</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -732,13 +703,13 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/scaling/06-ReplicaSets.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/scaling/06-ReplicaSets.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">ReplicaSets</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/scaling/07- Scaling.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/scaling/07- Scaling.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Scaling</span></a>
   </div>
 </li>
@@ -746,25 +717,25 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/12-StatefulSet.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/12-StatefulSet.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">StatefulSet</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/13-JobsCron.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/13-JobsCron.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Jobs &amp; CronJobs</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/14-RolloutsRollbacks.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/14-RolloutsRollbacks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Rollouts</span></a>
   </div>
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/k8s/multi_container_pods/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/multi_container_pods/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Multi-Container Pods</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -773,25 +744,25 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/multi_container_pods/08-Multi-Container-Pods.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/multi_container_pods/08-Multi-Container-Pods.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Multi-Container Pods</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/multi_container_pods/09-Ambassador Sidecars.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/multi_container_pods/09-Ambassador Sidecars.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Ambassador Sidecars</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/multi_container_pods/10-Downsides of MC Pods.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/multi_container_pods/10-Downsides of MC Pods.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Restart Conditions</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/multi_container_pods/11-Sharing Processes in MC Pods.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/multi_container_pods/11-Sharing Processes in MC Pods.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Sharing Processes in MC Pods</span></a>
   </div>
 </li>
@@ -799,7 +770,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/k8s/helm/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/helm/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Helm</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -808,25 +779,25 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/helm/15-Helm.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/helm/15-Helm.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Helm Intro</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/helm/16-Creating Your Own Helm Charts.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/helm/16-Creating Your Own Helm Charts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Creating Helm Charts</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/helm/17-Helm Upgrade &amp; Rollbacks.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/helm/17-Helm Upgrade &amp; Rollbacks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Helm Upgrades &amp; Rollbacks</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/helm/21-Testing-With-Helm.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/helm/21-Testing-With-Helm.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Testing With Helm</span></a>
   </div>
 </li>
@@ -834,61 +805,61 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/18-Developer.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/18-Developer.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Developer tips</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/19-Pod-Lifecycle.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/19-Pod-Lifecycle.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Pod restart vs.&nbsp;replacement</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/20-Health-Check.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/20-Health-Check.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Probes</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/22-Resource-Limits.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/22-Resource-Limits.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Resource Limits</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/22a-Resource-Requests.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/22a-Resource-Requests.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Requesting resources</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/23-Logging.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/23-Logging.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Logging</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/24-monitoring.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/24-monitoring.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Monitoring</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/25-Ingress.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/25-Ingress.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Ingress</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/26-cluster.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/26-cluster.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Cluster Components</span></a>
   </div>
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/k8s/security/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/k8s/security/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Security</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -897,31 +868,31 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/security/26-network-security.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/security/26-network-security.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Network Security</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/security/27-container-security.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/security/27-container-security.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Securing Containers</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/security/28-workloads.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/security/28-workloads.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Webhooks</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/security/29-cluster-updates.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/security/29-cluster-updates.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Updating a K8s Cluster</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/security/30-rbac.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/security/30-rbac.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">RBAC</span></a>
   </div>
 </li>
@@ -929,31 +900,31 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/27-workload-placement.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/27-workload-placement.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Workload Placement</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/28-auto-scaling.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/28-auto-scaling.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Auto Scaling</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/29-preemption.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/29-preemption.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preemption</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/99-Random.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/99-Random.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Random TILs</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/k8s/Open Questions.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/k8s/Open Questions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Open Questions</span></a>
   </div>
 </li>
@@ -961,34 +932,34 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/fastai/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/fastai/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">fastai</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-19" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-19" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/fastai/fundamentals.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fastai/fundamentals.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Fundamentals</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/fastai/cv.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fastai/cv.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Image Classification</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/fastai/data.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fastai/data.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Data</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/fastai/batch_predicitions.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../../notes/fastai/batch_predicitions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Batch Predictions</span></a>
   </div>
 </li>
@@ -996,7 +967,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/linux/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/linux/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Linux</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-20" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -1005,31 +976,31 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-20" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/linux/bash_scripting.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/linux/bash_scripting.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Cheatsheet</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/linux/cookbook.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/linux/cookbook.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Cookbook</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/linux/misc_utils.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/linux/misc_utils.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Misc Utilities</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/linux/osx.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/linux/osx.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">OSX Shell Tips</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/linux/permprocdata.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/linux/permprocdata.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Processes, Permissions and Moving Data</span></a>
   </div>
 </li>
@@ -1037,7 +1008,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/actions/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/actions/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">GitHub Actions</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-21" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -1046,13 +1017,13 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-21" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/actions/ocotkit.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/actions/ocotkit.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">ocotokit.js</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/actions/resources.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/actions/resources.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Resources</span></a>
   </div>
 </li>
@@ -1060,7 +1031,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/prompt-eng/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/prompt-eng/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Prompt engineering</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-22" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -1069,7 +1040,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-22" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/prompt-eng/course/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/prompt-eng/course/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Course</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-23" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -1078,43 +1049,43 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-23" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/01_guidelines.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/01_guidelines.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Guidelines for Prompting</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/02_iterative.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/02_iterative.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Iterative Prompt Development</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/03_summarizing.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/03_summarizing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Summarizing</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/04_inferring.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/04_inferring.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Inferring</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/05_transforming.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/05_transforming.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Transforming</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/06_expanding.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/06_expanding.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Expanding</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/prompt-eng/course/07_chatbot.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/prompt-eng/course/07_chatbot.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">The Chat Format</span></a>
   </div>
 </li>
@@ -1124,7 +1095,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/web-scraping/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/web-scraping/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Web Scraping</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-24" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -1133,13 +1104,13 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-24" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/web-scraping/browser-to-python.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/web-scraping/browser-to-python.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Browser requests to code</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/web-scraping/transcribe-diarize.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/web-scraping/transcribe-diarize.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Transcribe &amp; Diarize Videos</span></a>
   </div>
 </li>
@@ -1147,7 +1118,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/fasthtml/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/fasthtml/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">FastHTML</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-25" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -1156,13 +1127,13 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-25" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/fasthtml/annotation-apps.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fasthtml/annotation-apps.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Building Annotation Apps with FastHTML</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/fasthtml/concurrency.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/fasthtml/concurrency.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Concurrency For Starlette Apps (e.g FastAPI / FastHTML)</span></a>
   </div>
 </li>
@@ -1170,7 +1141,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/quarto/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/quarto/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Quarto</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-26" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -1179,19 +1150,19 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-26" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/quarto/highlighting.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/quarto/highlighting.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Syntax Highlighting</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/quarto/listings-from-data.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/quarto/listings-from-data.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Listings from data</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/quarto/merging.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/quarto/merging.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Merge listings</span></a>
   </div>
 </li>
@@ -1199,7 +1170,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../notes/jupyter/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../../notes/jupyter/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Jupyter</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-27" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -1208,25 +1179,25 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-27" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/jupyter/Best Way To Launch Jupyter On A Remote Server.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/jupyter/Best Way To Launch Jupyter On A Remote Server.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Launch Jupyter on a remote server</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/jupyter/Fix Jupyter CUDA cache.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/jupyter/Fix Jupyter CUDA cache.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Fix Jupyter CUDA cache</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/jupyter/remote_browser.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/jupyter/remote_browser.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Remote Browser For Jupyter</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../notes/jupyter/shortcuts.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../notes/jupyter/shortcuts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">My Jupyter Shortcuts</span></a>
   </div>
 </li>
@@ -1243,10 +1214,12 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
-  <ul>
-  <li><a href="#how-to-make-batch-predictions-in-fastai" id="toc-how-to-make-batch-predictions-in-fastai" class="nav-link active" data-scroll-target="#how-to-make-batch-predictions-in-fastai">How to make batch predictions in fastai</a></li>
+  <ul class="collapse">
+  <li><a href="#annotated-presentation" id="toc-annotated-presentation" class="nav-link active" data-scroll-target="#annotated-presentation">Annotated Presentation</a></li>
+  <li><a href="#qa-session" id="toc-qa-session" class="nav-link" data-scroll-target="#qa-session">Q&amp;A Session</a></li>
+  <li><a href="#video" id="toc-video" class="nav-link" data-scroll-target="#video">Video</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/fastai/batch_predicitions.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/llm/rag/p3_reasoning_condensed.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     <div class="quarto-margin-footer"><div class="margin-footer-item">
 <p><br> <button onclick="window.location.href='https://hamel.ck.page/7d15a4b6e7'" style="background-color: #447099; color: white; padding: 12px 24px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; transition: background-color 0.3s ease;">Subscribe To My Newsletter</button></p>
 </div></div></div>
@@ -1258,16 +1231,27 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../notes/index.html">Notes</a></li><li class="breadcrumb-item"><a href="../../notes/fastai/index.html">fastai</a></li><li class="breadcrumb-item"><a href="../../notes/fastai/batch_predicitions.html">Batch Predictions</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/index.html">Notes</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/rag/index.html">RAG</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/rag/p3_reasoning_condensed.html">P3: Instruction Following and Reasoning in Information Retrieval</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Batch Predictions</h1>
+<h1 class="title">P3: Instruction Following and Reasoning in Information Retrieval</h1>
 </div>
 
+<div>
+  <div class="description">
+    Orion Weller from Johns Hopkins University on making retrieval systems understand complex instructions and reason about documents, featuring Promptriever and Rank1.
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
 
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 9, 2025</p>
+    </div>
+  </div>
   
     
   </div>
@@ -1277,47 +1261,260 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </header>
 
 
-<section id="how-to-make-batch-predictions-in-fastai" class="level1">
-<h1>How to make batch predictions in fastai</h1>
-<p>Making batch predictions on new data is not provided “out of the box” in fastai. This is how you can achieve that:</p>
-<p>Add this method to learner:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="at">@patch</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict_batch(<span class="va">self</span>:Learner, item, rm_type_tfms<span class="op">=</span><span class="va">None</span>, with_input<span class="op">=</span><span class="va">False</span>):</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    dl <span class="op">=</span> <span class="va">self</span>.dls.test_dl(item, rm_type_tfms<span class="op">=</span>rm_type_tfms, num_workers<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    inp,preds,_,dec_preds <span class="op">=</span> <span class="va">self</span>.get_preds(dl<span class="op">=</span>dl, with_input<span class="op">=</span><span class="va">True</span>, with_decoded<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    i <span class="op">=</span> <span class="bu">getattr</span>(<span class="va">self</span>.dls, <span class="st">'n_inp'</span>, <span class="op">-</span><span class="dv">1</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    inp <span class="op">=</span> (inp,) <span class="cf">if</span> i<span class="op">==</span><span class="dv">1</span> <span class="cf">else</span> tuplify(inp)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    dec_inp, nm <span class="op">=</span> <span class="bu">zip</span>(<span class="op">*</span><span class="va">self</span>.dls.decode_batch(inp <span class="op">+</span> tuplify(dec_preds)))</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> preds,nm,dec_preds</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> with_input: res <span class="op">=</span> (dec_inp,) <span class="op">+</span> res</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> res</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>You can then use this method like so:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> fastai.text.<span class="bu">all</span> <span class="im">import</span> <span class="op">*</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> predict_batch <span class="im">import</span> predict_batch <span class="co"># this file.  If you don't import just define in your script.</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> dls <span class="op">=</span> TextDataLoaders.from_folder(untar_data(URLs.IMDB), valid<span class="op">=</span><span class="st">'test'</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> learn <span class="op">=</span> text_classifier_learner(dls, AWD_LSTM, drop_mult<span class="op">=</span><span class="fl">0.5</span>, metrics<span class="op">=</span>accuracy)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> learn.fine_tune(<span class="dv">4</span>, <span class="fl">1e-2</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> learn.predict_batch([<span class="st">"hello world"</span>]<span class="op">*</span><span class="dv">4</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>(TensorText([[<span class="fl">0.0029</span>, <span class="fl">0.9971</span>],</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>         [<span class="fl">0.0029</span>, <span class="fl">0.9971</span>],</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>         [<span class="fl">0.0029</span>, <span class="fl">0.9971</span>],</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>         [<span class="fl">0.0029</span>, <span class="fl">0.9971</span>]]),</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a> (<span class="st">'pos'</span>, <span class="st">'pos'</span>, <span class="st">'pos'</span>, <span class="st">'pos'</span>),</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a> TensorText([<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Alternatively, you can just patch the predict function so it works on batches:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="at">@patch</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict(<span class="va">self</span>:Learner, item, rm_type_tfms<span class="op">=</span><span class="va">None</span>, with_input<span class="op">=</span><span class="va">False</span>):</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    dl <span class="op">=</span> <span class="va">self</span>.dls.test_dl(item, rm_type_tfms<span class="op">=</span>rm_type_tfms, num_workers<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    inp,preds,_,dec_preds <span class="op">=</span> <span class="va">self</span>.get_preds(dl<span class="op">=</span>dl, with_input<span class="op">=</span><span class="va">True</span>, with_decoded<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    i <span class="op">=</span> <span class="bu">getattr</span>(<span class="va">self</span>.dls, <span class="st">'n_inp'</span>, <span class="op">-</span><span class="dv">1</span>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    inp <span class="op">=</span> (inp,) <span class="cf">if</span> i<span class="op">==</span><span class="dv">1</span> <span class="cf">else</span> tuplify(inp)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    dec <span class="op">=</span> <span class="va">self</span>.dls.decode_batch(inp <span class="op">+</span> tuplify(dec_preds))</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    dec_inp,dec_targ <span class="op">=</span> (<span class="bu">tuple</span>(<span class="bu">map</span>(detuplify, d)) <span class="cf">for</span> d <span class="kw">in</span> <span class="bu">zip</span>(<span class="op">*</span>dec.<span class="bu">map</span>(<span class="kw">lambda</span> x: (x[:i], x[i:]))))</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> dec_targ,dec_preds,preds</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> with_input: res <span class="op">=</span> (dec_inp,) <span class="op">+</span> res</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> res</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Other notes h/t zach:</p>
-<p><code>learn.dls.vocab</code> or <code>learn.dls.categorize.vocab</code> is another way to get the class names.</p>
+<p>As part of our <a href="https://bit.ly/evals-ai" target="_blank">LLM Evals course</a>, I hosted <a href="https://orionweller.github.io/" target="_blank">Orion Weller</a> from Johns Hopkins University for our 5-part mini-series on evaluating and optimizing RAG. Orion’s research focuses on embedding the instruction-following and reasoning capabilities of modern Large Language Models (LLMs) directly into the retrieval process.</p>
+<p>In his talk, Orion argues that while LLMs have improved RAG, the core retrieval step has remained static. He introduces an approach where instruction-following and reasoning are baked directly into retrieval models, a shift from using LLMs for query rewriting or as generic rerankers.</p>
+<p>His approach is showcased with two models:</p>
+<ul>
+<li><p><strong>Promptriever (bi-encoder):</strong> Creates “instruction-aware” embeddings by training on a novel dataset containing <strong>instruction negatives</strong>. These are examples where a document is relevant to a query but <em>not</em> to its specific instruction (e.g., “find a document using a metaphor”). This forces the model to encode abstract instructions directly into the query embedding, allowing it to surface documents from a massive corpus that a standard retriever would miss.</p></li>
+<li><p><strong>Rank1 (reranker):</strong> A smaller model fine-tuned by distilling the reasoning traces of a larger model. Orion shows that this approach allows it to uncover novel relevant documents invisible to previous systems.</p></li>
+</ul>
+<p>Below is an annotated version of his presentation with timestamped links.</p>
+<div class="cta" style="text-align: center;">
+<p><strong>👉 <em>We are teaching our last and final cohort of our <a href="https://bit.ly/evals-ai">AI Evals course</a> next month</em></strong><em> (we have to get back to building). Here is a <a href="https://bit.ly/evals-ai">35% discount code</a> for readers of this post.</em> 👈</p>
+</div>
+<hr>
+<section id="annotated-presentation" class="level2">
+<h2 class="anchored" data-anchor-id="annotated-presentation">Annotated Presentation</h2>
+<section id="the-premise-search-hasnt-caught-up-to-llms" class="level3">
+<h3 class="anchored" data-anchor-id="the-premise-search-hasnt-caught-up-to-llms">The Premise: Search Hasn’t Caught Up to LLMs</h3>
+<p><img src="p3-images/slide_2.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=7s" target="_blank">Timestamp: 00:00:07</a>)</em></p>
+<p>Modern LLMs like ChatGPT are powerful because of two key capabilities: <strong>instruction following</strong> (executing complex commands) and <strong>reasoning</strong> (generating a step-by-step “chain of thought”). While now taken for granted, these were recent breakthroughs. The central question is how to bring these features from text generation into Information Retrieval (IR).</p>
+<p><img src="p3-images/slide_5.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=101s" target="_blank">Timestamp: 00:01:41</a>)</em></p>
+<p>While user interfaces have improved, the core retrieval process has remained surprisingly static.</p>
+<p><img src="p3-images/slide_8.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=118s" target="_blank">Timestamp: 00:01:58</a>)</em></p>
+<p>Despite decades of development, the fundamental user interaction for search hasn’t changed much: you type keywords and get a list of links. Even in advanced “SearchGPT” style systems, the LLM often acts as a sophisticated wrapper. These systems typically send the user’s query to a traditional search engine, retrieve a list of documents, and then use the LLM to generate a summary. The retrieval step itself hasn’t gained the instruction-following or reasoning capabilities of the LLM.</p>
+<p><img src="p3-images/slide_11.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=166s" target="_blank">Timestamp: 00:02:46</a>)</em></p>
+</section>
+<section id="the-path-forward-from-keywords-to-instructions" class="level3">
+<h3 class="anchored" data-anchor-id="the-path-forward-from-keywords-to-instructions">The Path Forward: From Keywords to Instructions</h3>
+<p>The limitations of current systems are evident in the evolution of search.</p>
+<p><img src="p3-images/slide_10.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=199s" target="_blank">Timestamp: 00:03:19</a>)</em></p>
+<p><strong>Keyword Search</strong>, the dominant paradigm for years, relies on exact lexical matching and is brittle. A search for “data privacy” would miss a relevant document titled “Digital Protection” because it can’t connect the synonyms.</p>
+<p><img src="p3-images/slide_12.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=251s" target="_blank">Timestamp: 00:04:11</a>)</em></p>
+<p><strong>Semantic Search</strong> improves on this by matching based on meaning, correctly retrieving all topically relevant documents. While this is the state-of-the-art for most systems, it still falls short of true instruction following.</p>
+<p><img src="p3-images/slide_13.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=278s" target="_blank">Timestamp: 00:04:38</a>)</em></p>
+<p>The next frontier is <strong>Instruction-based Search</strong>. Here, the query is a nuanced command. For example, a user wants documents about data privacy that also “use extended metaphors.” This requires reasoning about the <em>style</em> of a document, not just its topic.</p>
+<p>This problem cannot be solved by reranking top results from a standard semantic search. The metaphorical document might have a low semantic score (because its language is abstract) and therefore might not even appear in the initial set of documents to be reranked. The instruction must influence the <strong>initial retrieval</strong> to change which documents are considered relevant in the first place.</p>
+<p><img src="p3-images/slide_15.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=362s" target="_blank">Timestamp: 00:06:02</a>)</em></p>
+<p>Taking the idea further, <strong>Prompt and Reasoning-based Search</strong> allows for instructions about the retriever’s <em>behavior</em>. A query like “Have really high recall” should cause the model to adjust its retrieval strategy (e.g., lower its relevance threshold), not search for the word “recall.” The core idea is simple: since our retrievers are built on LLMs, we should be able to prompt them just as we prompt language models.</p>
+</section>
+<section id="the-solution-promptriever-and-rank1" class="level3">
+<h3 class="anchored" data-anchor-id="the-solution-promptriever-and-rank1">The Solution: Promptriever and Rank1</h3>
+<p><img src="p3-images/slide_16.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=402s" target="_blank">Timestamp: 00:06:42</a>)</em></p>
+<p>An “instruction” in IR can include document attributes (date, length), NLU aspects (sentiment, style), or logical conditions.</p>
+</section>
+<section id="the-core-goal-use-retrievers-like-llms" class="level3">
+<h3 class="anchored" data-anchor-id="the-core-goal-use-retrievers-like-llms">The Core Goal: Use Retrievers Like LLMs</h3>
+<p><img src="p3-images/slide_17.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=451s" target="_blank">Timestamp: 00:07:31</a>)</em></p>
+<p>The core idea is to treat retrievers like LLMs. Since they are built on the same underlying technology, we should be able to prompt them to unlock their full instruction-following and reasoning capabilities.</p>
+</section>
+<section id="introducing-promptriever-and-rank1" class="level3">
+<h3 class="anchored" data-anchor-id="introducing-promptriever-and-rank1">Introducing Promptriever and Rank1</h3>
+<p><img src="p3-images/slide_18.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=465s" target="_blank">Timestamp: 00:07:45</a>)</em></p>
+<p>To explore this, Orion introduces two models:</p>
+<ol type="1">
+<li><strong>Promptriever:</strong> A fast embedder for quick, instruction-aware retrieval.</li>
+<li><strong>Rank1:</strong> A slower but more powerful reranker that uses reasoning.</li>
+</ol>
+</section>
+<section id="promptriever-instruction-trained-retrievers" class="level3">
+<h3 class="anchored" data-anchor-id="promptriever-instruction-trained-retrievers">Promptriever: Instruction-Trained Retrievers</h3>
+<p><img src="p3-images/slide_20.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=497s" target="_blank">Timestamp: 00:08:17</a>)</em></p>
+<p>Promptriever is a <strong>bi-encoder</strong>, which is fast and scalable because it processes the query and documents separately to create embeddings for comparison. The key challenge was teaching this efficient architecture to follow complex instructions.</p>
+<p><img src="p3-images/slide_22.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=550s" target="_blank">Timestamp: 00:09:10</a>)</em></p>
+<p>The solution was <strong>training data</strong>. Existing retrieval datasets lack instructions because users don’t type commands into search engines. To solve this, a new dataset was synthetically generated.</p>
+<p><img src="p3-images/slide_25.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=607s" target="_blank">Timestamp: 00:10:07</a>)</em></p>
+<p>The team used a powerful LLM to <strong>synthetically generate an instruction</strong> that logically connects an existing query and a relevant document. This process creates the necessary data to teach a retriever to follow instructions.</p>
+</section>
+<section id="promptriever-experimental-settings" class="level3">
+<h3 class="anchored" data-anchor-id="promptriever-experimental-settings">Promptriever: Experimental Settings</h3>
+<p><img src="p3-images/slide_26.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=634s" target="_blank">Timestamp: 00:10:34</a>)</em></p>
+<p>To ensure a fair comparison, experiments started with the <strong>RepLLaMA</strong> training recipe, evaluating on in-domain data, out-of-domain data, and new instruction-based datasets.</p>
+</section>
+<section id="evaluation-data" class="level3">
+<h3 class="anchored" data-anchor-id="evaluation-data">Evaluation Data</h3>
+<p><img src="p3-images/slide_28.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=682s" target="_blank">Timestamp: 00:11:22</a>)</em></p>
+<p>The <strong>FollowIR</strong> dataset tests if a model can update its search based on a revised instruction. Before this work, no embedding model had scored above zero on this benchmark.</p>
+<p><img src="p3-images/slide_29.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=733s" target="_blank">Timestamp: 00:12:13</a>)</em></p>
+<p>The <strong>InstructIR</strong> dataset simulates varied user needs by applying different “personas” (e.g., a professional vs.&nbsp;a student) to each query.</p>
+</section>
+<section id="instruction-following-results" class="level3">
+<h3 class="anchored" data-anchor-id="instruction-following-results">Instruction Following Results</h3>
+<p><img src="p3-images/slide_32.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=755s" target="_blank">Timestamp: 00:12:35</a>)</em></p>
+<p>On the FollowIR benchmark, the baseline RepLLaMA scores negatively. In contrast, <strong>Promptriever achieves a positive score</strong>, demonstrating for the first time that an embedding model can follow instructions.</p>
+<p><img src="p3-images/slide_33.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=771s" target="_blank">Timestamp: 00:12:51</a>)</em></p>
+<p>The results on InstructIR are even more dramatic, with Promptriever significantly outperforming the baseline.</p>
+</section>
+<section id="results-on-data-without-instructions" class="level3">
+<h3 class="anchored" data-anchor-id="results-on-data-without-instructions">Results on Data without Instructions</h3>
+<p><img src="p3-images/slide_35.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=782s" target="_blank">Timestamp: 00:13:02</a>)</em></p>
+<p>What happens when you evaluate on standard data with no set instruction? You can either use no prompt (the standard way) or try to use a generic, “one-size-fits-all” prompt. They came up with 10 generic prompts (e.g., “Be careful when assigning relevance…”) and used the best-performing one from the development set.</p>
+<p><img src="p3-images/slide_36.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=838s" target="_blank">Timestamp: 00:13:58</a>)</em></p>
+<p>On the BEIR out-of-domain benchmark with <strong>no prompt</strong>, Promptriever and RepLLaMA perform about the same, showing that instruction-following capabilities don’t hurt standard performance.</p>
+<p><img src="p3-images/slide_37.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=851s" target="_blank">Timestamp: 00:14:11</a>)</em></p>
+<p>Furthermore, when a generic instruction (e.g., “Find the most relevant document”) is added to a query on a standard benchmark, Promptriever’s performance significantly improves, while the baseline model’s performance degrades. As the paper explains, this enables a form of <strong>zero-shot hyperparameter optimization via prompting</strong>, where you can tune the retriever’s behavior with natural language instead of numerical settings.</p>
+</section>
+<section id="prompt-robustness-and-understanding-semantic-meaning" class="level3">
+<h3 class="anchored" data-anchor-id="prompt-robustness-and-understanding-semantic-meaning">Prompt Robustness and Understanding Semantic Meaning</h3>
+<p><img src="p3-images/slide_39.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=892s" target="_blank">Timestamp: 00:14:52</a>)</em></p>
+<p>Promptriever shows much smaller variance in performance across paraphrased prompts than keyword-based models. This indicates it understands the core semantic meaning of an instruction, not just the keywords.</p>
+</section>
+<section id="promptriever-summary" class="level3">
+<h3 class="anchored" data-anchor-id="promptriever-summary">Promptriever Summary</h3>
+<p><img src="p3-images/slide_40.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=916s" target="_blank">Timestamp: 00:15:16</a>)</em></p>
+<p>In summary, Promptriever shows that with the right training data, retrievers can be made promptable like LLMs, unlocking new types of queries and allowing users to state what they want in natural language.</p>
+</section>
+<section id="introducing-rank1-test-time-compute-for-ir" class="level3">
+<h3 class="anchored" data-anchor-id="introducing-rank1-test-time-compute-for-ir">Introducing Rank1: Test-Time Compute for IR</h3>
+<p><img src="p3-images/slide_42.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=964s" target="_blank">Timestamp: 00:16:04</a>)</em></p>
+<p>The talk now shifts to the second model, <strong>Rank1</strong>, a strong but slower reranker that uses reasoning.</p>
+<p><img src="p3-images/slide_43.png" class="img-fluid"></p>
+<p>The title slide for the Rank1 paper, highlighting its focus on Test-Time Compute for Information Retrieval.</p>
+<p><img src="p3-images/slide_44.png" class="img-fluid"></p>
+<p>This slide frames Rank1 as a Cross-Encoder, which processes the query and document jointly.</p>
+</section>
+<section id="test-time-compute-explained" class="level3">
+<h3 class="anchored" data-anchor-id="test-time-compute-explained">Test-Time Compute Explained</h3>
+<p><img src="p3-images/slide_45.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=981s" target="_blank">Timestamp: 00:16:21</a>)</em></p>
+<p><strong>Test-time compute</strong> is the idea that spending more computational resources at inference time can improve performance. The chart on the right shows that as the amount of “thinking” increases, model accuracy on a difficult math benchmark rises dramatically.</p>
+</section>
+<section id="what-test-time-compute-looks-like-in-ir" class="level3">
+<h3 class="anchored" data-anchor-id="what-test-time-compute-looks-like-in-ir">What Test-Time Compute Looks Like in IR</h3>
+<p><img src="p3-images/slide_46.png" class="img-fluid"></p>
+<p>This slide poses the question of how this “thinking” process applies to IR.</p>
+<p><img src="p3-images/slide_47.png" class="img-fluid"></p>
+<p>Here is a basic IR task: a query and a document.</p>
+<p><img src="p3-images/slide_48.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=1037s" target="_blank">Timestamp: 00:17:17</a>)</em></p>
+<p>This slide shows Rank1’s “thinking” process. Instead of just outputting “true” or “false,” the model generates a detailed reasoning chain, analyzing the query, the passage, and even questioning its own interpretations to arrive at a more nuanced judgment.</p>
+</section>
+<section id="evaluation-data-for-rank1" class="level3">
+<h3 class="anchored" data-anchor-id="evaluation-data-for-rank1">Evaluation Data for Rank1</h3>
+<p><img src="p3-images/slide_49.png" class="img-fluid"></p>
+<p>This slide transitions to the evaluation data for Rank1.</p>
+<p><img src="p3-images/slide_50.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=1086s" target="_blank">Timestamp: 00:18:06</a>)</em></p>
+<p>The <strong>BRIGHT dataset</strong> evaluates complex reasoning, with unique relevance definitions that go beyond topic matching (e.g., finding a math problem that <strong>uses the same theorem</strong>).</p>
+<p><img src="p3-images/slide_51.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=1132s" target="_blank">Timestamp: 00:18:52</a>)</em></p>
+<p>This example shows the model’s reasoning on a LeetCode problem. It correctly identifies that two different problems use the same underlying <strong>two-pointer approach</strong>, demonstrating a deep, algorithmic understanding.</p>
+</section>
+<section id="rank1-results" class="level3">
+<h3 class="anchored" data-anchor-id="rank1-results">Rank1 Results</h3>
+<p><img src="p3-images/slide_52.png" class="img-fluid"></p>
+<p>This slide marks the beginning of the Rank1 results.</p>
+<p><img src="p3-images/slide_53.png" class="img-fluid"></p>
+<p>The experiments evaluate Rank1 against a strong baseline (RankLLaMA) on a broad range of tasks: reasoning (BRIGHT), negation understanding (NevIR), and instruction following (mFollowIR). Orion notes that the baseline model was trained on <strong>10x more data</strong>.</p>
+<p><img src="p3-images/slide_54.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=1195s" target="_blank">Timestamp: 00:19:55</a>)</em></p>
+<p>On the BRIGHT reasoning task, Rank1 nearly doubles the performance of the baseline, achieving a score of 27.5 compared to 13.9.</p>
+<p><img src="p3-images/slide_55.png" class="img-fluid"></p>
+<p>The trend continues. On the NevIR negation benchmark, Rank1 more than doubles the baseline’s accuracy.</p>
+<p><img src="p3-images/slide_56.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=1205s" target="_blank">Timestamp: 00:20:05</a>)</em></p>
+<p>Across all three difficult tasks—reasoning, negation, and instruction following—Rank1 consistently and dramatically outperforms the baseline, even with significantly less training data.</p>
+</section>
+<section id="the-impact-of-the-reasoning-chain" class="level3">
+<h3 class="anchored" data-anchor-id="the-impact-of-the-reasoning-chain">The Impact of the Reasoning Chain</h3>
+<p><img src="p3-images/slide_58.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=1224s" target="_blank">Timestamp: 00:20:24</a>)</em></p>
+<p>A key takeaway: an ablation study shows that training the model to generate the explicit reasoning chain achieves a <strong>10-point gain</strong> in performance. The act of generating the reasoning chain is itself a powerful mechanism for improving the model’s capabilities.</p>
+</section>
+<section id="the-impact-on-old-evaluation-data" class="level3">
+<h3 class="anchored" data-anchor-id="the-impact-on-old-evaluation-data">The Impact on Old Evaluation Data</h3>
+<p><img src="p3-images/slide_59.png" class="img-fluid"></p>
+<p>This slide introduces a story about evaluating on older, established benchmarks.</p>
+<p><img src="p3-images/slide_60.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=1244s" target="_blank">Timestamp: 00:20:44</a>)</em></p>
+<p>When initially evaluated on the DL19 dataset (created in 2019, before BERT), Rank1 scored surprisingly low compared to other models. The team discovered this was because the metric only considered documents that had been previously judged by humans.</p>
+<p><img src="p3-images/slide_61.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=1298s" target="_blank">Timestamp: 00:21:38</a>)</em></p>
+<p>When evaluated on the old DL19 dataset, Rank1 initially scored low because the metric only considered previously judged documents. After re-judging the new documents retrieved by Rank1, its score surpassed other models. <strong>Rank1 was finding new, relevant documents that older systems had completely missed,</strong> offering a “fresh perspective.”</p>
+</section>
+<section id="rank1-summary" class="level3">
+<h3 class="anchored" data-anchor-id="rank1-summary">Rank1 Summary</h3>
+<p><img src="p3-images/slide_62.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=1326s" target="_blank">Timestamp: 00:22:06</a>)</em></p>
+<p>In summary, Rank1 demonstrates that test-time compute (reasoning chains) creates powerful rerankers without needing complex Reinforcement Learning. While slower, these models are much more powerful, and fine-tuning on in-domain data could lead to huge gains.</p>
+</section>
+<section id="conclusion-the-future-of-retrieval-models" class="level3">
+<h3 class="anchored" data-anchor-id="conclusion-the-future-of-retrieval-models">Conclusion: The Future of Retrieval Models</h3>
+<p><img src="p3-images/slide_64.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=1357s" target="_blank">Timestamp: 00:22:37</a>)</em></p>
+<p>The ultimate goal is to create Information Retrieval systems that work just like LLMs, understanding complex queries that include instructions about style, constraints, and user intent.</p>
+</section>
+<section id="what-this-means-for-developers" class="level3">
+<h3 class="anchored" data-anchor-id="what-this-means-for-developers">What This Means for Developers</h3>
+<p><img src="p3-images/slide_65.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=1376s" target="_blank">Timestamp: 00:22:56</a>)</em></p>
+<p>For practitioners, this means new retrievers can directly benefit from LLM advances, and instruction-based search unlocks new, more powerful query types. All models discussed are open-data and open-source.</p>
+<hr>
+</section>
+</section>
+<section id="qa-session" class="level2">
+<h2 class="anchored" data-anchor-id="qa-session">Q&amp;A Session</h2>
+<ul>
+<li><strong>How is Promptriever operationalized for queries vs.&nbsp;documents?</strong>
+<ul>
+<li><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=1425s">Timestamp: 23:45</a>)</em> The instruction is only applied to the query at inference time. The documents are pre-processed into embeddings without any instruction. This way, you can batch-process your entire corpus once, and then at query time, you append the user’s instruction to their query to generate a single, instruction-aware query embedding for the search.</li>
+</ul></li>
+<li><strong>Can this instruction-based approach be used for cross-encoders (rerankers) too?</strong>
+<ul>
+<li><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=1564s">Timestamp: 26:04</a>)</em> Yes, absolutely. Orion mentions they have other work that explores this, and the concepts are applicable to rerankers as well. The <a href="https://arxiv.org/abs/2403.15246">paper for the FollowIR benchmark</a>, for example, includes work on instruction-based rerankers.</li>
+</ul></li>
+<li><strong>Who provides the meta-instructions for search? Humans or LLMs?</strong>
+<ul>
+<li><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=1592s">Timestamp: 26:32</a>)</em> Both are possible and interesting. For a “deep research” system, an LLM agent could generate precise, detailed instructions to guide the retrieval process. For end-user applications, a “power user” could type in these complex instructions directly to get more fine-grained control over their search results.</li>
+</ul></li>
+<li><strong>How does Rank1 compare to frontier reasoning models like OpenAI’s?</strong>
+<ul>
+<li><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=1684s">Timestamp: 28:04</a>)</em> There is still a performance gap. On some benchmarks, a model like OpenAI’s <code>o3</code> might score around 75, while the 7B parameter Rank1 model scores around 69. However, Rank1 is significantly smaller (7B vs.&nbsp;a much larger frontier model), faster, and fully open-source, making it ideal for applications with private data or where cost and latency are concerns.</li>
+</ul></li>
+<li><strong>How easy is it to train Rank1 on a custom dataset?</strong>
+<ul>
+<li><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=1830s">Timestamp: 30:30</a>)</em> It’s surprisingly easy. The training process uses a standard supervised fine-tuning approach (predict-the-next-token loss) on reasoning traces. The <a href="https://arxiv.org/abs/2502.18418">Rank1 paper</a> notes that the model generalizes remarkably well even without in-domain training, but fine-tuning on a specific dataset is straightforward and would likely lead to large performance gains.</li>
+</ul></li>
+<li><strong>Why does supervised fine-tuning (SFT) work for a reasoning model instead of reinforcement learning (RL)?</strong>
+<ul>
+<li><em>(<a href="https://youtu.be/YB3b-wPbSH8?t=1892s">Timestamp: 31:32</a>)</em> The model learns to reason effectively through <strong>distillation</strong>, a process where it is trained on the reasoning chains generated by a more powerful model (in this case, Deepseek’s R1). By learning to mimic the step-by-step “thought process” of the stronger model, it acquires reasoning abilities using a simple and stable supervised fine-tuning objective. This is so effective that it removes the need for more complex RL techniques. Orion speculates this is why major companies have stopped exposing the full reasoning chains of their models, since they are incredibly valuable as training data.</li>
+</ul></li>
+</ul>
+<hr>
+<div class="cta" style="text-align: center;">
+<p><strong>👉 <em>We are teaching our last and final cohort of our <a href="https://bit.ly/evals-ai">AI Evals course</a> next month</em></strong><em> (we have to get back to building). Here is a <a href="https://bit.ly/evals-ai">35% discount code</a> for readers of this post.</em> 👈</p>
+</div>
+<hr>
+</section>
+<section id="video" class="level2">
+<h2 class="anchored" data-anchor-id="video">Video</h2>
+<p>Here is the full video:</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/YB3b-wPbSH8" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
 
 
 </section>
@@ -1762,7 +1959,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
     </a>
   </li>  
 </ul>
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/fastai/batch_predicitions.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/llm/rag/p3_reasoning_condensed.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
