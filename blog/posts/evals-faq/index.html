@@ -347,6 +347,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   <li><a href="#q-are-similarity-metrics-bertscore-rouge-etc.-useful-for-evaluating-llm-outputs" id="toc-q-are-similarity-metrics-bertscore-rouge-etc.-useful-for-evaluating-llm-outputs" class="nav-link" data-scroll-target="#q-are-similarity-metrics-bertscore-rouge-etc.-useful-for-evaluating-llm-outputs">Q: Are similarity metrics (BERTScore, ROUGE, etc.) useful for evaluating LLM outputs?</a></li>
   <li><a href="#q-should-i-use-ready-to-use-evaluation-metrics" id="toc-q-should-i-use-ready-to-use-evaluation-metrics" class="nav-link" data-scroll-target="#q-should-i-use-ready-to-use-evaluation-metrics">Q: Should I use “ready-to-use” evaluation metrics?</a></li>
   <li><a href="#q-how-can-i-efficiently-sample-production-traces-for-review" id="toc-q-how-can-i-efficiently-sample-production-traces-for-review" class="nav-link" data-scroll-target="#q-how-can-i-efficiently-sample-production-traces-for-review">Q: How can I efficiently sample production traces for review?</a></li>
+  <li><a href="#q-should-i-stop-writing-prompts-manually-in-favor-of-automated-tools" id="toc-q-should-i-stop-writing-prompts-manually-in-favor-of-automated-tools" class="nav-link" data-scroll-target="#q-should-i-stop-writing-prompts-manually-in-favor-of-automated-tools">Q: Should I stop writing prompts manually in favor of automated tools?</a></li>
   </ul>
 <div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/blog/posts/evals-faq/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     <div class="quarto-margin-footer"><div class="margin-footer-item">
@@ -711,8 +712,9 @@ Subscribe To My Newsletter
 </ul>
 <p>As you get more sophisticated with how you sample, you can incorporate these tactics into the design of your <a href="#q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs">annotation tools</a>.</p>
 <p>Here is a FAQ you have drafted for me. Can you look into objections I might get about this?</p>
-<section id="q-should-i-stop-writing-prompts-manually-in-favor-of-automated-tools" class="level3">
-<h3 class="anchored" data-anchor-id="q-should-i-stop-writing-prompts-manually-in-favor-of-automated-tools">Q: Should I stop writing prompts manually in favor of automated tools?</h3>
+</section>
+<section id="q-should-i-stop-writing-prompts-manually-in-favor-of-automated-tools" class="level2">
+<h2 class="anchored" data-anchor-id="q-should-i-stop-writing-prompts-manually-in-favor-of-automated-tools">Q: Should I stop writing prompts manually in favor of automated tools?</h2>
 <p>Automating prompt engineering can be tempting, but you should be skeptical of tools that promise to optimize prompts for you, especially in early stages of development. When you write a prompt, you are forced to clarify your assumptions and externalize your requirements. Good writing is good thinking <a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. If you delegate this task to an automated tool too early, you risk never fully understanding your own requirements or the model’s failure modes.</p>
 <p>This is because automated prompt optimization typically hill-climb a predefined evaluation metric. It can refine a prompt to perform better on known failures, but it cannot discover <em>new</em> ones. Discovering new errors requires <a href="#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed">error analysis</a>. Furthermore, research shows that evaluation criteria tends to shift after reviewing a model’s outputs, a phenomenon known as “criteria drift” <a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>. This means that evaluation is an iterative, human-driven sensemaking process, not a static target that can be set once and handed off to an optimizer.</p>
 <p>A pragmatic approach is to use LLMs to improve your prompt based on <a href="#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed">open coding</a> (open-ended notes about traces). This way, you maintain a human in the loop who is looking at the data and externalizing their requirements. Once you have a high-quality set of evals, prompt optimization can be effective for that last mile of performance.</p>
@@ -722,7 +724,6 @@ Subscribe To My Newsletter
 </div>
 
 
-</section>
 </section>
 
 
