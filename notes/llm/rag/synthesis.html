@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2025-07-12">
+<meta name="description" content="Why the future of RAG lies in better retrieval, not bigger context windows.">
 
-<title>untitled – Hamel's Blog</title>
+<title>RAG Optimization: Better Retrieval, Not Bigger Context – Hamel’s Blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -38,12 +40,10 @@ ul.task-list li input[type="checkbox"] {
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
 <link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap-e52038516e5d9cb106fef1ea778482b9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../../site_libs/bootstrap/bootstrap-dark-17ac83da12a7ce2544d04aaa4cd7dde0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="../../../site_libs/bootstrap/bootstrap-e52038516e5d9cb106fef1ea778482b9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-473cd3fdae26158324e3fa026112ebdf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark-5c21931d6ed7008fd1b1d77c416f53fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -90,19 +90,24 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <!-- End Google Tag Manager -->
 
 
-<meta property="og:title" content="Hamel’s Blog">
-<meta property="og:description" content="A collection of blogs and talks on machine learning and data science.">
-<meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
+<link rel="stylesheet" href="../../../styles.css">
+<meta property="og:title" content="RAG Optimization: Better Retrieval, Not Bigger Context – Hamel’s Blog">
+<meta property="og:description" content="Why the future of RAG lies in better retrieval, not bigger context windows.">
+<meta property="og:image" content="https://hamel.dev/notes/llm/rag/p3-images/slide_97.png">
 <meta property="og:site_name" content="Hamel's Blog">
-<meta name="twitter:title" content="Hamel’s Blog">
-<meta name="twitter:description" content="A collection of blogs and talks on machine learning and data science.">
-<meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
+<meta property="og:image:height" content="2250">
+<meta property="og:image:width" content="4000">
+<meta name="twitter:title" content="RAG Optimization: Better Retrieval, Not Bigger Context – Hamel’s Blog">
+<meta name="twitter:description" content="Why the future of RAG lies in better retrieval, not bigger context windows.">
+<meta name="twitter:image" content="https://hamel.dev/notes/llm/rag/p3-images/slide_97.png">
 <meta name="twitter:creator" content="@HamelHusain">
 <meta name="twitter:site" content="@HamelHusain">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image-height" content="2250">
+<meta name="twitter:image-width" content="4000">
 </head>
 
-<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+<body class="nav-sidebar docked nav-fixed quarto-dark"><script id="quarto-html-before-body" type="application/javascript">
     const toggleBodyColorMode = (bsSheetEl) => {
       const mode = bsSheetEl.getAttribute("data-mode");
       const bodyEl = window.document.querySelector("body");
@@ -244,11 +249,9 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
         changeGiscusTheme();
       }
     };
-    const authorPrefersDark = false;
+    const authorPrefersDark = true;
     const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
     const darkModeDefault = queryPrefersDark.matches;
-      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
-      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
     let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
     // Dark / light mode switch
     window.quartoToggleColorScheme = () => {
@@ -281,19 +284,19 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <div class="navbar-container container-fluid">
           <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../../index.html"> 
+    <a class="nav-link" href="../../../index.html" target="_blank"> 
 <span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="../../../notes/index.html" aria-current="page"> 
+    <a class="nav-link active" href="../../../notes/index.html" target="_blank" aria-current="page"> 
 <span class="menu-text">Notes</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="https://parlance-labs.com/"> 
+    <a class="nav-link" href="https://parlance-labs.com/" target="_blank"> 
 <span class="menu-text">Hire Me</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../../oss/opensource.html"> 
+    <a class="nav-link" href="../../../oss/opensource.html" target="_blank"> 
 <span class="menu-text">OSS</span></a>
   </li>  
   <li class="nav-item">
@@ -312,7 +315,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/index.html">Notes</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/rag/index.html">RAG</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/rag/Untitled.html">Untitled</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/index.html">Notes</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/rag/index.html">RAG</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/rag/synthesis.html">RAG Optimization: Better Retrieval, Not Bigger Context</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -534,8 +537,32 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../notes/llm/rag/Untitled.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Untitled</span></a>
+  <a href="../../../notes/llm/rag/p2-evals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">P2: Modern IR Evals For RAG</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/rag/p3_reasoning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">P3: Optimizing Retrieval with Reasoning Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/rag/p4_late_interaction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">P4: Late Interaction Models For RAG</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/rag/p5_map.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">P5: RAG with Multiple Representations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/rag/synthesis.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">RAG Optimization: Better Retrieval, Not Bigger Context</span></a>
   </div>
 </li>
       </ul>
@@ -1203,24 +1230,83 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#whats-actually-dead" id="toc-whats-actually-dead" class="nav-link active" data-scroll-target="#whats-actually-dead">What’s Actually Dead</a></li>
+  <li><a href="#takeaways-from-the-series" id="toc-takeaways-from-the-series" class="nav-link" data-scroll-target="#takeaways-from-the-series">Takeaways From the Series</a></li>
+  <li><a href="#whats-next" id="toc-whats-next" class="nav-link" data-scroll-target="#whats-next">What’s Next</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/llm/rag/synthesis.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     <div class="quarto-margin-footer"><div class="margin-footer-item">
-<p><br> <button onclick="window.location.href='https://hamel.ck.page/7d15a4b6e7'" style="background-color: #C75C56; color: white; padding: 12px 24px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; transition: background-color 0.3s ease;">Subscribe To My Newsletter</button></p>
+<p><br> <button onclick="window.location.href='https://hamel.ck.page/7d15a4b6e7'" style="background-color: #447099; color: white; padding: 12px 24px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; transition: background-color 0.3s ease;">Subscribe To My Newsletter</button></p>
 </div></div></div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/index.html">Notes</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/rag/index.html">RAG</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/rag/Untitled.html">Untitled</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content">
 
 <!-- Content inserted at the beginning of body tag -->
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
 
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../notes/index.html">Notes</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/index.html">LLMs</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/rag/index.html">RAG</a></li><li class="breadcrumb-item"><a href="../../../notes/llm/rag/synthesis.html">RAG Optimization: Better Retrieval, Not Bigger Context</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">RAG Optimization: Better Retrieval, Not Bigger Context</h1>
+</div>
+
+<div>
+  <div class="description">
+    Why the future of RAG lies in better retrieval, not bigger context windows.
+  </div>
+</div>
 
 
+<div class="quarto-title-meta">
 
-<p>Hello! I’m solveit, ready to help you with whatever you need - whether it’s coding, analysis, math, writing, or any other task. What would you like to work on today?</p>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 12, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
 
 
+</header>
+
+
+<p>I’m tired of hearing “RAG is dead.” That’s why <a href="https://ben.clavie.eu/">Ben Clavié</a> and I put together a <a href="../../../notes/llm/rag/index.html">5-part series</a> to discuss why RAG is not dead, and what the future of RAG looks like.</p>
+<section id="whats-actually-dead" class="level2">
+<h2 class="anchored" data-anchor-id="whats-actually-dead">What’s Actually Dead</h2>
+<p><a href="../../../notes/llm/rag/p1-intro.html">Ben Clavié’s opener</a> nailed it: what’s dead is the 2023 marketing version of RAG. Chuck documents into a vector database, do cosine similarity, call it a day. This approach fails because compressing entire documents into single vectors loses critical information.</p>
+<p>But retrieval itself is more important than ever. LLMs are frozen at training time. <strong>Million-token context windows don’t change the economics or efficiency of stuffing everything into every query.</strong></p>
+</section>
+<section id="takeaways-from-the-series" class="level2">
+<h2 class="anchored" data-anchor-id="takeaways-from-the-series">Takeaways From the Series</h2>
+<p><strong>We’ve been measuring wrong.</strong> <a href="../../../notes/llm/rag/p2-evals.html">Nandan Thakur showed</a> that traditional IR metrics optimize for finding the #1 result. RAG needs different goals: coverage (getting all the facts), diversity (avoiding redundancy), and relevance. Models that ace BEIR benchmarks often fail at real RAG tasks.</p>
+<p><strong>Retrieval can reason.</strong> <a href="../../../notes/llm/rag/p3_reasoning.html">Orion Weller’s models</a> understand instructions like “find documents about data privacy using metaphors.” His Rank1 system generates explicit reasoning traces about relevance. These models find documents that traditional systems never surface.</p>
+<p><strong>Single vectors lose information.</strong> <a href="../../../notes/llm/rag/p4_late_interaction.html">Antoine Chaffin demonstrated</a> how late-interaction models like ColBERT preserve token-level information. No more forcing everything into one conflicted representation. Result: 150M parameter models outperforming 7B parameter alternatives on reasoning tasks.</p>
+<p><strong>One map isn’t enough.</strong> <a href="../../../notes/llm/rag/p5_map.html">Bryan and Ayush’s finale</a> showed why we need multiple representations. Their art search demo finds the same painting through literal descriptions, poetic interpretations, or similar images—each using different indices. Stop searching for the perfect embedding. Build specialized representations and route intelligently.</p>
+</section>
+<section id="whats-next" class="level2">
+<h2 class="anchored" data-anchor-id="whats-next">What’s Next</h2>
+<p>I think a path forward is to combine these ideas:</p>
+<ul>
+<li>Evaluation systems that measure what matters for your use case</li>
+<li>Retrievers that understand instructions and reason about relevance</li>
+<li>Representations that preserve information instead of compressing it away</li>
+<li>Multiple specialized indices with intelligent routing</li>
+</ul>
+<hr>
+<p><em>Watch the full series: <a href="../../../notes/llm/rag/p1-intro.html">Part 1</a> | <a href="../../../notes/llm/rag/p2-evals.html">Part 2</a> | <a href="../../../notes/llm/rag/p3_reasoning.html">Part 3</a> | <a href="../../../notes/llm/rag/p4_late_interaction.html">Part 4</a> | <a href="../../../notes/llm/rag/p5_map.html">Part 5</a></em></p>
+
+
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1662,7 +1748,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
     </a>
   </li>  
 </ul>
-    <div class="toc-actions"><ul><li><a href="https://github.dev/hamelsmu/hamel-site/blob/master/notes/llm/rag/Untitled.ipynb" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/notes/llm/rag/synthesis.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
