@@ -1,0 +1,38 @@
+---
+title: "Stop Saying RAG Is Dead"
+description: "Why the future of RAG lies in better retrieval, not bigger context windows."
+author: ["Hamel Husain", "Ben Clavié"]
+order: 1
+date: 2025-07-12
+---
+
+I'm tired of hearing "RAG is dead." That's why [Ben Clavié](https://ben.clavie.eu/) and I put together a [5-part series](index.qmd) to discuss why RAG is not dead, and what the future of RAG looks like.
+
+## What's Actually Dead
+
+[Ben Clavié's opener](p1-intro.md) nailed it: what's dead is the 2023 marketing version of RAG. Chuck documents into a vector database, do cosine similarity, call it a day. This approach fails because compressing entire documents into single vectors loses critical information.
+
+But retrieval itself is more important than ever. LLMs are frozen at training time. **Million-token context windows don't change the economics or efficiency of stuffing everything into every query.**
+
+## Takeaways From the Series
+
+**We've been measuring wrong.** [Nandan Thakur showed](p2-evals.md) that traditional IR metrics optimize for finding the #1 result. RAG needs different goals: coverage (getting all the facts), diversity (avoiding redundancy), and relevance. Models that ace BEIR benchmarks often fail at real RAG tasks.
+
+**Retrieval can reason.** [Orion Weller's models](p3_reasoning.qmd) understand instructions like "find documents about data privacy using metaphors." His Rank1 system generates explicit reasoning traces about relevance. These models find documents that traditional systems never surface.
+
+**Single vectors lose information.** [Antoine Chaffin demonstrated](p4_late_interaction.qmd) how late-interaction models like ColBERT preserve token-level information. No more forcing everything into one conflicted representation. Result: 150M parameter models outperforming 7B parameter alternatives on reasoning tasks.
+
+**One map isn't enough.** [Bryan and Ayush's finale](p5_map.qmd) showed why we need multiple representations. Their art search demo finds the same painting through literal descriptions, poetic interpretations, or similar images—each using different indices. Stop searching for the perfect embedding. Build specialized representations and route intelligently.
+
+## What's Next
+
+I think a path forward is to combine these ideas:
+
+- Evaluation systems that measure what matters for your use case
+- Retrievers that understand instructions and reason about relevance
+- Representations that preserve information instead of compressing it away
+- Multiple specialized indices with intelligent routing
+
+---
+
+_Watch the full series: [Part 1](p1-intro.md) | [Part 2](p2-evals.md) | [Part 3](p3_reasoning.qmd) | [Part 4](p4_late_interaction.qmd) | [Part 5](p5_map.qmd)_
