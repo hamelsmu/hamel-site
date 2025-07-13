@@ -2,6 +2,7 @@
 title: "P2: Modern IR Evals For RAG"
 description: "Nandan Thakur on why traditional IR evals are insufficient for RAG and how new benchmarks like FreshStack provide a better path forward."
 image: p2-images/slide_19.png
+page-navigation: true
 date: 2025-07-02
 ---
 
