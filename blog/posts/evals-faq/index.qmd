@@ -373,7 +373,7 @@ Experienced practitioners may still use these metrics, just not how you'd expect
 
 ## Q: How can I efficiently sample production traces for review?
 
-It can be cubersome to review traces randomly, especially when most traces don't have an error. These sampling strategies help you find traces more likely to reveal problems:
+It can be cumbersome to review traces randomly, especially when most traces don't have an error. These sampling strategies help you find traces more likely to reveal problems:
 
 - **Outlier detection:** Sort by any metric (response length, latency, tool calls) and review extremes.
 - **User feedback signals:** Prioritize traces with negative feedback, support tickets, or escalations.
@@ -382,8 +382,6 @@ It can be cubersome to review traces randomly, especially when most traces don't
 
 As you get more sophisticated with how you sample, you can incorporate these tactics into the design of your [annotation tools](#q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs).
 
-Here is a FAQ you have drafted for me.  Can you look into objections I might get about this?
-
 ## Q: Should I stop writing prompts manually in favor of automated tools?
 
 Automating prompt engineering can be tempting, but you should be skeptical of tools that promise to optimize prompts for you, especially in  early stages of development. When you write a prompt, you are forced to clarify your assumptions and externalize your requirements. Good writing is good thinking [^2].  If you delegate this task to an automated tool too early, you risk never fully understanding your own requirements or the model's failure modes.
@@ -391,16 +389,6 @@ Automating prompt engineering can be tempting, but you should be skeptical of to
 This is because automated prompt optimization typically hill-climb a predefined evaluation metric. It can refine a prompt to perform better on known failures, but it cannot discover *new* ones. Discovering new errors requires [error analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed). Furthermore, research shows that evaluation criteria tends to shift after reviewing a model's outputs, a phenomenon known as “criteria drift” [^3]. This means that evaluation is an iterative, human-driven sensemaking process, not a static target that can be set once and handed off to an optimizer.
 
 A pragmatic approach is to use LLMs to improve your prompt based on [open coding](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed) (open-ended notes about traces). This way, you maintain a human in the loop who is looking at the data and externalizing their requirements. Once you have a high-quality set of evals, prompt optimization can be effective for that last mile of performance.
-
-<!-- ## Q: Should you write evals anytime you use a LLM for the same task?
-
-No. You need to assess when the cost of writing evals is worth the benefit. Here are some examples where I do NOT use evals (becaause their benefit is low):
-
-1. **When I am the sole customer.** For my own personal workflows, like writing or development assistants, I can immediately spot and correct errors. The feedback loop is instant and the only person affected is me, so a formal evaluation process is unnecessary.
-2. **Ad-hoc tasks that aren't repeated.** If you cannot amoritize the cost of writing evals over many uses (from either yourself or across users), their ROI is limited.
-3. **When I'm prototyping an idea.** There is no sense writing an eval before you have a product. Introducing them too early adds unnecessary friction.
-
-The trigger for introducing evals is when a prototype evolves into a product that serves others, has sufficient usage or high cost of failure (ex: user churn, reputational damage, etc.). There is no one-size-fits-all checklist: you must assess the cost-benefit of evals for your specific use case.  For example, if you are ready to scale to 100s of users, it makes sense to proactively write evals (perhaps with [synthetic data](#q-what-is-the-best-approach-for-generating-synthetic-data)). -->
 
 <hr>
 <div class="cta" style="text-align: center;">
