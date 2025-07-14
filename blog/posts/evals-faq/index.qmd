@@ -8,15 +8,15 @@ toc-expand: 1
 toc-depth: 2
 categories: [LLMs, evals]
 aliases: 
-  - /evals-faq
+ - /evals-faq
 author: 
-  - Hamel Husain
-  - Shreya Shankar
+ - Hamel Husain
+ - Shreya Shankar
 date: last-modified
 image: images/eval_faq.png
 ---
 
-This document curates the most common questions Shreya and I received while [teaching](https://bit.ly/evals-ai){target="_blank"} 700+ engineers & PMs AI Evals.  _Warning: These are sharp opinions about what works in most cases.  They are not universal truths. Use your judgment._
+This document curates the most common questions Shreya and I received while [teaching](https://bit.ly/evals-ai){target="_blank"} 700+ engineers & PMs AI Evals. _Warning: These are sharp opinions about what works in most cases. They are not universal truths. Use your judgment._
 
 <hr>
 <div class="cta" style="text-align: center;"> 
@@ -26,7 +26,7 @@ This document curates the most common questions Shreya and I received while [tea
 
 ## Q: What are LLM Evals?
 
-If you are **completely new** to product-specific LLM evals (not foundation model benchmarks), see these posts: [part 1](https://hamel.dev/evals), [part 2](https://hamel.dev/llm-judge/), [part 3](https://hamel.dev/field-guide).  Otherwise, keep reading.
+If you are **completely new** to product-specific LLM evals (not foundation model benchmarks), see these posts: [part 1](https://hamel.dev/evals), [part 2](https://hamel.dev/llm-judge/), [part 3](https://hamel.dev/field-guide). Otherwise, keep reading.
 
 ## Q: Is RAG dead?
 
@@ -48,7 +48,7 @@ Rather than following categorical advice to avoid or embrace RAG, experiment wit
 
 ## Q: Can I use the same model for both the main task and evaluation? 
 
-For LLM-as-Judge selection, using the same model is usually fine because the judge is doing a different task than your main LLM pipeline. The judges we recommend building do [scoped binary classification tasks](#q-why-do-you-recommend-binary-passfail-evaluations-instead-of-1-5-ratings-likert-scales). Focus on achieving high True Positive Rate (TPR) and True Negative Rate (TNR) with your judge on a held out labeled test set rather than avoiding the same model family.  You can use these metrics on the test set to understand how well your judge is doing.
+For LLM-as-Judge selection, using the same model is usually fine because the judge is doing a different task than your main LLM pipeline. The judges we recommend building do [scoped binary classification tasks](#q-why-do-you-recommend-binary-passfail-evaluations-instead-of-1-5-ratings-likert-scales). Focus on achieving high True Positive Rate (TPR) and True Negative Rate (TNR) with your judge on a held out labeled test set rather than avoiding the same model family. You can use these metrics on the test set to understand how well your judge is doing.
 
 When selecting judge models, start with the most capable models available to establish strong alignment with human judgments. You can optimize for cost later once you've established reliable evaluation criteria. We do not recommend using the same model for open ended preferences or response quality (but we don't recommend building judges this way in the first place!).
 
@@ -88,7 +88,7 @@ Start simple. Check if the whole conversation met the user's goal with a pass/fa
 
 When you find a failure, reproduce it with the simplest possible test case. Here's an example: suppose a shopping bot gives the wrong return policy on turn 4 of a conversation. Before diving into the full multi-turn complexity, simplify it to a single turn: "What is the return window for product X1000?" If it still fails, you've proven the error isn't about conversation context - it's likely a basic retrieval or knowledge issue you can debug more easily.
 
-For generating test cases, you have two main approaches. First, you can simulate users with another LLM to create realistic multi-turn conversations. Second, use "N-1 testing" where you provide the first N-1 turns of a real conversation and test what happens next. The N-1 approach often works better since it uses actual conversation prefixes rather than fully synthetic interactions (but is less flexible and doesn't test the full conversation). User simulation is getting better as models improve.  Keep an eye on this space.
+For generating test cases, you have two main approaches. First, you can simulate users with another LLM to create realistic multi-turn conversations. Second, use "N-1 testing" where you provide the first N-1 turns of a real conversation and test what happens next. The N-1 approach often works better since it uses actual conversation prefixes rather than fully synthetic interactions (but is less flexible and doesn't test the full conversation). User simulation is getting better as models improve. Keep an eye on this space.
 
 The key is balancing thoroughness with efficiency. Not every multi-turn failure requires multi-turn analysis.
 
@@ -126,7 +126,7 @@ The most effective workflows use AI to accelerate every stage of evaluation. Dur
 
 You'll also want AI assistance in proposing fixes. After identifying 20 cases where your assistant omits pet policies from property summaries, can your workflow analyze these failures and suggest specific prompt modifications? Can it draft refinements to your SQL generation instructions when it notices patterns of missing WHERE clauses? 
 
-Additionally, good workflows help you conduct data analysis of your annotations and traces.  I like using notebooks with AI in-the-loop like [Julius](https://julius.ai/),[Hex](https://hex.tech) or [SolveIt](https://solveit.fast.ai/).  These help me discover insights like "location ambiguity errors spike 3x when users mention neighborhood names" or "tone mismatches occur 80% more often in email generation than other modalities."
+Additionally, good workflows help you conduct data analysis of your annotations and traces. I like using notebooks with AI in-the-loop like [Julius](https://julius.ai/),[Hex](https://hex.tech) or [SolveIt](https://solveit.fast.ai/). These help me discover insights like "location ambiguity errors spike 3x when users mention neighborhood names" or "tone mismatches occur 80% more often in email generation than other modalities."
 
 #### 3. Custom Evaluators Over Generic Metrics
 
@@ -149,7 +149,7 @@ A common mistake is prompting an LLM to `"give me test queries"` without structu
 
 **Once you have dimensions, create tuples:** specific combinations selecting one value from each dimension. A tuple like (*Vegan*, *Italian*, *Multi-step*) represents a particular use case. Write 20 tuples manually to understand your problem space, then use an LLM to scale up.
 
-  The two-step generation process is important. First, have the LLM generate structured tuples. Then, in a separate prompt, convert each tuple to a natural language query. This separation prevents repetitive phrasing. For the vegan Italian tuple above, you might get `"I need a dairy-free lasagna recipe that I can prep the day before."`
+ The two-step generation process is important. First, have the LLM generate structured tuples. Then, in a separate prompt, convert each tuple to a natural language query. This separation prevents repetitive phrasing. For the vegan Italian tuple above, you might get `"I need a dairy-free lasagna recipe that I can prep the day before."`
 
 **Don't generate synthetic data for problems you can fix immediately.** If your prompt never mentions handling dietary restrictions, fix the prompt rather than generating hundreds of specialized queries. Save synthetic data for complex issues requiring iteration—like an LLM consistently failing at ingredient scaling math or misinterpreting ambiguous requests.
 
@@ -161,7 +161,7 @@ After iterating on your tuples and prompts, **run these synthetic queries throug
 
 **_[Error Analysis](https://youtu.be/e2i6JbU2R-s?si=8p5XVxbBiioz69Xc) is all you need._** Your evaluation strategy should emerge from observed failure patterns (e.g. error analysis), not predetermined query classifications. Rather than creating a massive evaluation matrix covering every query type you can imagine, let your system's actual behavior guide where you invest evaluation effort.
 
-During error analysis, you'll likely discover that certain query categories share failure patterns. For instance, all queries requiring temporal reasoning might struggle regardless of whether they're simple lookups or complex aggregations. Similarly, queries that need to combine information from multiple sources might fail in consistent ways. These patterns discovered through error analysis should drive your evaluation priorities.  It could be that query category is a fine way to group failures, but you don't know that until you've analyzed your data.
+During error analysis, you'll likely discover that certain query categories share failure patterns. For instance, all queries requiring temporal reasoning might struggle regardless of whether they're simple lookups or complex aggregations. Similarly, queries that need to combine information from multiple sources might fail in consistent ways. These patterns discovered through error analysis should drive your evaluation priorities. It could be that query category is a fine way to group failures, but you don't know that until you've analyzed your data.
 
 To see an example of basic error analysis in action, [see this video](https://youtu.be/e2i6JbU2R-s?si=8p5XVxbBiioz69Xc).
 
@@ -222,21 +222,21 @@ In summary, debug retrieval first using IR metrics, then tackle generation quali
 
 Great interfaces make human review fast, clear, and motivating. We recommend [building your own annotation tool](#q-should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf) customized to your domain. The following features are possible enhancements we've seen work well, but you don't need all of them. The screenshots shown are illustrative examples to clarify concepts. In practice, I rarely implement all these features in a single app. It's ultimately a judgment call based on your specific needs and constraints.
 
-**1. Render Traces Intelligently, Not Generically**: Present the trace in a way that's intuitive for the domain.  If you're evaluating generated emails, render them to look like emails. If the output is code, use syntax highlighting. Allow the reviewer to see the full trace (user input, tool calls, and LLM reasoning), but keep less important details in collapsed sections that can be expanded. Here is an example of a custom annotation tool for reviewing real estate assistant emails:
+**1. Render Traces Intelligently, Not Generically**: Present the trace in a way that's intuitive for the domain. If you're evaluating generated emails, render them to look like emails. If the output is code, use syntax highlighting. Allow the reviewer to see the full trace (user input, tool calls, and LLM reasoning), but keep less important details in collapsed sections that can be expanded. Here is an example of a custom annotation tool for reviewing real estate assistant emails:
 
 ![A custom interface for reviewing emails for a real estate assistant.](images/emailinterface1.png){width=75%}
 
-**2. Show Progress and Support Keyboard Navigation**: Keep reviewers in a state of flow by minimizing friction and motivating completion. Include progress indicators (e.g., "Trace 45 of 100") to keep the review session bounded and encourage completion. Enable hotkeys for navigating between traces (e.g., N for next), applying labels, and saving notes quickly.  Below is an illustration of these features:
+**2. Show Progress and Support Keyboard Navigation**: Keep reviewers in a state of flow by minimizing friction and motivating completion. Include progress indicators (e.g., "Trace 45 of 100") to keep the review session bounded and encourage completion. Enable hotkeys for navigating between traces (e.g., N for next), applying labels, and saving notes quickly. Below is an illustration of these features:
 
 ![An annotation interface with a progress bar and hotkey guide](images/hotkey.png){width=75%}
 
-**4. Trace navigation through clustering, filtering, and search**: Allow reviewers to filter traces by metadata or search by keywords. Semantic search helps find conceptually similar problems. Clustering similar traces (like grouping by user persona) lets reviewers spot recurring issues and explore hypotheses.  Below is an illustration of these features:
+**4. Trace navigation through clustering, filtering, and search**: Allow reviewers to filter traces by metadata or search by keywords. Semantic search helps find conceptually similar problems. Clustering similar traces (like grouping by user persona) lets reviewers spot recurring issues and explore hypotheses. Below is an illustration of these features:
 
 ![Cluster view showing groups of emails, such as property-focused or client-focused examples. Reviewers can drill into a group to see individual traces.](images/group1.png){width=75%}
 
 **5. Prioritize labeling traces you think might be problematic**: Surface traces flagged by guardrails, CI failures, or automated evaluators for review. Provide buttons to take actions like adding to datasets, filing bugs, or re-running pipeline tests. Display relevant context (pipeline version, eval scores, reviewer info) directly in the interface to minimize context switching. Below is an illustration of these ideas:
 
-![A trace view that allows you to quickly see auto-evaluator verdict, add traces to dataset or open issues.  Also shows metadata like pipeline version, reviewer info, and more.](images/ci.png){width=88%}
+![A trace view that allows you to quickly see auto-evaluator verdict, add traces to dataset or open issues. Also shows metadata like pipeline version, reviewer info, and more.](images/ci.png){width=88%}
 
 ### General Principle: Keep it minimal
 
@@ -256,19 +256,19 @@ Be [wary of optimizing for high eval pass rates](https://ai-execs.com/2_intro.ht
 
 ## Q: Why is "error analysis" so important in LLM evals, and how is it performed?
 
-Error analysis is **the most important activity in evals**.  Error analysis helps you decide what evals to write in the first place.  It allows you to identify failure modes unique to your application and data. The process involves:
+Error analysis is **the most important activity in evals**. Error analysis helps you decide what evals to write in the first place. It allows you to identify failure modes unique to your application and data. The process involves:
 
-1. **Creating a Dataset**: Gathering representative traces of user interactions with the LLM.  If you do not have any data, you can [generate synthetic data](#q-what-is-the-best-approach-for-generating-synthetic-data) to get started.
+1. **Creating a Dataset**: Gathering representative traces of user interactions with the LLM. If you do not have any data, you can [generate synthetic data](#q-what-is-the-best-approach-for-generating-synthetic-data) to get started.
 
-2. **Open Coding**: Human annotator(s) (ideally a [benevolent dictator](#q-how-many-people-should-annotate-my-llm-outputs)) review and write open-ended notes about traces, noting any issues. This process is akin to "journaling" and is adapted from qualitative research methodologies.  When beginning, it is recommended to focus on noting the [first failure](#q-how-do-i-debug-multi-turn-conversation-traces) observed in a trace, as upstream errors can cause downstream issues, though you can also tag all independent failures if feasible. A [domain expert](https://hamel.dev/blog/posts/llm-judge/#step-1-find-the-principal-domain-expert) should be performing this step.
+2. **Open Coding**: Human annotator(s) (ideally a [benevolent dictator](#q-how-many-people-should-annotate-my-llm-outputs)) review and write open-ended notes about traces, noting any issues. This process is akin to "journaling" and is adapted from qualitative research methodologies. When beginning, it is recommended to focus on noting the [first failure](#q-how-do-i-debug-multi-turn-conversation-traces) observed in a trace, as upstream errors can cause downstream issues, though you can also tag all independent failures if feasible. A [domain expert](https://hamel.dev/blog/posts/llm-judge/#step-1-find-the-principal-domain-expert) should be performing this step.
 
-3. **Axial Coding**: Categorize the open-ended notes into a "failure taxonomy.". In other words, group similar failures into distinct categories.  This is the most important step.  At the end, count the number of failures in each category. You can use a LLM to help with this step.
+3. **Axial Coding**: Categorize the open-ended notes into a "failure taxonomy.". In other words, group similar failures into distinct categories. This is the most important step. At the end, count the number of failures in each category. You can use a LLM to help with this step.
 
-4. **Iterative Refinement**: Keep iterating on more traces until you reach [theoretical saturation](https://delvetool.com/blog/theoreticalsaturation), meaning new traces do not seem to reveal new failure modes or information to you.  As a rule of thumb, you should aim to review at least 100 traces.
+4. **Iterative Refinement**: Keep iterating on more traces until you reach [theoretical saturation](https://delvetool.com/blog/theoreticalsaturation), meaning new traces do not seem to reveal new failure modes or information to you. As a rule of thumb, you should aim to review at least 100 traces.
 
-You should frequently revisit this process.  There are advanced ways to sample data more efficiently, like clustering, sorting by user feedback, and sorting by high probability failure patterns.  Over time, you'll develop a "nose" for where to look for failures in your data. 
+You should frequently revisit this process. There are advanced ways to sample data more efficiently, like clustering, sorting by user feedback, and sorting by high probability failure patterns. Over time, you'll develop a "nose" for where to look for failures in your data. 
 
-Do not skip error analysis.  It ensures that the evaluation metrics you develop are supported by real application behaviors instead of counter-productive generic metrics (which most platforms nudge you to use). For examples of how error analysis can be helpful, see [this video](https://www.youtube.com/watch?v=e2i6JbU2R-s), or this [blog post](https://hamel.dev/blog/posts/field-guide/).
+Do not skip error analysis. It ensures that the evaluation metrics you develop are supported by real application behaviors instead of counter-productive generic metrics (which most platforms nudge you to use). For examples of how error analysis can be helpful, see [this video](https://www.youtube.com/watch?v=e2i6JbU2R-s), or this [blog post](https://hamel.dev/blog/posts/field-guide/).
 
 ## Q: What's the difference between guardrails & evaluators?
 
@@ -282,11 +282,11 @@ If a guardrail triggers, the system can redact, refuse, or regenerate the respon
 
 On the other hand, evaluators typically run **after** a response is produced. Evaluators measure qualities that simple rules cannot, such as factual correctness, completeness, etc. Their verdicts feed dashboards, regression tests, and model-improvement loops, but they do not block the original answer. 
 
-Evaluators are usually run asynchronously or in batch to afford heavier computation such as a [LLM-as-a-Judge](https://hamel.dev/blog/posts/llm-judge/). Inline use of an LLM-as-Judge is possible _only_ when the latency budget and reliability targets allow it.  Slow LLM judges might be feasible in a cascade that runs on the minority of borderline cases.
+Evaluators are usually run asynchronously or in batch to afford heavier computation such as a [LLM-as-a-Judge](https://hamel.dev/blog/posts/llm-judge/). Inline use of an LLM-as-Judge is possible _only_ when the latency budget and reliability targets allow it. Slow LLM judges might be feasible in a cascade that runs on the minority of borderline cases.
 
 Apply guardrails for immediate protection against objective failures requiring intervention. Use evaluators for monitoring and improving subjective or nuanced criteria. Together, they create layered protection.
 
-Word of caution: Do not use llm guardrails off the shelf blindly.  Always [look at the prompt](https://hamel.dev/blog/posts/prompt/).
+Word of caution: Do not use llm guardrails off the shelf blindly. Always [look at the prompt](https://hamel.dev/blog/posts/prompt/).
 
 ## Q: What's a minimum viable evaluation setup?
 
@@ -298,7 +298,7 @@ If possible, **use notebooks** to help you review traces and analyze data. In ou
 
 We recommend evaluating agentic workflows in two phases:
 
-**1. End-to-end task success.** Treat the agent as a black box and ask "did we meet the user's goal?". Define a precise success rule per task (exact answer, correct side-effect, etc.) and measure with human or [aligned LLM judges](https://hamel.dev/blog/posts/llm-judge/).  Take note of the first upstream failure when conducting [error analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed).  
+**1. End-to-end task success.** Treat the agent as a black box and ask "did we meet the user's goal?". Define a precise success rule per task (exact answer, correct side-effect, etc.) and measure with human or [aligned LLM judges](https://hamel.dev/blog/posts/llm-judge/). Take note of the first upstream failure when conducting [error analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed). 
 
 Once error analysis reveals which workflows fail most often, move to step-level diagnostics to understand why they're failing.
 
@@ -312,7 +312,7 @@ Once error analysis reveals which workflows fail most often, move to step-level 
 
 Example: "Find Berkeley homes under $1M and schedule viewings" breaks into: parameters extracted correctly, relevant listings retrieved, availability checked, and calendar invites sent. Each checkpoint can pass or fail independently, making debugging tractable.
 
-**Use transition failure matrices to understand error patterns.** Create a matrix where rows represent the last successful state and columns represent where the first failure occurred.  This is a great way to understand where the most failures occur.
+**Use transition failure matrices to understand error patterns.** Create a matrix where rows represent the last successful state and columns represent where the first failure occurred. This is a great way to understand where the most failures occur.
 
 ![Transition failure matrix showing hotspots in text-to-SQL agent workflow](images/shreya_matrix.png){width=75%}
 
@@ -320,19 +320,19 @@ Transition matrices transform overwhelming agent complexity into actionable insi
 
 ![Bischof, Bryan "Failure is A Funnel - Data Council, 2025"](images/bischof_matrix.png){width=75%}
 
-In this example, Bryan shows variation in transition matrices across experiments. How you organize your transition matrix depends on the specifics of your application.  For example, Bryan's text-to-SQL agent has an inherent sequential workflow which he exploits for further analytical insight.  You can watch his [full talk](https://youtu.be/R_HnI9oTv3c?si=hRRhDiydHU5k6ikc) for more details.
+In this example, Bryan shows variation in transition matrices across experiments. How you organize your transition matrix depends on the specifics of your application. For example, Bryan's text-to-SQL agent has an inherent sequential workflow which he exploits for further analytical insight. You can watch his [full talk](https://youtu.be/R_HnI9oTv3c?si=hRRhDiydHU5k6ikc) for more details.
 
 **Creating Test Cases for Agent Failures**
 
 Creating test cases for agent failures follows the same principles as our previous FAQ on [debugging multi-turn conversation traces](#q-how-do-i-debug-multi-turn-conversation-traces) (i.e. try to reproduce the error in the simplest way possible, only use multi-turn tests when the failure actually requires conversation context, etc.).
 
-## Q: Seriously Hamel.  Stop the bullshit.  What's your favorite eval vendor?
+## Q: Seriously Hamel. Stop the bullshit. What's your favorite eval vendor?
 
-Eval tools are in an intensely competitive space.  It would be futile to compare their features.  If I tried to do such an analysis, it would be invalidated in a week!  Vendors I encounter the most organically in my work are: [Langsmith](https://www.langchain.com/langsmith), [Arize](https://arize.com/) and [Braintrust](https://www.braintrust.dev/).
+Eval tools are in an intensely competitive space. It would be futile to compare their features. If I tried to do such an analysis, it would be invalidated in a week! Vendors I encounter the most organically in my work are: [Langsmith](https://www.langchain.com/langsmith), [Arize](https://arize.com/) and [Braintrust](https://www.braintrust.dev/).
 
-When I help clients with vendor selection, the decision weighs heavily towards who can offer the best support, as opposed to purely features.  This changes depending on size of client, use case, etc. Yes - it's mainly the human factor that matters, and dare I say, vibes.
+When I help clients with vendor selection, the decision weighs heavily towards who can offer the best support, as opposed to purely features. This changes depending on size of client, use case, etc. Yes - it's mainly the human factor that matters, and dare I say, vibes.
 
-I have no favorite vendor.  At the core, their features are very similar - and I often build [custom tools](https://hamel.dev/blog/posts/evals/#q-should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf) on top of them to fit my needs. 
+I have no favorite vendor. At the core, their features are very similar - and I often build [custom tools](https://hamel.dev/blog/posts/evals/#q-should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf) on top of them to fit my needs. 
 
 My suggestion is to explore the vendors and see which one you like the most.
 
@@ -340,7 +340,7 @@ My suggestion is to explore the vendors and see which one you like the most.
 
 The most important difference between CI vs. production evaluation is the data used for testing.
 
-Test datasets for CI are small (in many cases 100+ examples) and purpose-built. Examples cover core features, regression tests for past bugs, and known edge cases.  Since CI tests are run frequently, the cost of each test has to be carefully considered (that's why you carefully curate the dataset). Favor assertions or other deterministic checks over LLM-as-judge evaluators.
+Test datasets for CI are small (in many cases 100+ examples) and purpose-built. Examples cover core features, regression tests for past bugs, and known edge cases. Since CI tests are run frequently, the cost of each test has to be carefully considered (that's why you carefully curate the dataset). Favor assertions or other deterministic checks over LLM-as-judge evaluators.
 
 For evaluating production traffic, you can sample live traces and run evaluators against them asynchronously. Since you usually lack reference outputs on production data, you might rely more on on more expensive reference-free evaluators like LLM-as-judge. Additionally, track confidence intervals for production metrics. If the lower bound crosses your threshold, investigate further.
 
@@ -384,7 +384,7 @@ As you get more sophisticated with how you sample, you can incorporate these tac
 
 ## Q: Should I stop writing prompts manually in favor of automated tools?
 
-Automating prompt engineering can be tempting, but you should be skeptical of tools that promise to optimize prompts for you, especially in  early stages of development. When you write a prompt, you are forced to clarify your assumptions and externalize your requirements. Good writing is good thinking [^2].  If you delegate this task to an automated tool too early, you risk never fully understanding your own requirements or the model's failure modes.
+Automating prompt engineering can be tempting, but you should be skeptical of tools that promise to optimize prompts for you, especially in early stages of development. When you write a prompt, you are forced to clarify your assumptions and externalize your requirements. Good writing is good thinking [^2]. If you delegate this task to an automated tool too early, you risk never fully understanding your own requirements or the model's failure modes.
 
 This is because automated prompt optimization typically hill-climb a predefined evaluation metric. It can refine a prompt to perform better on known failures, but it cannot discover *new* ones. Discovering new errors requires [error analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed). Furthermore, research shows that evaluation criteria tends to shift after reviewing a model's outputs, a phenomenon known as “criteria drift” [^3]. This means that evaluation is an iterative, human-driven sensemaking process, not a static target that can be set once and handed off to an optimizer.
 

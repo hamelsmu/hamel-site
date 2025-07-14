@@ -7,7 +7,7 @@ link-external-newwindow: true
 toc-expand: 1
 categories: [LLMs, AI]
 aliases: 
-  - /field-guide
+ - /field-guide
 author: Hamel Husain
 date: 2025-03-24
 image: images/field_guide_2.png
@@ -131,10 +131,10 @@ Let me show you what I mean. Here's the data viewer built for NurtureBoss (which
 
 Here's what makes a good data annotation tool:
 
-1. Show all context in one place. Don't make users hunt through different systems to understand what happened.  
+1. Show all context in one place. Don't make users hunt through different systems to understand what happened. 
 2. Make feedback trivial to capture. One-click correct/incorrect buttons beat lengthy forms.
 3. Capture open-ended feedback. This lets you capture nuanced issues that don't fit into a pre-defined taxonomy.
-4. Enable quick filtering and sorting. Teams need to easily dive into specific error types.  In the example above, NurtureBoss can quickly filter by the channel (voice, text, chat) or the specific property they want to look at quickly.
+4. Enable quick filtering and sorting. Teams need to easily dive into specific error types. In the example above, NurtureBoss can quickly filter by the channel (voice, text, chat) or the specific property they want to look at quickly.
 5. Have hotkeys that allow users to navigate between data examples and annotate without clicking.
 
 It doesn't matter what web frameworks you use - use whatever you are familiar with. Because I'm a python developer, my current favorite web framework is [FastHTML](https://fastht.ml/docs/) coupled with [MonsterUI](https://www.answer.ai/posts/2025-01-15-monsterui.html), because it allows me to define the back-end and front-end code in one small python file.
@@ -163,7 +163,7 @@ Prompt playgrounds are a great starting point for this. Tools like Arize, Langsm
 
 :::
 
-But there's a crucial next step that many teams miss: integrating prompt development into their application context. Most AI applications aren't just prompts –  They commonly involve RAG systems pulling from your knowledge base, agent orchestration coordinating multiple steps, and application-specific business logic. The most effective teams I've worked with go beyond standalone playgrounds. They build what I call _**integrated prompt environments**_ – essentially admin versions of their actual user interface that expose prompt editing.
+But there's a crucial next step that many teams miss: integrating prompt development into their application context. Most AI applications aren't just prompts – They commonly involve RAG systems pulling from your knowledge base, agent orchestration coordinating multiple steps, and application-specific business logic. The most effective teams I've worked with go beyond standalone playgrounds. They build what I call _**integrated prompt environments**_ – essentially admin versions of their actual user interface that expose prompt editing.
 
 Here's an illustration of what an integrated prompt environment might look like for a real estate AI assistant:
 
@@ -221,24 +221,24 @@ For a real estate CRM AI assistant I worked on with [Rechat](https://www.rechat.
 
 ```python
 features = [
-    "property search",      # Finding listings matching criteria
-    "market analysis",      # Analyzing trends and pricing
-    "scheduling",          # Setting up property viewings
-    "follow-up"           # Post-viewing communication
+  "property search",   # Finding listings matching criteria
+  "market analysis",   # Analyzing trends and pricing
+  "scheduling",     # Setting up property viewings
+  "follow-up"      # Post-viewing communication
 ]
 
 scenarios = [
-    "exact match",         # One perfect listing match
-    "multiple matches",    # Need to help user narrow down
-    "no matches",         # Need to suggest alternatives
-    "invalid criteria"     # Help user correct search terms
+  "exact match",     # One perfect listing match
+  "multiple matches",  # Need to help user narrow down
+  "no matches",     # Need to suggest alternatives
+  "invalid criteria"   # Help user correct search terms
 ]
 
 personas = [
-    "first_time_buyer",    # Needs more guidance and explanation
-    "investor",           # Focused on numbers and ROI
-    "luxury_client",      # Expects white-glove service
-    "relocating_family"   # Has specific neighborhood/school needs
+  "first_time_buyer",  # Needs more guidance and explanation
+  "investor",      # Focused on numbers and ROI
+  "luxury_client",   # Expects white-glove service
+  "relocating_family"  # Has specific neighborhood/school needs
 ]
 ```
 
@@ -253,36 +253,36 @@ Here's an example of how we might use these dimensions with real data to generat
 
 ```python
 def generate_search_query(scenario, persona, listing_db):
-    """Generate a realistic user query about listings"""
-    # Pull real listing data to ground the generation
-    sample_listings = listing_db.get_sample_listings(
-        price_range=persona.price_range,
-        location=persona.preferred_areas
-    )
-    
-    # Verify we have listings that will trigger our scenario
-    if scenario == "multiple_matches" and len(sample_listings) < 2:
-        raise ValueError("Need multiple listings for this scenario")
-    if scenario == "no_matches" and len(sample_listings) > 0:
-        raise ValueError("Found matches when testing no-match scenario")
-    
-    prompt = f"""
-    You are an expert real estate agent who is searching for listings. You are given a customer type and a scenario.
-    
-    Your job is to generate a natural language query you would use to search these listings.
-    
-    Context:
-    - Customer type: {persona.description}
-    - Scenario: {scenario}
-    
-    Use these actual listings as reference:
-    {format_listings(sample_listings)}
-    
-    The query should reflect the customer type and the scenario.
+  """Generate a realistic user query about listings"""
+  # Pull real listing data to ground the generation
+  sample_listings = listing_db.get_sample_listings(
+    price_range=persona.price_range,
+    location=persona.preferred_areas
+  )
+  
+  # Verify we have listings that will trigger our scenario
+  if scenario == "multiple_matches" and len(sample_listings) < 2:
+    raise ValueError("Need multiple listings for this scenario")
+  if scenario == "no_matches" and len(sample_listings) > 0:
+    raise ValueError("Found matches when testing no-match scenario")
+  
+  prompt = f"""
+  You are an expert real estate agent who is searching for listings. You are given a customer type and a scenario.
+  
+  Your job is to generate a natural language query you would use to search these listings.
+  
+  Context:
+  - Customer type: {persona.description}
+  - Scenario: {scenario}
+  
+  Use these actual listings as reference:
+  {format_listings(sample_listings)}
+  
+  The query should reflect the customer type and the scenario.
 
-    Example query: Find homes in the 75019 zip code, 3 bedrooms, 2 bathrooms, price range $750k - $1M for an investor.
-    """
-    return generate_with_llm(prompt)
+  Example query: Find homes in the 75019 zip code, 3 bedrooms, 2 bathrooms, price range $750k - $1M for an investor.
+  """
+  return generate_with_llm(prompt)
 ```
 
 This produced realistic queries like:
@@ -381,7 +381,7 @@ When working with Honeycomb, we tracked agreement rates between our LLM-as-a-jud
 
 ![Agreement rates between LLM evaluator and human expert. More details [here](https://hamel.dev/blog/posts/evals/#automated-evaluation-w-llms).](images/score.png)
 
-It took three iterations to achieve >90% agreement, but this investment paid off in a system the team could trust. Without this validation step, automated evaluations often drift from human expectations over time, especially as the distribution of inputs changes.  You can [read more about this here](https://hamel.dev/blog/posts/evals/#automated-evaluation-w-llms).
+It took three iterations to achieve >90% agreement, but this investment paid off in a system the team could trust. Without this validation step, automated evaluations often drift from human expectations over time, especially as the distribution of inputs changes. You can [read more about this here](https://hamel.dev/blog/posts/evals/#automated-evaluation-w-llms).
 
 Tools like [Eugene Yan's AlignEval](https://eugeneyan.com/writing/aligneval/) demonstrate this alignment process beautifully. It provides a simple interface where you upload data, label examples with a binary "good" or "bad," and then evaluate LLM-based judges against those human judgments. What makes it effective is how it streamlines the workflow – you can quickly see where automated evaluations diverge from your preferences, refine your criteria based on these insights, and measure improvement over time. This approach reinforces that alignment isn't a one-time setup but an ongoing conversation between human judgment and automated evaluation.
 

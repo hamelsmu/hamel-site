@@ -12,28 +12,28 @@ Here is my personal opinion about the questions I posed in [this tweet](https://
 
 ---
 
-I think that fine-tuning is still very valuable in many situations.  I’ve done some more digging and I find that people who say that fine-tuning isn't useful  are indeed often working on products where fine-tuning isn't likely to be useful:
+I think that fine-tuning is still very valuable in many situations. I’ve done some more digging and I find that people who say that fine-tuning isn't useful are indeed often working on products where fine-tuning isn't likely to be useful:
 
 - They are making developer tools - foundation models have been trained extensively on coding tasks.
-- They are building foundation models and testing for the most general cases.  But the foundation models themselves are also being trained for the most general cases.
+- They are building foundation models and testing for the most general cases. But the foundation models themselves are also being trained for the most general cases.
 - They are building a personal assistant that isn’t scoped to any type of domain or use case and is essentially similar to the same folks building foundation models.
 
 Another common pattern is that people often say this in earlier stages of their product development. One sign that folks are in really early stages is that they don’t have a domain-specific eval harness.
 
-**It’s impossible to fine-tune effectively without an eval system which can lead to writing off fine-tuning if you haven't completed this prerequisite.**  It's also impossible to improve your product without a good eval system in the long term, fine-tuning or not.
+**It’s impossible to fine-tune effectively without an eval system which can lead to writing off fine-tuning if you haven't completed this prerequisite.** It's also impossible to improve your product without a good eval system in the long term, fine-tuning or not.
 
-You should do as much prompt engineering as possible before you fine-tune.  But not for reasons you would think!  The reason for doing lots of prompt engineering is that it's a great way to stress test your eval system! 
+You should do as much prompt engineering as possible before you fine-tune. But not for reasons you would think! The reason for doing lots of prompt engineering is that it's a great way to stress test your eval system! 
 
-If you find that prompt-engineering works fine (and you are systematically evaluating your product) then it's fine to stop there.  I'm a big believer in using the simplest approach to solving a problem.  I just don't think you should write off fine-tuning yet.
+If you find that prompt-engineering works fine (and you are systematically evaluating your product) then it's fine to stop there. I'm a big believer in using the simplest approach to solving a problem. I just don't think you should write off fine-tuning yet.
 
 ### Examples where I've seen fine-tuning work well
 
-Generally speaking, fine-tuning works best to learn syntax, style and rules whereas techniques like RAG work best to supply the model with context or up-to-date facts.  
+Generally speaking, fine-tuning works best to learn syntax, style and rules whereas techniques like RAG work best to supply the model with context or up-to-date facts. 
 
-_These are some examples from companies I've worked with.  Hopefully, we will be able to share more details soon._
+_These are some examples from companies I've worked with. Hopefully, we will be able to share more details soon._
 
 - [Honeycomb's Natural Language Query Assistant](https://www.honeycomb.io/blog/introducing-query-assistant) - previously, the "programming manual" for the Honeycomb query language was being dumped into the prompt along with many examples. While this was OK, fine-tuning worked much better to allow the model to learn the syntax and rules of this niche domain-specific language. 
 
-- [ReChat's Lucy](https://www.youtube.com/watch?v=B_DMMlDuJB0) - this is an AI real estate assistant integrated into an existing Real Estate CRM system.  ReChat needs LLM responses to be provided in a very idiosyncratic format that weaves together structured and unstructured data to allow the front end to render widgets, cards and other interactive elements dynamically into the chat interface.  Fine-tuning was the key to making this work correctly.  [This talk](https://www.youtube.com/watch?v=B_DMMlDuJB0) has more details.
+- [ReChat's Lucy](https://www.youtube.com/watch?v=B_DMMlDuJB0) - this is an AI real estate assistant integrated into an existing Real Estate CRM system. ReChat needs LLM responses to be provided in a very idiosyncratic format that weaves together structured and unstructured data to allow the front end to render widgets, cards and other interactive elements dynamically into the chat interface. Fine-tuning was the key to making this work correctly. [This talk](https://www.youtube.com/watch?v=B_DMMlDuJB0) has more details.
 
-P.S. Fine-tuning is not only limited to open or "small" models. There are lots of folks who have been fine-tuning GPT-3.5, such as  [Perplexity.AI:](https://x.com/perplexity_ai/status/1695102998463009254?s=20) and [CaseText](https://casetext.com/blog/cocounsel-harnesses-gpt-4s-power-to-deliver-results-that-legal-professionals-can-rely-on/), to name a few.
+P.S. Fine-tuning is not only limited to open or "small" models. There are lots of folks who have been fine-tuning GPT-3.5, such as [Perplexity.AI:](https://x.com/perplexity_ai/status/1695102998463009254?s=20) and [CaseText](https://casetext.com/blog/cocounsel-harnesses-gpt-4s-power-to-deliver-results-that-legal-professionals-can-rely-on/), to name a few.
