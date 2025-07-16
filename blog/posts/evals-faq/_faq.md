@@ -390,20 +390,6 @@ This is because automated prompt optimization typically hill-climb a predefined 
 
 A pragmatic approach is to use LLMs to improve your prompt based on [open coding](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed) (open-ended notes about traces). This way, you maintain a human in the loop who is looking at the data and externalizing their requirements. Once you have a high-quality set of evals, prompt optimization can be effective for that last mile of performance.
 
-## Q: Can my evaluators also be used to automatically *fix* or *correct* outputs in production?
-
-Yes, but only a specific subset of them. This is the distinction between an **evaluator** and a **guardrail** that we [previously discussed](#q-whats-the-difference-between-guardrails--evaluators). As a reminder:
-
-- **Evaluators** typically run *asynchronously* after a response has been generated. They measure quality but don't interfere with the user's immediate experience.  
-- **Guardrails** run *synchronously* in the critical path of the request, before the output is shown to the user. Their job is to prevent high-impact failures in real-time.
-
-There are two important decision criteria for deciding whether to use an evaluator as a guardrail:
-
-1. **Latency & Cost**: Can the evaluator run fast enough and cheaply enough in the critical request path without degrading user experience?
-
-2. **Error Rate Trade-offs**: What's the cost-benefit balance between false positives (blocking good outputs and frustrating users) versus false negatives (letting bad outputs reach users and causing harm)? In high-stakes domains like medical advice, false negatives may be more costly than false positives. In creative applications, false positives that block legitimate creativity may be more harmful than occasional quality issues.  
-
-
 <hr>
 <div class="cta" style="text-align: center;">
 <strong>👉 <em>We are teaching our last and final cohort of our [AI Evals course](https://bit.ly/evals-ai) next month</strong> (we have to get back to building). Here is a [35% discount code](https://bit.ly/evals-ai) for readers.</em> 👈
