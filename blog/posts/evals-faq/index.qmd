@@ -348,7 +348,7 @@ These two systems are complementary: when production monitoring reveals new fail
 
 ## Q: Are similarity metrics (BERTScore, ROUGE, etc.) useful for evaluating LLM outputs? 
 
-Generic metrics like BERTScore, ROUGE, cosine similarity, etc. are not useful for evaluating LLM outputs in most AI applications. Instead, we recommend using [error analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed) to identify metrics specific to your application's behavior. We recommend designing [binary pass/fail](#q-why-do-you-recommend-binary-(passfail-evaluations-instead-of-1-5-ratings-(likert-scales)).) evals (using LLM-as-judge) or code-based assertions.
+Generic metrics like BERTScore, ROUGE, cosine similarity, etc. are not useful for evaluating LLM outputs in most AI applications. Instead, we recommend using [error analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed) to identify metrics specific to your application's behavior. We recommend designing [binary pass/fail](#q-why-do-you-recommend-binary-(passfail-evaluations-instead-of-1-5-ratings-(likert-scales).) evals (using LLM-as-judge) or code-based assertions.
 
 As an example, consider a real estate CRM assistant. Suggesting showings that aren't available (can be tested with an assertion) or confusing client personas (can be tested with a LLM-as-judge) is problematic . Generic metrics like similarity or verbosity won't catch this. A relevant quote from the course:
 
@@ -404,8 +404,6 @@ There are two important decision criteria for deciding whether to use an evaluat
 2. **Error Rate Trade-offs**: What's the cost-benefit balance between false positives (blocking good outputs and frustrating users) versus false negatives (letting bad outputs reach users and causing harm)? In high-stakes domains like medical advice, false negatives may be more costly than false positives. In creative applications, false positives that block legitimate creativity may be more harmful than occasional quality issues.  
 
 Most guardrails are designed to be **fast** (to avoid harming user experience) and have a **very low false positive rate** (to avoid blocking valid responses). For this reason, you would almost never use a slow or non-deterministic LLM-as-Judge as a synchronous guardrail.  However, these tradeoffs might be different for your use case.
-
-For more details, see [this blog post](https://hamel.dev/blog/posts/guardrails/).
 
 <hr>
 <div class="cta" style="text-align: center;">

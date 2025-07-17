@@ -390,6 +390,30 @@ This is because automated prompt optimization typically hill-climb a predefined 
 
 A pragmatic approach is to use LLMs to improve your prompt based on [open coding](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed) (open-ended notes about traces). This way, you maintain a human in the loop who is looking at the data and externalizing their requirements. Once you have a high-quality set of evals, prompt optimization can be effective for that last mile of performance.
 
+
+## Q: What is the ideal team structure for building and evaluating AI products?
+
+**No single structure works permanently. Organizations evolve through three models as AI maturity grows: federated, centralized, then hybrid.**
+
+### The Evolution Pattern
+
+**Nascent Stage (Federated):** Embed practitioners directly in business teams where they can move fast and own models end-to-end without shared infrastructure. You're here with few or no AI products in production, each team handling their own AI. The trade-off is speed for efficiency. Teams move quickly but duplicate work and use inconsistent methods. Success means demonstrating business impact quickly.
+
+**Scaling Stage (Centralized):** When multiple teams want AI capabilities and you have a few AI products in production, form a Center of Excellence to build infrastructure, evaluation standards, and governance. Infrastructure duplication becomes painful at this stage. The trade-off is control for agility: you gain consistency but the central team becomes a bottleneck. This team provides the "factory" for reliable AI delivery.
+
+**Mature Stage (Hybrid):** As AI drives core business functions and you have dozens of AI products in production, transform the central team into a platform function while distributing AI capabilities to business units. The hub maintains infrastructure and compliance while spokes own domain applications.
+
+### Maturity Indicators
+
+**You're Nascent if:** Few or no models in production. AI work happens in pockets without formal strategy, and you're still proving ROI. Most companies are currently here.
+
+**You're Scaling when:** Leadership commits to AI investment and multiple teams need capabilities. There are only a few AI products in production.
+
+**You're Mature when:** AI drives core processes requiring coordinated updates across departments. Significant focus is on optimizing and scaling AI systems.
+
+AI maturity differs from IT maturity.  Mature engineering organizations often start at Nascent for AI because it requires different skills, infrastructure, and governance patterns. Platform timing follows maturity: Nascent teams don't need platforms, Scaling teams must build them, and Mature organizations leverage the built platform to balance control and flexibility.
+
+
 <hr>
 <div class="cta" style="text-align: center;">
 <strong>👉 <em>We are teaching our last and final cohort of our [AI Evals course](https://bit.ly/evals-ai) next month</strong> (we have to get back to building). Here is a [35% discount code](https://bit.ly/evals-ai) for readers.</em> 👈
