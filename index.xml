@@ -17,7 +17,7 @@
 <width>144</width>
 </image>
 <generator>quarto-1.7.31</generator>
-<lastBuildDate>Mon, 14 Jul 2025 14:38:17 GMT</lastBuildDate>
+<lastBuildDate>Thu, 17 Jul 2025 06:09:45 GMT</lastBuildDate>
 <item>
   <title>Frequently Asked Questions (And Answers) About AI Evals</title>
   <dc:creator>Hamel Husain</dc:creator>
@@ -312,7 +312,7 @@
 </section>
 <section id="q-are-similarity-metrics-bertscore-rouge-etc.-useful-for-evaluating-llm-outputs" class="level2">
 <h2 class="anchored" data-anchor-id="q-are-similarity-metrics-bertscore-rouge-etc.-useful-for-evaluating-llm-outputs">Q: Are similarity metrics (BERTScore, ROUGE, etc.) useful for evaluating LLM outputs?</h2>
-<p>Generic metrics like BERTScore, ROUGE, cosine similarity, etc. are not useful for evaluating LLM outputs in most AI applications. Instead, we recommend using error analysis to identify metrics specific to your application’s behavior. We recommend designing binary pass/fail evals (using LLM-as-judge) or code-based assertions.</p>
+<p>Generic metrics like BERTScore, ROUGE, cosine similarity, etc. are not useful for evaluating LLM outputs in most AI applications. Instead, we recommend using error analysis to identify metrics specific to your application’s behavior. We recommend designing [binary pass/fail](#q-why-do-you-recommend-binary-(passfail-evaluations-instead-of-1-5-ratings-(likert-scales).) evals (using LLM-as-judge) or code-based assertions.</p>
 <p>As an example, consider a real estate CRM assistant. Suggesting showings that aren’t available (can be tested with an assertion) or confusing client personas (can be tested with a LLM-as-judge) is problematic . Generic metrics like similarity or verbosity won’t catch this. A relevant quote from the course:</p>
 <blockquote class="blockquote">
 <p>“The abuse of generic metrics is endemic. Many eval vendors promote off the shelf metrics, which ensnare engineers into superfluous tasks.”</p>
@@ -346,6 +346,21 @@
 <p>Automating prompt engineering can be tempting, but you should be skeptical of tools that promise to optimize prompts for you, especially in early stages of development. When you write a prompt, you are forced to clarify your assumptions and externalize your requirements. Good writing is good thinking <sup>2</sup>. If you delegate this task to an automated tool too early, you risk never fully understanding your own requirements or the model’s failure modes.</p>
 <p>This is because automated prompt optimization typically hill-climb a predefined evaluation metric. It can refine a prompt to perform better on known failures, but it cannot discover <em>new</em> ones. Discovering new errors requires error analysis. Furthermore, research shows that evaluation criteria tends to shift after reviewing a model’s outputs, a phenomenon known as “criteria drift” <sup>3</sup>. This means that evaluation is an iterative, human-driven sensemaking process, not a static target that can be set once and handed off to an optimizer.</p>
 <p>A pragmatic approach is to use LLMs to improve your prompt based on open coding (open-ended notes about traces). This way, you maintain a human in the loop who is looking at the data and externalizing their requirements. Once you have a high-quality set of evals, prompt optimization can be effective for that last mile of performance.</p>
+</section>
+<section id="q-can-my-evaluators-also-be-used-to-automatically-fix-or-correct-outputs-in-production" class="level2">
+<h2 class="anchored" data-anchor-id="q-can-my-evaluators-also-be-used-to-automatically-fix-or-correct-outputs-in-production">Q: Can my evaluators also be used to automatically <em>fix</em> or <em>correct</em> outputs in production?</h2>
+<p>Yes, but only a specific subset of them. This is the distinction between an <strong>evaluator</strong> and a <strong>guardrail</strong> that we previously discussed. As a reminder:</p>
+<ul>
+<li><strong>Evaluators</strong> typically run <em>asynchronously</em> after a response has been generated. They measure quality but don’t interfere with the user’s immediate experience.<br>
+</li>
+<li><strong>Guardrails</strong> run <em>synchronously</em> in the critical path of the request, before the output is shown to the user. Their job is to prevent high-impact failures in real-time.</li>
+</ul>
+<p>There are two important decision criteria for deciding whether to use an evaluator as a guardrail:</p>
+<ol type="1">
+<li><p><strong>Latency &amp; Cost</strong>: Can the evaluator run fast enough and cheaply enough in the critical request path without degrading user experience?</p></li>
+<li><p><strong>Error Rate Trade-offs</strong>: What’s the cost-benefit balance between false positives (blocking good outputs and frustrating users) versus false negatives (letting bad outputs reach users and causing harm)? In high-stakes domains like medical advice, false negatives may be more costly than false positives. In creative applications, false positives that block legitimate creativity may be more harmful than occasional quality issues.</p></li>
+</ol>
+<p>Most guardrails are designed to be <strong>fast</strong> (to avoid harming user experience) and have a <strong>very low false positive rate</strong> (to avoid blocking valid responses). For this reason, you would almost never use a slow or non-deterministic LLM-as-Judge as a synchronous guardrail. However, these tradeoffs might be different for your use case.</p>
 <hr>
 <div class="cta" style="text-align: center;">
 <p><strong>👉 <em>We are teaching our last and final cohort of our <a href="https://bit.ly/evals-ai">AI Evals course</a> next month</em></strong><em> (we have to get back to building). Here is a <a href="https://bit.ly/evals-ai">35% discount code</a> for readers.</em> 👈</p>
@@ -366,7 +381,7 @@
   <category>LLMs</category>
   <category>evals</category>
   <guid>https://hamel.dev/blog/posts/evals-faq/</guid>
-  <pubDate>Mon, 14 Jul 2025 14:38:17 GMT</pubDate>
+  <pubDate>Thu, 17 Jul 2025 06:09:45 GMT</pubDate>
   <media:content url="https://hamel.dev/blog/posts/evals-faq/images/eval_faq.png" medium="image" type="image/png" height="96" width="144"/>
 </item>
 <item>
