@@ -1,4 +1,4 @@
-## Q: Should I use \"ready-to-use\" evaluation metrics? [🔗](/blog/posts/evals-faq/should-i-use-ready-to-use-evaluation-metrics.html){.faq-link-icon}
+## Q: Should I use \"ready-to-use\" evaluation metrics? [↗](/blog/posts/evals-faq/should-i-use-ready-to-use-evaluation-metrics.html){.faq-link-icon}
 
 **No. Generic evaluations waste time and create false confidence.** (Unless you're using them for exploration). 
 

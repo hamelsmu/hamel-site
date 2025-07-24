@@ -1,4 +1,4 @@
-## Q: How should I approach evaluating my RAG system? [🔗](/blog/posts/evals-faq/how-should-i-approach-evaluating-my-rag-system.html){.faq-link-icon}
+## Q: How should I approach evaluating my RAG system? [↗](/blog/posts/evals-faq/how-should-i-approach-evaluating-my-rag-system.html){.faq-link-icon}
 
 RAG systems have two distinct components that require different evaluation approaches: retrieval and generation.
 

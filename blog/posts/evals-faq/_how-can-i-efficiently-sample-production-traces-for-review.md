@@ -1,4 +1,4 @@
-## Q: How can I efficiently sample production traces for review? [🔗](/blog/posts/evals-faq/how-can-i-efficiently-sample-production-traces-for-review.html){.faq-link-icon}
+## Q: How can I efficiently sample production traces for review? [↗](/blog/posts/evals-faq/how-can-i-efficiently-sample-production-traces-for-review.html){.faq-link-icon}
 
 It can be cumbersome to review traces randomly, especially when most traces don't have an error. These sampling strategies help you find traces more likely to reveal problems:
 

@@ -1,4 +1,4 @@
-## Q: Seriously Hamel.  Stop the bullshit.  What's your favorite eval vendor? [🔗](/blog/posts/evals-faq/seriously-hamel-stop-the-bullshit-whats-your-favorite-eval-vendor.html){.faq-link-icon}
+## Q: Seriously Hamel.  Stop the bullshit.  What's your favorite eval vendor? [↗](/blog/posts/evals-faq/seriously-hamel-stop-the-bullshit-whats-your-favorite-eval-vendor.html){.faq-link-icon}
 
 Eval tools are in an intensely competitive space.  It would be futile to compare their features.  If I tried to do such an analysis, it would be invalidated in a week!  Vendors I encounter the most organically in my work are: [Langsmith](https://www.langchain.com/langsmith), [Arize](https://arize.com/) and [Braintrust](https://www.braintrust.dev/).
 

@@ -53,7 +53,7 @@ def create_clean_include(qmd_file, output_dir):
     individual_url = f"/blog/posts/evals-faq/{qmd_file.stem}.html"
     
     # Create clean content with H2 heading and subtle link icon
-    clean_content = f"## Q: {title} [🔗]({individual_url}){{.faq-link-icon}}\n\n{content}"
+    clean_content = f"## Q: {title} [↗]({individual_url}){{.faq-link-icon}}\n\n{content}"
     
     # Create output filename with _ prefix
     output_file = output_dir / f"_{qmd_file.stem}.md"

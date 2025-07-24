@@ -48,10 +48,7 @@ Each individual FAQ file follows this template:
 ---
 title: "Q: [Question Title]"
 description: "[150-char SEO description]"
-categories: [LLMs, evals, faq]
-author: 
-  - Hamel Husain
-  - Shreya Shankar
+categories: [LLMs, evals, faq, faq-individual]
 date: last-modified
 image: images/eval_faq.png
 exclude-from-listing: true
@@ -99,41 +96,80 @@ The combined post uses includes and has specific CTA placement:
 
 ## Adding New FAQs
 
-### Method 1: Manual Addition
+### Step-by-Step Guide for New FAQ
+
+**For both humans and LLMs:** Follow these exact steps to add a new FAQ while maintaining system consistency.
 
 1. **Create individual FAQ file**:
    ```bash
-   # Use kebab-case filename
-   touch new-faq-question.qmd
+   # Use kebab-case filename matching the question
+   # Example: how-do-i-evaluate-multimodal-llm-outputs.qmd
+   touch blog/posts/evals-faq/new-faq-question.qmd
    ```
 
-2. **Add proper frontmatter** (see template above)
+2. **Add proper frontmatter** (use this exact template, no author field):
+   ```yaml
+   ---
+   title: "Q: [Your Question Here]"
+   description: "[150-char SEO-optimized description of the answer]"
+   categories: [LLMs, evals, faq, faq-individual]
+   date: last-modified
+   image: images/eval_faq.png
+   exclude-from-listing: true
+   aliases:
+     - /evals-faq/[kebab-case-slug]
+   page-navigation: true
+   ---
+   ```
 
-3. **Write content** (just the answer, no question header)
-
-4. **Add context include** at the end:
+3. **Write content** (just the answer, question already in title):
    ```markdown
-   `{{< include _faq-context.qmd >}}`
+   Your answer content here. Focus on practical, actionable advice.
+   
+   Use consistent voice with existing FAQs. Include links to related FAQs using:
+   [related topic](/blog/posts/evals-faq/related-topic.html)
+   
+   {{< include _faq-context.qmd >}}
    ```
 
-5. **Update combined post** (`index.qmd`):
+4. **Add to combined post** (`index.qmd`):
    ```markdown
-   `{{< include new-faq-question.qmd >}}`
+   # Find the appropriate section and add:
+   {{< include new-faq-question.qmd >}}
    ```
 
-6. **Test and validate** (see testing section below)
+5. **Run the system** (this regenerates includes):
+   ```bash
+   quarto render blog/posts/evals-faq/index.qmd
+   ```
 
-### Method 2: Using Extraction Script
+6. **Validate everything works**:
+   ```bash
+   cd blog/posts/evals-faq/scripts
+   python check_faq_links.py
+   ```
+
+### Method 2: Using Extraction Script (Advanced)
 
 If you have a combined FAQ post with new sections:
 
 1. **Update the source content** in a temporary file
 2. **Run extraction script**:
    ```bash
+   cd blog/posts/evals-faq/scripts
    python extract_faqs.py
    ```
 3. **Review generated files** and update frontmatter as needed
 4. **Test thoroughly**
+
+### Key Rules
+
+- **Filename**: Use kebab-case matching the question
+- **Categories**: Always include `[LLMs, evals, faq, faq-individual]`
+- **No author field**: Individual FAQs don't show author information
+- **Context include**: Always end with `{{< include _faq-context.qmd >}}`
+- **Links**: Use full URLs to other FAQ posts for proper SEO
+- **Testing**: Always run link validation after changes
 
 ## Available Utility Scripts
 

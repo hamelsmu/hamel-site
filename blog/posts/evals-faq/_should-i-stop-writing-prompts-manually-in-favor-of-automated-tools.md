@@ -1,4 +1,4 @@
-## Q: Should I stop writing prompts manually in favor of automated tools? [🔗](/blog/posts/evals-faq/should-i-stop-writing-prompts-manually-in-favor-of-automated-tools.html){.faq-link-icon}
+## Q: Should I stop writing prompts manually in favor of automated tools? [↗](/blog/posts/evals-faq/should-i-stop-writing-prompts-manually-in-favor-of-automated-tools.html){.faq-link-icon}
 
 Automating prompt engineering can be tempting, but you should be skeptical of tools that promise to optimize prompts for you, especially in  early stages of development. When you write a prompt, you are forced to clarify your assumptions and externalize your requirements. Good writing is good thinking [^2].  If you delegate this task to an automated tool too early, you risk never fully understanding your own requirements or the model's failure modes.
 
