@@ -18,11 +18,11 @@ Example: "Find Berkeley homes under $1M and schedule viewings" breaks into: para
 
 **Use transition failure matrices to understand error patterns.** Create a matrix where rows represent the last successful state and columns represent where the first failure occurred.  This is a great way to understand where the most failures occur.
 
-![Transition failure matrix showing hotspots in text-to-SQL agent workflow](images/shreya_matrix.png){target="_blank"}{width=75%}
+![Transition failure matrix showing hotspots in text-to-SQL agent workflow](images/shreya_matrix.png){target="_blank" width=75%}
 
 Transition matrices transform overwhelming agent complexity into actionable insights. Instead of drowning in individual trace reviews, you can immediately see that GenSQL → ExecSQL transitions cause 12 failures while DecideTool → PlanCal causes only 2. This data-driven approach guides where to invest debugging effort. Here is another [example](https://www.figma.com/deck/nwRlh5renu4s4olaCsf9lG/Failure-is-a-Funnel?node-id=2009-927&t=GJlTtxQ8bLJaQ92A-1){target="_blank"} from Bryan Bischof, that is also a text-to-SQL agent:
 
-![Bischof, Bryan "Failure is A Funnel - Data Council, 2025"](images/bischof_matrix.png){target="_blank"}{width=75%}
+![Bischof, Bryan "Failure is A Funnel - Data Council, 2025"](images/bischof_matrix.png){target="_blank" width=75%}
 
 In this example, Bryan shows variation in transition matrices across experiments. How you organize your transition matrix depends on the specifics of your application.  For example, Bryan's text-to-SQL agent has an inherent sequential workflow which he exploits for further analytical insight.  You can watch his [full talk](https://youtu.be/R_HnI9oTv3c?si=hRRhDiydHU5k6ikc){target="_blank"} for more details.
 

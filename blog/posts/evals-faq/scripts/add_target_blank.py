@@ -30,15 +30,27 @@ def update_all_links_in_file(filepath):
     
     original_content = content
     
-    # Find all markdown links: [text](url)
-    link_pattern = r'\[([^\]]*)\]\(([^)]+)\)(?!\{[^}]*target[^}]*\})'  # Don't match if target already exists
+    # Find all markdown links: [text](url) with optional existing attributes
+    link_pattern = r'\[([^\]]*)\]\(([^)]+)\)(\{[^}]*\})?'
     
     def replace_link(match):
         text = match.group(1)
         url = match.group(2)
+        existing_attrs = match.group(3) or ''
         
-        # Add target="_blank" to ALL links (both internal and external)
-        return f'[{text}]({url}){{target="_blank"}}'
+        # Skip if target="_blank" already exists
+        if 'target=' in existing_attrs:
+            return match.group(0)  # Return unchanged
+        
+        # Add target="_blank" while preserving existing attributes
+        if existing_attrs:
+            # Remove the closing brace, add target, and close
+            attrs_content = existing_attrs[1:-1]  # Remove { and }
+            new_attrs = f'{{target="_blank" {attrs_content}}}'
+        else:
+            new_attrs = '{target="_blank"}'
+        
+        return f'[{text}]({url}){new_attrs}'
     
     modified_content = re.sub(link_pattern, replace_link, content)
     
