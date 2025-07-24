@@ -21,5 +21,3 @@ Great interfaces make human review fast, clear, and motivating. We recommend [bu
 ### General Principle: Keep it minimal
 
 Keep your annotation interface minimal. Only incorporate these ideas if they provide a benefit that outweighs the additional complexity and maintenance overhead.
-
-[↩ Back to main FAQ](/blog/posts/evals-faq/#q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs){.faq-back-link}

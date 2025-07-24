@@ -16,5 +16,3 @@ A common mistake is prompting an LLM to `"give me test queries"` without structu
 **Don't generate synthetic data for problems you can fix immediately.** If your prompt never mentions handling dietary restrictions, fix the prompt rather than generating hundreds of specialized queries. Save synthetic data for complex issues requiring iteration—like an LLM consistently failing at ingredient scaling math or misinterpreting ambiguous requests.
 
 After iterating on your tuples and prompts, **run these synthetic queries through your actual system to capture full traces**. Sample 100 traces for error analysis. This number provides enough traces to manually review and identify failure patterns without being overwhelming. Rather than generating thousands of similar queries, ensure your 100 traces cover diverse combinations across your dimensions—this variety will reveal more failure modes than sheer volume.
-
-[↩ Back to main FAQ](/blog/posts/evals-faq/#q-what-is-the-best-approach-for-generating-synthetic-data){.faq-back-link}

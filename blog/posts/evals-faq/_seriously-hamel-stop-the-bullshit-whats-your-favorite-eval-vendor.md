@@ -7,5 +7,3 @@ When I help clients with vendor selection, the decision weighs heavily towards w
 I have no favorite vendor.  At the core, their features are very similar - and I often build [custom tools](https://hamel.dev/blog/posts/evals/#q-should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf) on top of them to fit my needs. 
 
 My suggestion is to explore the vendors and see which one you like the most.
-
-[↩ Back to main FAQ](/blog/posts/evals-faq/#q-seriously-hamel-stop-the-bullshit-whats-your-favorite-eval-vendor){.faq-back-link}

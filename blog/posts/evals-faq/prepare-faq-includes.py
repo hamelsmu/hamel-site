@@ -49,6 +49,9 @@ def create_clean_include(qmd_file, output_dir):
     # Remove the context include from content (should only appear in individual pages)
     content = re.sub(r'\{\{< include _faq-context\.qmd >\}\}\s*', '', content).strip()
     
+    # Remove back links from content (should only appear in individual pages)
+    content = re.sub(r'\[↩ Back to main FAQ\]\([^)]+\)\{\.faq-back-link\}\s*', '', content).strip()
+    
     # Create URL for individual FAQ post
     individual_url = f"/blog/posts/evals-faq/{qmd_file.stem}.html"
     

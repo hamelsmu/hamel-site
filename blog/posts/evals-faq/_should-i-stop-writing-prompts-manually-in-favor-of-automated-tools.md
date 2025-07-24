@@ -8,5 +8,3 @@ A pragmatic approach is to use LLMs to improve your prompt based on [open coding
 
 [^2]: Paul Graham, ["Writes and Write-Nots"](https://paulgraham.com/writes.html)
 [^3]: Shreya Shankar, et al., ["Who Validates the Validators? Aligning LLM-Assisted Evaluation of LLM Outputs with Human Preferences"](https://arxiv.org/abs/2404.12272)
-
-[↩ Back to main FAQ](/blog/posts/evals-faq/#q-should-i-stop-writing-prompts-manually-in-favor-of-automated-tools){.faq-back-link}

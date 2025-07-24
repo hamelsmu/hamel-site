@@ -23,5 +23,3 @@ Be prepared to build most of your evaluators from scratch. Generic metrics like 
 #### 4. APIs That Support Custom Annotation Apps
 
 Custom annotation interfaces [work best for most teams](/blog/posts/evals-faq/should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf.html). This requires observability platforms with thoughtful APIs. I often have to build my own libraries and abstractions just to make bulk data export manageable. You shouldn't have to paginate through thousands of requests or handle timeout-prone endpoints just to get your data. Look for platforms that provide true bulk export capabilities and, crucially, APIs that let you write annotations back efficiently.
-
-[↩ Back to main FAQ](/blog/posts/evals-faq/#q-what-gaps-in-eval-tooling-should-i-be-prepared-to-fill-myself){.faq-back-link}

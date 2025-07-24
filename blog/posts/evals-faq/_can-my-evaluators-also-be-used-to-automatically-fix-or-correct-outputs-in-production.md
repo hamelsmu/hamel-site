@@ -21,5 +21,3 @@ Most guardrails are designed to be **fast** (to avoid harming user experience) a
 [^1]: [Eleanor Berger](https://www.linkedin.com/in/intellectronica/), our wonderful TA.
 [^2]: Paul Graham, ["Writes and Write-Nots"](https://paulgraham.com/writes.html)
 [^3]: Shreya Shankar, et al., ["Who Validates the Validators? Aligning LLM-Assisted Evaluation of LLM Outputs with Human Preferences"](https://arxiv.org/abs/2404.12272)
-
-[↩ Back to main FAQ](/blog/posts/evals-faq/#q-can-my-evaluators-also-be-used-to-automatically-fix-or-correct-outputs-in-production){.faq-back-link}

@@ -3,5 +3,3 @@
 Start with [error analysis](/blog/posts/evals-faq/why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed.html), not infrastructure. Spend 30 minutes manually reviewing 20-50 LLM outputs whenever you make significant changes. Use one [domain expert](/blog/posts/evals-faq/how-many-people-should-annotate-my-llm-outputs.html) who understands your users as your quality decision maker (a "[benevolent dictator](/blog/posts/evals-faq/how-many-people-should-annotate-my-llm-outputs.html)").
 
 If possible, **use notebooks** to help you review traces and analyze data. In our opinion, this is the single most effective tool for evals because you can write arbitrary code, visualize data, and iterate quickly. You can even build your own [custom annotation interface](/blog/posts/evals-faq/what-makes-a-good-custom-interface-for-reviewing-llm-outputs.html) right inside notebooks, as shown in this [video](https://youtu.be/aqKUwPKBkB0?si=5KDmMQnRzO_Ce9xH).
-
-[↩ Back to main FAQ](/blog/posts/evals-faq/#q-whats-a-minimum-viable-evaluation-setup){.faq-back-link}

@@ -9,5 +9,3 @@ Having binary options forces people to make a decision rather than hiding uncert
 For tracking gradual improvements, consider measuring specific sub-components with their own binary checks rather than using a scale. For example, instead of rating factual accuracy 1-5, you could track "4 out of 5 expected facts included" as separate binary checks. This preserves the ability to measure progress while maintaining clear, objective criteria.
 
 Start with binary labels to understand what 'bad' looks like. Numeric labels are advanced and usually not necessary.
-
-[↩ Back to main FAQ](/blog/posts/evals-faq/#q-why-do-you-recommend-binary-passfail-evaluations-instead-of-1-5-ratings-likert-scales){.faq-back-link}
