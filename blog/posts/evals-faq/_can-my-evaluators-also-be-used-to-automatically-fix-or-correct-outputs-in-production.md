@@ -1,4 +1,4 @@
-## Q: Can my evaluators also be used to automatically *fix* or *correct* outputs in production? [↗](/blog/posts/evals-faq/can-my-evaluators-also-be-used-to-automatically-fix-or-correct-outputs-in-production.html){.faq-individual-link}
+## Q: Can my evaluators also be used to automatically *fix* or *correct* outputs in production?
 
 Yes, but only a specific subset of them. This is the distinction between an **evaluator** and a **guardrail** that we [previously discussed](/blog/posts/evals-faq/whats-the-difference-between-guardrails-evaluators.html). As a reminder:
 
@@ -16,7 +16,7 @@ Most guardrails are designed to be **fast** (to avoid harming user experience) a
 <hr>
 <div class="cta" style="text-align: center;">
 <strong>👉 <em>We are teaching our last and final cohort of our [AI Evals course](https://bit.ly/evals-ai) next month</strong> (we have to get back to building). Here is a [35% discount code](https://bit.ly/evals-ai) for readers.</em> 👈
-</div>
+</div> [↗](/blog/posts/evals-faq/can-my-evaluators-also-be-used-to-automatically-fix-or-correct-outputs-in-production.html){.faq-individual-link}
 
 [^1]: [Eleanor Berger](https://www.linkedin.com/in/intellectronica/), our wonderful TA.
 [^2]: Paul Graham, ["Writes and Write-Nots"](https://paulgraham.com/writes.html)

@@ -1,4 +1,4 @@
-## Q: Why do you recommend binary (pass/fail) evaluations instead of 1-5 ratings (Likert scales)? [↗](/blog/posts/evals-faq/why-do-you-recommend-binary-passfail-evaluations-instead-of-1-5-ratings-likert-scales.html){.faq-individual-link}
+## Q: Why do you recommend binary (pass/fail) evaluations instead of 1-5 ratings (Likert scales)?
 
 > Engineers often believe that Likert scales (1-5 ratings) provide more information than binary evaluations, allowing them to track gradual improvements. However, this added complexity often creates more problems than it solves in practice.
 
@@ -8,4 +8,4 @@ Having binary options forces people to make a decision rather than hiding uncert
 
 For tracking gradual improvements, consider measuring specific sub-components with their own binary checks rather than using a scale. For example, instead of rating factual accuracy 1-5, you could track "4 out of 5 expected facts included" as separate binary checks. This preserves the ability to measure progress while maintaining clear, objective criteria.
 
-Start with binary labels to understand what 'bad' looks like. Numeric labels are advanced and usually not necessary.
+Start with binary labels to understand what 'bad' looks like. Numeric labels are advanced and usually not necessary. [↗](/blog/posts/evals-faq/why-do-you-recommend-binary-passfail-evaluations-instead-of-1-5-ratings-likert-scales.html){.faq-individual-link}

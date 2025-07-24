@@ -1,4 +1,4 @@
-## Q: Is RAG dead? [↗](/blog/posts/evals-faq/is-rag-dead.html){.faq-individual-link}
+## Q: Is RAG dead?
 
 Question: Should I avoid using RAG for my AI application after reading that ["RAG is dead"](https://pashpashpash.substack.com/p/why-i-no-longer-recommend-rag-for) for coding agents?
 
@@ -14,4 +14,4 @@ You have multiple retrieval strategies available, ranging from simple keyword ma
 
 Unfortunately, "RAG" has become a buzzword with no shared definition. Some people use it to mean any retrieval system, others restrict it to vector databases. Focus on the ultimate goal: getting your LLM the context it needs to succeed. Whether that's through vector search, agentic exploration, or hybrid approaches is a product and engineering decision.
 
-Rather than following categorical advice to avoid or embrace RAG, experiment with different retrieval approaches and measure what works best for your application.
+Rather than following categorical advice to avoid or embrace RAG, experiment with different retrieval approaches and measure what works best for your application. [↗](/blog/posts/evals-faq/is-rag-dead.html){.faq-individual-link}

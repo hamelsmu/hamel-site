@@ -55,8 +55,20 @@ def create_clean_include(qmd_file, output_dir):
     # Create URL for individual FAQ post
     individual_url = f"/blog/posts/evals-faq/{qmd_file.stem}.html"
     
-    # Create clean content with H2 heading and individual post link
-    clean_content = f"## Q: {title} [↗]({individual_url}){{.faq-individual-link}}\n\n{content}"
+    # Create clean content with H2 heading and individual post link at the end
+    # Place link at the end of content, handling footnotes if they exist
+    if re.search(r'\[\^\d+\]:', content):
+        # If footnotes exist, place link before them
+        footnote_pattern = r'(\n\n\[\^\d+\]:.*?)$'
+        if re.search(footnote_pattern, content, re.DOTALL):
+            content_with_link = re.sub(footnote_pattern, r' [↗]({}){{.faq-individual-link}}\1'.format(individual_url), content, flags=re.DOTALL)
+        else:
+            content_with_link = f"{content} [↗]({individual_url}){{.faq-individual-link}}"
+    else:
+        # No footnotes, just add at the end
+        content_with_link = f"{content} [↗]({individual_url}){{.faq-individual-link}}"
+    
+    clean_content = f"## Q: {title}\n\n{content_with_link}"
     
     # Create output filename with _ prefix
     output_file = output_dir / f"_{qmd_file.stem}.md"

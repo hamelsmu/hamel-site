@@ -1,4 +1,4 @@
-## Q: How much of my development budget should I allocate to evals? [↗](/blog/posts/evals-faq/how-much-of-my-development-budget-should-i-allocate-to-evals.html){.faq-individual-link}
+## Q: How much of my development budget should I allocate to evals?
 
 It's important to recognize that evaluation is part of the development process rather than a distinct line item, similar to how debugging is part of software development.
 
@@ -8,4 +8,4 @@ The decision to build automated evaluators comes down to [cost-benefit analysis]
 
 In the projects we've worked on, **we've spent 60-80% of our development time on error analysis and evaluation**. Expect most of your effort to go toward understanding failures (i.e. looking at data) rather than building automated checks.
 
-Be [wary of optimizing for high eval pass rates](https://ai-execs.com/2_intro.html#a-case-study-in-misleading-ai-advice). If you're passing 100% of your evals, you're likely not challenging your system enough. A 70% pass rate might indicate a more meaningful evaluation that's actually stress-testing your application. Focus on evals that help you catch real issues, not ones that make your metrics look good.
+Be [wary of optimizing for high eval pass rates](https://ai-execs.com/2_intro.html#a-case-study-in-misleading-ai-advice). If you're passing 100% of your evals, you're likely not challenging your system enough. A 70% pass rate might indicate a more meaningful evaluation that's actually stress-testing your application. Focus on evals that help you catch real issues, not ones that make your metrics look good. [↗](/blog/posts/evals-faq/how-much-of-my-development-budget-should-i-allocate-to-evals.html){.faq-individual-link}

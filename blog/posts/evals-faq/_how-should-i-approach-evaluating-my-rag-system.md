@@ -1,4 +1,4 @@
-## Q: How should I approach evaluating my RAG system? [↗](/blog/posts/evals-faq/how-should-i-approach-evaluating-my-rag-system.html){.faq-individual-link}
+## Q: How should I approach evaluating my RAG system?
 
 RAG systems have two distinct components that require different evaluation approaches: retrieval and generation.
 
@@ -14,4 +14,4 @@ In addition to Jason's six evals, error analysis on your specific data may revea
 
 Finally, when implementing Jason's Tier 2 and 3 metrics, don't just use prompts off the shelf. The standard LLM-as-judge process requires several steps: error analysis, prompt iteration, creating labeled examples, and measuring your judge's accuracy against human labels. Once you know your judge's True Positive and True Negative rates, you can correct its estimates to determine the actual failure rate in your system. Skip this validation and your judges may not reflect your actual quality criteria.
 
-In summary, debug retrieval first using IR metrics, then tackle generation quality using properly validated LLM judges.
+In summary, debug retrieval first using IR metrics, then tackle generation quality using properly validated LLM judges. [↗](/blog/posts/evals-faq/how-should-i-approach-evaluating-my-rag-system.html){.faq-individual-link}

@@ -1,4 +1,4 @@
-## Q: Are similarity metrics (BERTScore, ROUGE, etc.) useful for evaluating LLM outputs? [↗](/blog/posts/evals-faq/are-similarity-metrics-bertscore-rouge-etc-useful-for-evaluating-llm-outputs.html){.faq-individual-link}
+## Q: Are similarity metrics (BERTScore, ROUGE, etc.) useful for evaluating LLM outputs?
 
 Generic metrics like BERTScore, ROUGE, cosine similarity, etc. are not useful for evaluating LLM outputs in most AI applications. Instead, we recommend using [error analysis](/blog/posts/evals-faq/why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed.html) to identify metrics specific to your application's behavior. We recommend designing [binary pass/fail](/blog/posts/evals-faq/why-do-you-recommend-binary-passfail-evaluations-instead-of-1-5-ratings-likert-scales.html).) evals (using LLM-as-judge) or code-based assertions.
 
@@ -6,4 +6,4 @@ As an example, consider a real estate CRM assistant. Suggesting showings that ar
 
 > "The abuse of generic metrics is endemic. Many eval vendors promote off the shelf metrics, which ensnare engineers into superfluous tasks."
 
-Similarity metrics aren't always useless. They have utility in domains like search and recommendation (and therefore can be useful for [optimizing and debugging retrieval](/blog/posts/evals-faq/how-should-i-approach-evaluating-my-rag-system.html) for RAG). For example, cosine similarity between embeddings can measure semantic closeness in retrieval systems, and average pairwise similarity can assess output diversity (where lower similarity indicates higher diversity).
+Similarity metrics aren't always useless. They have utility in domains like search and recommendation (and therefore can be useful for [optimizing and debugging retrieval](/blog/posts/evals-faq/how-should-i-approach-evaluating-my-rag-system.html) for RAG). For example, cosine similarity between embeddings can measure semantic closeness in retrieval systems, and average pairwise similarity can assess output diversity (where lower similarity indicates higher diversity). [↗](/blog/posts/evals-faq/are-similarity-metrics-bertscore-rouge-etc-useful-for-evaluating-llm-outputs.html){.faq-individual-link}

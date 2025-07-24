@@ -1,4 +1,4 @@
-## Q: How do I evaluate agentic workflows? [↗](/blog/posts/evals-faq/how-do-i-evaluate-agentic-workflows.html){.faq-individual-link}
+## Q: How do I evaluate agentic workflows?
 
 We recommend evaluating agentic workflows in two phases:
 
@@ -28,4 +28,4 @@ In this example, Bryan shows variation in transition matrices across experiments
 
 **Creating Test Cases for Agent Failures**
 
-Creating test cases for agent failures follows the same principles as our previous FAQ on [debugging multi-turn conversation traces](/blog/posts/evals-faq/how-do-i-debug-multi-turn-conversation-traces.html) (i.e. try to reproduce the error in the simplest way possible, only use multi-turn tests when the failure actually requires conversation context, etc.).
+Creating test cases for agent failures follows the same principles as our previous FAQ on [debugging multi-turn conversation traces](/blog/posts/evals-faq/how-do-i-debug-multi-turn-conversation-traces.html) (i.e. try to reproduce the error in the simplest way possible, only use multi-turn tests when the failure actually requires conversation context, etc.). [↗](/blog/posts/evals-faq/how-do-i-evaluate-agentic-workflows.html){.faq-individual-link}

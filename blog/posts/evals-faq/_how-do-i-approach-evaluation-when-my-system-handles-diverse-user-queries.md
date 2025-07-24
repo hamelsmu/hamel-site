@@ -1,4 +1,4 @@
-## Q: How do I approach evaluation when my system handles diverse user queries? [↗](/blog/posts/evals-faq/how-do-i-approach-evaluation-when-my-system-handles-diverse-user-queries.html){.faq-individual-link}
+## Q: How do I approach evaluation when my system handles diverse user queries?
 
 > Complex applications often support vastly different query patterns—from "What's the return policy?" to "Compare pricing trends across regions for products matching these criteria." Each query type exercises different system capabilities, leading to confusion on how to design eval criteria.
 
@@ -12,4 +12,4 @@ To see an example of basic error analysis in action, [see this video](https://yo
 <div class="cta" style="text-align: center;">
 <strong>👉 <em>We are teaching our last and final cohort of our [AI Evals course](https://bit.ly/evals-ai) next month</strong> (we have to get back to building). Here is a [35% discount code](https://bit.ly/evals-ai) for readers.</em> 👈
 </div>
-<hr>
+<hr> [↗](/blog/posts/evals-faq/how-do-i-approach-evaluation-when-my-system-handles-diverse-user-queries.html){.faq-individual-link}
