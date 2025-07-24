@@ -20,9 +20,10 @@ blog/posts/evals-faq/
 ├── index.qmd                    # Combined post (uses includes)
 ├── index.qmd.backup            # Original backup (DO NOT DELETE)
 ├── _faq-context.qmd            # Context include for individual posts
-├── AGENT.md                    # This documentation file
+├── _docs/
 ├── scripts/                    # Utility scripts directory
-│   ├── AGENT.md               # Scripts-specific documentation
+│   │   ├── AGENT.md           # This documentation file
+│   │   └── scripts.md         # Scripts-specific documentation
 │   ├── extract_faqs.py        # Split combined FAQ into individual posts  
 │   ├── fix_anchor_links.py    # Fix internal cross-references
 │   ├── check_faq_links.py     # Validate all links
@@ -59,7 +60,7 @@ page-navigation: true
 
 [Content here - just the answer, no question header]
 
-{{< include _faq-context.qmd >}}
+`{{< include _faq-context.qmd >}}`
 ```
 
 ### Key Frontmatter Fields
@@ -129,13 +130,13 @@ The combined post uses includes and has specific CTA placement:
    Use consistent voice with existing FAQs. Include links to related FAQs using:
    [related topic](/blog/posts/evals-faq/related-topic.html)
    
-   {{< include _faq-context.qmd >}}
+   `{{< include _faq-context.qmd >}}`
    ```
 
 4. **Add to combined post** (`index.qmd`):
    ```markdown
    # Find the appropriate section and add:
-   {{< include new-faq-question.qmd >}}
+   `{{< include new-faq-question.qmd >}}`
    ```
 
 5. **Run the system** (this regenerates includes):

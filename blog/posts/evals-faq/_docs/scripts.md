@@ -121,7 +121,7 @@ python list_faq_titles.py
    touch ../new-faq-name.qmd
    ```
 
-2. **Add proper frontmatter** (see main AGENT.md for template)
+2. **Add proper frontmatter** (see main _docs/AGENT.md for template)
 
 3. **Add navigation and context**:
    ```bash
@@ -188,7 +188,7 @@ Scripts include:
 - Backup creation before major changes
 - Idempotent operations (safe to run multiple times)
 - Dry-run capabilities where applicable
-- Rollback instructions in main AGENT.md
+- Rollback instructions in main _docs/AGENT.md
 
 ## Development Notes
 
@@ -261,4 +261,4 @@ These scripts integrate with:
 - **SEO optimization** (maintains URL structure)
 - **Site navigation** (preserves user experience)
 
-For complete system documentation, see `../AGENT.md`.
+For complete system documentation, see `AGENT.md` in this directory.
