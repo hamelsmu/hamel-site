@@ -1,4 +1,4 @@
-## Q: What makes a good custom interface for reviewing LLM outputs?
+## Q: What makes a good custom interface for reviewing LLM outputs? [🔗](/blog/posts/evals-faq/what-makes-a-good-custom-interface-for-reviewing-llm-outputs.html){.faq-link-icon}
 
 Great interfaces make human review fast, clear, and motivating. We recommend [building your own annotation tool](/blog/posts/evals-faq/should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf.html) customized to your domain. The following features are possible enhancements we've seen work well, but you don't need all of them. The screenshots shown are illustrative examples to clarify concepts. In practice, I rarely implement all these features in a single app. It's ultimately a judgment call based on your specific needs and constraints.
 
