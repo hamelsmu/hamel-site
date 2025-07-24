@@ -1,4 +1,5 @@
-## Q: Can my evaluators also be used to automatically *fix* or *correct* outputs in production? [↗](/blog/posts/evals-faq/can-my-evaluators-also-be-used-to-automatically-fix-or-correct-outputs-in-production.html){.faq-link-icon}
+## Q: Can my evaluators also be used to automatically *fix* or *correct* outputs in production?
+<div class="faq-individual-link">[View individual post ↗](/blog/posts/evals-faq/can-my-evaluators-also-be-used-to-automatically-fix-or-correct-outputs-in-production.html)</div>
 
 Yes, but only a specific subset of them. This is the distinction between an **evaluator** and a **guardrail** that we [previously discussed](/blog/posts/evals-faq/whats-the-difference-between-guardrails-evaluators.html). As a reminder:
 

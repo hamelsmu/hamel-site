@@ -1,4 +1,5 @@
-## Q: How are evaluations used differently in CI/CD vs. monitoring production? [↗](/blog/posts/evals-faq/how-are-evaluations-used-differently-in-cicd-vs-monitoring-production.html){.faq-link-icon}
+## Q: How are evaluations used differently in CI/CD vs. monitoring production?
+<div class="faq-individual-link">[View individual post ↗](/blog/posts/evals-faq/how-are-evaluations-used-differently-in-cicd-vs-monitoring-production.html)</div>
 
 The most important difference between CI vs. production evaluation is the data used for testing.
 
