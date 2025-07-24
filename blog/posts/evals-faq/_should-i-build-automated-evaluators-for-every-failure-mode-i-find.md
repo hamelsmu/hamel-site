@@ -1,4 +1,4 @@
-## Q: Should I build automated evaluators for every failure mode I find? <span class="faq-individual-link">[↗](/blog/posts/evals-faq/should-i-build-automated-evaluators-for-every-failure-mode-i-find.html)</span>
+## Q: Should I build automated evaluators for every failure mode I find? [↗](/blog/posts/evals-faq/should-i-build-automated-evaluators-for-every-failure-mode-i-find.html){.faq-individual-link}
 
 Focus automated evaluators on failures that persist after fixing your prompts. Many teams discover their LLM doesn't meet preferences they never actually specified - like wanting short responses, specific formatting, or step-by-step reasoning. Fix these obvious gaps first before building complex evaluation infrastructure.
 

@@ -1,4 +1,4 @@
-## Q: How many people should annotate my LLM outputs? <span class="faq-individual-link">[↗](/blog/posts/evals-faq/how-many-people-should-annotate-my-llm-outputs.html)</span>
+## Q: How many people should annotate my LLM outputs? [↗](/blog/posts/evals-faq/how-many-people-should-annotate-my-llm-outputs.html){.faq-individual-link}
 
 For most small to medium-sized companies, appointing a single domain expert as a "benevolent dictator" is the most effective approach. This person—whether it's a psychologist for a mental health chatbot, a lawyer for legal document analysis, or a customer service director for support automation—becomes the definitive voice on quality standards. 
 

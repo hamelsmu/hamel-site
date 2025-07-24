@@ -1,4 +1,4 @@
-## Q: What's a minimum viable evaluation setup? <span class="faq-individual-link">[↗](/blog/posts/evals-faq/whats-a-minimum-viable-evaluation-setup.html)</span>
+## Q: What's a minimum viable evaluation setup? [↗](/blog/posts/evals-faq/whats-a-minimum-viable-evaluation-setup.html){.faq-individual-link}
 
 Start with [error analysis](/blog/posts/evals-faq/why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed.html), not infrastructure. Spend 30 minutes manually reviewing 20-50 LLM outputs whenever you make significant changes. Use one [domain expert](/blog/posts/evals-faq/how-many-people-should-annotate-my-llm-outputs.html) who understands your users as your quality decision maker (a "[benevolent dictator](/blog/posts/evals-faq/how-many-people-should-annotate-my-llm-outputs.html)").
 

@@ -1,4 +1,4 @@
-## Q: How do I approach evaluation when my system handles diverse user queries? <span class="faq-individual-link">[↗](/blog/posts/evals-faq/how-do-i-approach-evaluation-when-my-system-handles-diverse-user-queries.html)</span>
+## Q: How do I approach evaluation when my system handles diverse user queries? [↗](/blog/posts/evals-faq/how-do-i-approach-evaluation-when-my-system-handles-diverse-user-queries.html){.faq-individual-link}
 
 > Complex applications often support vastly different query patterns—from "What's the return policy?" to "Compare pricing trends across regions for products matching these criteria." Each query type exercises different system capabilities, leading to confusion on how to design eval criteria.
 

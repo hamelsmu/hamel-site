@@ -1,21 +1,26 @@
 /* css styles */
 
-/* FAQ individual post link - inline but positioned right */
+/* FAQ individual post link - positioned outside text flow */
 .faq-individual-link {
-  float: right;
-  font-size: 0.8em;
-  opacity: 0.4;
+  position: absolute;
   margin-left: 0.5rem;
-  transition: opacity 0.2s ease;
-}
-
-.faq-individual-link a {
-  color: inherit;
+  font-size: 0.7em;
+  opacity: 0.3;
   text-decoration: none;
+  transition: opacity 0.2s ease;
+  color: inherit;
+  /* Remove from document flow so it doesn't affect TOC text */
+  top: 0.2em;
 }
 
 .faq-individual-link:hover {
-  opacity: 0.8;
+  opacity: 0.7;
+  text-decoration: none;
+}
+
+/* Ensure headings have relative positioning for absolute child */
+h2:has(.faq-individual-link) {
+  position: relative;
 }
 
 /* Hide FAQ individual link on smaller screens to save space */
