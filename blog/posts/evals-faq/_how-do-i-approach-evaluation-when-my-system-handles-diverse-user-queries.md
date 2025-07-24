@@ -6,4 +6,4 @@
 
 During error analysis, you'll likely discover that certain query categories share failure patterns. For instance, all queries requiring temporal reasoning might struggle regardless of whether they're simple lookups or complex aggregations. Similarly, queries that need to combine information from multiple sources might fail in consistent ways. These patterns discovered through error analysis should drive your evaluation priorities.  It could be that query category is a fine way to group failures, but you don't know that until you've analyzed your data.
 
-To see an example of basic error analysis in action, [see this video](https://youtu.be/e2i6JbU2R-s?si=8p5XVxbBiioz69Xc){target="_blank"}. [↗](/blog/posts/evals-faq/how-do-i-approach-evaluation-when-my-system-handles-diverse-user-queries.html){.faq-individual-link}
+To see an example of basic error analysis in action, [see this video](https://youtu.be/e2i6JbU2R-s?si=8p5XVxbBiioz69Xc){target="_blank"}. [↗](#q-how-do-i-approach-evaluation-when-my-system-handles-diverse-user-queries){.faq-individual-link}

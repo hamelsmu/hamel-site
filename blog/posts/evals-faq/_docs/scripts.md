@@ -2,6 +2,8 @@
 
 This directory contains utility scripts for maintaining the FAQ system. All scripts are designed to be run from this `scripts/` directory.
 
+**Current Scripts**: 10 essential scripts (cleaned up from 20+ scripts)
+
 ## Available Scripts
 
 ### Core Maintenance Scripts
@@ -25,22 +27,22 @@ python extract_faqs.py
 - Adding multiple new FAQs from a combined source
 - Recovering from system issues
 
-#### `fix_anchor_links.py`
-Converts internal anchor links to individual FAQ post URLs.
+#### `fix_cross_references.py`
+Fixes FAQ cross-references for individual vs combined pages.
 
 ```bash
-python fix_anchor_links.py
+python fix_cross_references.py
 ```
 
 **What it does:**
-- Maps anchor links like `#q-something` to individual post URLs
-- Updates cross-references in all FAQ files
-- Ensures internal navigation works correctly
+- Converts anchor links to individual post links in FAQ files
+- Ensures cross-references work correctly in individual posts
+- Maintains proper navigation between FAQs
 
 **When to use:**
 - After adding new FAQs with cross-references
-- When anchor links are broken
-- After restructuring content
+- When cross-references are broken
+- After content restructuring
 
 #### `check_faq_links.py`
 Comprehensive link validation for all FAQ posts.

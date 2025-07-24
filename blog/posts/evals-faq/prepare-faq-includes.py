@@ -14,6 +14,7 @@ This script:
 import os
 import re
 from pathlib import Path
+if not os.getenv("QUARTO_PROJECT_RENDER_ALL"): exit()
 
 def extract_title_and_content(qmd_file):
     """Extract title from frontmatter and return clean content"""
@@ -38,6 +39,37 @@ def extract_title_and_content(qmd_file):
     
     return None, body
 
+def convert_faq_links_for_context(content, is_for_include=True):
+    """Convert FAQ cross-references based on context"""
+    if is_for_include:
+        # For include files (combined FAQ): anchor links should stay as anchors
+        # Convert individual post links to anchors
+        content = re.sub(
+            r'\[([^\]]+)\]\(/blog/posts/evals-faq/([^)]+)\.html\)',
+            lambda m: f'[{m.group(1)}](#{filename_to_anchor(m.group(2))})',
+            content
+        )
+    else:
+        # For individual files: convert anchor links to individual post links
+        content = re.sub(
+            r'\[([^\]]+)\]\(#(q-[^)]+)\)',
+            lambda m: f'[{m.group(1)}](/blog/posts/evals-faq/{anchor_to_filename(m.group(2))}.html)',
+            content
+        )
+    
+    return content
+
+def filename_to_anchor(filename):
+    """Convert filename to anchor ID"""
+    # Remove any existing q- prefix and add it back
+    clean_name = filename.replace('q-', '')
+    return f"q-{clean_name}"
+
+def anchor_to_filename(anchor):
+    """Convert anchor ID to filename"""
+    # Remove q- prefix to get the filename
+    return anchor.replace('q-', '')
+
 def create_clean_include(qmd_file, output_dir):
     """Create a clean markdown file for inclusion"""
     title, content = extract_title_and_content(qmd_file)
@@ -51,6 +83,9 @@ def create_clean_include(qmd_file, output_dir):
     
     # Remove back links from content (should only appear in individual pages)
     content = re.sub(r'\[↩ Back to main FAQ\]\([^)]+\)\{[^}]*\.faq-back-link[^}]*\}\s*', '', content).strip()
+    
+    # Convert FAQ cross-references for include context (keep anchor links)
+    content = convert_faq_links_for_context(content, is_for_include=True)
     
     # Create URL for individual FAQ post
     individual_url = f"/blog/posts/evals-faq/{qmd_file.stem}.html"
@@ -112,6 +147,24 @@ def update_combined_post(faq_dir, include_files):
     
     print(f"Updated {len(include_mapping)} includes in index.qmd")
 
+def fix_individual_faq_links(faq_files):
+    """Fix cross-references in individual FAQ files to point to other individual posts"""
+    print("Fixing individual FAQ cross-references...")
+    
+    for qmd_file in faq_files:
+        with open(qmd_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        original_content = content
+        
+        # Convert anchor links to individual post links
+        content = convert_faq_links_for_context(content, is_for_include=False)
+        
+        if content != original_content:
+            with open(qmd_file, 'w', encoding='utf-8') as f:
+                f.write(content)
+            print(f"Fixed links in: {qmd_file.name}")
+
 def main():
     """Main pre-render script"""
     # Get the FAQ directory
@@ -127,7 +180,10 @@ def main():
     
     print(f"Processing {len(faq_files)} individual FAQ files...")
     
-    # Process each FAQ file
+    # First, fix cross-references in individual FAQ files
+    fix_individual_faq_links(faq_files)
+    
+    # Process each FAQ file to create clean includes
     include_files = []
     for qmd_file in sorted(faq_files):
         output_file = create_clean_include(qmd_file, faq_dir)

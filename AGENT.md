@@ -36,11 +36,12 @@ The most complex system in this blog is the AI Evals FAQ, which maintains both i
 **Documentation**: See `blog/posts/evals-faq/_docs/AGENT.md`
 
 **Key Features**:
-- 27 individual FAQ posts for direct linking and SEO
+- 29 individual FAQ posts for direct linking and SEO  
 - Combined FAQ post for readability 
 - Automatic include generation via pre-render script
 - Link validation and maintenance scripts
 - Context navigation between related FAQs
+- Cross-reference system (anchors in combined, individual links in posts)
 
 **When working with FAQs**:
 1. Always read `blog/posts/evals-faq/_docs/AGENT.md` first

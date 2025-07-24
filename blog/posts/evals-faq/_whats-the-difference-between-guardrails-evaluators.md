@@ -14,4 +14,4 @@ Evaluators are usually run asynchronously or in batch to afford heavier computat
 
 Apply guardrails for immediate protection against objective failures requiring intervention. Use evaluators for monitoring and improving subjective or nuanced criteria. Together, they create layered protection.
 
-Word of caution: Do not use llm guardrails off the shelf blindly.  Always [look at the prompt](https://hamel.dev/blog/posts/prompt/){target="_blank"}. [↗](/blog/posts/evals-faq/whats-the-difference-between-guardrails-evaluators.html){.faq-individual-link}
+Word of caution: Do not use llm guardrails off the shelf blindly.  Always [look at the prompt](https://hamel.dev/blog/posts/prompt/){target="_blank"}. [↗](#q-whats-the-difference-between-guardrails-evaluators){.faq-individual-link}

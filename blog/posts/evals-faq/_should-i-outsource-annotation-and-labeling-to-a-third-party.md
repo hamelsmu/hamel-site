@@ -1,13 +1,4 @@
----
-title: "Q: Should I outsource annotation & labeling for AI evals?"
-categories: [LLMs, evals, faq]
-date: last-modified
-image: images/eval_faq.png
-aliases:
-  - /evals-faq/should-i-outsource-annotation-and-labeling-for-ai-evals
-page-navigation: true
-exclude-from-listing: true
----
+## Q: Should I outsource annotation & labeling to a third party?
 
 Outsourcing [error analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed) is usually a big mistake (with some [exceptions](#exceptions-for-external-help)). The core of evaluation is building the product intuition that only comes from systematically analyzing your system's failures. You should be extremely skeptical of this process being delegated.
 
@@ -41,8 +32,4 @@ While outsourcing the core error analysis process is not recommended, there are 
 
 * Purely Mechanical Tasks: For highly objective, unambiguous tasks like identifying a phone number or validating an email address, external annotators can be used after a rigorous internal process has defined the rubric.  
 * Tasks Without Product Context: Well-defined tasks that don't require understanding your product's specific requirements can be outsourced. Translation is a good example: it requires linguistic expertise but not deep product knowledge.  
-* Engaging Subject Matter Experts: Hiring external SMEs to act as your internal domain experts is not outsourcing; it is bringing the necessary expertise into your evaluation process. For example, [AnkiHub](https://www.ankihub.net/){target="_blank"} hired 4th-year medical students to evaluate their RAG systems for medical content rather than outsourcing to generic annotators.
-
-[↩ Back to main FAQ](/blog/posts/evals-faq/#q-should-i-outsource-annotation-and-labeling-for-ai-evaluations){target="_blank" .faq-back-link}
-
-{{< include _faq-context.qmd >}}
+* Engaging Subject Matter Experts: Hiring external SMEs to act as your internal domain experts is not outsourcing; it is bringing the necessary expertise into your evaluation process. For example, [AnkiHub](https://www.ankihub.net/){target="_blank"} hired 4th-year medical students to evaluate their RAG systems for medical content rather than outsourcing to generic annotators. [↗](#q-should-i-outsource-annotation-and-labeling-to-a-third-party){.faq-individual-link}

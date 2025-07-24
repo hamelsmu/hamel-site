@@ -2,7 +2,7 @@
 
 We recommend evaluating agentic workflows in two phases:
 
-**1. End-to-end task success.** Treat the agent as a black box and ask "did we meet the user's goal?". Define a precise success rule per task (exact answer, correct side-effect, etc.) and measure with human or [aligned LLM judges](https://hamel.dev/blog/posts/llm-judge/){target="_blank"}.  Take note of the first upstream failure when conducting [error analysis](/blog/posts/evals-faq/why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed.html){target="_blank"}.  
+**1. End-to-end task success.** Treat the agent as a black box and ask "did we meet the user's goal?". Define a precise success rule per task (exact answer, correct side-effect, etc.) and measure with human or [aligned LLM judges](https://hamel.dev/blog/posts/llm-judge/){target="_blank"}.  Take note of the first upstream failure when conducting [error analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed){target="_blank"}.  
 
 Once error analysis reveals which workflows fail most often, move to step-level diagnostics to understand why they're failing.
 
@@ -28,4 +28,4 @@ In this example, Bryan shows variation in transition matrices across experiments
 
 **Creating Test Cases for Agent Failures**
 
-Creating test cases for agent failures follows the same principles as our previous FAQ on [debugging multi-turn conversation traces](/blog/posts/evals-faq/how-do-i-debug-multi-turn-conversation-traces.html){target="_blank"} (i.e. try to reproduce the error in the simplest way possible, only use multi-turn tests when the failure actually requires conversation context, etc.). [↗](/blog/posts/evals-faq/how-do-i-evaluate-agentic-workflows.html){.faq-individual-link}
+Creating test cases for agent failures follows the same principles as our previous FAQ on [debugging multi-turn conversation traces](#q-how-do-i-debug-multi-turn-conversation-traces){target="_blank"} (i.e. try to reproduce the error in the simplest way possible, only use multi-turn tests when the failure actually requires conversation context, etc.). [↗](#q-how-do-i-evaluate-agentic-workflows){.faq-individual-link}
