@@ -33,7 +33,7 @@ def categorize_links(links):
     
     return internal_links, external_links, anchor_links
 
-def test_internal_links(internal_links, site_root="_site"):
+def test_internal_links(internal_links, site_root="../../../_site"):
     """Test internal links against the rendered site"""
     broken_links = []
     
@@ -86,9 +86,9 @@ def test_external_links(external_links, max_links=10):
 
 def main():
     # Get all FAQ files
-    faq_dir = Path('blog/posts/evals-faq')
+    faq_dir = Path('../')
     faq_files = list(faq_dir.glob('*.qmd'))
-    faq_files = [f for f in faq_files if f.name != 'index.qmd.backup']
+    faq_files = [f for f in faq_files if f.name not in ['index.qmd.backup', '_faq-context.qmd']]
     
     print(f"Checking links in {len(faq_files)} FAQ files...")
     

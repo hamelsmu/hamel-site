@@ -21,8 +21,8 @@ def add_context_to_file(file_path):
     return True
 
 def main():
-    # Get all FAQ files except index.qmd and backup and the context file itself
-    faq_dir = Path('blog/posts/evals-faq')
+    # Get all FAQ files except index.qmd and backup and the context file itself  
+    faq_dir = Path('../')
     faq_files = list(faq_dir.glob('*.qmd'))
     faq_files = [f for f in faq_files if f.name not in ['index.qmd', 'index.qmd.backup', '_faq-context.qmd']]
     

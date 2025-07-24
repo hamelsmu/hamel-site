@@ -35,9 +35,9 @@ def add_page_navigation_to_file(file_path):
 
 def main():
     # Get all FAQ files except index.qmd and backup
-    faq_dir = Path('blog/posts/evals-faq')
+    faq_dir = Path('../')
     faq_files = list(faq_dir.glob('*.qmd'))
-    faq_files = [f for f in faq_files if f.name not in ['index.qmd', 'index.qmd.backup']]
+    faq_files = [f for f in faq_files if f.name not in ['index.qmd', 'index.qmd.backup', '_faq-context.qmd']]
     
     print(f"Adding page-navigation to {len(faq_files)} FAQ files...")
     

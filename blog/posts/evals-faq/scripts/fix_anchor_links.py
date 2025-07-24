@@ -64,9 +64,9 @@ def main():
         print(f"  {anchor} -> {url}")
     
     # Fix links in all individual FAQ files
-    faq_dir = Path('blog/posts/evals-faq')
+    faq_dir = Path('../')
     individual_files = list(faq_dir.glob('*.qmd'))
-    individual_files = [f for f in individual_files if f.name not in ['index.qmd', 'index.qmd.backup']]
+    individual_files = [f for f in individual_files if f.name not in ['index.qmd', 'index.qmd.backup', '_faq-context.qmd']]
     
     fixed_files = []
     for file_path in individual_files:

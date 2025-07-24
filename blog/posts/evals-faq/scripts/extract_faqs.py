@@ -49,7 +49,7 @@ def extract_description(content):
 
 def main():
     # Read the original FAQ file
-    faq_file = Path('blog/posts/evals-faq/index.qmd')
+    faq_file = Path('../index.qmd')
     
     with open(faq_file, 'r', encoding='utf-8') as f:
         content = f.read()
@@ -112,7 +112,7 @@ aliases:
         individual_content = f"{individual_frontmatter}\n\n{content_part.strip()}"
         
         # Write individual file
-        output_path = Path(f'blog/posts/evals-faq/{filename}')
+        output_path = Path(f'../{filename}')
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write(individual_content)
         
@@ -149,7 +149,7 @@ aliases:
 {outro_content}"""
     
     # Backup original file
-    backup_path = Path('blog/posts/evals-faq/index.qmd.backup')
+    backup_path = Path('../index.qmd.backup')
     os.rename(faq_file, backup_path)
     print(f"Backed up original to: {backup_path}")
     

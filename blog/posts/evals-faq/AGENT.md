@@ -20,9 +20,17 @@ blog/posts/evals-faq/
 ├── index.qmd                    # Combined post (uses includes)
 ├── index.qmd.backup            # Original backup (DO NOT DELETE)
 ├── _faq-context.qmd            # Context include for individual posts
+├── AGENT.md                    # This documentation file
+├── scripts/                    # Utility scripts directory
+│   ├── AGENT.md               # Scripts-specific documentation
+│   ├── extract_faqs.py        # Split combined FAQ into individual posts  
+│   ├── fix_anchor_links.py    # Fix internal cross-references
+│   ├── check_faq_links.py     # Validate all links
+│   ├── add_page_navigation.py # Add page navigation to posts
+│   ├── add_faq_context.py     # Add context includes to posts
+│   └── list_faq_titles.py     # List all FAQ titles and descriptions
 ├── images/                     # Shared images directory
-├── [27 individual FAQ files]   # Individual posts for SEO
-└── [utility scripts]          # Maintenance scripts (see below)
+└── [27 individual FAQ files]   # Individual posts for SEO
 ```
 
 ## File Naming Conventions
@@ -76,14 +84,14 @@ The combined post uses includes and has specific CTA placement:
 
 [CTA #1 - Top]
 
-{{< include individual-faq-1.qmd >}}
-{{< include individual-faq-2.qmd >}}
+`{{< include individual-faq-1.qmd >}}`
+`{{< include individual-faq-2.qmd >}}`
 ...
 [After "diverse user queries" FAQ]
 
 [CTA #2 - Middle]
 
-{{< include remaining-faqs.qmd >}}
+`{{< include remaining-faqs.qmd >}}`
 ...
 
 [Footnotes]
@@ -105,12 +113,12 @@ The combined post uses includes and has specific CTA placement:
 
 4. **Add context include** at the end:
    ```markdown
-   {{< include _faq-context.qmd >}}
+   `{{< include _faq-context.qmd >}}`
    ```
 
 5. **Update combined post** (`index.qmd`):
    ```markdown
-   {{< include new-faq-question.qmd >}}
+   `{{< include new-faq-question.qmd >}}`
    ```
 
 6. **Test and validate** (see testing section below)
@@ -129,6 +137,12 @@ If you have a combined FAQ post with new sections:
 
 ## Available Utility Scripts
 
+All utility scripts are located in the `scripts/` directory. Run them from that directory:
+
+```bash
+cd scripts/
+```
+
 ### Core Scripts
 - `extract_faqs.py` - Splits combined FAQ into individual posts
 - `fix_anchor_links.py` - Updates internal cross-references
@@ -137,8 +151,13 @@ If you have a combined FAQ post with new sections:
 - `add_faq_context.py` - Adds context includes to posts
 - `list_faq_titles.py` - Lists all FAQ titles and descriptions
 
+For detailed script documentation, see `scripts/AGENT.md`.
+
 ### Script Usage
 ```bash
+# Change to scripts directory
+cd scripts/
+
 # Check all links
 python check_faq_links.py
 
@@ -210,7 +229,7 @@ python list_faq_titles.py
 
 ### 3. Missing Context
 **Problem**: New FAQ doesn't have context navigation
-**Solution**: Run `python add_faq_context.py`
+**Solution**: Run `cd scripts/ && python add_faq_context.py`
 
 ### 4. Duplicate Content
 **Problem**: FAQ appears in both individual post and combined post incorrectly
@@ -251,9 +270,9 @@ python list_faq_titles.py
 If the system breaks:
 
 1. **Check `index.qmd.backup`** - contains original content
-2. **Re-run extraction**: `python extract_faqs.py`
-3. **Fix links**: `python fix_anchor_links.py`
-4. **Validate**: `python check_faq_links.py`
+2. **Re-run extraction**: `cd scripts/ && python extract_faqs.py`
+3. **Fix links**: `cd scripts/ && python fix_anchor_links.py`
+4. **Validate**: `cd scripts/ && python check_faq_links.py`
 5. **Test render**: `quarto render`
 
 ## Contact/Context
