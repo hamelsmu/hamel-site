@@ -14,7 +14,7 @@ The most effective workflows use AI to accelerate every stage of evaluation. Dur
 
 You'll also want AI assistance in proposing fixes. After identifying 20 cases where your assistant omits pet policies from property summaries, can your workflow analyze these failures and suggest specific prompt modifications? Can it draft refinements to your SQL generation instructions when it notices patterns of missing WHERE clauses? 
 
-Additionally, good workflows help you conduct data analysis of your annotations and traces.  I like using notebooks with AI in-the-loop like [Julius](https://julius.ai/),[Hex](https://hex.tech) or [SolveIt](https://solveit.fast.ai/).  These help me discover insights like "location ambiguity errors spike 3x when users mention neighborhood names" or "tone mismatches occur 80% more often in email generation than other modalities."
+Additionally, good workflows help you conduct data analysis of your annotations and traces.  I like using notebooks with AI in-the-loop like [Julius](https://julius.ai/){target="_blank"},[Hex](https://hex.tech){target="_blank"} or [SolveIt](https://solveit.fast.ai/){target="_blank"}.  These help me discover insights like "location ambiguity errors spike 3x when users mention neighborhood names" or "tone mismatches occur 80% more often in email generation than other modalities."
 
 #### 3. Custom Evaluators Over Generic Metrics
 

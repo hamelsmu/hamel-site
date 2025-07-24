@@ -10,8 +10,8 @@ If a guardrail triggers, the system can redact, refuse, or regenerate the respon
 
 On the other hand, evaluators typically run **after** a response is produced. Evaluators measure qualities that simple rules cannot, such as factual correctness, completeness, etc. Their verdicts feed dashboards, regression tests, and model-improvement loops, but they do not block the original answer. 
 
-Evaluators are usually run asynchronously or in batch to afford heavier computation such as a [LLM-as-a-Judge](https://hamel.dev/blog/posts/llm-judge/). Inline use of an LLM-as-Judge is possible _only_ when the latency budget and reliability targets allow it.  Slow LLM judges might be feasible in a cascade that runs on the minority of borderline cases.
+Evaluators are usually run asynchronously or in batch to afford heavier computation such as a [LLM-as-a-Judge](https://hamel.dev/blog/posts/llm-judge/){target="_blank"}. Inline use of an LLM-as-Judge is possible _only_ when the latency budget and reliability targets allow it.  Slow LLM judges might be feasible in a cascade that runs on the minority of borderline cases.
 
 Apply guardrails for immediate protection against objective failures requiring intervention. Use evaluators for monitoring and improving subjective or nuanced criteria. Together, they create layered protection.
 
-Word of caution: Do not use llm guardrails off the shelf blindly.  Always [look at the prompt](https://hamel.dev/blog/posts/prompt/). [↗](/blog/posts/evals-faq/whats-the-difference-between-guardrails-evaluators.html){.faq-individual-link}
+Word of caution: Do not use llm guardrails off the shelf blindly.  Always [look at the prompt](https://hamel.dev/blog/posts/prompt/){target="_blank"}. [↗](/blog/posts/evals-faq/whats-the-difference-between-guardrails-evaluators.html){.faq-individual-link}

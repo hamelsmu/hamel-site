@@ -187,6 +187,7 @@ cd scripts/
 - `add_page_navigation.py` - Adds page navigation to posts
 - `add_faq_context.py` - Adds context includes to posts
 - `add_back_links.py` - Adds back links to individual FAQs pointing to main post anchors
+- `add_target_blank.py` - Adds target="_blank" to external links for better UX
 - `list_faq_titles.py` - Lists all FAQ titles and descriptions
 
 For detailed script documentation, see `_docs/scripts.md`.
