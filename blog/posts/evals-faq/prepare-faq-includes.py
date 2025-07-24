@@ -28,8 +28,8 @@ def extract_title_and_content(qmd_file):
     frontmatter = parts[1]
     body = parts[2].strip()
     
-    # Extract title from frontmatter
-    title_match = re.search(r'title:\s*"([^"]*)"', frontmatter)
+    # Extract title from frontmatter (handle escaped quotes)
+    title_match = re.search(r'title:\s*"((?:[^"\\]|\\.)*)"', frontmatter)
     if title_match:
         title = title_match.group(1)
         # Remove the "Q: " prefix if present

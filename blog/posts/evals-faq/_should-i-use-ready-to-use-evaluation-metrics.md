@@ -1,4 +1,4 @@
-## Q: Should I use \
+## Q: Should I use \"ready-to-use\" evaluation metrics?
 
 **No. Generic evaluations waste time and create false confidence.** (Unless you're using them for exploration). 
 

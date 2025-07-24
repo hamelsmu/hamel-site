@@ -1,4 +1,4 @@
-## Q: Why is \
+## Q: Why is \"error analysis\" so important in LLM evals, and how is it performed?
 
 Error analysis is **the most important activity in evals**.  Error analysis helps you decide what evals to write in the first place.  It allows you to identify failure modes unique to your application and data. The process involves:
 
