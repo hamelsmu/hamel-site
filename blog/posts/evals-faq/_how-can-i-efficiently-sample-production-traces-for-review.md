@@ -8,5 +8,3 @@ It can be cumbersome to review traces randomly, especially when most traces don'
 - **Stratified sampling:** Group traces by key dimensions (user type, feature, query category) and sample from each group.
 
 As you get more sophisticated with how you sample, you can incorporate these tactics into the design of your [annotation tools](/blog/posts/evals-faq/what-makes-a-good-custom-interface-for-reviewing-llm-outputs.html).
-
-{{< include _faq-context.qmd >}}

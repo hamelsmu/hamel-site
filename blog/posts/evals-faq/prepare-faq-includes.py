@@ -46,6 +46,9 @@ def create_clean_include(qmd_file, output_dir):
         print(f"Warning: No title found in {qmd_file.name}")
         return None
     
+    # Remove the context include from content (should only appear in individual pages)
+    content = re.sub(r'\{\{< include _faq-context\.qmd >\}\}\s*', '', content).strip()
+    
     # Create clean content with H2 heading
     clean_content = f"## Q: {title}\n\n{content}"
     
