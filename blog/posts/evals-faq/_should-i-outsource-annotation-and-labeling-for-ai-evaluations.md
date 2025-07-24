@@ -1,4 +1,4 @@
-## Q: Should I outsource annotation and labeling for AI evaluations?
+## Q: Should I outsource annotation & labeling for AI evals?
 
 Outsourcing [error analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed) is usually a big mistake (with some [exceptions](#exceptions-for-external-help)). The core of evaluation is building the product intuition that only comes from systematically analyzing your system's failures. You should be extremely skeptical of this process being delegated.
 
