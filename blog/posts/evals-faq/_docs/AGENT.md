@@ -48,7 +48,6 @@ Each individual FAQ file follows this template:
 ```yaml
 ---
 title: "Q: [Question Title]"
-description: "[150-char SEO description]"
 categories: [LLMs, evals, faq, faq-individual]
 date: last-modified
 image: images/eval_faq.png
@@ -67,7 +66,7 @@ page-navigation: true
 - `exclude-from-listing: true` - Keeps individual posts out of main blog listing
 - `page-navigation: true` - Enables navigation between related FAQs
 - `aliases` - Creates short URLs for each FAQ
-- `description` - Must be ~150 characters for optimal SEO
+- `description` - Not needed for individual FAQs (excluded from listings)
 
 ## Combined Post Structure (`index.qmd`)
 
@@ -108,11 +107,10 @@ The combined post uses includes and has specific CTA placement:
    touch blog/posts/evals-faq/new-faq-question.qmd
    ```
 
-2. **Add proper frontmatter** (use this exact template, no author field):
+2. **Add proper frontmatter** (use this exact template, no author or description field):
    ```yaml
    ---
    title: "Q: [Your Question Here]"
-   description: "[150-char SEO-optimized description of the answer]"
    categories: [LLMs, evals, faq, faq-individual]
    date: last-modified
    image: images/eval_faq.png
