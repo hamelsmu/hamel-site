@@ -1,5 +1,4 @@
-## Q: What gaps in eval tooling should I be prepared to fill myself?
-<div class="faq-individual-link">[View individual post ↗](/blog/posts/evals-faq/what-gaps-in-eval-tooling-should-i-be-prepared-to-fill-myself.html)</div>
+## Q: What gaps in eval tooling should I be prepared to fill myself? <span class="faq-individual-link">[↗](/blog/posts/evals-faq/what-gaps-in-eval-tooling-should-i-be-prepared-to-fill-myself.html)</span>
 
 Most eval tools handle the basics well: logging complete traces, tracking metrics, prompt playgrounds, and annotation queues. These are table stakes. Here are four areas where you'll likely need to supplement existing tools. 
 

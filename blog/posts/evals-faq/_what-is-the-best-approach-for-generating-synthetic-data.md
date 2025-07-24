@@ -1,5 +1,4 @@
-## Q: What is the best approach for generating synthetic data?
-<div class="faq-individual-link">[View individual post ↗](/blog/posts/evals-faq/what-is-the-best-approach-for-generating-synthetic-data.html)</div>
+## Q: What is the best approach for generating synthetic data? <span class="faq-individual-link">[↗](/blog/posts/evals-faq/what-is-the-best-approach-for-generating-synthetic-data.html)</span>
 
 A common mistake is prompting an LLM to `"give me test queries"` without structure, resulting in generic, repetitive outputs. A structured approach using dimensions produces far better synthetic data for testing LLM applications.
 

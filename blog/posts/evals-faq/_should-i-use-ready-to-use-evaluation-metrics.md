@@ -1,5 +1,4 @@
-## Q: Should I use \"ready-to-use\" evaluation metrics?
-<div class="faq-individual-link">[View individual post ↗](/blog/posts/evals-faq/should-i-use-ready-to-use-evaluation-metrics.html)</div>
+## Q: Should I use \"ready-to-use\" evaluation metrics? <span class="faq-individual-link">[↗](/blog/posts/evals-faq/should-i-use-ready-to-use-evaluation-metrics.html)</span>
 
 **No. Generic evaluations waste time and create false confidence.** (Unless you're using them for exploration). 
 

@@ -1,5 +1,4 @@
-## Q: How do I evaluate agentic workflows?
-<div class="faq-individual-link">[View individual post ↗](/blog/posts/evals-faq/how-do-i-evaluate-agentic-workflows.html)</div>
+## Q: How do I evaluate agentic workflows? <span class="faq-individual-link">[↗](/blog/posts/evals-faq/how-do-i-evaluate-agentic-workflows.html)</span>
 
 We recommend evaluating agentic workflows in two phases:
 

@@ -1,5 +1,4 @@
-## Q: How do I debug multi-turn conversation traces?
-<div class="faq-individual-link">[View individual post ↗](/blog/posts/evals-faq/how-do-i-debug-multi-turn-conversation-traces.html)</div>
+## Q: How do I debug multi-turn conversation traces? <span class="faq-individual-link">[↗](/blog/posts/evals-faq/how-do-i-debug-multi-turn-conversation-traces.html)</span>
 
 Start simple. Check if the whole conversation met the user's goal with a pass/fail judgment. Look at the entire trace and focus on the first upstream failure. Read the user-visible parts first to understand if something went wrong. Only then dig into the technical details like tool calls and intermediate steps.
 

@@ -1,5 +1,4 @@
-## Q: Are similarity metrics (BERTScore, ROUGE, etc.) useful for evaluating LLM outputs?
-<div class="faq-individual-link">[View individual post ↗](/blog/posts/evals-faq/are-similarity-metrics-bertscore-rouge-etc-useful-for-evaluating-llm-outputs.html)</div>
+## Q: Are similarity metrics (BERTScore, ROUGE, etc.) useful for evaluating LLM outputs? <span class="faq-individual-link">[↗](/blog/posts/evals-faq/are-similarity-metrics-bertscore-rouge-etc-useful-for-evaluating-llm-outputs.html)</span>
 
 Generic metrics like BERTScore, ROUGE, cosine similarity, etc. are not useful for evaluating LLM outputs in most AI applications. Instead, we recommend using [error analysis](/blog/posts/evals-faq/why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed.html) to identify metrics specific to your application's behavior. We recommend designing [binary pass/fail](/blog/posts/evals-faq/why-do-you-recommend-binary-passfail-evaluations-instead-of-1-5-ratings-likert-scales.html).) evals (using LLM-as-judge) or code-based assertions.
 

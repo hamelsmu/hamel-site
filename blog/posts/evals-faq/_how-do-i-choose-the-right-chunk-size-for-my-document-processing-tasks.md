@@ -1,5 +1,4 @@
-## Q: How do I choose the right chunk size for my document processing tasks?
-<div class="faq-individual-link">[View individual post ↗](/blog/posts/evals-faq/how-do-i-choose-the-right-chunk-size-for-my-document-processing-tasks.html)</div>
+## Q: How do I choose the right chunk size for my document processing tasks? <span class="faq-individual-link">[↗](/blog/posts/evals-faq/how-do-i-choose-the-right-chunk-size-for-my-document-processing-tasks.html)</span>
 
 Unlike RAG, where chunks are optimized for retrieval, document processing assumes the model will see every chunk. The goal is to split text so the model can reason effectively without being overwhelmed. Even if a document fits within the context window, it might be better to break it up. Long inputs can degrade performance due to attention bottlenecks, especially in the middle of the context. Two task types require different strategies:
 

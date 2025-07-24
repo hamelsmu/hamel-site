@@ -1,5 +1,4 @@
-## Q: What's the difference between guardrails & evaluators?
-<div class="faq-individual-link">[View individual post ↗](/blog/posts/evals-faq/whats-the-difference-between-guardrails-evaluators.html)</div>
+## Q: What's the difference between guardrails & evaluators? <span class="faq-individual-link">[↗](/blog/posts/evals-faq/whats-the-difference-between-guardrails-evaluators.html)</span>
 
 Guardrails are **inline safety checks** that sit directly in the request/response path. They validate inputs or outputs _before_ anything reaches a user, so they typically are:
 

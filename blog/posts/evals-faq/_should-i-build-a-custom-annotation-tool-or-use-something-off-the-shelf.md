@@ -1,5 +1,4 @@
-## Q: Should I build a custom annotation tool or use something off-the-shelf?
-<div class="faq-individual-link">[View individual post ↗](/blog/posts/evals-faq/should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf.html)</div>
+## Q: Should I build a custom annotation tool or use something off-the-shelf? <span class="faq-individual-link">[↗](/blog/posts/evals-faq/should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf.html)</span>
 
 **Build a custom annotation tool.** This is the single most impactful investment you can make for your AI evaluation workflow. With AI-assisted development tools like Cursor or Lovable, you can build a tailored interface in hours. I often find that teams with custom annotation tools iterate ~10x faster.
 

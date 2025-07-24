@@ -1,5 +1,4 @@
-## Q: Is RAG dead?
-<div class="faq-individual-link">[View individual post ↗](/blog/posts/evals-faq/is-rag-dead.html)</div>
+## Q: Is RAG dead? <span class="faq-individual-link">[↗](/blog/posts/evals-faq/is-rag-dead.html)</span>
 
 Question: Should I avoid using RAG for my AI application after reading that ["RAG is dead"](https://pashpashpash.substack.com/p/why-i-no-longer-recommend-rag-for) for coding agents?
 

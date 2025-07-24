@@ -1,5 +1,4 @@
-## Q: How much of my development budget should I allocate to evals?
-<div class="faq-individual-link">[View individual post ↗](/blog/posts/evals-faq/how-much-of-my-development-budget-should-i-allocate-to-evals.html)</div>
+## Q: How much of my development budget should I allocate to evals? <span class="faq-individual-link">[↗](/blog/posts/evals-faq/how-much-of-my-development-budget-should-i-allocate-to-evals.html)</span>
 
 It's important to recognize that evaluation is part of the development process rather than a distinct line item, similar to how debugging is part of software development.
 
