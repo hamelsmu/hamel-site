@@ -1,6 +1,6 @@
 ## Q: Can my evaluators also be used to automatically *fix* or *correct* outputs in production?
 
-Yes, but only a specific subset of them. This is the distinction between an **evaluator** and a **guardrail** that we [previously discussed](/blog/posts/evals-faq/whats-the-difference-between-guardrails-evaluators.html). As a reminder:
+Yes, but only a specific subset of them. This is the distinction between an **evaluator** and a **guardrail** that we [previously discussed](/blog/posts/evals-faq/whats-the-difference-between-guardrails-evaluators.html){target="_blank"}. As a reminder:
 
 - **Evaluators** typically run *asynchronously* after a response has been generated. They measure quality but don't interfere with the user's immediate experience.  
 - **Guardrails** run *synchronously* in the critical path of the request, before the output is shown to the user. Their job is to prevent high-impact failures in real-time.
