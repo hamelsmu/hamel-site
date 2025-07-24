@@ -151,7 +151,7 @@ cd scripts/
 - `add_faq_context.py` - Adds context includes to posts
 - `list_faq_titles.py` - Lists all FAQ titles and descriptions
 
-For detailed script documentation, see `scripts/AGENT.md`.
+For detailed script documentation, see `_docs/scripts.md`.
 
 ### Script Usage
 ```bash
