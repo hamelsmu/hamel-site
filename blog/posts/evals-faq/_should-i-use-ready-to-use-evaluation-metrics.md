@@ -13,3 +13,5 @@ Instead, conduct [error analysis](/blog/posts/evals-faq/why-is-error-analysis-so
 Experienced practitioners may still use these metrics, just not how you'd expect. As Picasso said: "Learn the rules like a pro, so you can break them like an artist." Once you understand why generic metrics fail as evaluations, you can repurpose them as exploration tools to [find interesting traces](/blog/posts/evals-faq/how-can-i-efficiently-sample-production-traces-for-review.html) (explained in the next FAQ).
 
 [^1]: [Eleanor Berger](https://www.linkedin.com/in/intellectronica/), our wonderful TA.
+
+[↩ Back to main FAQ](/blog/posts/evals-faq/#q-should-i-use-ready-to-use-evaluation-metrics){.faq-back-link}

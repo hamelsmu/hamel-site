@@ -7,3 +7,5 @@ As an example, consider a real estate CRM assistant. Suggesting showings that ar
 > "The abuse of generic metrics is endemic. Many eval vendors promote off the shelf metrics, which ensnare engineers into superfluous tasks."
 
 Similarity metrics aren't always useless. They have utility in domains like search and recommendation (and therefore can be useful for [optimizing and debugging retrieval](/blog/posts/evals-faq/how-should-i-approach-evaluating-my-rag-system.html) for RAG). For example, cosine similarity between embeddings can measure semantic closeness in retrieval systems, and average pairwise similarity can assess output diversity (where lower similarity indicates higher diversity).
+
+[↩ Back to main FAQ](/blog/posts/evals-faq/#q-are-similarity-metrics-bertscore-rouge-etc-useful-for-evaluating-llm-outputs){.faq-back-link}

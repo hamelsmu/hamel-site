@@ -128,6 +128,8 @@ The combined post uses includes and has specific CTA placement:
    Use consistent voice with existing FAQs. Include links to related FAQs using:
    [related topic](/blog/posts/evals-faq/related-topic.html)
    
+   [↩ Back to main FAQ](/blog/posts/evals-faq/#anchor-id){.faq-back-link}
+   
    `{{< include _faq-context.qmd >}}`
    ```
 
@@ -184,6 +186,7 @@ cd scripts/
 - `check_faq_links.py` - Validates all links (internal & external)
 - `add_page_navigation.py` - Adds page navigation to posts
 - `add_faq_context.py` - Adds context includes to posts
+- `add_back_links.py` - Adds back links to individual FAQs pointing to main post anchors
 - `list_faq_titles.py` - Lists all FAQ titles and descriptions
 
 For detailed script documentation, see `_docs/scripts.md`.
