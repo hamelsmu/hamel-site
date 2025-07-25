@@ -2,7 +2,7 @@
 
 Most eval tools handle the basics well: logging complete traces, tracking metrics, prompt playgrounds, and annotation queues. These are table stakes. Here are four areas where you'll likely need to supplement existing tools. 
 
-Watch for vendors addressing these gaps—it's a strong signal they understand practitioner needs.
+Watch for vendors addressing these gaps: it's a strong signal they understand practitioner needs.
 
 ### 1. Error Analysis and Pattern Discovery
 
@@ -22,4 +22,4 @@ Be prepared to build most of your evaluators from scratch. Generic metrics like 
 
 ### 4. APIs That Support Custom Annotation Apps
 
-Custom annotation interfaces [work best for most teams](#q-should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf){target="_blank"}. This requires observability platforms with thoughtful APIs. I often have to build my own libraries and abstractions just to make bulk data export manageable. You shouldn't have to paginate through thousands of requests or handle timeout-prone endpoints just to get your data. Look for platforms that provide true bulk export capabilities and, crucially, APIs that let you write annotations back efficiently. [↗](#q-what-gaps-in-eval-tooling-should-i-be-prepared-to-fill-myself){.faq-individual-link}
+Custom annotation interfaces [work best for most teams](#q-should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf){target="_blank"}. This requires observability platforms with thoughtful APIs. I often have to build my own libraries and abstractions just to make bulk data export manageable. You shouldn't have to paginate through thousands of requests or handle timeout-prone endpoints just to get your data. Look for platforms that provide true bulk export capabilities and, crucially, APIs that let you write annotations back efficiently. [↗](/blog/posts/evals-faq/what-gaps-in-eval-tooling-should-i-be-prepared-to-fill-myself.html){.faq-individual-link}
