@@ -5,7 +5,7 @@ This directory contains a dual-structure FAQ system optimized for both SEO and u
 ## System Overview
 
 The FAQ system has two main components:
-1. **Individual FAQ posts** (29 files) - each targeting specific SEO keywords
+1. **Individual FAQ posts** (30 files) - each targeting specific SEO keywords
 2. **Combined FAQ post** (`index.qmd`) - using includes for optimal reading experience
 
 ### Key Benefits
@@ -31,7 +31,7 @@ blog/posts/evals-faq/
 │   ├── add_faq_context.py     # Add context includes to posts
 │   └── list_faq_titles.py     # List all FAQ titles and descriptions
 ├── images/                     # Shared images directory
-└── [29 individual FAQ files]   # Individual posts for SEO
+└── [30 individual FAQ files]   # Individual posts for SEO
 ```
 
 ## File Naming Conventions
@@ -79,12 +79,13 @@ toc-location: right
 
 The combined post is organized into logical categories with H1 headings, each containing related FAQs:
 
-### Current FAQ Categories (29 total FAQs)
+### Current FAQ Categories (30 total FAQs)
 
-1. **Getting Started & Fundamentals** (3 FAQs)
+1. **Getting Started & Fundamentals** (4 FAQs)
    - What are LLM Evals?
    - What's a minimum viable evaluation setup?
    - How much of my development budget should I allocate to evals?
+   - Will these evaluation methods still be relevant in 5-10 years given how fast AI is changing?
 
 2. **Error Analysis & Data Collection** (4 FAQs)
    - Why is error analysis so important and how is it performed?
