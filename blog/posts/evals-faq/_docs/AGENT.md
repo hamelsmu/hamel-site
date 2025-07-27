@@ -77,26 +77,83 @@ toc-location: right
 
 ## Combined Post Structure (`index.qmd`)
 
-The combined post uses includes and has specific CTA placement:
+The combined post is organized into logical categories with H1 headings, each containing related FAQs:
 
+### Current FAQ Categories (29 total FAQs)
+
+1. **Getting Started & Fundamentals** (3 FAQs)
+   - What are LLM Evals?
+   - What's a minimum viable evaluation setup?
+   - How much of my development budget should I allocate to evals?
+
+2. **Error Analysis & Data Collection** (4 FAQs)
+   - Why is error analysis so important and how is it performed?
+   - What is the best approach for generating synthetic data?
+   - How do I approach evaluation when my system handles diverse user queries?
+   - How can I efficiently sample production traces for review?
+
+3. **Evaluation Design & Methodology** (5 FAQs)
+   - Why do you recommend binary (pass/fail) evaluations instead of 1-5 ratings?
+   - Should I build automated evaluators for every failure mode I find?
+   - Should I use "ready-to-use" evaluation metrics?
+   - Are similarity metrics (BERTScore, ROUGE, etc.) useful for evaluating LLM outputs?
+   - Can I use the same model for both the main task and evaluation?
+
+4. **Human Annotation & Process** (4 FAQs)
+   - How many people should annotate my LLM outputs?
+   - Should I outsource annotation and labeling to a third party?
+   - What parts of evals can be automated with LLMs?
+   - Should I stop writing prompts manually in favor of automated tools?
+
+5. **Tools & Infrastructure** (4 FAQs)
+   - Should I build a custom annotation tool or use something off-the-shelf?
+   - What makes a good custom interface for reviewing LLM outputs?
+   - What gaps in eval tooling should I be prepared to fill myself?
+   - Seriously Hamel. Stop the bullshit. What's your favorite eval vendor?
+
+6. **Production & Deployment** (4 FAQs)
+   - How are evaluations used differently in CI/CD vs. monitoring production?
+   - What's the difference between guardrails & evaluators?
+   - Can my evaluators also be used to automatically fix or correct outputs in production?
+   - How much time should I spend on model selection?
+
+7. **Domain-Specific Applications** (5 FAQs)
+   - Is RAG dead?
+   - How should I approach evaluating my RAG system?
+   - How do I choose the right chunk size for my document processing tasks?
+   - How do I debug multi-turn conversation traces?
+   - How do I evaluate agentic workflows?
+
+### Category Guidelines
+
+**When adding new FAQs:**
+- Determine which existing category best fits the new question
+- If no category is a good fit, consider creating a new category (update this documentation)
+- Maintain roughly balanced category sizes (3-5 FAQs per category works well)
+- Categories should follow a logical progression from fundamentals to advanced topics
+
+**Category structure in `index.qmd`:**
 ```markdown
 ---
 [Combined post frontmatter - no exclude-from-listing]
 ---
 
 [Introduction]
-
 [CTA #1 - Top]
 
-`{{< include individual-faq-1.qmd >}}`
-`{{< include individual-faq-2.qmd >}}`
-...
-[After "diverse user queries" FAQ]
+# Getting Started & Fundamentals
 
-[CTA #2 - Middle]
-
-`{{< include remaining-faqs.qmd >}}`
+{{< include _faq-1.md >}}
+{{< include _faq-2.md >}}
 ...
+
+# Error Analysis & Data Collection
+
+{{< include _faq-3.md >}}
+...
+
+[CTA #2 - Middle after Evaluation Design & Methodology]
+[CTA #3 - Bottom after Domain-Specific Applications]
 
 [Footnotes]
 ```
@@ -152,9 +209,15 @@ The combined post uses includes and has specific CTA placement:
 
 4. **Add to combined post** (`index.qmd`):
    ```markdown
-   # Find the appropriate section and add:
+   # Find the appropriate category section and add:
    `{{< include new-faq-question.qmd >}}`
    ```
+   
+   **Category placement guidelines:**
+   - Place in the most relevant existing category
+   - If the FAQ doesn't fit well in any existing category, consider creating a new category
+   - Maintain logical flow within categories (fundamentals → advanced topics)
+   - Keep category sizes balanced (3-5 FAQs per category)
 
 5. **Run the system** (this regenerates includes):
    ```bash
