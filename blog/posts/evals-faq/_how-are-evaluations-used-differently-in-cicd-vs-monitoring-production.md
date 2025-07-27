@@ -6,4 +6,4 @@ Test datasets for CI are small (in many cases 100+ examples) and purpose-built. 
 
 For evaluating production traffic, you can sample live traces and run evaluators against them asynchronously. Since you usually lack reference outputs on production data, you might rely more on on more expensive reference-free evaluators like LLM-as-judge. Additionally, track confidence intervals for production metrics. If the lower bound crosses your threshold, investigate further.
 
-These two systems are complementary: when production monitoring reveals new failure patterns through error analysis and evals, add representative examples to your CI dataset. This mitigates regressions on new issues. [↗](#q-how-are-evaluations-used-differently-in-cicd-vs-monitoring-production){.faq-individual-link}
+These two systems are complementary: when production monitoring reveals new failure patterns through error analysis and evals, add representative examples to your CI dataset. This mitigates regressions on new issues. [↗](/blog/posts/evals-faq/how-are-evaluations-used-differently-in-cicd-vs-monitoring-production.html){.faq-individual-link}

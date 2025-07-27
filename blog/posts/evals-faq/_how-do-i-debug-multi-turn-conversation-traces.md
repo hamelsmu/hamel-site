@@ -6,4 +6,4 @@ When you find a failure, reproduce it with the simplest possible test case. Here
 
 For generating test cases, you have two main approaches. First, you can simulate users with another LLM to create realistic multi-turn conversations. Second, use "N-1 testing" where you provide the first N-1 turns of a real conversation and test what happens next. The N-1 approach often works better since it uses actual conversation prefixes rather than fully synthetic interactions (but is less flexible and doesn't test the full conversation). User simulation is getting better as models improve.  Keep an eye on this space.
 
-The key is balancing thoroughness with efficiency. Not every multi-turn failure requires multi-turn analysis. [↗](#q-how-do-i-debug-multi-turn-conversation-traces){.faq-individual-link}
+The key is balancing thoroughness with efficiency. Not every multi-turn failure requires multi-turn analysis. [↗](/blog/posts/evals-faq/how-do-i-debug-multi-turn-conversation-traces.html){.faq-individual-link}
