@@ -1,6 +1,6 @@
 # Frequently Asked Questions (And Answers) About AI Evals
 Hamel Husain, Shreya Shankar
-2025-07-26
+2025-07-27
 
 - [Getting Started & Fundamentals](#getting-started--fundamentals)
   - [Q: What are LLM Evals?](#q-what-are-llm-evals)
@@ -79,11 +79,11 @@ judgment.*
 
 <div class="cta" style="text-align: center;">
 
-<strong>👉 <em>If you want to learn more about AI Evals, check out our
-<a href="https://bit.ly/evals-ai" target="_blank">AI Evals
-course</a></em></strong><em>. Here is a
+**👉 *If you want to learn more about AI Evals, check out our
+<a href="https://bit.ly/evals-ai" target="_blank">AI Evals course</a>***.
+Here is a
 <a href="https://bit.ly/evals-ai" target="_blank">35% discount code</a>
-for readers.</em> 👈
+for readers. 👈
 
 </div>
 
@@ -489,11 +489,11 @@ class="faq-individual-link">↗</a>
 
 <div class="cta" style="text-align: center;">
 
-<strong>👉 <em>If you want to learn more about AI Evals, check out our
-<a href="https://bit.ly/evals-ai" target="_blank">AI Evals
-course</a></em></strong><em>. Here is a
+**👉 *If you want to learn more about AI Evals, check out our
+<a href="https://bit.ly/evals-ai" target="_blank">AI Evals course</a>***.
+Here is a
 <a href="https://bit.ly/evals-ai" target="_blank">35% discount code</a>
-for readers.</em> 👈
+for readers. 👈
 
 </div>
 
@@ -1023,20 +1023,6 @@ error analysis suggest that your model is the problem?” <a
 href="../../../blog/posts/evals-faq/how-much-time-should-i-spend-on-model-selection.html"
 class="faq-individual-link">↗</a>
 
-<hr>
-
-<div class="cta" style="text-align: center;">
-
-<strong>👉 <em>If you want to learn more about AI Evals, check out our
-<a href="https://bit.ly/evals-ai" target="_blank">AI Evals
-course</a></em></strong><em>. Here is a
-<a href="https://bit.ly/evals-ai" target="_blank">35% discount code</a>
-for readers.</em> 👈
-
-</div>
-
-<hr>
-
 # Domain-Specific Applications
 
 ## Q: Is RAG dead?
@@ -1318,11 +1304,11 @@ class="faq-individual-link">↗</a>
 
 <div class="cta" style="text-align: center;">
 
-<strong>👉 <em>If you want to learn more about AI Evals, check out our
-<a href="https://bit.ly/evals-ai" target="_blank">AI Evals
-course</a></em></strong><em>. Here is a
+**👉 *If you want to learn more about AI Evals, check out our
+<a href="https://bit.ly/evals-ai" target="_blank">AI Evals course</a>***.
+Here is a
 <a href="https://bit.ly/evals-ai" target="_blank">35% discount code</a>
-for readers.</em> 👈
+for readers. 👈
 
 </div>
 
