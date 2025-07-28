@@ -2,6 +2,8 @@
 Hamel Husain, Shreya Shankar
 2025-07-28
 
+- [Listen to the audio version of this
+  FAQ](#listen-to-the-audio-version-of-this-faq)
 - [Getting Started & Fundamentals](#getting-started--fundamentals)
   - [Q: What are LLM Evals?](#q-what-are-llm-evals)
   - [Q: What is a trace?](#q-what-is-a-trace)
@@ -107,6 +109,24 @@ for readers. 👈
 </div>
 
 <hr>
+
+# Listen to the audio version of this FAQ
+
+If you prefer to listen to the audio version (narrated by AI), you can
+play it [here](https://soundcloud.com/hamel-husain/llm-evals-faq).
+
+<iframe width="100%" height="20" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/2138083206&amp;color=%23ff5500&amp;inverse=false&amp;auto_play=false&amp;show_user=true">
+
+</iframe>
+
+<div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;">
+
+<a href="https://soundcloud.com/hamel-husain" title="Hamel Husain" target="_blank" style="color: #cccccc; text-decoration: none;">Hamel
+Husain</a> ·
+<a href="https://soundcloud.com/hamel-husain/llm-evals-faq" title="LLM Evals FAQ" target="_blank" style="color: #cccccc; text-decoration: none;">LLM
+Evals FAQ</a>
+
+</div>
 
 # Getting Started & Fundamentals
 
