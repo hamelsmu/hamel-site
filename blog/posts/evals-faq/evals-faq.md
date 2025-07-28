@@ -1,6 +1,6 @@
 # Frequently Asked Questions (And Answers) About AI Evals
 Hamel Husain, Shreya Shankar
-2025-07-27
+2025-07-28
 
 - [Getting Started & Fundamentals](#getting-started--fundamentals)
   - [Q: What are LLM Evals?](#q-what-are-llm-evals)
