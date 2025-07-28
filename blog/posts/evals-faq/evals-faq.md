@@ -4,15 +4,25 @@ Hamel Husain, Shreya Shankar
 
 - [Getting Started & Fundamentals](#getting-started--fundamentals)
   - [Q: What are LLM Evals?](#q-what-are-llm-evals)
+  - [Q: What is a trace?](#q-what-is-a-trace)
   - [Q: What’s a minimum viable evaluation
     setup?](#q-whats-a-minimum-viable-evaluation-setup)
   - [Q: How much of my development budget should I allocate to
     evals?](#q-how-much-of-my-development-budget-should-i-allocate-to-evals)
+  - [Q: Will today’s evaluation methods still be relevant in 5-10 years
+    given how fast AI is
+    changing?](#q-will-todays-evaluation-methods-still-be-relevant-in-5-10-years-given-how-fast-ai-is-changing)
 - [Error Analysis & Data Collection](#error-analysis--data-collection)
   - [Q: Why is "error analysis" so important in LLM evals, and how is it
     performed?](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed)
+  - [Q: How do I surface problematic traces for review beyond user
+    feedback?](#q-how-do-i-surface-problematic-traces-for-review-beyond-user-feedback)
+  - [Q: How often should I re-run error analysis on my production
+    system?](#q-how-often-should-i-re-run-error-analysis-on-my-production-system)
   - [Q: What is the best approach for generating synthetic
     data?](#q-what-is-the-best-approach-for-generating-synthetic-data)
+  - [Q: Are there scenarios where synthetic data may not be
+    reliable?](#q-are-there-scenarios-where-synthetic-data-may-not-be-reliable)
   - [Q: How do I approach evaluation when my system handles diverse user
     queries?](#q-how-do-i-approach-evaluation-when-my-system-handles-diverse-user-queries)
   - [Q: How can I efficiently sample production traces for
@@ -21,6 +31,8 @@ Hamel Husain, Shreya Shankar
   - [Q: Why do you recommend binary (pass/fail) evaluations instead of
     1-5 ratings (Likert
     scales)?](#q-why-do-you-recommend-binary-passfail-evaluations-instead-of-1-5-ratings-likert-scales)
+  - [Q: Should I practice eval-driven
+    development?](#q-should-i-practice-eval-driven-development)
   - [Q: Should I build automated evaluators for every failure mode I
     find?](#q-should-i-build-automated-evaluators-for-every-failure-mode-i-find)
   - [Q: Should I use "ready-to-use" evaluation
@@ -33,6 +45,9 @@ Hamel Husain, Shreya Shankar
 - [Human Annotation & Process](#human-annotation--process)
   - [Q: How many people should annotate my LLM
     outputs?](#q-how-many-people-should-annotate-my-llm-outputs)
+  - [Q: Should product managers and engineers collaborate on error
+    analysis?
+    How?](#q-should-product-managers-and-engineers-collaborate-on-error-analysis-how)
   - [Q: Should I outsource annotation & labeling to a third
     party?](#q-should-i-outsource-annotation--labeling-to-a-third-party)
   - [Q: What parts of evals can be automated with
@@ -66,6 +81,10 @@ Hamel Husain, Shreya Shankar
     tasks?](#q-how-do-i-choose-the-right-chunk-size-for-my-document-processing-tasks)
   - [Q: How do I debug multi-turn conversation
     traces?](#q-how-do-i-debug-multi-turn-conversation-traces)
+  - [Q: How do I evaluate sessions with human
+    handoffs?](#q-how-do-i-evaluate-sessions-with-human-handoffs)
+  - [Q: How do I evaluate complex multi-step
+    workflows?](#q-how-do-i-evaluate-complex-multi-step-workflows)
   - [Q: How do I evaluate agentic
     workflows?](#q-how-do-i-evaluate-agentic-workflows)
 
@@ -100,6 +119,23 @@ foundation model benchmarks), see these posts:
 <a href="https://hamel.dev/field-guide" target="_blank">part 3</a>.
 Otherwise, keep reading.
 <a href="../../../blog/posts/evals-faq/what-are-llm-evals.html"
+class="faq-individual-link">↗</a>
+
+## Q: What is a trace?
+
+A trace is the complete record of all actions, messages, tool calls, and
+data retrievals from a single initial user query through to the final
+response. It includes every step across all agents, tools, and system
+components in a session: multiple user messages, assistant responses,
+retrieved documents, and intermediate tool interactions.
+
+**Note on terminology:** Different observability vendors use varying
+definitions of traces and spans. [Alex Strick van Linschoten’s
+analysis](https://mlops.systems/posts/2025-06-04-instrumenting-an-agentic-app-with-arize-phoenix-and-litellm.html#llm-tracing-tools-naming-conventions-june-2025)
+highlights these differences (screenshot below):
+
+![Vendor differences in trace definitions as of 2025-07-02](alex.jpeg)
+<a href="../../../blog/posts/evals-faq/what-is-a-trace.html"
 class="faq-individual-link">↗</a>
 
 ## Q: What’s a minimum viable evaluation setup?
@@ -161,6 +197,29 @@ evaluation that’s actually stress-testing your application. Focus on
 evals that help you catch real issues, not ones that make your metrics
 look good. <a
 href="../../../blog/posts/evals-faq/how-much-of-my-development-budget-should-i-allocate-to-evals.html"
+class="faq-individual-link">↗</a>
+
+## Q: Will today’s evaluation methods still be relevant in 5-10 years given how fast AI is changing?
+
+Yes. Even with perfect models, you still need to verify they’re solving
+the right problem. The need for systematic <a
+href="#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed"
+target="_blank">error analysis</a>, domain-specific testing, and
+monitoring will still be important.
+
+Today’s prompt engineering tricks might become obsolete, but you’ll
+still need to understand failure modes. Additionally, a LLM cannot read
+your mind, and
+<a href="https://arxiv.org/abs/2404.12272" target="_blank">research
+shows</a> that people need to observe the LLM’s behavior in order to
+properly externalize their requirements.
+
+For deeper perspective on this debate, see these two viewpoints: <a
+href="https://m.youtube.com/watch?si=qknrtQeITqJ7VsJH&amp;v=4dUFIRj-BWo&amp;feature=youtu.be"
+target="_blank">“The model is the product”</a> versus
+<a href="https://www.youtube.com/watch?v=EEw2PpL-_NM"
+target="_blank">“The model is NOT the product”</a>. <a
+href="../../../blog/posts/evals-faq/will-these-evaluation-methods-still-be-relevant-in-5-10-years-given-how-fast-ai-is-changing.html"
 class="faq-individual-link">↗</a>
 
 # Error Analysis & Data Collection
@@ -227,6 +286,58 @@ post</a>. <a
 href="../../../blog/posts/evals-faq/why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed.html"
 class="faq-individual-link">↗</a>
 
+## Q: How do I surface problematic traces for review beyond user feedback?
+
+While user feedback is a good way to narrow in on problematic traces,
+other methods are also useful. Here are three complementary approaches:
+
+### Start with random sampling
+
+The simplest approach is reviewing a random sample of traces. If you
+find few issues, escalate to stress testing: create queries that
+deliberately test your prompt constraints to see if the AI follows your
+rules.
+
+### Use evals for initial screening
+
+Use existing evals to find problematic traces and potential issues. Once
+you’ve identified these, you can proceed with the typical evaluation
+process starting with [error
+analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed).
+
+### Leverage efficient sampling strategies
+
+For more sophisticated trace discovery, [use outlier detection,
+metric-based sorting, and stratified
+sampling](#q-how-can-i-efficiently-sample-production-traces-for-review)
+to find interesting traces. [Generic metrics can serve as exploration
+signals](#q-should-i-use-ready-to-use-evaluation-metrics) to identify
+traces worth reviewing, even if they don’t directly measure quality. <a
+href="../../../blog/posts/evals-faq/how-do-i-surface-problematic-traces-for-review-beyond-user-feedback.html"
+class="faq-individual-link">↗</a>
+
+## Q: How often should I re-run error analysis on my production system?
+
+Re-run [error
+analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed)
+when making significant changes: new features, prompt updates, model
+switches, or major bug fixes. A useful heuristic is to set a goal for
+reviewing *at least* 100+ fresh traces each review cycle. Typical review
+cycles we’ve seen range from 2-4 weeks. See
+<a href="#q-how-can-i-efficiently-sample-production-traces-for-review"
+target="_blank">this FAQ</a> on how to sample traces effectively.
+
+Between major analyses, review 10-20 traces weekly, focusing on
+outliers: unusually long conversations, sessions with multiple retries,
+or traces flagged by automated monitoring. Adjust frequency based on
+system stability and usage growth. New systems need weekly analysis
+until failure patterns stabilize. Mature systems might need only monthly
+analysis unless usage patterns change. Always analyze after incidents,
+user complaint spikes, or metric drift. Scaling usage introduces new
+edge cases. <a
+href="../../../blog/posts/evals-faq/how-often-should-i-re-run-error-analysis-on-my-production-system.html"
+class="faq-individual-link">↗</a>
+
 ## Q: What is the best approach for generating synthetic data?
 
 A common mistake is prompting an LLM to `"give me test queries"` without
@@ -246,41 +357,83 @@ in user behavior. For example:
   *technical*, *general*), Customer Mood (*frustrated*, *neutral*,
   *happy*), and Prior Context (*new issue*, *follow-up*, *resolved*).
 
-**Choose dimensions that target likely failure modes.** If you suspect
-your recipe app struggles with scaling ingredients for large groups or
-your support bot mishandles angry customers, make those dimensions. Use
-your application first—you need hypotheses about where failures occur.
-Without this, you’ll generate useless test data.
+**Start with failure hypotheses**. If you lack intuition about failure
+modes, use your application extensively or recruit friends to use it.
+Then choose dimensions targeting those likely failures.
 
-**Once you have dimensions, create tuples:** specific combinations
-selecting one value from each dimension. A tuple like (*Vegan*,
-*Italian*, *Multi-step*) represents a particular use case. Write 20
-tuples manually to understand your problem space, then use an LLM to
-scale up.
+**Create tuples manually first**: Write 20 tuples by hand—specific
+combinations selecting one value from each dimension. Example: (*Vegan*,
+*Italian*, *Multi-step*). This manual work helps you understand your
+problem space.
 
-The two-step generation process is important. First, have the LLM
-generate structured tuples. Then, in a separate prompt, convert each
-tuple to a natural language query. This separation prevents repetitive
-phrasing. For the vegan Italian tuple above, you might get
+**Scale with two-step generation**:
+
+1.  **Generate structured tuples**: Have the LLM create more
+    combinations like (*Gluten-free*, *Asian*, *Simple*)
+2.  **Convert tuples to queries**: In a separate prompt, transform each
+    tuple into natural language
+
+This separation avoids repetitive phrasing. The (*Vegan*, *Italian*,
+*Multi-step*) tuple becomes:
 `"I need a dairy-free lasagna recipe that I can prep the day before."`
 
-**Don’t generate synthetic data for problems you can fix immediately.**
-If your prompt never mentions handling dietary restrictions, fix the
-prompt rather than generating hundreds of specialized queries. Save
-synthetic data for complex issues requiring iteration—like an LLM
-consistently failing at ingredient scaling math or misinterpreting
-ambiguous requests.
+### Generation approaches
+
+You can generate tuples two ways:
+
+**Cross product then filter**: Generate all dimension combinations, then
+filter with an LLM. Guarantees coverage including edge cases. Use when
+most combinations are valid.
+
+**Direct LLM generation**: Ask the LLM to generate tuples directly. More
+realistic but tends toward generic outputs and misses rare scenarios.
+Use when many dimension combinations are invalid.
+
+**Fix obvious problems first**: Don’t generate synthetic data for issues
+you can fix immediately. If your prompt doesn’t mention dietary
+restrictions, fix the prompt rather than generating specialized test
+queries.
 
 After iterating on your tuples and prompts, **run these synthetic
 queries through your actual system to capture full traces**. Sample 100
 traces for error analysis. This number provides enough traces to
 manually review and identify failure patterns without being
-overwhelming. Rather than generating thousands of similar queries,
-ensure your 100 traces cover diverse combinations across your
-dimensions—this variety will reveal more failure modes than sheer
-volume. <a
+overwhelming. <a
 href="../../../blog/posts/evals-faq/what-is-the-best-approach-for-generating-synthetic-data.html"
 class="faq-individual-link">↗</a>
+
+## Q: Are there scenarios where synthetic data may not be reliable?
+
+Yes: synthetic data can mislead or mask issues. For guidance on
+generating synthetic data when appropriate, see [What is the best
+approach for generating synthetic
+data?](#q-what-is-the-best-approach-for-generating-synthetic-data)
+
+Common scenarios where synthetic data fails:
+
+1.  **Complex domain-specific content**: LLMs often miss the structure,
+    nuance, or quirks of specialized documents (e.g., legal filings,
+    medical records, technical forms). Without real examples, critical
+    edge cases are missed.
+
+2.  **Low-resource languages or dialects**: For low-resource languages
+    or dialects, LLM-generated samples are often unrealistic.
+    Evaluations based on them won’t reflect actual performance.
+
+3.  **When validation is impossible**: If you can’t verify synthetic
+    sample realism (due to domain complexity or lack of ground truth),
+    real data is important for accurate evaluation.
+
+4.  **High-stakes domains**: In high-stakes domains (medicine, law,
+    emergency response), synthetic data often lacks subtlety and edge
+    cases. Errors here have serious consequences, and manual validation
+    is difficult.
+
+5.  **Underrepresented user groups**: For underrepresented user groups,
+    LLMs may misrepresent context, values, or challenges. Synthetic data
+    can reinforce biases in the training data of the LLM. <a
+    href="../../../blog/posts/evals-faq/are-there-scenarios-where-synthetic-data-may-not-be-reliable.html"
+    class="faq-individual-link">↗</a>
 
 ## Q: How do I approach evaluation when my system handles diverse user queries?
 
@@ -329,6 +482,11 @@ traces more likely to reveal problems:
   build custom evaluators for the failure modes you find.
 - **Stratified sampling:** Group traces by key dimensions (user type,
   feature, query category) and sample from each group.
+- **Embedding clustering:** Generate embeddings of queries and cluster
+  them to reveal natural groupings. Sample proportionally from each
+  cluster, but oversample small clusters for edge cases. There’s no
+  right answer for clustering—it’s an exploration technique to surface
+  patterns you might miss manually.
 
 As you get more sophisticated with how you sample, you can incorporate
 these tactics into the design of your <a
@@ -368,6 +526,32 @@ objective criteria.
 Start with binary labels to understand what ‘bad’ looks like. Numeric
 labels are advanced and usually not necessary. <a
 href="../../../blog/posts/evals-faq/why-do-you-recommend-binary-passfail-evaluations-instead-of-1-5-ratings-likert-scales.html"
+class="faq-individual-link">↗</a>
+
+## Q: Should I practice eval-driven development?
+
+**Generally no.** Eval-driven development (writing evaluators before
+implementing features) sounds appealing but creates more problems than
+it solves. Unlike traditional software where failure modes are
+predictable, LLMs have infinite surface area for potential failures. You
+can’t anticipate what will break.
+
+A better approach is to start with [error
+analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed).
+Write evaluators for errors you discover, not errors you imagine. This
+avoids getting blocked on what to evaluate and prevents wasted effort on
+metrics that have no impact on actual system quality.
+
+**Exception:** Eval-driven development may work for specific constraints
+where you know exactly what success looks like. If adding “never mention
+competitors,” writing that evaluator early may be acceptable.
+
+Most importantly, always do a [cost-benefit
+analysis](#q-should-i-build-automated-evaluators-for-every-failure-mode-i-find)
+before implementing an eval. Ask whether the failure mode justifies the
+investment. Error analysis reveals which failures actually matter for
+your users. <a
+href="../../../blog/posts/evals-faq/should-i-practice-eval-driven-development.html"
 class="faq-individual-link">↗</a>
 
 ## Q: Should I build automated evaluators for every failure mode I find?
@@ -526,6 +710,28 @@ companies, a single expert is often enough.
 Start with a benevolent dictator whenever feasible. Only add complexity
 when your domain demands it. <a
 href="../../../blog/posts/evals-faq/how-many-people-should-annotate-my-llm-outputs.html"
+class="faq-individual-link">↗</a>
+
+## Q: Should product managers and engineers collaborate on error analysis? How?
+
+At the outset, collaborate to establish shared context. Engineers catch
+technical issues like retrieval issues and tool errors. PMs identify
+product failures like unmet user expectations, confusing responses, or
+missing features users expect.
+
+As time goes on you should lean towards a [benevolent
+dictator](#q-how-many-people-should-annotate-my-llm-outputs) for error
+analysis: a domain expert or PM who understands user needs. Empower
+domain experts to evaluate actual outcomes rather than technical
+implementation. Ask “Has an appointment been made?” not “Did the tool
+call succeed?” The best way to empower the domain expert is to give them
+[custom annotation
+tools](#q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs)
+that display system outcomes alongside traces. Show the confirmation,
+generated email, or database update that validates goal completion. Keep
+all context on one screen so non-technical reviewers focus on results.
+<a
+href="../../../blog/posts/evals-faq/should-product-managers-and-engineers-collaborate-on-error-analysis-how.html"
 class="faq-individual-link">↗</a>
 
 ## Q: Should I outsource annotation & labeling to a third party?
@@ -1207,6 +1413,23 @@ upstream failure. Read the user-visible parts first to understand if
 something went wrong. Only then dig into the technical details like tool
 calls and intermediate steps.
 
+### Multi-agent trace logging
+
+For multi-agent flows, assign a session or trace ID to each user request
+and log every message with its source (which agent or tool), trace ID,
+and position in the sequence. This lets you reconstruct the full path
+from initial query to final result across all agents.
+
+### Annotation strategy
+
+Annotate only the first failure in the trace initially—don’t worry about
+downstream failures since these often cascade from the first issue.
+Fixing upstream failures often resolves dependent downstream failures
+automatically. As you gain experience, you can annotate independent
+failure modes within the same trace to speed up overall error analysis.
+
+### Simplify when possible
+
 When you find a failure, reproduce it with the simplest possible test
 case. Here’s an example: suppose a shopping bot gives the wrong return
 policy on turn 4 of a conversation. Before diving into the full
@@ -1215,18 +1438,65 @@ window for product X1000?” If it still fails, you’ve proven the error
 isn’t about conversation context - it’s likely a basic retrieval or
 knowledge issue you can debug more easily.
 
-For generating test cases, you have two main approaches. First, you can
-simulate users with another LLM to create realistic multi-turn
-conversations. Second, use “N-1 testing” where you provide the first N-1
-turns of a real conversation and test what happens next. The N-1
-approach often works better since it uses actual conversation prefixes
-rather than fully synthetic interactions (but is less flexible and
-doesn’t test the full conversation). User simulation is getting better
-as models improve. Keep an eye on this space.
+### Test case generation
+
+You have two main approaches. First, simulate users with another LLM to
+create realistic multi-turn conversations. Second, use “N-1 testing”
+where you provide the first N-1 turns of a real conversation and test
+what happens next. The N-1 approach often works better since it uses
+actual conversation prefixes rather than fully synthetic interactions,
+but is less flexible.
 
 The key is balancing thoroughness with efficiency. Not every multi-turn
 failure requires multi-turn analysis. <a
 href="../../../blog/posts/evals-faq/how-do-i-debug-multi-turn-conversation-traces.html"
+class="faq-individual-link">↗</a>
+
+## Q: How do I evaluate sessions with human handoffs?
+
+Capture the complete user journey in your traces, including human
+handoffs. The trace continues until the user’s need is resolved or the
+session ends, not when AI hands off to a human. Log the handoff
+decision, why it occurred, context transferred, wait time, human
+actions, final resolution, and whether the human had sufficient context.
+Many failures occur at handoff boundaries where AI hands off too early,
+too late, or without proper context.
+
+Evaluate handoffs as potential failure modes during [error
+analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed).
+Ask: Was the handoff necessary? Did the AI provide adequate context?
+Track both handoff quality and handoff rate. Sometimes the best
+improvement reduces handoffs entirely rather than improving handoff
+execution. <a
+href="../../../blog/posts/evals-faq/how-do-i-evaluate-sessions-with-human-handoffs.html"
+class="faq-individual-link">↗</a>
+
+## Q: How do I evaluate complex multi-step workflows?
+
+Log the entire workflow from initial trigger to final business outcome.
+Include LLM calls, tool usage, human approvals, and database writes in
+your traces. You will need this visibility to properly diagnose
+failures.
+
+Use both outcome and process metrics. Outcome metrics verify the final
+result meets requirements: Was the business case complete? Accurate?
+Properly formatted? Process metrics evaluate efficiency: step count,
+time taken, resource usage. Process failures are often easier to debug
+since they’re more deterministic, so tackle them first.
+
+Segment your [error
+analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed)
+by workflow stages. Early stage failures (understanding user input)
+differ from middle stage failures (data processing) and late stage
+failures (formatting output). Early stage improvements have more impact
+since errors cascade in LLM chains.
+
+Use [transition failure
+matrices](#q-how-do-i-evaluate-agentic-workflows) to analyze where
+workflows break. Create a matrix showing the last successful state
+versus where the first failure occurred. This reveals failure hotspots
+and guides where to invest debugging effort. <a
+href="../../../blog/posts/evals-faq/how-do-i-evaluate-complex-multi-step-workflows.html"
 class="faq-individual-link">↗</a>
 
 ## Q: How do I evaluate agentic workflows?

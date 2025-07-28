@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-07-24">
+<meta name="dcterms.date" content="2025-07-27">
 
 <title>Q: How do I debug multi-turn conversation traces? – Hamel’s Blog</title>
 <style>
@@ -315,7 +315,16 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#multi-agent-trace-logging" id="toc-multi-agent-trace-logging" class="nav-link active" data-scroll-target="#multi-agent-trace-logging">Multi-agent trace logging</a></li>
+  <li><a href="#annotation-strategy" id="toc-annotation-strategy" class="nav-link" data-scroll-target="#annotation-strategy">Annotation strategy</a></li>
+  <li><a href="#simplify-when-possible" id="toc-simplify-when-possible" class="nav-link" data-scroll-target="#simplify-when-possible">Simplify when possible</a></li>
+  <li><a href="#test-case-generation" id="toc-test-case-generation" class="nav-link" data-scroll-target="#test-case-generation">Test case generation</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/blog/posts/evals-faq/how-do-i-debug-multi-turn-conversation-traces.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
     <div class="quarto-margin-footer"><div class="margin-footer-item">
 <button onclick="window.location.href='https://hamel.ck.page/7d15a4b6e7'" style="background-color: #447099; color: white; padding: 12px 24px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; transition: background-color 0.3s ease;">
 Subscribe To My Newsletter
@@ -348,7 +357,7 @@ Subscribe To My Newsletter
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 24, 2025</p>
+      <p class="date">July 27, 2025</p>
     </div>
   </div>
   
@@ -361,14 +370,28 @@ Subscribe To My Newsletter
 
 
 <p>Start simple. Check if the whole conversation met the user’s goal with a pass/fail judgment. Look at the entire trace and focus on the first upstream failure. Read the user-visible parts first to understand if something went wrong. Only then dig into the technical details like tool calls and intermediate steps.</p>
+<section id="multi-agent-trace-logging" class="level3">
+<h3 class="anchored" data-anchor-id="multi-agent-trace-logging">Multi-agent trace logging</h3>
+<p>For multi-agent flows, assign a session or trace ID to each user request and log every message with its source (which agent or tool), trace ID, and position in the sequence. This lets you reconstruct the full path from initial query to final result across all agents.</p>
+</section>
+<section id="annotation-strategy" class="level3">
+<h3 class="anchored" data-anchor-id="annotation-strategy">Annotation strategy</h3>
+<p>Annotate only the first failure in the trace initially—don’t worry about downstream failures since these often cascade from the first issue. Fixing upstream failures often resolves dependent downstream failures automatically. As you gain experience, you can annotate independent failure modes within the same trace to speed up overall error analysis.</p>
+</section>
+<section id="simplify-when-possible" class="level3">
+<h3 class="anchored" data-anchor-id="simplify-when-possible">Simplify when possible</h3>
 <p>When you find a failure, reproduce it with the simplest possible test case. Here’s an example: suppose a shopping bot gives the wrong return policy on turn 4 of a conversation. Before diving into the full multi-turn complexity, simplify it to a single turn: “What is the return window for product X1000?” If it still fails, you’ve proven the error isn’t about conversation context - it’s likely a basic retrieval or knowledge issue you can debug more easily.</p>
-<p>For generating test cases, you have two main approaches. First, you can simulate users with another LLM to create realistic multi-turn conversations. Second, use “N-1 testing” where you provide the first N-1 turns of a real conversation and test what happens next. The N-1 approach often works better since it uses actual conversation prefixes rather than fully synthetic interactions (but is less flexible and doesn’t test the full conversation). User simulation is getting better as models improve. Keep an eye on this space.</p>
+</section>
+<section id="test-case-generation" class="level3">
+<h3 class="anchored" data-anchor-id="test-case-generation">Test case generation</h3>
+<p>You have two main approaches. First, simulate users with another LLM to create realistic multi-turn conversations. Second, use “N-1 testing” where you provide the first N-1 turns of a real conversation and test what happens next. The N-1 approach often works better since it uses actual conversation prefixes rather than fully synthetic interactions, but is less flexible.</p>
 <p>The key is balancing thoroughness with efficiency. Not every multi-turn failure requires multi-turn analysis.</p>
 <p><a href="../../../blog/posts/evals-faq/#q-how-do-i-debug-multi-turn-conversation-traces" class="faq-back-link" target="_blank">↩︎ Back to main FAQ</a></p>
 <hr>
 <p><em>This article is part of our AI Evals FAQ, a collection of common questions (and answers) about LLM evaluation. <a href="../../../blog/posts/evals-faq/">View all FAQs</a> or <a href="../../..">return to the homepage</a>.</em></p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -810,7 +833,7 @@ Subscribe To My Newsletter
     </a>
   </li>  
 </ul>
-    <div class="toc-actions"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/blog/posts/evals-faq/how-do-i-debug-multi-turn-conversation-traces.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/blog/posts/evals-faq/how-do-i-debug-multi-turn-conversation-traces.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
