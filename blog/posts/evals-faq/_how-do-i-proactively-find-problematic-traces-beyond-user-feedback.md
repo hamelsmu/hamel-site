@@ -1,0 +1,11 @@
+## Q: How do I proactively find problematic traces beyond user feedback?
+
+**User feedback alone misses many issues.** Users don't report all problems—they may not notice subtle errors, accept poor quality, or abandon the system silently. You need proactive strategies to find issues before they escalate or cause churn.
+
+**Start with random sampling, then escalate if needed.** Review a random sample of traces first. If you find few issues, move to stress testing: systematically test every constraint in your prompt with queries designed to trigger those specific instructions. Analyze whether the AI follows the rules you've specified.
+
+**Use LLM judges for initial screening.** Deploy an LLM judge to review traces and flag potential issues or "bad vibes." Sort traces by the number of problems flagged. This helps surface candidates for manual review when dealing with thousands of traces. However, always conduct manual [error analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed) on flagged traces to ensure the judge's assessments align with your standards.
+
+**Leverage [efficient sampling strategies](#q-how-can-i-efficiently-sample-production-traces-for-review).** Use outlier detection, metric-based sorting, and stratified sampling to find interesting traces. [Generic metrics can serve as exploration signals](#q-should-i-use-ready-to-use-evaluation-metrics) to identify traces worth reviewing, even if they don't directly measure quality.
+
+**Manual review remains essential.** Whether sampling randomly, stress testing, or using LLM judges, human review is critical until you thoroughly understand your system's behaviors and failure modes. This manual process lets you infuse your taste and standards into the evaluation process, discovering issues that users haven't reported. [↗](/blog/posts/evals-faq/how-do-i-proactively-find-problematic-traces-beyond-user-feedback.html){.faq-individual-link}
