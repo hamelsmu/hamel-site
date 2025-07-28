@@ -115,7 +115,7 @@ for readers. 👈
 If you prefer to listen to the audio version (narrated by AI), you can
 play it [here](https://soundcloud.com/hamel-husain/llm-evals-faq).
 
-<iframe width="100%" height="20" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/2138083206&amp;color=%23ff5500&amp;inverse=false&amp;auto_play=false&amp;show_user=true">
+<iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/2138083206&amp;color=%23447099&amp;auto_play=false&amp;hide_related=true&amp;show_comments=false&amp;show_user=true&amp;show_reposts=false&amp;show_teaser=true">
 
 </iframe>
 
