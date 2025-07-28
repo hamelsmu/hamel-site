@@ -20,5 +20,4 @@ Keep iterating on more traces until you reach [theoretical saturation](https://d
 
 You should frequently revisit this process.  There are advanced ways to [sample data more efficiently](how-can-i-efficiently-sample-production-traces-for-review.html){target="_blank"}, like clustering, sorting by user feedback, and sorting by high probability failure patterns.  Over time, you'll develop a "nose" for where to look for failures in your data. 
 
-
 Do not skip error analysis.  It ensures that the evaluation metrics you develop are supported by real application behaviors instead of counter-productive generic metrics (which most platforms nudge you to use). For examples of how error analysis can be helpful, see [this video](https://www.youtube.com/watch?v=e2i6JbU2R-s){target="_blank"}, or this [blog post](https://hamel.dev/blog/posts/field-guide/){target="_blank"}. [↗](/blog/posts/evals-faq/why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed.html){.faq-individual-link}

@@ -2,6 +2,6 @@
 
 A trace is the complete record of all actions, messages, tool calls, and data retrievals from a single initial user query through to the final response. It includes every step across all agents, tools, and system components in a session: multiple user messages, assistant responses, retrieved documents, and intermediate tool interactions.
 
-**Why not individual request-response pairs?** Many errors only make sense in full context. Breaking traces into single turns creates far more data to review and misses the bigger picture needed for effective [error analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed). Errors cascade: early mistakes cause multiple downstream failures. Full-trace annotation helps spot these chains and avoids labeling each dependent error separately.
+**Note on terminology:** Different observability vendors use varying definitions of traces and spans. [Alex Strick van Linschoten's analysis](https://mlops.systems/posts/2025-06-04-instrumenting-an-agentic-app-with-arize-phoenix-and-litellm.html#llm-tracing-tools-naming-conventions-june-2025) highlights these differences (screenshot below):
 
-**Note on terminology:** Different observability vendors use varying definitions of traces and spans. [Alex Strick van Linschoten's analysis](https://mlops.systems/posts/2025-06-04-instrumenting-an-agentic-app-with-arize-phoenix-and-litellm.html) explains these vendor differences, but the core concept of capturing complete user journeys remains consistent. [↗](/blog/posts/evals-faq/what-is-a-trace.html){.faq-individual-link}
+![Vendor differences in trace definitions as of 2025-07-02](alex.jpeg) [↗](/blog/posts/evals-faq/what-is-a-trace.html){.faq-individual-link}
