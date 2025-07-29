@@ -22,4 +22,8 @@ You should frequently revisit this process.  There are advanced ways to [sample 
 
 Do not skip error analysis.  It ensures that the evaluation metrics you develop are supported by real application behaviors instead of counter-productive generic metrics (which most platforms nudge you to use). For examples of how error analysis can be helpful, see [this video](https://www.youtube.com/watch?v=e2i6JbU2R-s){target="_blank"}, or this [blog post](https://hamel.dev/blog/posts/field-guide/){target="_blank"}.
 
+Here is a visualization of the error analysis process by one of our students, [Pawel Huryn](https://www.linkedin.com/in/pawel-huryn/){target="_blank"} - including how it fits into the overall evaluation process:
+
+![](pawel-error-analysis.png)
+
 [↗](/blog/posts/evals-faq/why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed.html){.faq-individual-link}
