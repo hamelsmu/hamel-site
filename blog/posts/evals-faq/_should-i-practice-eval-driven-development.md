@@ -8,4 +8,4 @@ A better approach is to start with [error analysis](#q-why-is-error-analysis-so-
 
 Most importantly, always do a [cost-benefit analysis](#q-should-i-build-automated-evaluators-for-every-failure-mode-i-find) before implementing an eval. Ask whether the failure mode justifies the investment. Error analysis reveals which failures actually matter for your users.
 
-[↗](/blog/posts/evals-faq/should-i-practice-eval-driven-development.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/should-i-practice-eval-driven-development.html){.faq-individual-link}

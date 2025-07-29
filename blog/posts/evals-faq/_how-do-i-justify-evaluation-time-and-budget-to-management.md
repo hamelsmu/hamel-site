@@ -4,4 +4,4 @@
 
 **Frame evaluation as core development, not optional testing.** You wouldn't ship software without unit tests. Evaluation serves the same function for LLM applications.
 
-[↗](/blog/posts/evals-faq/how-do-i-justify-evaluation-time-and-budget-to-management.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/how-do-i-justify-evaluation-time-and-budget-to-management.html){.faq-individual-link}

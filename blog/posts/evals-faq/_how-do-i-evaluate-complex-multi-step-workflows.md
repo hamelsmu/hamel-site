@@ -8,4 +8,4 @@ Segment your [error analysis](#q-why-is-error-analysis-so-important-in-llm-evals
 
 Use [transition failure matrices](#q-how-do-i-evaluate-agentic-workflows) to analyze where workflows break. Create a matrix showing the last successful state versus where the first failure occurred. This reveals failure hotspots and guides where to invest debugging effort.
 
-[↗](/blog/posts/evals-faq/how-do-i-evaluate-complex-multi-step-workflows.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/how-do-i-evaluate-complex-multi-step-workflows.html){.faq-individual-link}

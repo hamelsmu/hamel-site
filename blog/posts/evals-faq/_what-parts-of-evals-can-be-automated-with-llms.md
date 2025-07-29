@@ -20,4 +20,4 @@ That said, LLMs are valuable tools for accelerating certain parts of the evaluat
 
 In conclusion, start by examining data manually to understand what's actually going wrong. Use LLMs to scale what you've learned, not to avoid looking at data.
 
-[↗](/blog/posts/evals-faq/what-parts-of-evals-can-be-automated-with-llms.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/what-parts-of-evals-can-be-automated-with-llms.html){.faq-individual-link}

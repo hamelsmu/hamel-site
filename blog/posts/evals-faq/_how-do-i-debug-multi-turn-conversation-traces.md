@@ -20,4 +20,4 @@ You have two main approaches. First, simulate users with another LLM to create r
 
 The key is balancing thoroughness with efficiency. Not every multi-turn failure requires multi-turn analysis.
 
-[↗](/blog/posts/evals-faq/how-do-i-debug-multi-turn-conversation-traces.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/how-do-i-debug-multi-turn-conversation-traces.html){.faq-individual-link}

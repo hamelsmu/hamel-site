@@ -6,4 +6,4 @@ Consider the cost hierarchy of different evaluator types. Simple assertions and 
 
 Only build expensive evaluators for problems you'll iterate on repeatedly. Since LLM-as-Judge comes with significant overhead, save it for persistent generalization failures - not issues you can fix trivially. Start with cheap code-based checks where possible: regex patterns, structural validation, or execution tests. Reserve complex evaluation for subjective qualities that can't be captured by simple rules.
 
-[↗](/blog/posts/evals-faq/should-i-build-automated-evaluators-for-every-failure-mode-i-find.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/should-i-build-automated-evaluators-for-every-failure-mode-i-find.html){.faq-individual-link}

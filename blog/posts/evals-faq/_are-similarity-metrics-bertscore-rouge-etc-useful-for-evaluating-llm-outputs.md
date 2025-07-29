@@ -8,4 +8,4 @@ As an example, consider a real estate CRM assistant. Suggesting showings that ar
 
 Similarity metrics aren't always useless. They have utility in domains like search and recommendation (and therefore can be useful for [optimizing and debugging retrieval](#q-how-should-i-approach-evaluating-my-rag-system){target="_blank"} for RAG). For example, cosine similarity between embeddings can measure semantic closeness in retrieval systems, and average pairwise similarity can assess output diversity (where lower similarity indicates higher diversity).
 
-[↗](/blog/posts/evals-faq/are-similarity-metrics-bertscore-rouge-etc-useful-for-evaluating-llm-outputs.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/are-similarity-metrics-bertscore-rouge-etc-useful-for-evaluating-llm-outputs.html){.faq-individual-link}

@@ -14,4 +14,4 @@ Common scenarios where synthetic data fails:
 
 5. **Underrepresented user groups**: For underrepresented user groups, LLMs may misrepresent context, values, or challenges. Synthetic data can reinforce biases in the training data of the LLM.
 
-[↗](/blog/posts/evals-faq/are-there-scenarios-where-synthetic-data-may-not-be-reliable.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/are-there-scenarios-where-synthetic-data-may-not-be-reliable.html){.faq-individual-link}

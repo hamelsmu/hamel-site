@@ -14,4 +14,4 @@ Use existing evals to find problematic traces and potential issues. Once you've 
 
 For more sophisticated trace discovery, [use outlier detection, metric-based sorting, and stratified sampling](#q-how-can-i-efficiently-sample-production-traces-for-review) to find interesting traces. [Generic metrics can serve as exploration signals](#q-should-i-use-ready-to-use-evaluation-metrics) to identify traces worth reviewing, even if they don't directly measure quality.
 
-[↗](/blog/posts/evals-faq/how-do-i-surface-problematic-traces-for-review-beyond-user-feedback.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/how-do-i-surface-problematic-traces-for-review-beyond-user-feedback.html){.faq-individual-link}

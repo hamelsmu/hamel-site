@@ -8,4 +8,4 @@ However, larger organizations or those operating across multiple domains (like a
 
 Start with a benevolent dictator whenever feasible. Only add complexity when your domain demands it.
 
-[↗](/blog/posts/evals-faq/how-many-people-should-annotate-my-llm-outputs.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/how-many-people-should-annotate-my-llm-outputs.html){.faq-individual-link}

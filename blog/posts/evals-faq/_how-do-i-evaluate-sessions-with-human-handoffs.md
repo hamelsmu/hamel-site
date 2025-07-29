@@ -4,4 +4,4 @@ Capture the complete user journey in your traces, including human handoffs. The 
 
 Evaluate handoffs as potential failure modes during [error analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed). Ask: Was the handoff necessary? Did the AI provide adequate context? Track both handoff quality and handoff rate. Sometimes the best improvement reduces handoffs entirely rather than improving handoff execution.
 
-[↗](/blog/posts/evals-faq/how-do-i-evaluate-sessions-with-human-handoffs.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/how-do-i-evaluate-sessions-with-human-handoffs.html){.faq-individual-link}

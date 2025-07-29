@@ -6,4 +6,4 @@ A trace is the complete record of all actions, messages, tool calls, and data re
 
 ![Vendor differences in trace definitions as of 2025-07-02](alex.jpeg)
 
-[↗](/blog/posts/evals-faq/what-is-a-trace.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/what-is-a-trace.html){.faq-individual-link}

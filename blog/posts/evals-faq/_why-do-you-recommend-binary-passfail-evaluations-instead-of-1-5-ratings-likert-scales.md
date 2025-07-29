@@ -10,4 +10,4 @@ For tracking gradual improvements, consider measuring specific sub-components wi
 
 Start with binary labels to understand what 'bad' looks like. Numeric labels are advanced and usually not necessary.
 
-[↗](/blog/posts/evals-faq/why-do-you-recommend-binary-passfail-evaluations-instead-of-1-5-ratings-likert-scales.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/why-do-you-recommend-binary-passfail-evaluations-instead-of-1-5-ratings-likert-scales.html){.faq-individual-link}

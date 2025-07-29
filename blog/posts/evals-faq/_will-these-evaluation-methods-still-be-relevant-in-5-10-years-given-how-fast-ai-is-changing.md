@@ -14,4 +14,4 @@ For deeper perspective on this debate, see these two viewpoints: ["The model is 
 {{< video https://www.youtube.com/watch?v=EEw2PpL-_NM >}}
 :::
 
-[↗](/blog/posts/evals-faq/will-these-evaluation-methods-still-be-relevant-in-5-10-years-given-how-fast-ai-is-changing.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/will-these-evaluation-methods-still-be-relevant-in-5-10-years-given-how-fast-ai-is-changing.html){.faq-individual-link}

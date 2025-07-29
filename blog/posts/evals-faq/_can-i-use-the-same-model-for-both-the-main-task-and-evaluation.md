@@ -4,4 +4,4 @@ For LLM-as-Judge selection, using the same model is usually fine because the jud
 
 When selecting judge models, start with the most capable models available to establish strong alignment with human judgments. You can optimize for cost later once you've established reliable evaluation criteria. We do not recommend using the same model for open ended preferences or response quality (but we don't recommend building judges this way in the first place!).
 
-[↗](/blog/posts/evals-faq/can-i-use-the-same-model-for-both-the-main-task-and-evaluation.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/can-i-use-the-same-model-for-both-the-main-task-and-evaluation.html){.faq-individual-link}

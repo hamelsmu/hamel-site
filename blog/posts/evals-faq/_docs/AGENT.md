@@ -360,6 +360,7 @@ python list_faq_titles.py
 - [ ] No individual FAQs in main blog listing
 - [ ] All images and links work
 - [ ] Context navigation present at bottom of individual posts
+- [ ] `[↗ Focus view]` links in combined FAQ point to correct individual pages
 
 ## SEO Considerations
 
@@ -372,6 +373,7 @@ python list_faq_titles.py
 ### Link Structure
 - **Individual FAQ pages**: Links to other FAQs use individual post URLs (`/blog/posts/evals-faq/other-faq.html`)
 - **Combined FAQ page**: Links use anchor links (`#q-other-faq`) to stay on same page
+- **Focus view links**: Each FAQ in the combined page includes a `[↗ Focus view]` link to its standalone page
 - **Cross-reference system**: Automatic conversion handled by pre-render script
 - **External links**: Validate periodically
 

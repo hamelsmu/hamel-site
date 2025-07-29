@@ -63,4 +63,4 @@ If you are completely new to product-specific LLM evals (not foundation model be
 :::
 :::
 
-[↗](/blog/posts/evals-faq/what-are-llm-evals.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/what-are-llm-evals.html){.faq-individual-link}

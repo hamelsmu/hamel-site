@@ -16,4 +16,4 @@ Apply guardrails for immediate protection against objective failures requiring i
 
 Word of caution: Do not use llm guardrails off the shelf blindly.  Always [look at the prompt](https://hamel.dev/blog/posts/prompt/){target="_blank"}.
 
-[↗](/blog/posts/evals-faq/whats-the-difference-between-guardrails-evaluators.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/whats-the-difference-between-guardrails-evaluators.html){.faq-individual-link}

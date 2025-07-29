@@ -8,4 +8,4 @@ I have no favorite vendor.  At the core, their features are very similar - and I
 
 My suggestion is to explore the vendors and see which one you like the most.
 
-[↗](/blog/posts/evals-faq/seriously-hamel-stop-the-bullshit-whats-your-favorite-eval-vendor.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/seriously-hamel-stop-the-bullshit-whats-your-favorite-eval-vendor.html){.faq-individual-link}

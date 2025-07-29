@@ -16,4 +16,4 @@ Finally, when implementing Jason's Tier 2 and 3 metrics, don't just use prompts 
 
 In summary, debug retrieval first using IR metrics, then tackle generation quality using properly validated LLM judges.
 
-[↗](/blog/posts/evals-faq/how-should-i-approach-evaluating-my-rag-system.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/how-should-i-approach-evaluating-my-rag-system.html){.faq-individual-link}

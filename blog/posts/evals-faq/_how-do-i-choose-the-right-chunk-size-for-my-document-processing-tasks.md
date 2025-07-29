@@ -26,4 +26,4 @@ It's important to recognize **why chunk size affects results**. A larger chunk m
 
 No rule of thumb can perfectly determine the best chunk size for your use case – **you should validate with experiments**. The optimal chunk size can vary by domain and model. I treat chunk size as a hyperparameter to tune.
 
-[↗](/blog/posts/evals-faq/how-do-i-choose-the-right-chunk-size-for-my-document-processing-tasks.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/how-do-i-choose-the-right-chunk-size-for-my-document-processing-tasks.html){.faq-individual-link}

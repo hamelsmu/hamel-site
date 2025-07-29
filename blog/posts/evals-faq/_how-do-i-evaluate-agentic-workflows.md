@@ -34,4 +34,4 @@ In this example, Bryan shows variation in transition matrices across experiments
 
 Creating test cases for agent failures follows the same principles as our previous FAQ on [debugging multi-turn conversation traces](#q-how-do-i-debug-multi-turn-conversation-traces){target="_blank"} (i.e. try to reproduce the error in the simplest way possible, only use multi-turn tests when the failure actually requires conversation context, etc.).
 
-[↗](/blog/posts/evals-faq/how-do-i-evaluate-agentic-workflows.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/how-do-i-evaluate-agentic-workflows.html){.faq-individual-link}

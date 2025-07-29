@@ -26,4 +26,4 @@ Here is a visualization of the error analysis process by one of our students, [P
 
 ![](pawel-error-analysis.png)
 
-[↗](/blog/posts/evals-faq/why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed.html){.faq-individual-link}

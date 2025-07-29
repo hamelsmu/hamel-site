@@ -30,4 +30,4 @@ Surface traces flagged by guardrails, CI failures, or automated evaluators for r
 
 Keep your annotation interface minimal. Only incorporate these ideas if they provide a benefit that outweighs the additional complexity and maintenance overhead.
 
-[↗](/blog/posts/evals-faq/what-makes-a-good-custom-interface-for-reviewing-llm-outputs.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/what-makes-a-good-custom-interface-for-reviewing-llm-outputs.html){.faq-individual-link}

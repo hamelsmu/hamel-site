@@ -96,15 +96,15 @@ def create_clean_include(qmd_file, output_dir):
         # If footnotes exist, place link before them
         footnote_pattern = r'(\n\n\[\^\d+\]:.*?)$'
         if re.search(footnote_pattern, content, re.DOTALL):
-            content_with_link = re.sub(footnote_pattern, r'\n\n[↗]({}){{.faq-individual-link}}\1'.format(individual_url), content, flags=re.DOTALL)
+            content_with_link = re.sub(footnote_pattern, r'\n\n[↗ Focus view]({}){{.faq-individual-link}}\1'.format(individual_url), content, flags=re.DOTALL)
         else:
-            content_with_link = f"{content}\n\n[↗]({individual_url}){{.faq-individual-link}}"
+            content_with_link = f"{content}\n\n[↗ Focus view]({individual_url}){{.faq-individual-link}}"
     elif content.rstrip().endswith(':::'):
         # If content ends with a closing div, add link after it
-        content_with_link = f"{content}\n\n[↗]({individual_url}){{.faq-individual-link}}"
+        content_with_link = f"{content}\n\n[↗ Focus view]({individual_url}){{.faq-individual-link}}"
     else:
         # No footnotes or special endings, just add at the end
-        content_with_link = f"{content}\n\n[↗]({individual_url}){{.faq-individual-link}}"
+        content_with_link = f"{content}\n\n[↗ Focus view]({individual_url}){{.faq-individual-link}}"
     
     clean_content = f"## Q: {title}\n\n{content_with_link}"
     

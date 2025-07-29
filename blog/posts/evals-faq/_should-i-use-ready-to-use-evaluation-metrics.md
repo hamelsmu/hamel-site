@@ -12,6 +12,6 @@ Instead, conduct [error analysis](#q-why-is-error-analysis-so-important-in-llm-e
 
 Experienced practitioners may still use these metrics, just not how you'd expect. As Picasso said: "Learn the rules like a pro, so you can break them like an artist." Once you understand why generic metrics fail as evaluations, you can repurpose them as exploration tools to [find interesting traces](#q-how-can-i-efficiently-sample-production-traces-for-review){target="_blank"} (explained in the next FAQ).
 
-[↗](/blog/posts/evals-faq/should-i-use-ready-to-use-evaluation-metrics.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/should-i-use-ready-to-use-evaluation-metrics.html){.faq-individual-link}
 
 [^1]: [Eleanor Berger](https://www.linkedin.com/in/intellectronica/){target="_blank"}, our wonderful TA.

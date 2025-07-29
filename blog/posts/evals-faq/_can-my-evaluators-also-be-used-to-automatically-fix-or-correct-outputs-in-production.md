@@ -13,4 +13,4 @@ There are two important decision criteria for deciding whether to use an evaluat
 
 Most guardrails are designed to be **fast** (to avoid harming user experience) and have a **very low false positive rate** (to avoid blocking valid responses). For this reason, you would almost never use a slow or non-deterministic LLM-as-Judge as a synchronous guardrail.  However, these tradeoffs might be different for your use case.
 
-[↗](/blog/posts/evals-faq/can-my-evaluators-also-be-used-to-automatically-fix-or-correct-outputs-in-production.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/can-my-evaluators-also-be-used-to-automatically-fix-or-correct-outputs-in-production.html){.faq-individual-link}

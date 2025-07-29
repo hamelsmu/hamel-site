@@ -10,4 +10,4 @@ It can be cumbersome to review traces randomly, especially when most traces don'
 
 As you get more sophisticated with how you sample, you can incorporate these tactics into the design of your [annotation tools](#q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs){target="_blank"}.
 
-[↗](/blog/posts/evals-faq/how-can-i-efficiently-sample-production-traces-for-review.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/how-can-i-efficiently-sample-production-traces-for-review.html){.faq-individual-link}

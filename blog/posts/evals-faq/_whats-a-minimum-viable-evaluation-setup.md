@@ -8,4 +8,4 @@ If possible, **use notebooks** to help you review traces and analyze data. In ou
 {{< video https://www.youtube.com/watch?v=aqKUwPKBkB0 >}}
 :::
 
-[↗](/blog/posts/evals-faq/whats-a-minimum-viable-evaluation-setup.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/whats-a-minimum-viable-evaluation-setup.html){.faq-individual-link}

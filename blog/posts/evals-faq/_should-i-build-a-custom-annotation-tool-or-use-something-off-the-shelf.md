@@ -16,4 +16,4 @@ Off-the-shelf tools may be justified when you need to coordinate dozens of distr
 {{< video https://www.youtube.com/watch?v=fA4pe9bE0LY >}}
 :::
 
-[↗](/blog/posts/evals-faq/should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf.html){.faq-individual-link}

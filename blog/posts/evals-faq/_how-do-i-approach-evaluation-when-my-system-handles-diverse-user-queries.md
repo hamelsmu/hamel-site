@@ -12,4 +12,4 @@ To see an example of basic error analysis in action, [see this video](https://yo
 {{< video https://www.youtube.com/watch?v=e2i6JbU2R-s >}}
 :::
 
-[↗](/blog/posts/evals-faq/how-do-i-approach-evaluation-when-my-system-handles-diverse-user-queries.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/how-do-i-approach-evaluation-when-my-system-handles-diverse-user-queries.html){.faq-individual-link}

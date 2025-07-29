@@ -16,4 +16,4 @@ Unfortunately, "RAG" has become a buzzword with no shared definition. Some peopl
 
 Rather than following categorical advice to avoid or embrace RAG, experiment with different retrieval approaches and measure what works best for your application. For more info on RAG evaluation and optimization, see [this series of posts](/notes/llm/rag/not_dead.html).
 
-[↗](/blog/posts/evals-faq/is-rag-dead.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/is-rag-dead.html){.faq-individual-link}
