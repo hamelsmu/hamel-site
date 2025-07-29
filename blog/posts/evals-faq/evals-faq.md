@@ -96,7 +96,7 @@ while <a href="https://bit.ly/evals-ai" target="_blank">teaching</a>
 what works in most cases. They are not universal truths. Use your
 judgment.*
 
-<hr>
+------------------------------------------------------------------------
 
 <div class="cta" style="text-align: center;">
 
@@ -108,7 +108,7 @@ for readers. 👈
 
 </div>
 
-<hr>
+------------------------------------------------------------------------
 
 # Listen to the audio version of this FAQ
 
@@ -689,7 +689,7 @@ this way in the first place!). <a
 href="../../../blog/posts/evals-faq/can-i-use-the-same-model-for-both-the-main-task-and-evaluation.html"
 class="faq-individual-link">↗</a>
 
-<hr>
+------------------------------------------------------------------------
 
 <div class="cta" style="text-align: center;">
 
@@ -701,7 +701,7 @@ for readers. 👈
 
 </div>
 
-<hr>
+------------------------------------------------------------------------
 
 # Human Annotation & Process
 
@@ -1590,7 +1590,7 @@ tests when the failure actually requires conversation context, etc.). <a
 href="../../../blog/posts/evals-faq/how-do-i-evaluate-agentic-workflows.html"
 class="faq-individual-link">↗</a>
 
-<hr>
+------------------------------------------------------------------------
 
 <div class="cta" style="text-align: center;">
 
@@ -1602,7 +1602,7 @@ for readers. 👈
 
 </div>
 
-<hr>
+------------------------------------------------------------------------
 
 [^1]: <a href="https://www.linkedin.com/in/intellectronica/"
     target="_blank">Eleanor Berger</a>, our wonderful TA.
