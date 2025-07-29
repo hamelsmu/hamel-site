@@ -1,7 +1,8 @@
 ## Q: What are LLM Evals?
 
-If you are completely new to product-specific LLM evals (not foundation model benchmarks), see the posts below. Otherwise, keep reading.
+If you are completely new to product-specific LLM evals (not foundation model benchmarks), see these posts: [part 1](/blog/posts/evals/index.qmd){target="_blank"}, [part 2](/blog/posts/llm-judge/index.qmd){target="_blank"} and [part 3](/blog/posts/field-guide/index.qmd){target="_blank"}. Otherwise, keep reading.
 
+::: {.content-visible unless-format="pdf"}
 ::: {.grid}
 
 ::: {.g-col-4}
@@ -59,6 +60,7 @@ If you are completely new to product-specific LLM evals (not foundation model be
 6. Why your AI roadmap should count experiments, not features
 :::
 
+:::
 :::
 
 [↗](/blog/posts/evals-faq/what-are-llm-evals.html){.faq-individual-link}
