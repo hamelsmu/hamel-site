@@ -6,4 +6,6 @@ Use both outcome and process metrics. Outcome metrics verify the final result me
 
 Segment your [error analysis](#q-why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed) by workflow stages. Early stage failures (understanding user input) differ from middle stage failures (data processing) and late stage failures (formatting output). Early stage improvements have more impact since errors cascade in LLM chains.
 
-Use [transition failure matrices](#q-how-do-i-evaluate-agentic-workflows) to analyze where workflows break. Create a matrix showing the last successful state versus where the first failure occurred. This reveals failure hotspots and guides where to invest debugging effort. [↗](/blog/posts/evals-faq/how-do-i-evaluate-complex-multi-step-workflows.html){.faq-individual-link}
+Use [transition failure matrices](#q-how-do-i-evaluate-agentic-workflows) to analyze where workflows break. Create a matrix showing the last successful state versus where the first failure occurred. This reveals failure hotspots and guides where to invest debugging effort.
+
+[↗](/blog/posts/evals-faq/how-do-i-evaluate-complex-multi-step-workflows.html){.faq-individual-link}

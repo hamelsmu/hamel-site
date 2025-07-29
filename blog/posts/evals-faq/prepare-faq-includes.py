@@ -91,17 +91,20 @@ def create_clean_include(qmd_file, output_dir):
     individual_url = f"/blog/posts/evals-faq/{qmd_file.stem}.html"
     
     # Create clean content with H2 heading and individual post link at the end
-    # Place link at the end of content, handling footnotes if they exist
+    # Place link at the end of content, handling footnotes and video divs if they exist
     if re.search(r'\[\^\d+\]:', content):
         # If footnotes exist, place link before them
         footnote_pattern = r'(\n\n\[\^\d+\]:.*?)$'
         if re.search(footnote_pattern, content, re.DOTALL):
-            content_with_link = re.sub(footnote_pattern, r' [↗]({}){{.faq-individual-link}}\1'.format(individual_url), content, flags=re.DOTALL)
+            content_with_link = re.sub(footnote_pattern, r'\n\n[↗]({}){{.faq-individual-link}}\1'.format(individual_url), content, flags=re.DOTALL)
         else:
-            content_with_link = f"{content} [↗]({individual_url}){{.faq-individual-link}}"
+            content_with_link = f"{content}\n\n[↗]({individual_url}){{.faq-individual-link}}"
+    elif content.rstrip().endswith(':::'):
+        # If content ends with a closing div, add link after it
+        content_with_link = f"{content}\n\n[↗]({individual_url}){{.faq-individual-link}}"
     else:
-        # No footnotes, just add at the end
-        content_with_link = f"{content} [↗]({individual_url}){{.faq-individual-link}}"
+        # No footnotes or special endings, just add at the end
+        content_with_link = f"{content}\n\n[↗]({individual_url}){{.faq-individual-link}}"
     
     clean_content = f"## Q: {title}\n\n{content_with_link}"
     

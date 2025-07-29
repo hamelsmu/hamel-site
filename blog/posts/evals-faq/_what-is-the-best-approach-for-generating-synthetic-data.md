@@ -28,4 +28,6 @@ You can generate tuples two ways:
 
 **Fix obvious problems first**: Don't generate synthetic data for issues you can fix immediately. If your prompt doesn't mention dietary restrictions, fix the prompt rather than generating specialized test queries.
 
-After iterating on your tuples and prompts, **run these synthetic queries through your actual system to capture full traces**. Sample 100 traces for error analysis. This number provides enough traces to manually review and identify failure patterns without being overwhelming. [↗](/blog/posts/evals-faq/what-is-the-best-approach-for-generating-synthetic-data.html){.faq-individual-link}
+After iterating on your tuples and prompts, **run these synthetic queries through your actual system to capture full traces**. Sample 100 traces for error analysis. This number provides enough traces to manually review and identify failure patterns without being overwhelming.
+
+[↗](/blog/posts/evals-faq/what-is-the-best-approach-for-generating-synthetic-data.html){.faq-individual-link}

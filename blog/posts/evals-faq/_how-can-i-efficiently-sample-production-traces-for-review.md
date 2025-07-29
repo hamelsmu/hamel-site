@@ -8,4 +8,6 @@ It can be cumbersome to review traces randomly, especially when most traces don'
 - **Stratified sampling:** Group traces by key dimensions (user type, feature, query category) and sample from each group.
 - **Embedding clustering:** Generate embeddings of queries and cluster them to reveal natural groupings. Sample proportionally from each cluster, but oversample small clusters for edge cases. There's no right answer for clustering—it's an exploration technique to surface patterns you might miss manually.
 
-As you get more sophisticated with how you sample, you can incorporate these tactics into the design of your [annotation tools](#q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs){target="_blank"}. [↗](/blog/posts/evals-faq/how-can-i-efficiently-sample-production-traces-for-review.html){.faq-individual-link}
+As you get more sophisticated with how you sample, you can incorporate these tactics into the design of your [annotation tools](#q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs){target="_blank"}.
+
+[↗](/blog/posts/evals-faq/how-can-i-efficiently-sample-production-traces-for-review.html){.faq-individual-link}

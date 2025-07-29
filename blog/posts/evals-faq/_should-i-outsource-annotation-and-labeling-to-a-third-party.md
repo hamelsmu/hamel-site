@@ -32,4 +32,6 @@ While outsourcing the core error analysis process is not recommended, there are 
 
 * Purely Mechanical Tasks: For highly objective, unambiguous tasks like identifying a phone number or validating an email address, external annotators can be used after a rigorous internal process has defined the rubric.  
 * Tasks Without Product Context: Well-defined tasks that don't require understanding your product's specific requirements can be outsourced. Translation is a good example: it requires linguistic expertise but not deep product knowledge.  
-* Engaging Subject Matter Experts: Hiring external SMEs to act as your internal domain experts is not outsourcing; it is bringing the necessary expertise into your evaluation process. For example, [AnkiHub](https://www.ankihub.net/){target="_blank"} hired 4th-year medical students to evaluate their RAG systems for medical content rather than outsourcing to generic annotators. [↗](/blog/posts/evals-faq/should-i-outsource-annotation-and-labeling-to-a-third-party.html){.faq-individual-link}
+* Engaging Subject Matter Experts: Hiring external SMEs to act as your internal domain experts is not outsourcing; it is bringing the necessary expertise into your evaluation process. For example, [AnkiHub](https://www.ankihub.net/){target="_blank"} hired 4th-year medical students to evaluate their RAG systems for medical content rather than outsourcing to generic annotators.
+
+[↗](/blog/posts/evals-faq/should-i-outsource-annotation-and-labeling-to-a-third-party.html){.faq-individual-link}

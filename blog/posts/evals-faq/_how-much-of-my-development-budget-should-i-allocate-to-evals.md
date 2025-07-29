@@ -4,8 +4,14 @@ It's important to recognize that evaluation is part of the development process r
 
 You should always be doing [error analysis](https://www.youtube.com/watch?v=qH1dZ8JLLdU){target="_blank"}. When you discover issues through error analysis, many will be straightforward bugs you'll fix immediately. These fixes don't require separate evaluation infrastructure as they're just part of development.
 
+::: {.content-visible unless-format="pdf"}
+{{< video https://www.youtube.com/watch?v=qH1dZ8JLLdU >}}
+:::
+
 The decision to build automated evaluators comes down to [cost-benefit analysis](#q-should-i-build-automated-evaluators-for-every-failure-mode-i-find){target="_blank"}. If you can catch an error with a simple assertion or regex check, the cost is minimal and probably worth it. But if you need to align an LLM-as-judge evaluator, consider whether the failure mode warrants that investment.
 
 In the projects we've worked on, **we've spent 60-80% of our development time on error analysis and evaluation**. Expect most of your effort to go toward understanding failures (i.e. looking at data) rather than building automated checks.
 
-Be [wary of optimizing for high eval pass rates](https://ai-execs.com/2_intro.html#a-case-study-in-misleading-ai-advice){target="_blank"}. If you're passing 100% of your evals, you're likely not challenging your system enough. A 70% pass rate might indicate a more meaningful evaluation that's actually stress-testing your application. Focus on evals that help you catch real issues, not ones that make your metrics look good. [↗](/blog/posts/evals-faq/how-much-of-my-development-budget-should-i-allocate-to-evals.html){.faq-individual-link}
+Be [wary of optimizing for high eval pass rates](https://ai-execs.com/2_intro.html#a-case-study-in-misleading-ai-advice){target="_blank"}. If you're passing 100% of your evals, you're likely not challenging your system enough. A 70% pass rate might indicate a more meaningful evaluation that's actually stress-testing your application. Focus on evals that help you catch real issues, not ones that make your metrics look good.
+
+[↗](/blog/posts/evals-faq/how-much-of-my-development-budget-should-i-allocate-to-evals.html){.faq-individual-link}
