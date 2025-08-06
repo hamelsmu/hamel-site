@@ -1,0 +1,726 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Retrieval Augmented Generation (RAG)",
+    "section": "",
+    "text": "1 Retrieval Augmented Generation (RAG)",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#the-future-of-ai-is-retrieval",
+    "href": "index.html#the-future-of-ai-is-retrieval",
+    "title": "Retrieval Augmented Generation (RAG)",
+    "section": "1.1 The Future of AI is Retrieval",
+    "text": "1.1 The Future of AI is Retrieval\nIn the rapidly evolving landscape of artificial intelligence, one technology stands at the intersection of knowledge and generation: Retrieval Augmented Generation (RAG). Despite claims that larger context windows might render it obsolete, RAG continues to be the backbone of the most powerful AI systems today.\nThis book takes you on a journey through the world of RAG—from its fundamental concepts to cutting-edge techniques that are reshaping how AI systems access and utilize information. RAG isn’t just about extending context windows; it’s about finding the right information at the right time.\nAs large language models continue to advance, the ability to retrieve relevant information becomes not less important, but more critical. Even with infinite context, the challenge of finding the needle in the haystack remains. This is where RAG shines—providing AI systems with the ability to access and leverage external knowledge beyond their training data.\nIn the following chapters, we’ll explore:\n\nWhy RAG is far from dead, and in fact, just getting started\nAdvanced retrieval techniques that go beyond simple vector similarity\nEvaluation methods to measure and improve RAG system performance\nReasoning capabilities that allow models to synthesize information across sources\nLate interaction approaches that make retrieval more efficient and effective\nA comprehensive map of the RAG landscape to guide your implementation\n\nWhether you’re building your first RAG system or looking to optimize an existing one, this book provides the insights and techniques you need to harness the full power of Retrieval Augmented Generation.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch1-not-dead.html",
+    "href": "chapters/ch1-not-dead.html",
+    "title": "2  Stop Saying RAG Is Dead",
+    "section": "",
+    "text": "3 Stop Saying RAG Is Dead\nWhy the future of RAG lies in better retrieval, not bigger context windows.\nBy Hamel Husain and Ben Clavié\nI’ve been seeing a lot of posts lately claiming that RAG is dead or will be obsolete soon due to larger context windows. This is a misunderstanding of what RAG is and why it’s valuable.\nRAG isn’t just about extending context windows - it’s about relevant information retrieval. Even with infinite context, you still need to find the right information.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Stop Saying RAG Is Dead</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch1-not-dead.html#the-real-problem-retrieval-quality",
+    "href": "chapters/ch1-not-dead.html#the-real-problem-retrieval-quality",
+    "title": "2  Stop Saying RAG Is Dead",
+    "section": "3.1 The Real Problem: Retrieval Quality",
+    "text": "3.1 The Real Problem: Retrieval Quality\nThe core challenge in RAG is finding the most relevant information for a given query. This remains true regardless of context window size.\nConsider these scenarios:\n\nSmall context window + poor retrieval: You can only fit a few documents, and they’re not even the right ones.\nLarge context window + poor retrieval: You can fit more documents, but most are irrelevant noise.\nAny context window + good retrieval: You get precisely the information needed to answer the query.\n\nThe third scenario is always superior, regardless of context size.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Stop Saying RAG Is Dead</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch1-not-dead.html#why-bigger-context-windows-arent-enough",
+    "href": "chapters/ch1-not-dead.html#why-bigger-context-windows-arent-enough",
+    "title": "2  Stop Saying RAG Is Dead",
+    "section": "3.2 Why Bigger Context Windows Aren’t Enough",
+    "text": "3.2 Why Bigger Context Windows Aren’t Enough\nLarger context windows don’t solve the fundamental problem of finding the right information. In fact, they can make things worse by:\n\nIncreasing noise: More irrelevant information can confuse the model\nRaising costs: Processing larger contexts is more expensive\nReducing performance: Models often perform worse with too much irrelevant context",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Stop Saying RAG Is Dead</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch1-not-dead.html#the-future-of-rag",
+    "href": "chapters/ch1-not-dead.html#the-future-of-rag",
+    "title": "2  Stop Saying RAG Is Dead",
+    "section": "3.3 The Future of RAG",
+    "text": "3.3 The Future of RAG\nThe future of RAG isn’t about cramming more documents into context - it’s about:\n\nBetter retrieval: Finding exactly the right information\nReasoning over documents: Synthesizing information across sources\nLate interaction: Deferring expensive operations until needed\nHybrid approaches: Combining dense and sparse retrieval methods",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Stop Saying RAG Is Dead</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch1-not-dead.html#conclusion",
+    "href": "chapters/ch1-not-dead.html#conclusion",
+    "title": "2  Stop Saying RAG Is Dead",
+    "section": "3.4 Conclusion",
+    "text": "3.4 Conclusion\nRAG isn’t dying - it’s evolving. The focus is shifting from “how much context can we fit?” to “how can we find exactly the right information?”\nEven with infinite context windows, you’d still need effective retrieval to find the needle in the haystack.\nSo no, RAG isn’t dead. It’s just getting started.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Stop Saying RAG Is Dead</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch2-intro.html",
+    "href": "chapters/ch2-intro.html",
+    "title": "3  I don’t use RAG, I just retrieve documents",
+    "section": "",
+    "text": "4 I don’t use RAG, I just retrieve documents\nAs part of our LLM Evals course, I hosted Benjamin Clavié to kick off a 5-part mini-series on evaluating and optimizing RAG. Ben is a retrieval researcher who has built widely used tools like RAGatouille and rerankers among other things. His talk focused on important developments in RAG and where you should be paying attention (late-interaction, reasoning, evals, multimodal, etc.).\nBelow is an annotated version of the presentation, with timestamped links for each slide.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>I don't use RAG, I just retrieve documents</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch2-intro.html#introduction",
+    "href": "chapters/ch2-intro.html#introduction",
+    "title": "3  I don’t use RAG, I just retrieve documents",
+    "section": "4.1 Introduction",
+    "text": "4.1 Introduction\n\nBen starts by introducing himself and his background in retrieval research. He’s the founder of Answer.ai, a company focused on building better retrieval systems.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>I don't use RAG, I just retrieve documents</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch2-intro.html#the-state-of-rag",
+    "href": "chapters/ch2-intro.html#the-state-of-rag",
+    "title": "3  I don’t use RAG, I just retrieve documents",
+    "section": "4.2 The State of RAG",
+    "text": "4.2 The State of RAG\n\nBen discusses the current state of RAG and how it’s evolved over the past year. He notes that while RAG has become more popular, there’s still a lot of confusion about what it is and how to use it effectively.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>I don't use RAG, I just retrieve documents</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch2-intro.html#rag-is-not-just-about-context-windows",
+    "href": "chapters/ch2-intro.html#rag-is-not-just-about-context-windows",
+    "title": "3  I don’t use RAG, I just retrieve documents",
+    "section": "4.3 RAG is Not Just About Context Windows",
+    "text": "4.3 RAG is Not Just About Context Windows\n\nA common misconception is that RAG is just about extending context windows. Ben emphasizes that RAG is about finding the most relevant information for a given query, regardless of context window size.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>I don't use RAG, I just retrieve documents</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch2-intro.html#the-evolution-of-retrieval",
+    "href": "chapters/ch2-intro.html#the-evolution-of-retrieval",
+    "title": "3  I don’t use RAG, I just retrieve documents",
+    "section": "4.4 The Evolution of Retrieval",
+    "text": "4.4 The Evolution of Retrieval\n\nBen traces the evolution of retrieval from simple keyword matching to modern neural approaches. He highlights how retrieval has become more sophisticated over time.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>I don't use RAG, I just retrieve documents</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch2-intro.html#dense-retrieval",
+    "href": "chapters/ch2-intro.html#dense-retrieval",
+    "title": "3  I don’t use RAG, I just retrieve documents",
+    "section": "4.5 Dense Retrieval",
+    "text": "4.5 Dense Retrieval\n\nDense retrieval involves encoding queries and documents into dense vector representations and finding the most similar documents to a query. This approach has become the standard for modern retrieval systems.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>I don't use RAG, I just retrieve documents</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch2-intro.html#hybrid-retrieval",
+    "href": "chapters/ch2-intro.html#hybrid-retrieval",
+    "title": "3  I don’t use RAG, I just retrieve documents",
+    "section": "4.6 Hybrid Retrieval",
+    "text": "4.6 Hybrid Retrieval\n\nHybrid retrieval combines multiple retrieval methods (e.g., dense and sparse) to get the best of both worlds. Ben discusses how hybrid approaches can improve retrieval quality.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>I don't use RAG, I just retrieve documents</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch2-intro.html#re-ranking",
+    "href": "chapters/ch2-intro.html#re-ranking",
+    "title": "3  I don’t use RAG, I just retrieve documents",
+    "section": "4.7 Re-ranking",
+    "text": "4.7 Re-ranking\n\nRe-ranking involves taking the results from a retrieval system and re-ordering them based on a more sophisticated model. This can significantly improve retrieval quality.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>I don't use RAG, I just retrieve documents</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch2-intro.html#late-interaction",
+    "href": "chapters/ch2-intro.html#late-interaction",
+    "title": "3  I don’t use RAG, I just retrieve documents",
+    "section": "4.8 Late Interaction",
+    "text": "4.8 Late Interaction\n\nLate interaction defers expensive operations until they’re needed. Ben explains how this approach can make retrieval more efficient.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>I don't use RAG, I just retrieve documents</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch2-intro.html#reasoning-over-documents",
+    "href": "chapters/ch2-intro.html#reasoning-over-documents",
+    "title": "3  I don’t use RAG, I just retrieve documents",
+    "section": "4.9 Reasoning Over Documents",
+    "text": "4.9 Reasoning Over Documents\n\nReasoning over documents involves synthesizing information across multiple sources. Ben discusses how this can lead to more accurate and comprehensive answers.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>I don't use RAG, I just retrieve documents</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch2-intro.html#evaluating-rag-systems",
+    "href": "chapters/ch2-intro.html#evaluating-rag-systems",
+    "title": "3  I don’t use RAG, I just retrieve documents",
+    "section": "4.10 Evaluating RAG Systems",
+    "text": "4.10 Evaluating RAG Systems\n\nBen emphasizes the importance of evaluating RAG systems properly. He discusses various metrics and approaches for measuring retrieval quality.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>I don't use RAG, I just retrieve documents</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch2-intro.html#the-future-of-rag",
+    "href": "chapters/ch2-intro.html#the-future-of-rag",
+    "title": "3  I don’t use RAG, I just retrieve documents",
+    "section": "4.11 The Future of RAG",
+    "text": "4.11 The Future of RAG\n\nBen concludes by discussing the future of RAG and where he sees the field heading. He emphasizes that RAG will continue to evolve and improve as retrieval methods become more sophisticated.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>I don't use RAG, I just retrieve documents</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch2-intro.html#qa",
+    "href": "chapters/ch2-intro.html#qa",
+    "title": "3  I don’t use RAG, I just retrieve documents",
+    "section": "4.12 Q&A",
+    "text": "4.12 Q&A\nThe presentation ends with a Q&A session where Ben answers questions from the audience about RAG, retrieval, and related topics.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>I don't use RAG, I just retrieve documents</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch3-evals.html",
+    "href": "chapters/ch3-evals.html",
+    "title": "4  Evaluating RAG Systems",
+    "section": "",
+    "text": "5 Evaluating RAG Systems\nIn this chapter, we’ll explore how to evaluate RAG systems effectively. Evaluation is crucial for understanding the performance of your RAG system and identifying areas for improvement.",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Evaluating RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch3-evals.html#introduction-to-rag-evaluation",
+    "href": "chapters/ch3-evals.html#introduction-to-rag-evaluation",
+    "title": "4  Evaluating RAG Systems",
+    "section": "5.1 Introduction to RAG Evaluation",
+    "text": "5.1 Introduction to RAG Evaluation\n\nEvaluation is a critical component of building effective RAG systems. Without proper evaluation, it’s difficult to know if your system is actually improving or if changes are making things worse.",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Evaluating RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch3-evals.html#types-of-evaluation-metrics",
+    "href": "chapters/ch3-evals.html#types-of-evaluation-metrics",
+    "title": "4  Evaluating RAG Systems",
+    "section": "5.2 Types of Evaluation Metrics",
+    "text": "5.2 Types of Evaluation Metrics\n\nThere are several types of evaluation metrics for RAG systems:\n\nRetrieval metrics: Measure how well the system retrieves relevant documents\nGeneration metrics: Measure the quality of the generated responses\nEnd-to-end metrics: Measure the overall performance of the system",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Evaluating RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch3-evals.html#retrieval-metrics",
+    "href": "chapters/ch3-evals.html#retrieval-metrics",
+    "title": "4  Evaluating RAG Systems",
+    "section": "5.3 Retrieval Metrics",
+    "text": "5.3 Retrieval Metrics\n\nRetrieval metrics focus on how well the system retrieves relevant documents. Common metrics include:\n\nPrecision: The fraction of retrieved documents that are relevant\nRecall: The fraction of relevant documents that are retrieved\nF1 Score: The harmonic mean of precision and recall\nMean Average Precision (MAP): The mean of average precision scores for each query\nNormalized Discounted Cumulative Gain (NDCG): Measures the ranking quality of the retrieved documents",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Evaluating RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch3-evals.html#generation-metrics",
+    "href": "chapters/ch3-evals.html#generation-metrics",
+    "title": "4  Evaluating RAG Systems",
+    "section": "5.4 Generation Metrics",
+    "text": "5.4 Generation Metrics\n\nGeneration metrics focus on the quality of the generated responses. Common metrics include:\n\nBLEU: Measures the similarity between the generated text and reference text\nROUGE: Measures the overlap of n-grams between the generated text and reference text\nBERTScore: Measures the semantic similarity between the generated text and reference text\nFaithfulness: Measures how well the generated text aligns with the retrieved documents\nRelevance: Measures how well the generated text addresses the query",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Evaluating RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch3-evals.html#end-to-end-metrics",
+    "href": "chapters/ch3-evals.html#end-to-end-metrics",
+    "title": "4  Evaluating RAG Systems",
+    "section": "5.5 End-to-End Metrics",
+    "text": "5.5 End-to-End Metrics\n\nEnd-to-end metrics measure the overall performance of the system. These metrics often involve human evaluation or automated metrics that correlate well with human judgment.",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Evaluating RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch3-evals.html#challenges-in-rag-evaluation",
+    "href": "chapters/ch3-evals.html#challenges-in-rag-evaluation",
+    "title": "4  Evaluating RAG Systems",
+    "section": "5.6 Challenges in RAG Evaluation",
+    "text": "5.6 Challenges in RAG Evaluation\n\nEvaluating RAG systems comes with several challenges:\n\nSubjectivity: Different people may have different opinions on what constitutes a good response\nContext dependence: The quality of a response may depend on the context in which it’s used\nMultiple correct answers: There may be multiple valid ways to answer a query\nLack of standardized benchmarks: There are few standardized benchmarks for RAG evaluation",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Evaluating RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch3-evals.html#building-an-evaluation-pipeline",
+    "href": "chapters/ch3-evals.html#building-an-evaluation-pipeline",
+    "title": "4  Evaluating RAG Systems",
+    "section": "5.7 Building an Evaluation Pipeline",
+    "text": "5.7 Building an Evaluation Pipeline\n\nBuilding an effective evaluation pipeline involves:\n\nDefining clear metrics: Choose metrics that align with your goals\nCreating a test set: Build a diverse and representative test set\nAutomating evaluation: Set up automated evaluation to run regularly\nHuman evaluation: Incorporate human evaluation for subjective aspects\nContinuous improvement: Use evaluation results to guide system improvements",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Evaluating RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch3-evals.html#case-study-evaluating-a-rag-system",
+    "href": "chapters/ch3-evals.html#case-study-evaluating-a-rag-system",
+    "title": "4  Evaluating RAG Systems",
+    "section": "5.8 Case Study: Evaluating a RAG System",
+    "text": "5.8 Case Study: Evaluating a RAG System\n\nLet’s walk through a case study of evaluating a RAG system:\n\nDefine metrics: We’ll use precision@k for retrieval and a combination of relevance and faithfulness for generation\nCreate test set: We’ll create a test set of 100 diverse queries\nRun evaluation: We’ll evaluate the system on the test set\nAnalyze results: We’ll analyze the results to identify strengths and weaknesses\nMake improvements: We’ll make targeted improvements based on the analysis",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Evaluating RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch3-evals.html#conclusion",
+    "href": "chapters/ch3-evals.html#conclusion",
+    "title": "4  Evaluating RAG Systems",
+    "section": "5.9 Conclusion",
+    "text": "5.9 Conclusion\n\nEvaluation is a crucial component of building effective RAG systems. By using a combination of retrieval, generation, and end-to-end metrics, you can gain a comprehensive understanding of your system’s performance and identify areas for improvement.\nRemember that evaluation should be an ongoing process, not a one-time activity. Regularly evaluating your system as you make changes will help ensure that you’re moving in the right direction.",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Evaluating RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch4-reasoning.html",
+    "href": "chapters/ch4-reasoning.html",
+    "title": "5  Reasoning in RAG Systems",
+    "section": "",
+    "text": "6 Reasoning in RAG Systems\nIn this chapter, we’ll explore the role of reasoning in RAG systems and how it can improve the quality of generated responses.",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Reasoning in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch4-reasoning.html#introduction-to-reasoning-in-rag",
+    "href": "chapters/ch4-reasoning.html#introduction-to-reasoning-in-rag",
+    "title": "5  Reasoning in RAG Systems",
+    "section": "6.1 Introduction to Reasoning in RAG",
+    "text": "6.1 Introduction to Reasoning in RAG\n\nReasoning is a critical component of advanced RAG systems. It involves synthesizing information across multiple sources and drawing logical conclusions based on the retrieved information.",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Reasoning in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch4-reasoning.html#why-reasoning-matters",
+    "href": "chapters/ch4-reasoning.html#why-reasoning-matters",
+    "title": "5  Reasoning in RAG Systems",
+    "section": "6.2 Why Reasoning Matters",
+    "text": "6.2 Why Reasoning Matters\n\nReasoning matters in RAG systems for several reasons:\n\nComplex queries: Many queries require reasoning across multiple pieces of information\nInconsistent information: Retrieved documents may contain conflicting information that needs to be reconciled\nImplicit knowledge: Some queries require drawing on implicit knowledge not explicitly stated in the documents\nMulti-hop reasoning: Some queries require multiple steps of reasoning to arrive at an answer",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Reasoning in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch4-reasoning.html#types-of-reasoning",
+    "href": "chapters/ch4-reasoning.html#types-of-reasoning",
+    "title": "5  Reasoning in RAG Systems",
+    "section": "6.3 Types of Reasoning",
+    "text": "6.3 Types of Reasoning\n\nThere are several types of reasoning that can be incorporated into RAG systems:\n\nDeductive reasoning: Drawing logical conclusions from premises\nInductive reasoning: Making generalizations based on specific examples\nAbductive reasoning: Forming the most likely explanation for an observation\nAnalogical reasoning: Drawing parallels between similar situations\nCausal reasoning: Understanding cause-and-effect relationships",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Reasoning in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch4-reasoning.html#implementing-reasoning-in-rag",
+    "href": "chapters/ch4-reasoning.html#implementing-reasoning-in-rag",
+    "title": "5  Reasoning in RAG Systems",
+    "section": "6.4 Implementing Reasoning in RAG",
+    "text": "6.4 Implementing Reasoning in RAG\n\nThere are several approaches to implementing reasoning in RAG systems:\n\nChain-of-thought prompting: Guiding the model through a step-by-step reasoning process\nSelf-consistency: Generating multiple reasoning paths and selecting the most consistent one\nTree-of-thought: Exploring multiple reasoning paths in a tree-like structure\nReasoning over retrieved documents: Explicitly reasoning over the content of retrieved documents",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Reasoning in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch4-reasoning.html#chain-of-thought-prompting",
+    "href": "chapters/ch4-reasoning.html#chain-of-thought-prompting",
+    "title": "5  Reasoning in RAG Systems",
+    "section": "6.5 Chain-of-Thought Prompting",
+    "text": "6.5 Chain-of-Thought Prompting\n\nChain-of-thought prompting involves guiding the model through a step-by-step reasoning process. This can be done by:\n\nExplicit instructions: Telling the model to “think step by step”\nFew-shot examples: Providing examples of step-by-step reasoning\nStructured prompts: Using a structured format to guide the reasoning process",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Reasoning in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch4-reasoning.html#self-consistency",
+    "href": "chapters/ch4-reasoning.html#self-consistency",
+    "title": "5  Reasoning in RAG Systems",
+    "section": "6.6 Self-Consistency",
+    "text": "6.6 Self-Consistency\n\nSelf-consistency involves generating multiple reasoning paths and selecting the most consistent one. This can improve the reliability of the reasoning process.",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Reasoning in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch4-reasoning.html#tree-of-thought",
+    "href": "chapters/ch4-reasoning.html#tree-of-thought",
+    "title": "5  Reasoning in RAG Systems",
+    "section": "6.7 Tree-of-Thought",
+    "text": "6.7 Tree-of-Thought\n\nTree-of-thought involves exploring multiple reasoning paths in a tree-like structure. This allows the model to consider different approaches to solving a problem.",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Reasoning in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch4-reasoning.html#reasoning-over-retrieved-documents",
+    "href": "chapters/ch4-reasoning.html#reasoning-over-retrieved-documents",
+    "title": "5  Reasoning in RAG Systems",
+    "section": "6.8 Reasoning Over Retrieved Documents",
+    "text": "6.8 Reasoning Over Retrieved Documents\n\nReasoning over retrieved documents involves explicitly reasoning over the content of retrieved documents. This can be done by:\n\nDocument-level reasoning: Reasoning over each document individually\nCross-document reasoning: Reasoning across multiple documents\nDocument-query reasoning: Reasoning about the relationship between the query and the documents",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Reasoning in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch4-reasoning.html#case-study-implementing-reasoning-in-a-rag-system",
+    "href": "chapters/ch4-reasoning.html#case-study-implementing-reasoning-in-a-rag-system",
+    "title": "5  Reasoning in RAG Systems",
+    "section": "6.9 Case Study: Implementing Reasoning in a RAG System",
+    "text": "6.9 Case Study: Implementing Reasoning in a RAG System\n\nLet’s walk through a case study of implementing reasoning in a RAG system:\n\nIdentify reasoning needs: Determine what types of reasoning are needed for your use case\nChoose an approach: Select an appropriate reasoning approach (e.g., chain-of-thought)\nImplement the approach: Integrate the reasoning approach into your RAG system\nEvaluate the results: Measure the impact of reasoning on system performance\nIterate and improve: Refine the reasoning approach based on evaluation results",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Reasoning in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch4-reasoning.html#challenges-in-implementing-reasoning",
+    "href": "chapters/ch4-reasoning.html#challenges-in-implementing-reasoning",
+    "title": "5  Reasoning in RAG Systems",
+    "section": "6.10 Challenges in Implementing Reasoning",
+    "text": "6.10 Challenges in Implementing Reasoning\n\nImplementing reasoning in RAG systems comes with several challenges:\n\nComputational cost: Reasoning can be computationally expensive\nError propagation: Errors in reasoning can propagate through the system\nBalancing depth and breadth: Finding the right balance between deep reasoning and broad coverage\nEvaluating reasoning quality: It can be difficult to evaluate the quality of reasoning",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Reasoning in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch4-reasoning.html#future-directions",
+    "href": "chapters/ch4-reasoning.html#future-directions",
+    "title": "5  Reasoning in RAG Systems",
+    "section": "6.11 Future Directions",
+    "text": "6.11 Future Directions\n\nThe field of reasoning in RAG is rapidly evolving. Future directions include:\n\nMore efficient reasoning: Developing more computationally efficient reasoning approaches\nMulti-modal reasoning: Reasoning across different modalities (text, images, etc.)\nPersonalized reasoning: Adapting reasoning to individual user needs and preferences\nExplainable reasoning: Making reasoning processes more transparent and explainable",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Reasoning in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch4-reasoning.html#conclusion",
+    "href": "chapters/ch4-reasoning.html#conclusion",
+    "title": "5  Reasoning in RAG Systems",
+    "section": "6.12 Conclusion",
+    "text": "6.12 Conclusion\n\nReasoning is a critical component of advanced RAG systems. By incorporating reasoning into your RAG system, you can improve the quality and reliability of generated responses, especially for complex queries that require synthesizing information across multiple sources.\nAs the field continues to evolve, we can expect to see more sophisticated reasoning approaches that further enhance the capabilities of RAG systems.",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Reasoning in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch5-late-interaction.html",
+    "href": "chapters/ch5-late-interaction.html",
+    "title": "6  Late Interaction in RAG Systems",
+    "section": "",
+    "text": "7 Late Interaction in RAG Systems\nIn this chapter, we’ll explore the concept of late interaction in RAG systems and how it can improve retrieval efficiency and effectiveness.",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Late Interaction in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch5-late-interaction.html#introduction-to-late-interaction",
+    "href": "chapters/ch5-late-interaction.html#introduction-to-late-interaction",
+    "title": "6  Late Interaction in RAG Systems",
+    "section": "7.1 Introduction to Late Interaction",
+    "text": "7.1 Introduction to Late Interaction\n\nLate interaction is an approach to retrieval that defers expensive operations until they’re needed. This can make retrieval more efficient and effective.",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Late Interaction in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch5-late-interaction.html#traditional-vs.-late-interaction-retrieval",
+    "href": "chapters/ch5-late-interaction.html#traditional-vs.-late-interaction-retrieval",
+    "title": "6  Late Interaction in RAG Systems",
+    "section": "7.2 Traditional vs. Late Interaction Retrieval",
+    "text": "7.2 Traditional vs. Late Interaction Retrieval\n\nIn traditional retrieval, queries and documents are encoded into dense vectors, and similarity is computed between these vectors. This approach has limitations:\n\nInformation loss: Encoding queries and documents into fixed-size vectors can lose information\nComputational cost: Computing dense vectors for all documents can be expensive\nLimited expressiveness: The similarity function is limited to vector similarity\n\nLate interaction addresses these limitations by deferring the interaction between queries and documents until retrieval time.",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Late Interaction in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch5-late-interaction.html#how-late-interaction-works",
+    "href": "chapters/ch5-late-interaction.html#how-late-interaction-works",
+    "title": "6  Late Interaction in RAG Systems",
+    "section": "7.3 How Late Interaction Works",
+    "text": "7.3 How Late Interaction Works\n\nLate interaction works by:\n\nEncoding tokens: Instead of encoding entire documents, encode individual tokens\nComputing token-level similarity: Compute similarity between query tokens and document tokens\nAggregating similarities: Aggregate token-level similarities to get document-level similarity\n\nThis approach preserves more information and allows for more expressive similarity functions.",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Late Interaction in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch5-late-interaction.html#colbert-a-late-interaction-model",
+    "href": "chapters/ch5-late-interaction.html#colbert-a-late-interaction-model",
+    "title": "6  Late Interaction in RAG Systems",
+    "section": "7.4 Colbert: A Late Interaction Model",
+    "text": "7.4 Colbert: A Late Interaction Model\n\nColbert is a popular late interaction model. It works by:\n\nEncoding tokens: Encode query and document tokens using a transformer model\nComputing token-level similarity: Compute the maximum similarity between each query token and all document tokens\nAggregating similarities: Sum the maximum similarities to get the document score",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Late Interaction in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch5-late-interaction.html#benefits-of-late-interaction",
+    "href": "chapters/ch5-late-interaction.html#benefits-of-late-interaction",
+    "title": "6  Late Interaction in RAG Systems",
+    "section": "7.5 Benefits of Late Interaction",
+    "text": "7.5 Benefits of Late Interaction\n\nLate interaction offers several benefits:\n\nImproved retrieval quality: By preserving more information, late interaction can improve retrieval quality\nMore expressive similarity: Late interaction allows for more expressive similarity functions\nBetter handling of long documents: Late interaction can better handle long documents by operating at the token level\nInterpretability: Token-level interactions can provide insights into why a document was retrieved",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Late Interaction in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch5-late-interaction.html#challenges-of-late-interaction",
+    "href": "chapters/ch5-late-interaction.html#challenges-of-late-interaction",
+    "title": "6  Late Interaction in RAG Systems",
+    "section": "7.6 Challenges of Late Interaction",
+    "text": "7.6 Challenges of Late Interaction\n\nLate interaction also comes with challenges:\n\nComputational cost: Computing token-level similarities can be more expensive than vector similarity\nStorage requirements: Storing token-level representations can require more storage\nImplementation complexity: Implementing late interaction can be more complex than traditional retrieval",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Late Interaction in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch5-late-interaction.html#optimizing-late-interaction",
+    "href": "chapters/ch5-late-interaction.html#optimizing-late-interaction",
+    "title": "6  Late Interaction in RAG Systems",
+    "section": "7.7 Optimizing Late Interaction",
+    "text": "7.7 Optimizing Late Interaction\n\nThere are several approaches to optimizing late interaction:\n\nPruning: Remove low-importance tokens to reduce computation\nQuantization: Reduce the precision of token representations to save storage\nCaching: Cache token representations to avoid recomputation\nParallel computation: Leverage parallel computation to speed up token-level similarity",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Late Interaction in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch5-late-interaction.html#case-study-implementing-late-interaction",
+    "href": "chapters/ch5-late-interaction.html#case-study-implementing-late-interaction",
+    "title": "6  Late Interaction in RAG Systems",
+    "section": "7.8 Case Study: Implementing Late Interaction",
+    "text": "7.8 Case Study: Implementing Late Interaction\n\nLet’s walk through a case study of implementing late interaction in a RAG system:\n\nChoose a model: Select a late interaction model (e.g., Colbert)\nPreprocess documents: Encode document tokens and store the representations\nImplement retrieval: Implement token-level similarity computation and aggregation\nOptimize for efficiency: Apply optimization techniques to improve efficiency\nEvaluate performance: Measure the impact of late interaction on retrieval quality and efficiency",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Late Interaction in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch5-late-interaction.html#future-directions",
+    "href": "chapters/ch5-late-interaction.html#future-directions",
+    "title": "6  Late Interaction in RAG Systems",
+    "section": "7.9 Future Directions",
+    "text": "7.9 Future Directions\n\nThe field of late interaction is rapidly evolving. Future directions include:\n\nMore efficient models: Developing more computationally efficient late interaction models\nMulti-modal late interaction: Extending late interaction to multi-modal retrieval\nHybrid approaches: Combining late interaction with other retrieval approaches\nEnd-to-end optimization: Optimizing late interaction models end-to-end for specific tasks",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Late Interaction in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch5-late-interaction.html#conclusion",
+    "href": "chapters/ch5-late-interaction.html#conclusion",
+    "title": "6  Late Interaction in RAG Systems",
+    "section": "7.10 Conclusion",
+    "text": "7.10 Conclusion\n\nLate interaction is a powerful approach to retrieval that can improve both efficiency and effectiveness. By deferring expensive operations until they’re needed and operating at the token level, late interaction preserves more information and allows for more expressive similarity functions.\nAs the field continues to evolve, we can expect to see more sophisticated late interaction models that further enhance the capabilities of RAG systems.",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Late Interaction in RAG Systems</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch6-map.html",
+    "href": "chapters/ch6-map.html",
+    "title": "7  The RAG Map: A Comprehensive Guide",
+    "section": "",
+    "text": "8 The RAG Map: A Comprehensive Guide\nIn this chapter, we’ll explore the RAG Map, a comprehensive guide to the various components and techniques in Retrieval Augmented Generation.",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>The RAG Map: A Comprehensive Guide</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch6-map.html#introduction-to-the-rag-map",
+    "href": "chapters/ch6-map.html#introduction-to-the-rag-map",
+    "title": "7  The RAG Map: A Comprehensive Guide",
+    "section": "8.1 Introduction to the RAG Map",
+    "text": "8.1 Introduction to the RAG Map\n\nThe RAG Map provides a comprehensive overview of the various components and techniques in Retrieval Augmented Generation. It serves as a guide for understanding the RAG landscape and making informed decisions about which approaches to use.",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>The RAG Map: A Comprehensive Guide</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch6-map.html#the-core-components-of-rag",
+    "href": "chapters/ch6-map.html#the-core-components-of-rag",
+    "title": "7  The RAG Map: A Comprehensive Guide",
+    "section": "8.2 The Core Components of RAG",
+    "text": "8.2 The Core Components of RAG\n\nThe RAG Map identifies several core components of RAG systems:\n\nDocument processing: Preparing documents for retrieval\nRetrieval: Finding relevant documents for a query\nGeneration: Generating responses based on retrieved documents\nEvaluation: Measuring the performance of the RAG system",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>The RAG Map: A Comprehensive Guide</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch6-map.html#document-processing",
+    "href": "chapters/ch6-map.html#document-processing",
+    "title": "7  The RAG Map: A Comprehensive Guide",
+    "section": "8.3 Document Processing",
+    "text": "8.3 Document Processing\n\nDocument processing involves preparing documents for retrieval. This includes:\n\nChunking: Splitting documents into smaller pieces\nEmbedding: Converting text into vector representations\nIndexing: Organizing documents for efficient retrieval\nMetadata: Adding additional information to documents",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>The RAG Map: A Comprehensive Guide</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch6-map.html#retrieval-approaches",
+    "href": "chapters/ch6-map.html#retrieval-approaches",
+    "title": "7  The RAG Map: A Comprehensive Guide",
+    "section": "8.4 Retrieval Approaches",
+    "text": "8.4 Retrieval Approaches\n\nThe RAG Map identifies several retrieval approaches:\n\nDense retrieval: Using dense vector representations for retrieval\nSparse retrieval: Using sparse vector representations (e.g., BM25)\nHybrid retrieval: Combining dense and sparse approaches\nLate interaction: Deferring expensive operations until needed\nMulti-modal retrieval: Retrieving across different modalities (text, images, etc.)",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>The RAG Map: A Comprehensive Guide</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch6-map.html#generation-approaches",
+    "href": "chapters/ch6-map.html#generation-approaches",
+    "title": "7  The RAG Map: A Comprehensive Guide",
+    "section": "8.5 Generation Approaches",
+    "text": "8.5 Generation Approaches\n\nThe RAG Map identifies several generation approaches:\n\nStandard generation: Generating responses based on retrieved documents\nChain-of-thought: Guiding the model through a step-by-step reasoning process\nSelf-consistency: Generating multiple responses and selecting the most consistent one\nTree-of-thought: Exploring multiple reasoning paths in a tree-like structure\nReasoning over documents: Explicitly reasoning over the content of retrieved documents",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>The RAG Map: A Comprehensive Guide</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch6-map.html#evaluation-approaches",
+    "href": "chapters/ch6-map.html#evaluation-approaches",
+    "title": "7  The RAG Map: A Comprehensive Guide",
+    "section": "8.6 Evaluation Approaches",
+    "text": "8.6 Evaluation Approaches\n\nThe RAG Map identifies several evaluation approaches:\n\nRetrieval metrics: Measuring retrieval quality (e.g., precision, recall)\nGeneration metrics: Measuring generation quality (e.g., BLEU, ROUGE)\nEnd-to-end metrics: Measuring overall system performance\nHuman evaluation: Using human judges to evaluate system performance\nAutomated evaluation: Using automated metrics that correlate with human judgment",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>The RAG Map: A Comprehensive Guide</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch6-map.html#advanced-rag-techniques",
+    "href": "chapters/ch6-map.html#advanced-rag-techniques",
+    "title": "7  The RAG Map: A Comprehensive Guide",
+    "section": "8.7 Advanced RAG Techniques",
+    "text": "8.7 Advanced RAG Techniques\n\nThe RAG Map also covers advanced RAG techniques:\n\nQuery expansion: Expanding queries to improve retrieval\nDocument reranking: Reordering retrieved documents based on relevance\nAdaptive retrieval: Adjusting retrieval based on the query\nMulti-step retrieval: Retrieving documents in multiple steps\nPersonalized RAG: Adapting RAG to individual user needs",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>The RAG Map: A Comprehensive Guide</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch6-map.html#navigating-the-rag-map",
+    "href": "chapters/ch6-map.html#navigating-the-rag-map",
+    "title": "7  The RAG Map: A Comprehensive Guide",
+    "section": "8.8 Navigating the RAG Map",
+    "text": "8.8 Navigating the RAG Map\n\nThe RAG Map can be used to navigate the RAG landscape and make informed decisions about which approaches to use. When navigating the RAG Map, consider:\n\nYour use case: Different approaches may be more suitable for different use cases\nResource constraints: Some approaches may require more computational resources\nPerformance requirements: Different approaches may offer different trade-offs between quality and efficiency\nImplementation complexity: Some approaches may be more complex to implement",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>The RAG Map: A Comprehensive Guide</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch6-map.html#case-study-using-the-rag-map",
+    "href": "chapters/ch6-map.html#case-study-using-the-rag-map",
+    "title": "7  The RAG Map: A Comprehensive Guide",
+    "section": "8.9 Case Study: Using the RAG Map",
+    "text": "8.9 Case Study: Using the RAG Map\n\nLet’s walk through a case study of using the RAG Map to design a RAG system:\n\nDefine requirements: Identify the requirements for your RAG system\nExplore options: Use the RAG Map to explore different approaches\nMake trade-offs: Consider the trade-offs between different approaches\nDesign the system: Design a RAG system based on your exploration\nImplement and evaluate: Implement the system and evaluate its performance",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>The RAG Map: A Comprehensive Guide</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch6-map.html#future-directions",
+    "href": "chapters/ch6-map.html#future-directions",
+    "title": "7  The RAG Map: A Comprehensive Guide",
+    "section": "8.10 Future Directions",
+    "text": "8.10 Future Directions\n\nThe RAG Map will continue to evolve as the field of RAG advances. Future directions include:\n\nNew retrieval approaches: Developing more effective and efficient retrieval approaches\nNew generation approaches: Developing more sophisticated generation approaches\nNew evaluation approaches: Developing better ways to evaluate RAG systems\nIntegration with other techniques: Integrating RAG with other AI techniques\nDomain-specific RAG: Adapting RAG to specific domains and use cases",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>The RAG Map: A Comprehensive Guide</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/ch6-map.html#conclusion",
+    "href": "chapters/ch6-map.html#conclusion",
+    "title": "7  The RAG Map: A Comprehensive Guide",
+    "section": "8.11 Conclusion",
+    "text": "8.11 Conclusion\n\nThe RAG Map provides a comprehensive guide to the various components and techniques in Retrieval Augmented Generation. By understanding the RAG landscape, you can make informed decisions about which approaches to use for your specific use case.\nAs the field continues to evolve, the RAG Map will be updated to reflect new developments and best practices.",
+    "crumbs": [
+      "Advanced Techniques",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>The RAG Map: A Comprehensive Guide</span>"
+    ]
+  }
+]
