@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.31">
+<meta name="generator" content="quarto-1.7.29">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Hamel Husain">
 <meta name="author" content="Shreya Shankar">
-<meta name="dcterms.date" content="2025-07-31">
+<meta name="dcterms.date" content="2025-08-16">
 <meta name="description" content="FAQ from our course on AI Evals.">
 
 <title>Frequently Asked Questions (And Answers) About AI Evals – Hamel’s Blog</title>
@@ -40,8 +40,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-748b535e376f14d4692bf2b2e5fd6380.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../../site_libs/bootstrap/bootstrap-473cd3fdae26158324e3fa026112ebdf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
@@ -262,7 +262,6 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       toggleColorMode(toAlternate);
       setStyleSentinel(toAlternate);
       toggleGiscusIfUsed(toAlternate, darkModeDefault);
-      window.dispatchEvent(new Event('resize'));
     };
     queryPrefersDark.addEventListener("change", e => {
       if(window.localStorage.getItem("quarto-color-scheme") !== null)
@@ -364,6 +363,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   <li><a href="#q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs" id="toc-q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs" class="nav-link" data-scroll-target="#q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs">Q: What makes a good custom interface for reviewing LLM outputs?</a></li>
   <li><a href="#q-what-gaps-in-eval-tooling-should-i-be-prepared-to-fill-myself" id="toc-q-what-gaps-in-eval-tooling-should-i-be-prepared-to-fill-myself" class="nav-link" data-scroll-target="#q-what-gaps-in-eval-tooling-should-i-be-prepared-to-fill-myself">Q: What gaps in eval tooling should I be prepared to fill myself?</a></li>
   <li><a href="#q-seriously-hamel.-stop-the-bullshit.-whats-your-favorite-eval-vendor" id="toc-q-seriously-hamel.-stop-the-bullshit.-whats-your-favorite-eval-vendor" class="nav-link" data-scroll-target="#q-seriously-hamel.-stop-the-bullshit.-whats-your-favorite-eval-vendor">Q: Seriously Hamel. Stop the bullshit. What’s your favorite eval vendor?</a></li>
+  <li><a href="#q-how-should-i-version-and-manage-prompts" id="toc-q-how-should-i-version-and-manage-prompts" class="nav-link" data-scroll-target="#q-how-should-i-version-and-manage-prompts">Q: How should I version and manage prompts?</a></li>
   </ul></li>
   <li><a href="#production-deployment" id="toc-production-deployment" class="nav-link" data-scroll-target="#production-deployment">Production &amp; Deployment</a>
   <ul class="collapse">
@@ -427,7 +427,7 @@ Subscribe To My Newsletter
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 31, 2025</p>
+      <p class="date">August 16, 2025</p>
     </div>
   </div>
   
@@ -484,6 +484,7 @@ Subscribe To My Newsletter
   <li><a href="#q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs" id="toc-q-what-makes-a-good-custom-interface-for-reviewing-llm-outputs">Q: What makes a good custom interface for reviewing LLM outputs?</a></li>
   <li><a href="#q-what-gaps-in-eval-tooling-should-i-be-prepared-to-fill-myself" id="toc-q-what-gaps-in-eval-tooling-should-i-be-prepared-to-fill-myself">Q: What gaps in eval tooling should I be prepared to fill myself?</a></li>
   <li><a href="#q-seriously-hamel.-stop-the-bullshit.-whats-your-favorite-eval-vendor" id="toc-q-seriously-hamel.-stop-the-bullshit.-whats-your-favorite-eval-vendor">Q: Seriously Hamel. Stop the bullshit. What’s your favorite eval vendor?</a></li>
+  <li><a href="#q-how-should-i-version-and-manage-prompts" id="toc-q-how-should-i-version-and-manage-prompts">Q: How should I version and manage prompts?</a></li>
   </ul></li>
   <li><a href="#production-deployment" id="toc-production-deployment">Production &amp; Deployment</a>
   <ul>
@@ -990,6 +991,15 @@ Subscribe To My Newsletter
 <p>I have no favorite vendor. At the core, their features are very similar - and I often build <a href="https://hamel.dev/blog/posts/evals/#q-should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf" target="_blank">custom tools</a> on top of them to fit my needs.</p>
 <p>My suggestion is to explore the vendors and see which one you like the most.</p>
 <p><a href="../../../blog/posts/evals-faq/seriously-hamel-stop-the-bullshit-whats-your-favorite-eval-vendor.html" class="faq-individual-link">↗ Focus view</a></p>
+</section>
+<section id="q-how-should-i-version-and-manage-prompts" class="level2">
+<h2 class="anchored" data-anchor-id="q-how-should-i-version-and-manage-prompts">Q: How should I version and manage prompts?</h2>
+<p>There is an unavoidable tension between keeping prompts close to the code vs.&nbsp;an environment that non-technical stakeholders can access.</p>
+<p><strong>My preferred approach is storing prompts in Git.</strong> This treats them as software artifacts that are versioned, reviewed, and deployed atomically with the application code. While the Git command line is unfriendly for non-technical folks, the <a href="https://github.com">GitHub</a> web interface and the GitHub <a href="https://desktop.github.com/">Desktop app</a> make it very approachable. When I was working at GitHub, I worked with many non-technical professionals, including lawyers and accountants, who used these tools effectively. Here is a good <a href="https://ben.balter.com/2023/03/02/github-for-non-technical-roles/">blog post</a> aimed at non-technical folks to get started.</p>
+<p>Alternatively, most vendors in the LLM tooling space, such as observability platforms like Arize, Braintrust, and LangSmith, offer dedicated prompt management tools. These are accessible for rapid iteration by product managers but risk creating additional layers of indirection.</p>
+<p>An appealing aspect of the aforementioned prompt management tools is the ability to experiment with prompts and version them in one interface. However, I find Jupyter notebooks are more powerful for this purpose. To see what this looks like in practice, Teresa Torres gives a fantastic, hands-on walkthrough of how she, as a PM, used notebooks for the entire eval and experimentation lifecycle:</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/N-qAOv_PNPc" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p><a href="../../../blog/posts/evals-faq/how-should-i-version-and-manage-prompts.html" class="faq-individual-link">↗ Focus view</a></p>
 </section>
 </section>
 <section id="production-deployment" class="level1">
