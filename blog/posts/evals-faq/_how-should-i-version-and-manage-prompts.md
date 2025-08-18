@@ -12,4 +12,6 @@ Alternatively, most vendors in the LLM tooling space, such as observability plat
 
 {{< video https://youtu.be/N-qAOv_PNPc >}}
 
+If notebooks are not feasible for your code base, an [​integrated prompt environment](/blog/posts/field-guide/#build-bridges-not-gatekeepers)​ can be effective for experimentation.  Either way, I prefer to version and manage prompts in Git.
+
 [↗ Focus view](/blog/posts/evals-faq/how-should-i-version-and-manage-prompts.html){.faq-individual-link}
