@@ -12,6 +12,4 @@ Alternatively, most vendors in the LLM tooling space, such as observability plat
 
 {{< video https://youtu.be/N-qAOv_PNPc >}}
 
-Note that Deno has a [typescript Jupyter kernel](https://deno.com/blog/exploring-art-with-typescript-and-jupyter) which makes this an option for TypeScript developers.
-
 [↗ Focus view](/blog/posts/evals-faq/how-should-i-version-and-manage-prompts.html){.faq-individual-link}
