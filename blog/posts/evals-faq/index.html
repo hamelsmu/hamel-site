@@ -350,6 +350,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   <li><a href="#q-should-i-use-ready-to-use-evaluation-metrics" id="toc-q-should-i-use-ready-to-use-evaluation-metrics" class="nav-link" data-scroll-target="#q-should-i-use-ready-to-use-evaluation-metrics">Q: Should I use "ready-to-use" evaluation metrics?</a></li>
   <li><a href="#q-are-similarity-metrics-bertscore-rouge-etc.-useful-for-evaluating-llm-outputs" id="toc-q-are-similarity-metrics-bertscore-rouge-etc.-useful-for-evaluating-llm-outputs" class="nav-link" data-scroll-target="#q-are-similarity-metrics-bertscore-rouge-etc.-useful-for-evaluating-llm-outputs">Q: Are similarity metrics (BERTScore, ROUGE, etc.) useful for evaluating LLM outputs?</a></li>
   <li><a href="#q-can-i-use-the-same-model-for-both-the-main-task-and-evaluation" id="toc-q-can-i-use-the-same-model-for-both-the-main-task-and-evaluation" class="nav-link" data-scroll-target="#q-can-i-use-the-same-model-for-both-the-main-task-and-evaluation">Q: Can I use the same model for both the main task and evaluation?</a></li>
+  <li><a href="#q-how-do-we-evaluate-a-models-ability-to-express-uncertainty-or-know-what-it-doesnt-know" id="toc-q-how-do-we-evaluate-a-models-ability-to-express-uncertainty-or-know-what-it-doesnt-know" class="nav-link" data-scroll-target="#q-how-do-we-evaluate-a-models-ability-to-express-uncertainty-or-know-what-it-doesnt-know">Q: How do we evaluate a model’s ability to express uncertainty or "know what it doesn’t know"?</a></li>
   </ul></li>
   <li><a href="#human-annotation-process" id="toc-human-annotation-process" class="nav-link" data-scroll-target="#human-annotation-process">Human Annotation &amp; Process</a>
   <ul class="collapse">
@@ -472,6 +473,7 @@ Subscribe To My Newsletter
   <li><a href="#q-should-i-use-ready-to-use-evaluation-metrics" id="toc-q-should-i-use-ready-to-use-evaluation-metrics">Q: Should I use "ready-to-use" evaluation metrics?</a></li>
   <li><a href="#q-are-similarity-metrics-bertscore-rouge-etc.-useful-for-evaluating-llm-outputs" id="toc-q-are-similarity-metrics-bertscore-rouge-etc.-useful-for-evaluating-llm-outputs">Q: Are similarity metrics (BERTScore, ROUGE, etc.) useful for evaluating LLM outputs?</a></li>
   <li><a href="#q-can-i-use-the-same-model-for-both-the-main-task-and-evaluation" id="toc-q-can-i-use-the-same-model-for-both-the-main-task-and-evaluation">Q: Can I use the same model for both the main task and evaluation?</a></li>
+  <li><a href="#q-how-do-we-evaluate-a-models-ability-to-express-uncertainty-or-know-what-it-doesnt-know" id="toc-q-how-do-we-evaluate-a-models-ability-to-express-uncertainty-or-know-what-it-doesnt-know">Q: How do we evaluate a model’s ability to express uncertainty or "know what it doesn’t know"?</a></li>
   </ul></li>
   <li><a href="#human-annotation-process" id="toc-human-annotation-process">Human Annotation &amp; Process</a>
   <ul>
@@ -808,6 +810,19 @@ Subscribe To My Newsletter
 <p>For LLM-as-Judge selection, using the same model is usually fine because the judge is doing a different task than your main LLM pipeline. The judges we recommend building do <a href="#q-why-do-you-recommend-binary-passfail-evaluations-instead-of-1-5-ratings-likert-scales" target="_blank">scoped binary classification tasks</a>. Focus on achieving high True Positive Rate (TPR) and True Negative Rate (TNR) with your judge on a held out labeled test set rather than avoiding the same model family. You can use these metrics on the test set to understand how well your judge is doing.</p>
 <p>When selecting judge models, start with the most capable models available to establish strong alignment with human judgments. You can optimize for cost later once you’ve established reliable evaluation criteria. We do not recommend using the same model for open ended preferences or response quality (but we don’t recommend building judges this way in the first place!).</p>
 <p><a href="../../../blog/posts/evals-faq/can-i-use-the-same-model-for-both-the-main-task-and-evaluation.html" class="faq-individual-link">↗ Focus view</a></p>
+</section>
+<section id="q-how-do-we-evaluate-a-models-ability-to-express-uncertainty-or-know-what-it-doesnt-know" class="level2">
+<h2 class="anchored" data-anchor-id="q-how-do-we-evaluate-a-models-ability-to-express-uncertainty-or-know-what-it-doesnt-know">Q: How do we evaluate a model’s ability to express uncertainty or "know what it doesn’t know"?</h2>
+<p>Many applications require a model that can refuse to answer a question when it lacks sufficient information. To evaluate whether this refusal behavior is well-calibrated, you need to test if the model refuses at the appropriate times without refusing to answer questions it <em>should</em> be able to answer.</p>
+<p>To do this effectively, you should construct an evaluation set that has the following components:</p>
+<ol type="1">
+<li><strong>Answerable Questions:</strong> Scenarios where a correct, verifiable answer is present in the model’s provided context or general knowledge.</li>
+<li><strong>Unanswerable Questions:</strong> Scenarios designed to tempt the model to hallucinate. These include questions with false premises, queries about information explicitly missing from context, or topics far outside its knowledge base.</li>
+</ol>
+<p>While the exact proportion isn’t critical, a balanced set with a roughly equal number of answerable and unanswerable questions is a good starting point. The diversity and difficulty of the questions are more important than the precise ratio.</p>
+<p>The evaluation itself is a binary (Pass/Fail) check of the model’s judgment. A “Pass” requires the model to satisfy two conditions: it must answer the answerable questions while also refusing to answer the unanswerable ones. A failure is defined as providing a fabricated answer to an unanswerable question, which indicates poor calibration.</p>
+<p>In the research literature, this capability is known as “Abstention Ability.” To improve this behavior, it is worth <a href="https://arxiv.org/search/?query=Abstention+Ability&amp;searchtype=all">searching for this term on Arxiv</a> to understand the latest techniques.</p>
+<p><a href="../../../blog/posts/evals-faq/how-do-we-evaluate-a-models-ability-to-express-uncertainty-or-know-what-it-doesnt-know.html" class="faq-individual-link">↗ Focus view</a></p>
 <hr>
 <div class="cta" style="text-align: center;">
 <p><strong>👉 <em>If you want to learn more about AI Evals, check out our <a href="https://bit.ly/evals-ai" target="_blank">AI Evals course</a></em></strong>. Here is a <a href="https://bit.ly/evals-ai" target="_blank">35% discount code</a> for readers. 👈</p>
