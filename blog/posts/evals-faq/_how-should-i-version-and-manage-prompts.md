@@ -8,8 +8,10 @@ Alternatively, most vendors in the LLM tooling space, such as observability plat
 
 **Why prompt management tools often fall short:** AI products typically involve many moving parts: tools, RAG, agents, etc. Prompt management tools are inherently limiting because they can't easily execute your application's code. Even when they can, there's often significant indirection involved, making it difficult to test prompts with your actual system's capabilities.
 
-**When possible, a REPL or notebook provides a better solution.** If you have Python entry points into your codebase or your codebase is written in Python, Jupyter notebooks are particularly powerful for this purpose. You can experiment with prompts and iterate on your actual AI agents with their full tool and RAG capabilities. This makes it much easier to understand how your system works in practice. Additionally, you can create widgets and small user interfaces within notebooks, giving you the best of both worlds for experimentation and iteration. To see what this looks like in practice, Teresa Torres gives a fantastic, hands-on walkthrough of how she, as a PM, used notebooks for the entire eval and experimentation lifecycle:
+**When possible, a notebook provides a great solution for prompt experimentation** If you have Python entry points into your codebase or your codebase is written in Python, Jupyter notebooks are particularly powerful for this purpose. You can experiment with prompts and iterate on your actual AI agents with their full tool and RAG capabilities. This makes it much easier to understand how your system works in practice. Additionally, you can create widgets and small user interfaces within notebooks, giving you the best of both worlds for experimentation and iteration. To see what this looks like in practice, Teresa Torres gives a fantastic, hands-on walkthrough of how she, as a PM, used notebooks for the entire eval and experimentation lifecycle:
 
 {{< video https://youtu.be/N-qAOv_PNPc >}}
+
+Note that Deno has a [typescript Jupyter kernel](https://deno.com/blog/exploring-art-with-typescript-and-jupyter) which makes this an option for TypeScript developers.
 
 [↗ Focus view](/blog/posts/evals-faq/how-should-i-version-and-manage-prompts.html){.faq-individual-link}

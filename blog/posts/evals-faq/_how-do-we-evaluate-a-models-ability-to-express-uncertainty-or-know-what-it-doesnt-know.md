@@ -1,0 +1,16 @@
+## Q: How do we evaluate a model's ability to express uncertainty or \"know what it doesn't know\"?
+
+Many applications require a model that can refuse to answer a question when it lacks sufficient information. To evaluate whether this refusal behavior is well-calibrated, you need to test if the model refuses at the appropriate times without refusing to answer questions it *should* be able to answer.
+
+To do this effectively, you should construct an evaluation set that has the following components:
+
+1.  **Answerable Questions:** Scenarios where a correct, verifiable answer is present in the model's provided context or general knowledge.
+2.  **Unanswerable Questions:** Scenarios designed to tempt the model to hallucinate. These include questions with false premises, queries about information explicitly missing from context, or topics far outside its knowledge base.
+
+While the exact proportion isn't critical, a balanced set with a roughly equal number of answerable and unanswerable questions is a good starting point. The diversity and difficulty of the questions are more important than the precise ratio.
+
+The evaluation itself is a binary (Pass/Fail) check of the model's judgment. A "Pass" requires the model to satisfy two conditions: it must answer the answerable questions while also refusing to answer the unanswerable ones. A failure is defined as providing a fabricated answer to an unanswerable question, which indicates poor calibration.
+
+In the research literature, this capability is known as "Abstention Ability." To improve this behavior, it is worth [searching for this term on Arxiv](https://arxiv.org/search/?query=Abstention+Ability&searchtype=all) to understand the latest techniques.
+
+[↗ Focus view](/blog/posts/evals-faq/how-do-we-evaluate-a-models-ability-to-express-uncertainty-or-know-what-it-doesnt-know.html){.faq-individual-link}
