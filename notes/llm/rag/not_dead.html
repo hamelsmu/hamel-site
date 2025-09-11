@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.31">
+<meta name="generator" content="quarto-1.7.29">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -40,8 +40,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-748b535e376f14d4692bf2b2e5fd6380.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../../site_libs/bootstrap/bootstrap-473cd3fdae26158324e3fa026112ebdf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
@@ -263,7 +263,6 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
       toggleColorMode(toAlternate);
       setStyleSentinel(toAlternate);
       toggleGiscusIfUsed(toAlternate, darkModeDefault);
-      window.dispatchEvent(new Event('resize'));
     };
     queryPrefersDark.addEventListener("change", e => {
       if(window.localStorage.getItem("quarto-color-scheme") !== null)
@@ -566,6 +565,12 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   <div class="sidebar-item-container"> 
   <a href="../../../notes/llm/rag/p5_map.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">P5: RAG with Multiple Representations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/rag/p6-context_rot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">P6: Context Rot</span></a>
   </div>
 </li>
       </ul>
@@ -1292,7 +1297,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 
 
 <p><br></p>
-<p>I’m tired of hearing “RAG is dead.” That’s why <a href="https://ben.clavie.eu/">Ben Clavié</a> and I put together this <a href="../../../notes/llm/rag/index.html">open 5-part series</a> to discuss why RAG is not dead, and what the future of RAG looks like.</p>
+<p>I’m tired of hearing “RAG is dead.” That’s why <a href="https://ben.clavie.eu/">Ben Clavié</a> and I put together this <a href="../../../notes/llm/rag/index.html">open 6-part series</a> to discuss why RAG is not dead, and what the future of RAG looks like.</p>
 <section id="whats-actually-dead" class="level2">
 <h2 class="anchored" data-anchor-id="whats-actually-dead">What’s Actually Dead</h2>
 <p><a href="../../../notes/llm/rag/p1-intro.html">Ben Clavié’s opener</a> nailed it: what’s dead is the 2023 marketing version of RAG. Chuck documents into a vector database, do cosine similarity, call it a day. This approach fails because compressing entire documents into single vectors loses critical information.</p>
@@ -1304,6 +1309,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <p><strong>Retrieval can reason.</strong> <a href="../../../notes/llm/rag/p3_reasoning.html">Orion Weller’s models</a> understand instructions like “find documents about data privacy using metaphors.” His Rank1 system generates explicit reasoning traces about relevance. These models find documents that traditional systems never surface.</p>
 <p><strong>Single vectors lose information.</strong> <a href="../../../notes/llm/rag/p4_late_interaction.html">Antoine Chaffin demonstrated</a> how late-interaction models like ColBERT preserve token-level information. No more forcing everything into one conflicted representation. Result: 150M parameter models outperforming 7B parameter alternatives on reasoning tasks.</p>
 <p><strong>One map isn’t enough.</strong> <a href="../../../notes/llm/rag/p5_map.html">Bryan and Ayush’s finale</a> showed why we need multiple representations. Their art search demo finds the same painting through literal descriptions, poetic interpretations, or similar images—each using different indices. Stop searching for the perfect embedding. Build specialized representations and route intelligently.</p>
+<p><strong>Bigger context isn’t always better.</strong> <a href="../../../notes/llm/rag/p6-context_rot.html">Kelly Hong from Chroma showed</a> that as you add more information, models become increasingly unreliable, even on simple tasks. This phenomenon, coined “Context Rot,” highlights why thoughtful retrieval and context engineering are more important than ever.</p>
 </section>
 <section id="whats-next" class="level2">
 <h2 class="anchored" data-anchor-id="whats-next">What’s Next</h2>
@@ -1357,6 +1363,11 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <td style="text-align: center;"><a href="../../../notes/llm/rag/p5_map.html"><img src="p5-images/slide_2.png" class="img-fluid" width="100"></a></td>
 <td style="text-align: left;"><a href="../../../notes/llm/rag/p5_map.html">Part 5</a>: <strong>RAG with Multiple Representations</strong></td>
 <td style="text-align: left;">Bryan Bischof and Ayush Chaurasia show why multiple specialized indices beat one perfect embedding</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><a href="../../../notes/llm/rag/p6-context_rot.html"><img src="p6-images/crot_cover.png" class="img-fluid" width="100"></a></td>
+<td style="text-align: left;"><a href="../../../notes/llm/rag/p6-context_rot.html">Part 6</a>: <strong>Context Rot</strong></td>
+<td style="text-align: left;">Kelly Hong explains how LLM performance degrades with longer inputs and why context engineering is critical.</td>
 </tr>
 </tbody>
 </table>
