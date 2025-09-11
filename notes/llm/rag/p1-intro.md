@@ -10,10 +10,9 @@ As part of our [LLM Evals course](https://bit.ly/evals-ai){target="_blank"}, I h
 
 Below is an annotated version of the presentation, with timestamped links for each slide.
 
----
-
-<div class="cta" style="text-align: center;">
-<strong>👉 <em>We are teaching our last and final cohort of our [AI Evals course](https://bit.ly/evals-ai){target="_blank"} next month</strong> (we have to get back to building). Here's a [35% discount code](https://bit.ly/evals-ai){target="_blank"} for readers of this post.</em> 👈
+<hr>
+<div class="cta" style="text-align: center;"> 
+<strong>👉 <em>These are the kinds of things we cover in our [AI Evals course](https://bit.ly/evals-ai). You can learn more about [the course here](https://bit.ly/evals-ai).</em> 👈 </strong>
 </div>
 <hr>
 
@@ -154,10 +153,9 @@ The final talk features [Bryan Bischof and Ayush Chaurasia](https://maven.com/p/
 
 You can sign up for the series with the links above, or here: [p2: Evals](https://maven.com/p/fae749/modern-ir-evaluation-in-the-generative-rag-era){target="_blank"}, [p3: Reasoning](https://maven.com/p/d6c44b/reasoning-opens-up-new-retrieval-frontiers){target="_blank"}, [p4: Late-Interaction](https://maven.com/p/1973fe/going-further-late-interaction-beats-single-vector-limits){target="_blank"}, and [p5: Multimodal](https://maven.com/p/f9eb59/the-map-is-not-the-territory-highly-multimodal-search){target="_blank"}.
 
----
-
+<hr>
 <div class="cta" style="text-align: center;"> 
-<strong>👉 <em>We are teaching our last and final cohort of our [AI Evals course](https://bit.ly/evals-ai){target="_blank"} next month</strong> (we have to get back to building). Here is a [35% discount code](https://bit.ly/evals-ai){target="_blank"} for readers of this post.</em> 👈
+<strong>👉 <em>These are the kinds of things we cover in our [AI Evals course](https://bit.ly/evals-ai). You can learn more about [the course here](https://bit.ly/evals-ai).</em> 👈 </strong>
 </div>
 <hr>
 

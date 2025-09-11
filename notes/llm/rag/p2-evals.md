@@ -10,8 +10,9 @@ As part of our [LLM Evals course](https://bit.ly/evals-ai), I hosted [Nandan Tha
 
 Below is an annotated version of his presentation, with timestamped links for each slide.
 
+<hr>
 <div class="cta" style="text-align: center;"> 
-<strong>👉 <em>We are teaching our last and final cohort of our [AI Evals course](https://bit.ly/evals-ai) next month</strong> (we have to get back to building). Here is a [35% discount code](https://bit.ly/evals-ai) for readers of this post.</em> 👈
+<strong>👉 <em>These are the kinds of things we cover in our [AI Evals course](https://bit.ly/evals-ai). You can learn more about [the course here](https://bit.ly/evals-ai).</em> 👈 </strong>
 </div>
 <hr>
 
@@ -247,9 +248,9 @@ This is not a call to discard traditional metrics but to **augment** them. The F
 *   **What are you working on next?**
     Nandan is focusing on generating high-quality synthetic training data for RAG systems. He is also an organizer for the TREC RAG track, where he plans to introduce the diversity and grounding metrics from FreshStack to help push the community toward more robust evaluation standards.
 
----
+<hr>
 <div class="cta" style="text-align: center;"> 
-<strong>👉 <em>We are teaching our last and final cohort of our [AI Evals course](https://bit.ly/evals-ai) next month</strong> (we have to get back to building). Here is a [35% discount code](https://bit.ly/evals-ai) for readers of this post.</em> 👈
+<strong>👉 <em>These are the kinds of things we cover in our [AI Evals course](https://bit.ly/evals-ai). You can learn more about [the course here](https://bit.ly/evals-ai).</em> 👈 </strong>
 </div>
 <hr>
 
