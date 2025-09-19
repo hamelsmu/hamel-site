@@ -16,8 +16,8 @@
 <height>86</height>
 <width>144</width>
 </image>
-<generator>quarto-1.7.29</generator>
-<lastBuildDate>Thu, 11 Sep 2025 05:13:51 GMT</lastBuildDate>
+<generator>quarto-1.7.31</generator>
+<lastBuildDate>Fri, 19 Sep 2025 23:34:23 GMT</lastBuildDate>
 <item>
   <title>Frequently Asked Questions (And Answers) About AI Evals</title>
   <dc:creator>Hamel Husain</dc:creator>
@@ -748,7 +748,7 @@
   <category>LLMs</category>
   <category>evals</category>
   <guid>https://hamel.dev/blog/posts/evals-faq/</guid>
-  <pubDate>Thu, 11 Sep 2025 05:13:51 GMT</pubDate>
+  <pubDate>Fri, 19 Sep 2025 23:34:23 GMT</pubDate>
   <media:content url="https://hamel.dev/blog/posts/evals-faq/images/eval_faq.png" medium="image" type="image/png" height="96" width="144"/>
 </item>
 <item>
@@ -2177,6 +2177,19 @@ then provide a pass/fail judgment in the same format as above.
 <p><img src="https://hamel.dev/blog/posts/llm-judge/spreadsheet.png" class="img-fluid"></p>
 <p>I also tracked agreement rates over time to ensure we were converging on a good prompt.</p>
 <p><img src="https://hamel.dev/blog/posts/llm-judge/score.png" class="img-fluid"></p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important Note on Using Agreement as a Metric
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In this example, we used agreement between the model and human evaluator because our dataset was roughly balanced (about 50% of instances were failures). However, using raw agreement is generally not recommended and can be misleading when classes are imbalanced. Instead, you should typically measure <a href="https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall">precision and recall</a> separately to get a more accurate picture of your judge’s alignment.</p>
+</div>
+</div>
 <p>It took us only three iterations to achieve &gt; 90% agreement between the LLM and Phillip. Your mileage may vary depending on the complexity of the task. For example, <a href="https://humanloop.com/blog/why-your-product-needs-evals">Swyx has conducted a similar process hundreds of times</a> for <a href="https://www.latent.space/">AI News</a>, an <a href="https://x.com/swyx/status/1672306744884887553">extremely popular</a> news aggregator with high quality recommendations. The quality of the AI owing to this process is why this product has received <a href="https://buttondown.com/ainews">critical acclaim</a>.</p>
 </section>
 <section id="how-to-optimize-the-llm-judge-prompt" class="level3">
@@ -3314,6 +3327,19 @@ font-style: inherit;">s the partner name of Susan Brown?'</span></span>
 <li>Model-based evaluation is a meta-problem within your larger problem. You must maintain a mini-evaluation system to track its quality. I have sometimes fine-tuned a model at this stage (but I try not to).</li>
 <li>After bringing the model-based evaluator in line with the human, you must continue doing periodic exercises to monitor the model and human agreement.</li>
 </ul>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important Note on Using Agreement as a Metric
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In this example, we used agreement between the model and human evaluator because our dataset was roughly balanced (about 50% of instances were failures). However, using raw agreement is generally not recommended and can be misleading when classes are imbalanced. Instead, you should typically measure <a href="https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall">precision and recall</a> separately to get a more accurate picture of your judge’s alignment.</p>
+</div>
+</div>
 <p>My favorite aspect about creating a good evaluator model is that its critiques can be used to curate high-quality synthetic data, which I will touch upon later.</p>
 </section>
 </section>
