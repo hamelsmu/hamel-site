@@ -241,6 +241,11 @@ General tips on model-based eval:
 - Model-based evaluation is a meta-problem within your larger problem. You must maintain a mini-evaluation system to track its quality. I have sometimes fine-tuned a model at this stage (but I try not to).
 - After bringing the model-based evaluator in line with the human, you must continue doing periodic exercises to monitor the model and human agreement.
 
+:::{.callout-warning}
+## Important Note on Using Agreement as a Metric
+In this example, we used agreement between the model and human evaluator because our dataset was roughly balanced (about 50% of instances were failures). However, using raw agreement is generally not recommended and can be misleading when classes are imbalanced. Instead, you should typically measure precision and recall separately to get a more accurate picture of your judge's alignment.
+:::
+
 My favorite aspect about creating a good evaluator model is that its critiques can be used to curate high-quality synthetic data, which I will touch upon later.
 
 ## Level 3: A/B Testing
