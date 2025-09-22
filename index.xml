@@ -17,7 +17,7 @@
 <width>144</width>
 </image>
 <generator>quarto-1.7.31</generator>
-<lastBuildDate>Fri, 19 Sep 2025 23:34:23 GMT</lastBuildDate>
+<lastBuildDate>Mon, 22 Sep 2025 17:54:57 GMT</lastBuildDate>
 <item>
   <title>Frequently Asked Questions (And Answers) About AI Evals</title>
   <dc:creator>Hamel Husain</dc:creator>
@@ -331,8 +331,9 @@
 </section>
 <section id="q-can-i-use-the-same-model-for-both-the-main-task-and-evaluation" class="level2">
 <h2 class="anchored" data-anchor-id="q-can-i-use-the-same-model-for-both-the-main-task-and-evaluation">Q: Can I use the same model for both the main task and evaluation?</h2>
-<p>For LLM-as-Judge selection, using the same model is usually fine because the judge is doing a different task than your main LLM pipeline. The judges we recommend building do scoped binary classification tasks. Focus on achieving high True Positive Rate (TPR) and True Negative Rate (TNR) with your judge on a held out labeled test set rather than avoiding the same model family. You can use these metrics on the test set to understand how well your judge is doing.</p>
-<p>When selecting judge models, start with the most capable models available to establish strong alignment with human judgments. You can optimize for cost later once you’ve established reliable evaluation criteria. We do not recommend using the same model for open ended preferences or response quality (but we don’t recommend building judges this way in the first place!).</p>
+<p>For LLM-as-Judge selection, using the same model is usually fine because the judge is doing a different task than your main LLM pipeline. While <a href="https://arxiv.org/pdf/2508.06709">research has shown</a> that models can exhibit bias when evaluating their own outputs, what ultimately matters is how well your judge aligns with human judgments. The judges we recommend building do scoped binary classification tasks. We’ve found that iterative alignment with human labels is usually achievable on this constrained task.</p>
+<p>Focus on achieving high True Positive Rate (TPR) and True Negative Rate (TNR) with your judge on a held out labeled test set. If you struggle to achieve good alignment with human scores, then consider trying a different model. However onboarding new model providers may involve non-trivial effort in some organizations, which is why we don’t advocate for using different models by default unless there’s a specific alignment issue.</p>
+<p>When selecting judge models, start with the most capable models available to establish strong alignment with human judgments. You can optimize for cost later once you’ve established reliable evaluation criteria.</p>
 <p><a href="../../../blog/posts/evals-faq/can-i-use-the-same-model-for-both-the-main-task-and-evaluation.html" class="faq-individual-link">↗ Focus view</a></p>
 </section>
 <section id="q-how-do-we-evaluate-a-models-ability-to-express-uncertainty-or-know-what-it-doesnt-know" class="level2">
@@ -748,7 +749,7 @@
   <category>LLMs</category>
   <category>evals</category>
   <guid>https://hamel.dev/blog/posts/evals-faq/</guid>
-  <pubDate>Fri, 19 Sep 2025 23:34:23 GMT</pubDate>
+  <pubDate>Mon, 22 Sep 2025 17:54:57 GMT</pubDate>
   <media:content url="https://hamel.dev/blog/posts/evals-faq/images/eval_faq.png" medium="image" type="image/png" height="96" width="144"/>
 </item>
 <item>

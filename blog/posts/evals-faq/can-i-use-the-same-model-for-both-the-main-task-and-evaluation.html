@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-08-04">
+<meta name="dcterms.date" content="2025-09-22">
 
 <title>Q: Can I use the same model for both the main task and evaluation? – Hamel’s Blog</title>
 <style>
@@ -350,7 +350,7 @@ Subscribe To My Newsletter
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 4, 2025</p>
+      <p class="date">September 22, 2025</p>
     </div>
   </div>
   
@@ -362,8 +362,9 @@ Subscribe To My Newsletter
 </header>
 
 
-<p>For LLM-as-Judge selection, using the same model is usually fine because the judge is doing a different task than your main LLM pipeline. The judges we recommend building do <a href="../../../blog/posts/evals-faq/why-do-you-recommend-binary-passfail-evaluations-instead-of-1-5-ratings-likert-scales.html" target="_blank">scoped binary classification tasks</a>. Focus on achieving high True Positive Rate (TPR) and True Negative Rate (TNR) with your judge on a held out labeled test set rather than avoiding the same model family. You can use these metrics on the test set to understand how well your judge is doing.</p>
-<p>When selecting judge models, start with the most capable models available to establish strong alignment with human judgments. You can optimize for cost later once you’ve established reliable evaluation criteria. We do not recommend using the same model for open ended preferences or response quality (but we don’t recommend building judges this way in the first place!).</p>
+<p>For LLM-as-Judge selection, using the same model is usually fine because the judge is doing a different task than your main LLM pipeline. While <a href="https://arxiv.org/pdf/2508.06709">research has shown</a> that models can exhibit bias when evaluating their own outputs, what ultimately matters is how well your judge aligns with human judgments. The judges we recommend building do <a href="../../../blog/posts/evals-faq/why-do-you-recommend-binary-passfail-evaluations-instead-of-1-5-ratings-likert-scales.html" target="_blank">scoped binary classification tasks</a>. We’ve found that iterative alignment with human labels is usually achievable on this constrained task.</p>
+<p>Focus on achieving high True Positive Rate (TPR) and True Negative Rate (TNR) with your judge on a held out labeled test set. If you struggle to achieve good alignment with human scores, then consider trying a different model. However onboarding new model providers may involve non-trivial effort in some organizations, which is why we don’t advocate for using different models by default unless there’s a specific alignment issue.</p>
+<p>When selecting judge models, start with the most capable models available to establish strong alignment with human judgments. You can optimize for cost later once you’ve established reliable evaluation criteria.</p>
 <p><a href="../../../blog/posts/evals-faq/#q-can-i-use-the-same-model-for-both-the-main-task-and-evaluation" class="faq-back-link" target="_blank">↩︎ Back to main FAQ</a></p>
 <hr>
 <p><em>This article is part of our AI Evals FAQ, a collection of common questions (and answers) about LLM evaluation. <a href="../../../blog/posts/evals-faq/">View all FAQs</a> or <a href="../../..">return to the homepage</a>.</em></p>
