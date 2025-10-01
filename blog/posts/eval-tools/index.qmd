@@ -1,0 +1,133 @@
+---
+title: "Selecting The Right AI Evals Tool"
+description: "An example of how I assess AI eval tools like Langsmith, Braintrust, and Arize Phoenix."
+author: "Hamel Husain"
+date: 2025-10-01
+categories: [AI, Evals]
+---
+
+Over the past year, I've focused heavily on [AI Evals](blog/posts/evals-faq/index.qmd), both in my consulting work and teaching. A question I get constantly is, "What's the best tool for evals?". I've always resisted answering directly for two reasons. First, people focus too much on tools instead of the process, thinking the tool will be an off-the-shelf solution when it rarely is. Second, the tools change so quickly that comparisons become outdated immediately.
+
+Having used many of the popular eval tools, I can genuinely say that no single one is superior in every dimension. The "best" tool depends on your team's skillset, technical stack, and maturity.
+
+Instead of a feature-by-feature comparison, I think it's more valuable to show you *how* a panel of data scientists skilled in evals assesses these tools. As part of my AI Evals [course](https://evals.info), we had three of the most dominant vendors—Langsmith, Braintrust, and Arize Phoenix complete the same homework [assignment](https://github.com/ai-evals-course/recipe-chatbot). This gave us a unique opportunity to see how they tackle the exact same challenge.
+
+We recorded the entire process and live commentary, which is available below. We think this might be helpful in learning about the kinds of things you should consider when selecting a tool for your team.
+
+_Thanks to [Shreya Shankar](https://www.sh-reya.com/) and [Bryan Bischof](https://x.com/BEBischof) for serving as the panelists (alongside me)._
+
+## Langsmith
+
+With [Harrison Chase](https://x.com/hwchase17), CEO of LangChain.
+
+<div style="width: 70%; margin: auto;">
+{{< video https://youtu.be/y0vm_fjkejo >}}
+</div>
+
+## Braintrust
+
+With [Wayde Gilliam](https://x.com/waydegilliam), former developer relations at Braintrust.
+
+<div style="width: 70%; margin: auto;">
+{{< video https://youtu.be/97iykOemOn4 >}}
+</div>
+
+## Arize Phoenix
+
+With [SallyAnn DeLucia](https://www.linkedin.com/in/sallyann-delucia-59a381172/), Technical AI Product Leader at Arize.
+
+<div style="width: 70%; margin: auto;">
+{{< video https://youtu.be/wcYnzHJlUR0 >}}
+</div>
+
+---
+
+## Criteria for Assessing AI Evals Tools
+
+Here are themes that consistently surfaced during our review.
+
+### 1. Workflow and Developer Experience
+
+Reducing friction is more important than any single feature. Concretely, you should be mindful of the time it takes to go from observing a failure to iterating on a solution. For example, we appreciated the ability to go from viewing a single trace to experimenting with that same trace in a playground. For some teams with data-science backgrounds, a notebook-centric workflow is ideal as it provides transparency and control.  This happens to be my preferred workflow as well.
+
+When considering a notebook-centric workflow, its important to pay attention to the ergonmics of the sdk.  This often boils down to the quality of the documentation and integration with existing data tools.
+
+### 2. Human-in-the-Loop Support
+
+The best tools don't try to automate away the human; they empower them. Since error analysis is the highest ROI activity in AI engineering, a tool's ability to support efficient human review is paramount. Prioritize tools with first-class support for manual annotation and error analysis.  As of this writing, one thing that is missing from many tools is [axial coding](blog/posts/evals-faq/index.qmd#why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed).
+
+### 3. Transparency and Control vs. "Magic"
+
+Be deeply skeptical of features that promise full automation without human validation, as these can create a powerful and dangerous illusion of confidence. For example, be wary of features where an AI agent both creates an evaluation rubric and then immediately scores the outputs. This "stacking of abstractions" often hides flaws behind a high score. Favor tools that give you control and visibility. 
+
+### 4. Ecosystem Integration vs. Walled Gardens
+
+An eval tool should fit your stack, not force you to fit its stack. Assess how well a tool integrates with your existing technologies.  Also, beware of proprietary DSLs as they can add friction. Finally, the ability to export data into common formats for analysis in a variety of environments is a must-have. 
+
+### Conclusion
+
+The right choice of tool depends on your team's workflow, skillset, and specific needs. I hope seeing how our panel approached this evaluation provides a better framework for making your own decision.
+
+As for me personally, I tend to use these tools as a backend data store and use Jupyter notebooks as well as my own [custom built](blog/posts/evals-faq/index.qmd#should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf) annotation interfaces for most of my needs.
+
+---
+
+::: {.callout-caution collapse="true"}
+## Appendix: Vendor Snapshots (As of Mid-2025)
+
+**You should take these notes with a grain of salt. I recommend watch the videos above to get a sense of how we applied these criteria and where you might differ according to your neeeds.**
+
+### Langsmith Evaluation Notes
+
+**Overall Sentiment**
+The overall workflow is intuitive, especially for those new to formal evaluation processes. The UI guides you through creating datasets, running experiments, and annotating results.
+
+**Positive Feedback / What We Liked**
+
+* **Seamless Workflow from Trace to Playground:** The transition from inspecting a trace to experimenting with it in the playground is very smooth.
+* **AI-Assisted Prompt Improvement:** The "Prompt Canvas" feature is a powerful tool for prompt engineering.
+* **Dataset Creation and Management:** You can easily create datasets by uploading files, and the schema detection helps structure the data correctly.
+* **Experimentation and Evaluation:** The "Annotation Queue" is a dedicated interface for human review and labeling of traces, which is more efficient than using spreadsheets.
+
+**Critiques and Areas for Improvement**
+
+* **Limited Side-by-Side Comparison:** The UI doesn't make it easy to see side-by-side comparisons of different prompt versions and their outputs.
+* **UI/UX Concerns:** The UI can feel a bit cluttered, with a lot of options and information presented at once.
+* **Potential for Over-Automation:** Features like AI-generated examples, while convenient, can lead to homogenous data.
+
+### Braintrust Evaluation Notes
+
+**Overall Sentiment**
+The panel had a generally positive view of Braintrust, highlighting its clean UI and structured approach to evaluations. The tool's emphasis on human-in-the-loop workflows was a significant strength.
+
+**Positive Feedback / What We Liked**
+
+* **Focus on a Structured Evals Process:** The demonstration emphasized a solid, methodical approach, starting by involving subject-matter experts to create an initial dataset.
+* **Clean and Intuitive User Interface (UI):** The panel found the UI to be clean and easier to navigate than other tools, with a particularly readable trace viewing screen.
+* **Strong Support for Human-in-the-Loop Workflows:** The platform has dedicated UIs designed for human review and annotation, which is critical for creating high-quality datasets and performing error analysis.
+* **The "Money Table":** After annotating traces with failure modes, the final dataset view is an actionable output that allows teams to quickly sort, filter, and quantify the most common failure modes.
+
+**Critiques and Areas for Improvement**
+
+* **The "Loop" AI Scorer:** The most significant concern was the "Loop" feature, an AI agent that creates an evaluation rubric and then immediately scores the outputs, which could lead to a false sense of security.
+* **Reliance on a Proprietary Query Language (BTQL):** The panel viewed the use of "BTQL" with mild skepticism, stating a preference for exporting data to a Jupyter notebook.
+* **Clunky Data Workflows:** The process for generating and refining synthetic data seemed inefficient, requiring downloading and re-uploading data between steps.
+
+### Arize Phoenix Evaluation Notes
+
+**Overall Sentiment**
+The panel had a generally positive view of Phoenix, with one panelist calling it one of his "favorite open source eval tools." The tool is positioned as a developer-first, notebook-centric platform.
+
+**Positive Feedback / What We Liked**
+
+* **Notebook-Centric Workflow:** The entire evaluation process was driven from a Jupyter notebook, giving the developer transparency and control. The ability to export annotated data back into a Pandas DataFrame was a powerful feature.
+* **UI & Developer Experience:** The prompt management UI was praised for being clear and easy to understand. The tight integration between traces and the "Playground" was also noted as a smooth workflow.
+* **Open Source & Local-First Approach:** Phoenix can be run entirely locally, providing a sense of control and transparency. As an open-source tool, it was noted for being "hackable."
+
+**Critiques and Areas for Improvement**
+
+* **UI Readability:** The text in the output panes was difficult to read during the demonstration, with a possible lack of markdown rendering for model outputs.
+* **Metrics and Visualization:** The tool displays point statistics for each run, but the panel found this of limited use and expressed a desire for aggregate visualizations like histograms to identify outliers.
+* **Prompt Management and Testing:** The prompt editor treats the system prompt as one large, monolithic block of text. A more component-based approach where individual instructions could be toggled on and off ("ablated") would be preferable for systematic testing.
+
+:::
