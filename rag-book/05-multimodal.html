@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.31">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>multimodal – Hamel's Blog</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-473cd3fdae26158324e3fa026112ebdf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-5c21931d6ed7008fd1b1d77c416f53fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-ZSZXL3KFR5"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
+</script>
+<!-- Custom head content for all pages -->
+<meta name="msvalidate.01" content="F9BFAF34FB8220973415C67CA60EB1A0">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-PKGWQMKL');</script>
+<!-- End Google Tag Manager -->
+
+
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="Hamel’s Blog">
+<meta property="og:description" content="A collection of blogs and talks on machine learning and data science.">
+<meta property="og:image" content="https://hamel.dev/notes/llm/rag/p5-images/slide_1.png">
+<meta property="og:site_name" content="Hamel's Blog">
+<meta property="og:image:height" content="2250">
+<meta property="og:image:width" content="4000">
+<meta name="twitter:title" content="Hamel’s Blog">
+<meta name="twitter:description" content="A collection of blogs and talks on machine learning and data science.">
+<meta name="twitter:image" content="https://hamel.dev/notes/llm/rag/p5-images/slide_1.png">
+<meta name="twitter:creator" content="@HamelHusain">
+<meta name="twitter:site" content="@HamelHusain">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image-height" content="2250">
+<meta name="twitter:image-width" content="4000">
+</head>
+
+<body class="nav-fixed quarto-dark"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = true;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+          <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html" target="_blank"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../notes/index.html" target="_blank"> 
+<span class="menu-text">Notes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://parlance-labs.com/" target="_blank"> 
+<span class="menu-text">Hire Me</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../oss/opensource.html" target="_blank"> 
+<span class="menu-text">OSS</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../talks.html" target="_blank"> 
+<span class="menu-text">Teaching</span></a>
+  </li>  
+</ul>
+          <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#rag-with-multiple-representations" id="toc-rag-with-multiple-representations" class="nav-link active" data-scroll-target="#rag-with-multiple-representations">RAG with Multiple Representations</a>
+  <ul class="collapse">
+  <li><a href="#the-map-is-not-the-territory" id="toc-the-map-is-not-the-territory" class="nav-link" data-scroll-target="#the-map-is-not-the-territory">The Map is Not the Territory</a></li>
+  <li><a href="#deconstructing-rag-buzzwords" id="toc-deconstructing-rag-buzzwords" class="nav-link" data-scroll-target="#deconstructing-rag-buzzwords">Deconstructing RAG Buzzwords</a></li>
+  <li><a href="#a-first-principles-view-of-rag" id="toc-a-first-principles-view-of-rag" class="nav-link" data-scroll-target="#a-first-principles-view-of-rag">A First-Principles View of RAG</a></li>
+  <li><a href="#the-three-responsibilities-of-an-ir-engineer" id="toc-the-three-responsibilities-of-an-ir-engineer" class="nav-link" data-scroll-target="#the-three-responsibilities-of-an-ir-engineer">The Three Responsibilities of an IR Engineer</a></li>
+  <li><a href="#practical-application-curving-space" id="toc-practical-application-curving-space" class="nav-link" data-scroll-target="#practical-application-curving-space">Practical Application: Curving Space</a></li>
+  <li><a href="#agents-as-routers" id="toc-agents-as-routers" class="nav-link" data-scroll-target="#agents-as-routers">Agents as Routers</a></li>
+  <li><a href="#dynamic-representations" id="toc-dynamic-representations" class="nav-link" data-scroll-target="#dynamic-representations">Dynamic Representations</a></li>
+  <li><a href="#demo-semantic-dot-art" id="toc-demo-semantic-dot-art" class="nav-link" data-scroll-target="#demo-semantic-dot-art">Demo: Semantic Dot Art</a></li>
+  <li><a href="#system-architecture" id="toc-system-architecture" class="nav-link" data-scroll-target="#system-architecture">System Architecture</a></li>
+  <li><a href="#integration-with-other-techniques" id="toc-integration-with-other-techniques" class="nav-link" data-scroll-target="#integration-with-other-techniques">Integration with Other Techniques</a></li>
+  <li><a href="#chapter-principles" id="toc-chapter-principles" class="nav-link" data-scroll-target="#chapter-principles">Chapter Principles</a></li>
+  <li><a href="#video" id="toc-video" class="nav-link" data-scroll-target="#video">Video</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/rag-book/05-multimodal.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+
+<!-- Content inserted at the beginning of body tag -->
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKGWQMKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+
+
+
+<section id="rag-with-multiple-representations" class="level1">
+<h1>RAG with Multiple Representations</h1>
+<p><em>Based on a presentation by Bryan Bischof and Ayush Chaurasia</em></p>
+<p><a href="https://www.linkedin.com/in/bryan-bischof/" target="_blank">Bryan Bischof</a> and <a href="https://www.linkedin.com/in/ayushchaurasia" target="_blank">Ayush Chaurasia</a> argued that effective retrieval lies not in finding a single, perfect data representation, but in creating and leveraging multiple, diverse representations with a router to better serve user intent.</p>
+<section id="the-map-is-not-the-territory" class="level2">
+<h2 class="anchored" data-anchor-id="the-map-is-not-the-territory">The Map is Not the Territory</h2>
+<p><img src="../notes/llm/rag/p5-images/slide_1.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=60s" target="_blank">Timestamp: 01:00</a>)</em></p>
+<p>The presentation’s central theme is that a “map” (a data representation) is not the same as the “territory” (the real-world data). In machine learning, this distinction is an advantage. Models and embeddings are our maps, and we can create many different maps of the same territory to serve different purposes.</p>
+</section>
+<section id="deconstructing-rag-buzzwords" class="level2">
+<h2 class="anchored" data-anchor-id="deconstructing-rag-buzzwords">Deconstructing RAG Buzzwords</h2>
+<p>The RAG landscape is filled with terms that can obscure fundamental principles. These terms can be deconstructed into simpler concepts.</p>
+<p><img src="../notes/llm/rag/p5-images/slide_3.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=157s" target="_blank">Timestamp: 02:37</a>)</em></p>
+<p><strong>Naive RAG</strong> is better understood as <strong>Simple RAG</strong>: the foundational approach of searching a vector store with a vector to find similar items.</p>
+<p><img src="../notes/llm/rag/p5-images/slide_4.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=244s" target="_blank">Timestamp: 04:04</a>)</em></p>
+<p><strong>Agentic RAG</strong> involves an LLM choosing <em>how</em> to search, giving the impression that the model can remove the engineer from designing the retrieval pipeline.</p>
+<p><img src="../notes/llm/rag/p5-images/slide_5.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=281s" target="_blank">Timestamp: 04:41</a>)</em></p>
+<p><strong>Hybrid RAG</strong> combines Simple RAG with classic retrieval techniques like keyword matching, allowing for searches with multiple signals simultaneously.</p>
+<p><img src="../notes/llm/rag/p5-images/slide_6.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=305s" target="_blank">Timestamp: 05:05</a>)</em></p>
+<p><strong>Graph RAG</strong> uses the relationships <em>between</em> objects to improve retrieval, such as identifying stores that sell “home goods” to find a coffee filter, also considering proximity.</p>
+<p><img src="../notes/llm/rag/p5-images/slide_7.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=366s" target="_blank">Timestamp: 06:06</a>)</em></p>
+<p><strong>Multi-Modal RAG</strong> has two meanings: searching with multiple data types (text and images) or searching across multiple locations (“modes”) within the same latent space for a single item.</p>
+</section>
+<section id="a-first-principles-view-of-rag" class="level2">
+<h2 class="anchored" data-anchor-id="a-first-principles-view-of-rag">A First-Principles View of RAG</h2>
+<p>Advanced RAG techniques can be reframed as core engineering pipelines.</p>
+<p><img src="../notes/llm/rag/p5-images/slide_10.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=478s" target="_blank">Timestamp: 07:58</a>)</em></p>
+<p><strong>Hypothetical Document Embeddings (HyDE)</strong> is a <strong>document enrichment pipeline</strong>. It uses an LLM to rewrite documents into the language that users are likely to search with. A dense, technical document can be rewritten into a simpler description, creating a new, more searchable “map” of the original.</p>
+<p><img src="../notes/llm/rag/p5-images/slide_11.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=614s" target="_blank">Timestamp: 10:14</a>)</em></p>
+<p><strong>Agentic RAG</strong> is a <strong>query enrichment pipeline</strong>. When a query is ambiguous, an agent decides how to search. For example, it determines whether “V60 filter” refers to a product or a restaurant, routing the query to the correct search process.</p>
+<p><img src="../notes/llm/rag/p5-images/slide_12.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=698s" target="_blank">Timestamp: 11:38</a>)</em></p>
+<p><strong>Rank fusion</strong> is <strong>multi-stage processing</strong>. It involves running multiple different searches and then combining, or “stitching,” the results together in a subsequent stage.</p>
+</section>
+<section id="the-three-responsibilities-of-an-ir-engineer" class="level2">
+<h2 class="anchored" data-anchor-id="the-three-responsibilities-of-an-ir-engineer">The Three Responsibilities of an IR Engineer</h2>
+<p>These advanced techniques can be derived by focusing on three core responsibilities.</p>
+<p><img src="../notes/llm/rag/p5-images/slide_14.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=763s" target="_blank">Timestamp: 12:43</a>)</em></p>
+<ol type="1">
+<li><strong>Predict user intent:</strong> What is the most likely representation of what the user is looking for?</li>
+</ol>
+<p><img src="../notes/llm/rag/p5-images/slide_15.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=788s" target="_blank">Timestamp: 13:08</a>)</em></p>
+<ol start="2" type="1">
+<li><strong>Generate multiple representations (maps):</strong> Create different views of the source data ahead of time (document enrichment).</li>
+</ol>
+<p><img src="../notes/llm/rag/p5-images/slide_16.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=819s" target="_blank">Timestamp: 13:39</a>)</em></p>
+<ol start="3" type="1">
+<li><strong>Match intent to representation:</strong> Correctly match the user’s query with the appropriate pre-generated representation.</li>
+</ol>
+</section>
+<section id="practical-application-curving-space" class="level2">
+<h2 class="anchored" data-anchor-id="practical-application-curving-space">Practical Application: Curving Space</h2>
+<p>“Curving space” means shaping data representations and indices to improve search.</p>
+<p><img src="../notes/llm/rag/p5-images/slide_18.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=838s" target="_blank">Timestamp: 13:58</a>)</em></p>
+<p>For financial documents, one could create multiple “maps” from a single corpus, such as summaries, tables of data, lists of named entities, and form types. This is document enrichment.</p>
+<p><img src="../notes/llm/rag/p5-images/slide_19.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=994s" target="_blank">Timestamp: 16:34</a>)</em></p>
+<p>Once multiple representations exist, the right indexing strategy must be chosen for each. This involves deciding between semantic search, keyword matching, pre-filters, and whether to use a single index or separate ones.</p>
+<p><img src="../notes/llm/rag/p5-images/slide_20.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=1088s" target="_blank">Timestamp: 18:08</a>)</em></p>
+<p>Sometimes, a second retrieval step, informed by the first, is required. This is a form of staged processing.</p>
+</section>
+<section id="agents-as-routers" class="level2">
+<h2 class="anchored" data-anchor-id="agents-as-routers">Agents as Routers</h2>
+<p><img src="../notes/llm/rag/p5-images/slide_22.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=1134s" target="_blank">Timestamp: 18:54</a>)</em></p>
+<p>Agents are <strong>transformers</strong> in their function: they transform incoming data and instructions into a structured output.</p>
+<p><img src="../notes/llm/rag/p5-images/slide_23.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=1144s" target="_blank">Timestamp: 19:04</a>)</em></p>
+<p>An effective way to use agents is as <strong>routers</strong>. They take incoming data and route it to different indices or subsequent retrieval stages. This is the core idea behind both Agentic RAG and Multi-Agent RAG.</p>
+</section>
+<section id="dynamic-representations" class="level2">
+<h2 class="anchored" data-anchor-id="dynamic-representations">Dynamic Representations</h2>
+<p><img src="../notes/llm/rag/p5-images/slide_25.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=1251s" target="_blank">Timestamp: 20:51</a>)</em></p>
+<p>A significant danger in RAG is that documents are dynamic. A static embedding will become outdated as the context of a document changes based on new business or world events.</p>
+<p><img src="../notes/llm/rag/p5-images/slide_26.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=1369s" target="_blank">Timestamp: 22:49</a>)</em></p>
+<p>The solution is to design a system that can detect what has changed and re-index only those parts, requiring an architecture built for dynamic updates.</p>
+</section>
+<section id="demo-semantic-dot-art" class="level2">
+<h2 class="anchored" data-anchor-id="demo-semantic-dot-art">Demo: Semantic Dot Art</h2>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?t=1401s" target="_blank">Timestamp: 23:21</a>)</em></p>
+<p>To make these concepts concrete, Ayush Chaurasia demonstrated <code>semanticdotart</code>, an application for discovering artworks. The demo shows how a system can serve diverse user intents by creating and searching over multiple representations of the same underlying data.</p>
+<p><img src="../notes/llm/rag/p5-images/2025-07-11-21-24-09.png" class="img-fluid"></p>
+<p>A user can search for art using different “maps” of the data. For example, they can search with a literal description (“multiple clocks melting in a desert”), a poetic description, or even a similar image. The system retrieves not only the original artwork but also derivative pieces and other thematically related works. This is made possible by a rich document enrichment pipeline that creates multiple vector and keyword-based indices for each artwork, capturing everything from mood and style to literal object descriptions.</p>
+<p>The retrieval process is agentic. The system routes the user’s query to the most appropriate index or combination of indices. A poetic query might be routed to an index of artistic descriptions, while an image query would use a multimodal embedding. This dynamic routing, combined with multi-stage processing and rank fusion, allows the system to handle a wide variety of user needs and deliver more satisfying, diverse results.</p>
+</section>
+<section id="system-architecture" class="level2">
+<h2 class="anchored" data-anchor-id="system-architecture">System Architecture</h2>
+<p><img src="../notes/llm/rag/p5-images/slide_27.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=1642s" target="_blank">Timestamp: 27:26</a>)</em></p>
+<p>The “Represent!” diagram visualizes the document enrichment pipeline. Data from various sources is processed to extract different features (poem captions, NL captions, mood keywords, image content). These are embedded into different vector types and stored, creating multiple “maps” for the same territory.</p>
+<p><img src="../notes/llm/rag/p5-images/slide_28.png" class="img-fluid"></p>
+<p><em>(<a href="https://youtu.be/hf9B3knU9vc?si=KCrVC9MDwJXtq-iK&amp;t=1750s" target="_blank">Timestamp: 29:10</a>)</em></p>
+<p>The “Discover!” diagram shows the retrieval pipeline. User input is routed through various stages where it can be enriched (e.g., mood extraction, query rewriting). These enriched queries are then used in a multi-stage retrieval process involving pre-filtering and hybrid search before final reranking.</p>
+</section>
+<section id="integration-with-other-techniques" class="level2">
+<h2 class="anchored" data-anchor-id="integration-with-other-techniques">Integration with Other Techniques</h2>
+<p>The multiple representations approach naturally integrates with other advanced RAG techniques:</p>
+<p><strong>Reasoning Models</strong> are a form of query enrichment, rewriting confusing queries with necessary context.</p>
+<p><strong>Late-interaction models</strong> like ColBERT create diversity <em>within the model itself</em> by generating multiple representations (a vector for each token) for a single document. This creates different “modes” in the latent space for more diverse and nuanced search results.</p>
+<p><strong>Routing</strong> is a retrieval stage where you decide which process or index to use based on the query. For a small number of routes, an LLM can act as a simple classifier. As the number of routes grows, a dedicated, trained classifier becomes more appropriate.</p>
+</section>
+<section id="chapter-principles" class="level2">
+<h2 class="anchored" data-anchor-id="chapter-principles">Chapter Principles</h2>
+<p>The key insights from this approach:</p>
+<ol type="1">
+<li><strong>No Single Perfect Map</strong>: Instead of seeking one perfect representation, build multiple specialized representations of your data</li>
+<li><strong>Intent-Based Routing</strong>: Use agents or classifiers to route queries to the most appropriate representation</li>
+<li><strong>Dynamic Updates</strong>: Design systems that can detect changes and re-index incrementally</li>
+<li><strong>Multi-Stage Processing</strong>: Combine results from different representations and processing stages</li>
+<li><strong>Domain Specialization</strong>: Create representations tailored to specific types of queries or user intents</li>
+</ol>
+<p>This framework provides a principled way to think about advanced RAG techniques as variations on the theme of multiple representations and intelligent routing.</p>
+</section>
+<section id="video" class="level2">
+<h2 class="anchored" data-anchor-id="video">Video</h2>
+<p>Here is the full video:</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/hf9B3knU9vc" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/hamel\.dev\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/hamelhusain/">
+      <i class="bi bi-linkedin" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/HamelHusain">
+      <i class="bi bi-twitter" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/hamelsmu">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/hamelsmu/hamel-site/edit/master/rag-book/05-multimodal.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
