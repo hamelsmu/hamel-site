@@ -1,0 +1,51 @@
+---
+title: "Stop Saying RAG Is Dead"
+description: "Why the future of RAG lies in better retrieval, not bigger context windows."
+image: rag_dead.png
+author: "Hamel Husain and Ben Clavie"
+order: 1
+date: 2025-07-12
+---
+<br>
+
+I'm tired of hearing "RAG is dead." That's why [Ben Clavié](https://ben.clavie.eu/) and I put together this [open 5-part series](index.qmd) to discuss why RAG is not dead, and what the future of RAG looks like.
+
+## What's Actually Dead
+
+[Ben Clavié's opener](p1-intro.md) nailed it: what's dead is the 2023 marketing version of RAG. Chuck documents into a vector database, do cosine similarity, call it a day. This approach fails because compressing entire documents into single vectors loses critical information.
+
+But retrieval is more important than ever. LLMs are frozen at training time. **Million-token context windows don't change the economics or efficiency of stuffing everything into every query.**
+
+## Takeaways From the Series
+
+**We've been measuring wrong.** [Nandan Thakur showed](p2-evals.md) that traditional IR metrics optimize for finding the #1 result. RAG needs different goals: coverage (getting all the facts), diversity (corroborating facts), and relevance. Models that ace BEIR benchmarks often fail at real RAG tasks.
+
+**Retrieval can reason.** [Orion Weller's models](p3_reasoning.qmd) understand instructions like "find documents about data privacy using metaphors." His Rank1 system generates explicit reasoning traces about relevance. These models find documents that traditional systems never surface.
+
+**Single vectors lose information.** [Antoine Chaffin demonstrated](p4_late_interaction.qmd) how late-interaction models like ColBERT preserve token-level information. No more forcing everything into one conflicted representation. Result: 150M parameter models outperforming 7B parameter alternatives on reasoning tasks.
+
+**One map isn't enough.** [Bryan and Ayush's finale](p5_map.qmd) showed why we need multiple representations. Their art search demo finds the same painting through literal descriptions, poetic interpretations, or similar images—each using different indices. Stop searching for the perfect embedding. Build specialized representations and route intelligently.
+
+## What's Next
+
+I think a path forward is to combine these ideas:
+
+- Evaluation systems that measure what matters for your use case
+- Retrievers that understand instructions and reason about relevance
+- Representations that preserve information instead of compressing it away
+- Multiple specialized indices with intelligent routing
+
+---
+
+## Annotated Notes From the Series
+
+Each post includes timestamped annotations of slides, saving you hours of video watching. We've highlighted the most important bits and provided context for quickly grokking the material.
+
+|  | Title | Description |
+|:---:|:-----|:------------|
+| [![](p1-images/slide_12.png){width=100px}](p1-intro.md) | [Part 1](p1-intro.md): **I don't use RAG, I just retrieve documents** | Ben Clavié explains why naive single-vector search is dead, not RAG itself |
+| [![](p2-images/slide_19.png){width=100px}](p2-evals.md) | [Part 2](p2-evals.md): **Modern IR Evals For RAG** | Nandan Thakur shows why traditional IR metrics fail for RAG and introduces FreshStack |
+| [![](p3-images/slide_97.png){width=100px}](p3_reasoning.qmd) | [Part 3](p3_reasoning.qmd): **Optimizing Retrieval with Reasoning Models** | Orion Weller demonstrates retrievers that understand instructions and reason about relevance |
+| [![](p4-images/slide_13.png){width=100px}](p4_late_interaction.qmd) | [Part 4](p4_late_interaction.qmd): **Late Interaction Models For RAG** | Antoine Chaffin reveals how ColBERT-style models preserve information that single vectors lose |
+| [![](p5-images/slide_2.png){width=100px}](p5_map.qmd) | [Part 5](p5_map.qmd): **RAG with Multiple Representations** | Bryan Bischof and Ayush Chaurasia show why multiple specialized indices beat one perfect embedding |
+: {tbl-colwidths="[20, 35, 45]"}
