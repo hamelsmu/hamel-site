@@ -20,7 +20,7 @@ This document curates the most common questions Shreya and I received while [tea
 
 <hr>
 <div class="cta" style="text-align: center;"> 
-<strong>👉 <em>We are teaching our last and final cohort of our [AI Evals course](https://bit.ly/evals-ai){target="_blank"} next month</strong> (we have to get back to building). Here is a [15% discount code](https://bit.ly/evals-ai){target="_blank"} for readers.</em> 👈
+<strong>👉 <em>Check out our [AI Evals course](https://bit.ly/evals-ai){target="_blank"}</strong>. Here is a [15% discount code](https://bit.ly/evals-ai){target="_blank"} for readers.</em> 👈
 </div>
 <hr>
 
