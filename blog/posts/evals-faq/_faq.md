@@ -167,7 +167,7 @@ To see an example of basic error analysis in action, [see this video](https://yo
 
 <hr>
 <div class="cta" style="text-align: center;">
-<strong>👉 <em>We are teaching our last and final cohort of our [AI Evals course](https://bit.ly/evals-ai)</strong> (we have to get back to building). Here is a [15% discount code](https://bit.ly/evals-ai) for readers.</em> 👈
+<strong>👉 <em>Check out our [AI Evals course](https://bit.ly/evals-ai)</strong>. Here is a [15% discount code](https://bit.ly/evals-ai) for readers.</em> 👈
 </div>
 <hr>
 
@@ -416,7 +416,7 @@ AI maturity differs from IT maturity.  Mature engineering organizations often st
 
 <hr>
 <div class="cta" style="text-align: center;">
-<strong>👉 <em>We are teaching our last and final cohort of our [AI Evals course](https://bit.ly/evals-ai)</strong> (we have to get back to building). Here is a [15% discount code](https://bit.ly/evals-ai) for readers.</em> 👈
+<strong>👉 <em>Check out our [AI Evals course](https://bit.ly/evals-ai)</strong>. Here is a [15% discount code](https://bit.ly/evals-ai) for readers.</em> 👈
 </div>
 
 [^1]: [Eleanor Berger](https://www.linkedin.com/in/intellectronica/), our wonderful TA.
