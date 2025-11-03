@@ -1,0 +1,68 @@
+---
+title: Amp
+description: Notes from reading the Amp manual
+toc-location: right-body
+date: 2025-11-02
+image: amp-notes.png
+---
+
+I'm constantly trying new coding agents.  One that's stood out for me over the last few months is [Amp](https://ampcode.com/). I finally took some time to carefully read their [manual](https://ampcode.com/manual) and took notes on some of features I've missed.
+
+## Distinctive Features of Amp
+
+Amp has all the trappings of a coding agent you might expect: support for MCP, ability to set project, folder, and global context (`AGENTS.md`), a permissions system, headless mode, and more. But there are some distinctive features that set it apart. Most users are already familiar with these, but they're worth mentioning.
+
+1. **Threads**: This is my favorite feature. Amp stores all your threads on the server. You can resume a thread (or a colleague's thread) anytime. You set different visibility levels (public, unlisted, workspace-shared, or private). Reading your team's threads helps you see what's going on and how others are using Amp. For example, [here's a public thread](https://ampcode.com/threads/T-3055a820-35f2-4660-bdb4-7af85af849c3) where I had Amp help with SEO optimization—turning a FAQ into standalone pages. Since threads are stored on the server, I can start work on my laptop and finish it later on a server or phone. Old sessions are always accessible regardless of which device I used.
+
+2. **Model Selection is Abstracted**: Amp picks the right model for each task—Sonnet for most work, GPT-5 for complex reasoning, fast models for quick operations. You don't configure model selection; Amp handles it based on what each model does best. It's opinionated: if they don't use and love a feature, they kill it.
+
+3. **Oracle**: Exception to model abstraction: you can nudge Amp to use a more expensive model. Ask it to "use the oracle" for GPT-5 reasoning.
+
+4. **Pay Per Token (and can be expensive)**: You pay per token and it's not cheap. However, I like it enough to where I think it's worth it because it saves me time, and I've gotten better at using it efficiently. I haven't tried the free version yet.
+
+The rest of these notes are features I discovered or didn't completely understand until I read the manual.
+
+## 1. Handoff
+
+If you're familiar with `/compact` from Claude Code, [handoff](https://ampcode.com/news/handoff) is a better version. Just like Claude, you can provide a prompt explaining what you want to focus on or what's important. Amp generates a new thread prompt with the context summarizing the current thread that you can edit before starting fresh. Showing you the new prompt helps you guide the transition. This strikes the right balance and I find that handoff keeps you in control while still being efficient.
+
+## 2. Message Queueing
+
+By default, sending a message interrupts the agent. But you can queue messages to be sent once the agent finishes its turn without interrupting its current work. In the editor extension, use Cmd-Shift-Enter (macOS) or Ctrl-Shift-Enter (Windows/Linux). In the CLI, use the `queue` command from the command palette.
+
+## 3. Scoped Instructions
+
+You can use globs in YAML front matter of markdown files to scope instructions to certain files. For example, create a `typescript-conventions.md` file with language-specific coding rules that only apply when working with TypeScript:
+
+```yaml
+---
+globs:
+  - '**/*.ts'
+  - '**/*.tsx'
+---
+Follow these TypeScript conventions:
+- Never use the `any` type
+- Use strict mode
+```
+
+When you bring files with this frontmatter into context (ex: `@typescript-conventions.md`), the context will only apply if Amp has read a file matching any of the globs. This also works by reference: if you have `See typescript-conventions.md` in your `AGENTS.md`, it will respect the globs too. [Read more](https://ampcode.com/manual#granular-guidance).
+
+## 4. Editing Messages
+
+Press up arrow in the CLI to edit prior messages. You can edit the message, delete & restore (removes the message and reverts Amp's changes after it), or fork (creates a new thread from that point).
+
+## 5. Toolboxes
+
+[Toolboxes](https://ampcode.com/manual#toolboxes) are similar to skills in Claude Code. I like them because they have less abstraction: you just write simple executables that describe themselves and handle inputs. When Amp starts, it runs each executable with `TOOLBOX_ACTION=describe`, and the tool writes its description to stdout. When Amp decides to use the tool, it runs it again with `TOOLBOX_ACTION=execute`.
+
+## 6. Librarian
+
+The [Librarian](https://ampcode.com/news/librarian) is great for working with newer libraries or private codebases. It acts like a specialized subagent that aggressively searches through repositories or documentation sites to gather context. The inner workings aren't public, but it's effective at priming the agent with the information it needs before you start coding.
+
+## Tips for Using Amp
+
+- For the best experience, use the [Ghostty terminal](https://ghostty.org/). I was using iTerm and had some issues.
+- Features may be slightly ahead in the VS Code extension, like the handy [code review tool](https://ampcode.com/news/review). Try both. I recently discovered I like the VS Code extension over the CLI for this reason.
+- **CLAUDE.md compatibility**: Claude Code is my second favorite coding agent. One frustrating part of using multiple agents is maintaining separate rules files. Amp handles this by falling back to CLAUDE.md when no AGENTS.md exists in a directory, so you can use the same rules across both.
+
+The manual's at [ampcode.com/manual](https://ampcode.com/manual). Worth reading if you're using Amp regularly.
