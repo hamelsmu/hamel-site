@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.31">
+<meta name="generator" content="quarto-1.8.25">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="description" content="Serving a HuggingFace Model">
 
-<title>Serving Your Own Model – Hamel’s Blog</title>
+<title>Serving Your Own Model – Hamel’s Blog - Hamel Husain</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -59,7 +59,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
 <script src="../../../site_libs/quarto-search/fuse.min.js"></script>
@@ -68,16 +68,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../../favicon.ico" rel="icon">
 <script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-707d8167ce6003fca903bfe2be84ab7f.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap-473cd3fdae26158324e3fa026112ebdf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../../site_libs/bootstrap/bootstrap-dark-5c21931d6ed7008fd1b1d77c416f53fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap-b0fe883f02db2f46296de4a3c19badbc.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark-b35f3af08095d3347dac7d8eef9bb0ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -116,6 +117,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </script>
 <!-- Custom head content for all pages -->
 <meta name="msvalidate.01" content="F9BFAF34FB8220973415C67CA60EB1A0">
+<meta property="og:type" content="article">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -123,23 +125,25 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-PKGWQMKL');</script>
 <!-- End Google Tag Manager -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
 
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
-<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
 
 
 <link rel="stylesheet" href="../../../styles.css">
-<meta property="og:title" content="Serving Your Own Model – Hamel’s Blog">
+<meta property="og:title" content="Serving Your Own Model – Hamel’s Blog - Hamel Husain">
 <meta property="og:description" content="Serving a HuggingFace Model">
 <meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
-<meta property="og:site_name" content="Hamel's Blog">
-<meta name="twitter:title" content="Serving Your Own Model – Hamel’s Blog">
+<meta property="og:site_name" content="Hamel's Blog - Hamel Husain">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:title" content="Serving Your Own Model – Hamel’s Blog - Hamel Husain">
 <meta name="twitter:description" content="Serving a HuggingFace Model">
 <meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta name="twitter:creator" content="@HamelHusain">
 <meta name="twitter:site" content="@HamelHusain">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://hamel.dev/notes/serving/torchserve/hf.html">
 </head>
 
 <body class="nav-sidebar docked nav-fixed quarto-dark"><script id="quarto-html-before-body" type="application/javascript">
@@ -317,13 +321,17 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+  </div>
           <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../../index.html" target="_blank"> 
+    <a class="nav-link active" href="../../../index.html" target="_blank" aria-current="page"> 
 <span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="../../../notes/index.html" target="_blank" aria-current="page"> 
+    <a class="nav-link" href="../../../notes/index.html" target="_blank"> 
 <span class="menu-text">Notes</span></a>
   </li>  
   <li class="nav-item">
@@ -360,6 +368,10 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../../../index.html" class="sidebar-logo-link">
+      </a>
+      </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item sidebar-item-section">
@@ -1362,13 +1374,13 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <h3 class="anchored" data-anchor-id="gpt-2">GPT-2</h3>
 <p>GPT-2 looks archaic compared to GPT-3</p>
 <div id="136d6a3e-1c51-4587-89a0-34f0580f997c" class="cell" data-execution_count="53">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> pipeline</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>pipe <span class="op">=</span> pipeline(task<span class="op">=</span><span class="st">"text-generation"</span>, model<span class="op">=</span><span class="st">"distilgpt2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> pipeline</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>pipe <span class="op">=</span> pipeline(task<span class="op">=</span><span class="st">"text-generation"</span>, model<span class="op">=</span><span class="st">"distilgpt2"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div id="78678a23-fd1a-49fb-964b-073292c35a9e" class="cell" data-execution_count="55">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>preds <span class="op">=</span> pipe([<span class="st">"How do you use Torch Serve for model inference?"</span>, </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>preds <span class="op">=</span> pipe([<span class="st">"How do you use Torch Serve for model inference?"</span>, </span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>              <span class="st">"The quick brown fox jumps over the lazy"</span>])</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>preds</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>preds</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Setting `pad_token_id` to `eos_token_id`:50256 for open-end generation.
 Setting `pad_token_id` to `eos_token_id`:50256 for open-end generation.</code></pre>
@@ -1383,14 +1395,14 @@ Setting `pad_token_id` to `eos_token_id`:50256 for open-end generation.</code></
 <h3 class="anchored" data-anchor-id="diffusion">Diffusion</h3>
 <p>This definitely requires a GPU</p>
 <div id="e6444f6f-4622-4461-9b17-17d469c489bc" class="cell" data-execution_count="51">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> diffusers <span class="im">import</span> DiffusionPipeline, DPMSolverMultistepScheduler</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> diffusers <span class="im">import</span> DiffusionPipeline, DPMSolverMultistepScheduler</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>repo_id <span class="op">=</span> <span class="st">"stabilityai/stable-diffusion-2"</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>pipe <span class="op">=</span> DiffusionPipeline.from_pretrained(repo_id, torch_dtype<span class="op">=</span>torch.float16, revision<span class="op">=</span><span class="st">"fp16"</span>)</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>pipe.scheduler <span class="op">=</span> DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>pipe <span class="op">=</span> pipe.to(<span class="st">"cuda:0"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>pipe <span class="op">=</span> pipe.to(<span class="st">"cuda:0"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
 {"model_id":"bd2f72c6f76a46f19fa74e2da38a201f","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
@@ -1398,10 +1410,10 @@ Setting `pad_token_id` to `eos_token_id`:50256 for open-end generation.</code></
 </div>
 </div>
 <div id="29d04e8c-ff7b-496d-b046-1f594237e007" class="cell" data-execution_count="52">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>prompt <span class="op">=</span> <span class="st">"A Butterly in space"</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>prompt <span class="op">=</span> <span class="st">"A Butterly in space"</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>image <span class="op">=</span> pipe(prompt, num_inference_steps<span class="op">=</span><span class="dv">25</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> image.images[<span class="dv">0</span>]</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>img</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>img</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
 {"model_id":"3604811d3f764e50ae60617cf48b555c","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
@@ -1417,8 +1429,8 @@ Setting `pad_token_id` to `eos_token_id`:50256 for open-end generation.</code></
 </div>
 <p>You can convert PIL to JSON serializable structures <a href="https://stackoverflow.com/a/57433803">like this</a>:</p>
 <div id="be29f15c-183b-4ed6-a4e0-4575ec1f64c0" class="cell" data-execution_count="47">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>img_as_list <span class="op">=</span> np.array(img).tolist()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>img_as_list <span class="op">=</span> np.array(img).tolist()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 </section>
@@ -1457,7 +1469,7 @@ Warning
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Use environment variables instead of <code>context</code>
+<span class="screen-reader-only">Tip</span>Use environment variables instead of <code>context</code>
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1468,7 +1480,7 @@ Use environment variables instead of <code>context</code>
 <section id="gpt-handler" class="level2">
 <h2 class="anchored" data-anchor-id="gpt-handler">GPT Handler</h2>
 <div id="519573c1-bcfc-475b-b257-b8ce05a3c78d" class="cell" data-execution_count="61">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>writefile gpt_handler.py</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>writefile gpt_handler.py</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#gpt_handler.py</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> logging</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
@@ -1506,7 +1518,7 @@ Use environment variables instead of <code>context</code>
 <span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> inference(<span class="va">self</span>, data): <span class="cf">return</span> <span class="va">self</span>.pipe(data)</span>
 <span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> postprocess(<span class="va">self</span>, data): <span class="cf">return</span> data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> postprocess(<span class="va">self</span>, data): <span class="cf">return</span> data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Overwriting gpt_handler.py</code></pre>
 </div>
@@ -1515,7 +1527,7 @@ Use environment variables instead of <code>context</code>
 <section id="diffusion-handler" class="level2">
 <h2 class="anchored" data-anchor-id="diffusion-handler">Diffusion Handler</h2>
 <div id="1df4cec2-44a9-4bc8-93bd-596bbbe20f0c" class="cell" data-execution_count="62">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>writefile diffusion_handler.py</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>writefile diffusion_handler.py</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">#diffusion_handler.py</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> logging</span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
@@ -1559,7 +1571,7 @@ Use environment variables instead of <code>context</code>
 <span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.array(img)</span>
 <span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> postprocess(<span class="va">self</span>, data): </span>
-<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> [data.tolist()]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> [data.tolist()]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Overwriting diffusion_handler.py</code></pre>
 </div>
@@ -1571,7 +1583,7 @@ Use environment variables instead of <code>context</code>
 <section id="create-the-model-archive" class="level2">
 <h2 class="anchored" data-anchor-id="create-the-model-archive">Create the model archive</h2>
 <div id="b013ddc6-4ec2-41c2-848a-ad841915f518" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>mkdir <span class="op">-</span>p model_store</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>mkdir <span class="op">-</span>p model_store</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> torch<span class="op">-</span>model<span class="op">-</span>archiver <span class="op">\</span></span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="op">--</span>export<span class="op">-</span>path model_store <span class="op">\</span></span>
@@ -1583,7 +1595,7 @@ Use environment variables instead of <code>context</code>
 <span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="op">--</span>export<span class="op">-</span>path model_store <span class="op">\</span></span>
 <span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="op">--</span>model<span class="op">-</span>name <span class="st">"diffusion"</span> <span class="op">--</span>version <span class="fl">1.0</span> <span class="op">\</span></span>
 <span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="op">--</span>handler <span class="st">"./diffusion_handler.py"</span> <span class="op">\</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="op">--</span>force</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="op">--</span>force</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>WARNING - Overwriting model_store/gpt.mar ...
 WARNING - Overwriting model_store/diffusion.mar ...</code></pre>
@@ -1594,12 +1606,12 @@ WARNING - Overwriting model_store/diffusion.mar ...</code></pre>
 <h2 class="anchored" data-anchor-id="set-config.properties">Set <code>config.properties</code></h2>
 <p>The diffusion response is bigger than the allowable default so we must pass a config. An example is <a href="https://github.com/pytorch/serve/blob/master/examples/diffusers/config.properties">here</a>. I don’t know why I have to set the different ports like this, since these are the defaults (If I do not set these, things do not work properly).</p>
 <div id="ac30e211-75c9-4c1e-ab0b-2a9bd4c50b7e" class="cell" data-execution_count="54">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>writefile config<span class="op">/</span>config.properties</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>writefile config<span class="op">/</span>config.properties</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>inference_address<span class="op">=</span>http:<span class="op">//</span><span class="fl">0.0.0.0</span>:<span class="dv">8080</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>management_address<span class="op">=</span>http:<span class="op">//</span><span class="fl">0.0.0.0</span>:<span class="dv">8081</span></span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>metrics_address<span class="op">=</span>http:<span class="op">//</span><span class="fl">0.0.0.0</span>:<span class="dv">8082</span></span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>load_models<span class="op">=</span><span class="bu">all</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>max_response_size<span class="op">=</span><span class="dv">655350000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>max_response_size<span class="op">=</span><span class="dv">655350000</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Overwriting config/config.properties</code></pre>
 </div>
@@ -1609,20 +1621,20 @@ WARNING - Overwriting model_store/diffusion.mar ...</code></pre>
 <h2 class="anchored" data-anchor-id="create-a-dockerfile">Create a Dockerfile</h2>
 <p>We can get ideas from <a href="https://github.com/pytorch/serve/blob/master/docker/Dockerfile">their Dockerfile</a></p>
 <div id="0f47a1c6-1f50-48d3-99dd-56245874afbc" class="cell" data-execution_count="51">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>writefile Dockerfile.gpt</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>writefile Dockerfile.gpt</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>FROM pytorch<span class="op">/</span>torchserve:latest<span class="op">-</span>gpu</span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>RUN python <span class="op">-</span>m pip install transformers diffusers</span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>ENTRYPOINT [<span class="st">"/usr/local/bin/dockerd-entrypoint.sh"</span>]</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>CMD [<span class="st">"serve"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>CMD [<span class="st">"serve"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Overwriting Dockerfile.gpt</code></pre>
 </div>
 </div>
 <p>Build the Dockerfile</p>
 <div id="72067359-6447-46a6-a6a9-14ebe00e3ac1" class="cell" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> docker build <span class="op">-</span>f Dockerfile.gpt . <span class="op">-</span>t pytorch<span class="op">/</span>torchserve:gpu<span class="op">-</span>hf<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> docker build <span class="op">-</span>f Dockerfile.gpt . <span class="op">-</span>t pytorch<span class="op">/</span>torchserve:gpu<span class="op">-</span>hf<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Sending build context to Docker daemon  334.6MB
 Step 1/4 : FROM pytorch/torchserve:latest-gpu
@@ -1645,7 +1657,7 @@ Successfully tagged pytorch/torchserve:gpu-hf</code></pre>
 <section id="start-torch-serve" class="level1">
 <h1>Start torch serve</h1>
 <p>We don’t need any arguments since the BaseHandler pulls the model from the Hub, etc.</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-it</span> <span class="at">--gpus</span> <span class="st">'"device=0"'</span> <span class="dt">\</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-it</span> <span class="at">--gpus</span> <span class="st">'"device=0"'</span> <span class="dt">\</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">-p</span> 8080:8080 <span class="dt">\</span></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">-p</span> 8081:8081 <span class="dt">\</span></span>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">-p</span> 8082:8082 <span class="dt">\</span></span>
@@ -1657,14 +1669,14 @@ Successfully tagged pytorch/torchserve:gpu-hf</code></pre>
 <span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    torchserve <span class="dt">\</span></span>
 <span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">--model-store</span> /home/model-server/model_store <span class="dt">\</span></span>
 <span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">--models</span> gpt=gpt.mar diffusion=diffusion.mar <span class="dt">\</span></span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">--ts-config</span> /home/model-server/custom_config/config.properties</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">--ts-config</span> /home/model-server/custom_config/config.properties</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="use-the-rest-api" class="level1">
 <h1>Use the REST API</h1>
 <section id="list-models" class="level2">
 <h2 class="anchored" data-anchor-id="list-models"><a href="https://pytorch.org/serve/management_api.html#list-models">List Models</a></h2>
 <div id="b5df963b-f12c-48a6-8807-f793bf7afdc8" class="cell" data-execution_count="56">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>curl http:<span class="op">//</span><span class="fl">127.0.0.1</span>:<span class="dv">8081</span><span class="op">/</span>models</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>curl http:<span class="op">//</span><span class="fl">127.0.0.1</span>:<span class="dv">8081</span><span class="op">/</span>models</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>{
   "models": [
@@ -1687,14 +1699,14 @@ Successfully tagged pytorch/torchserve:gpu-hf</code></pre>
 <h3 class="anchored" data-anchor-id="gpt">GPT</h3>
 <p>With curl</p>
 <div id="426a8467-5221-4047-bb4c-81906b025a5d" class="cell" data-execution_count="55">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> echo <span class="st">"The quick brown fox jumps over the lazy"</span> <span class="op">&gt;</span> gpt.txt</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> cat gpt.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> echo <span class="st">"The quick brown fox jumps over the lazy"</span> <span class="op">&gt;</span> gpt.txt</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> cat gpt.txt</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>The quick brown fox jumps over the lazy</code></pre>
 </div>
 </div>
 <div id="8df62f45-bc6f-4037-8154-80fe27390453" class="cell" data-execution_count="57">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>curl http:<span class="op">//</span><span class="fl">127.0.0.1</span>:<span class="dv">8080</span><span class="op">/</span>predictions<span class="op">/</span>gpt <span class="op">-</span>T gpt.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>curl http:<span class="op">//</span><span class="fl">127.0.0.1</span>:<span class="dv">8080</span><span class="op">/</span>predictions<span class="op">/</span>gpt <span class="op">-</span>T gpt.txt</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>{
   "generated_text": "The quick brown fox jumps over the lazy\nI do find some funny gifs to do.\nI used to have cats but I never find one\nI used to have dogs. But I couldn't really find a cute dog but now I enjoy"
@@ -1703,10 +1715,10 @@ Successfully tagged pytorch/torchserve:gpu-hf</code></pre>
 </div>
 <p>With requests</p>
 <div id="e88035d0-5d2c-4374-9238-b8ee6d59866d" class="cell" data-execution_count="58">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>resp <span class="op">=</span> requests.post(<span class="st">'http://127.0.0.1:8080/predictions/gpt'</span>,</span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>                     data<span class="op">=</span>{<span class="st">'data'</span>: <span class="st">"The quick brown fox jumps over the lazy"</span>})</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>resp.text</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>resp.text</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="58">
 <pre><code>'{\n  "generated_text": "The quick brown fox jumps over the lazy blonde to win, the latter has to wait for the rest to come on, and she also needs a hug and a hug. The adorable feline can barely contain itself, but the kitten is quite responsive,"\n}'</code></pre>
 </div>
@@ -1715,16 +1727,16 @@ Successfully tagged pytorch/torchserve:gpu-hf</code></pre>
 <section id="diffusion-1" class="level3">
 <h3 class="anchored" data-anchor-id="diffusion-1">Diffusion</h3>
 <div id="ee121226-9d65-4455-80d9-b3b9165609e8" class="cell" data-execution_count="59">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
 <span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>resp <span class="op">=</span> requests.post(<span class="st">'http://127.0.0.1:8080/predictions/diffusion'</span>,</span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>                     data<span class="op">=</span>{<span class="st">'data'</span>: <span class="st">"A butterfly in space with glasses."</span>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>                     data<span class="op">=</span>{<span class="st">'data'</span>: <span class="st">"A butterfly in space with glasses."</span>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div id="e6d96467-5d6c-49b4-961a-ffc0a1baae83" class="cell" data-execution_count="60">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>dimg <span class="op">=</span> np.array(json.loads(resp.text), dtype<span class="op">=</span><span class="st">'uint8'</span>)</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>Image.fromarray(dimg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>dimg <span class="op">=</span> np.array(json.loads(resp.text), dtype<span class="op">=</span><span class="st">'uint8'</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>Image.fromarray(dimg)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="60">
 <div>
 <figure class="figure">
@@ -1804,13 +1816,14 @@ Successfully tagged pytorch/torchserve:gpu-hf</code></pre>
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy

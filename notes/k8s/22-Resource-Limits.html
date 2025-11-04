@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.31">
+<meta name="generator" content="quarto-1.8.25">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="description" content="Protect your apps with resource limits.">
 
-<title>Resource Limits – Hamel’s Blog</title>
+<title>Resource Limits – Hamel’s Blog - Hamel Husain</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -68,16 +68,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../favicon.ico" rel="icon">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-707d8167ce6003fca903bfe2be84ab7f.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-473cd3fdae26158324e3fa026112ebdf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-5c21931d6ed7008fd1b1d77c416f53fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-b0fe883f02db2f46296de4a3c19badbc.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-b35f3af08095d3347dac7d8eef9bb0ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -116,6 +117,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </script>
 <!-- Custom head content for all pages -->
 <meta name="msvalidate.01" content="F9BFAF34FB8220973415C67CA60EB1A0">
+<meta property="og:type" content="article">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -126,16 +128,18 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="Resource Limits – Hamel’s Blog">
+<meta property="og:title" content="Resource Limits – Hamel’s Blog - Hamel Husain">
 <meta property="og:description" content="Protect your apps with resource limits.">
 <meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
-<meta property="og:site_name" content="Hamel's Blog">
-<meta name="twitter:title" content="Resource Limits – Hamel’s Blog">
+<meta property="og:site_name" content="Hamel's Blog - Hamel Husain">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:title" content="Resource Limits – Hamel’s Blog - Hamel Husain">
 <meta name="twitter:description" content="Protect your apps with resource limits.">
 <meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta name="twitter:creator" content="@HamelHusain">
 <meta name="twitter:site" content="@HamelHusain">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://hamel.dev/notes/k8s/22-Resource-Limits.html">
 </head>
 
 <body class="nav-sidebar docked nav-fixed quarto-dark"><script id="quarto-html-before-body" type="application/javascript">
@@ -313,13 +317,17 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+  </div>
           <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../index.html" target="_blank"> 
+    <a class="nav-link active" href="../../index.html" target="_blank" aria-current="page"> 
 <span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="../../notes/index.html" target="_blank" aria-current="page"> 
+    <a class="nav-link" href="../../notes/index.html" target="_blank"> 
 <span class="menu-text">Notes</span></a>
   </li>  
   <li class="nav-item">
@@ -356,6 +364,10 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../../index.html" class="sidebar-logo-link">
+      </a>
+      </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item sidebar-item-section">
@@ -1344,12 +1356,12 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <div class="code-with-filename-file">
 <pre><strong>vmemory-allocator-with-limit.yaml</strong></pre>
 </div>
-<div class="sourceCode" id="cb1" data-filename="vmemory-allocator-with-limit.yaml"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span><span class="co">                       # The Pod spec in the Deployment</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-filename="vmemory-allocator-with-limit.yaml"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span><span class="co">                       # The Pod spec in the Deployment</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">containers</span><span class="kw">:</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> kiamol/ch12-memory-allocator</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">resources</span><span class="kw">:</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">limits</span><span class="kw">:</span><span class="co">             # Resource limits constrain compute power</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">         </span><span class="fu">memory</span><span class="kw">:</span><span class="at"> 50Mi</span><span class="co">      # for the container; this limits RAM to 50 MB.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">         </span><span class="fu">memory</span><span class="kw">:</span><span class="at"> 50Mi</span><span class="co">      # for the container; this limits RAM to 50 MB.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>When you create this Pod, the container is automatically assigned a memory limit of 256 MiB. It will restart when it hits that limit</p>
 </section>
@@ -1360,14 +1372,14 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <div class="code-with-filename-file">
 <pre><strong>namespace-with-quota/02-memory-quota.yaml</strong></pre>
 </div>
-<div class="sourceCode" id="cb2" data-filename="namespace-with-quota/02-memory-quota.yaml"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> v1</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" data-filename="namespace-with-quota/02-memory-quota.yaml"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> v1</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> ResourceQuota</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> memory-quota</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">namespace</span><span class="kw">:</span><span class="at"> kiamol-ch12-memory</span></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">hard</span><span class="kw">:</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">limits.memory</span><span class="kw">:</span><span class="at"> 150Mi</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">limits.memory</span><span class="kw">:</span><span class="at"> 150Mi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1387,7 +1399,7 @@ Important
 <div class="code-with-filename-file">
 <pre><strong>03-memory-allocator.yaml</strong></pre>
 </div>
-<div class="sourceCode" id="cb3" data-filename="03-memory-allocator.yaml"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> apps/v1</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" data-filename="03-memory-allocator.yaml"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> apps/v1</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Deployment</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">...</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">    spec:</span></span>
@@ -1396,7 +1408,7 @@ Important
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">          image: kiamol/ch12-memory-allocator</span></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">          resources:</span></span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">            limits:</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">              memory: 200Mi</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">              memory: 200Mi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="cpu-limits" class="level2">
@@ -1407,20 +1419,20 @@ Important
 <div class="code-with-filename-file">
 <pre><strong>web-with-cpu-limit.yaml</strong></pre>
 </div>
-<div class="sourceCode" id="cb4" data-filename="web-with-cpu-limit.yaml"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" data-filename="web-with-cpu-limit.yaml"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">containers</span><span class="kw">:</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="kw">-</span><span class="at"> </span><span class="fu">image</span><span class="kw">:</span><span class="at"> kiamol/ch05-pi</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">command</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">"dotnet"</span><span class="kw">,</span><span class="at"> </span><span class="st">"Pi.Web.dll"</span><span class="kw">,</span><span class="at"> </span><span class="st">"-m"</span><span class="kw">,</span><span class="at"> </span><span class="st">"web"</span><span class="kw">]</span></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">resources</span><span class="kw">:</span></span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">       </span><span class="fu">limits</span><span class="kw">:</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">cpu</span><span class="kw">:</span><span class="at"> 250m</span><span class="co">    # 250 millicores limits the container to 0.25 cores.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">cpu</span><span class="kw">:</span><span class="at"> 250m</span><span class="co">    # 250 millicores limits the container to 0.25 cores.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Include <strong>both</strong> CPU and memory limits in your Pod specs.</p>
 </section>
 <section id="resource-constraint-failures" class="level2">
 <h2 class="anchored" data-anchor-id="resource-constraint-failures">Resource Constraint Failures</h2>
 <p>What if you have a namespace quota of 500m, but you have two replicas with a limit of 300m each? It will only deploy one pod. YOu can see it like this:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># after deploying your app with two repolicas</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># after deploying your app with two repolicas</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">%</span> kubectl get deploy <span class="at">-n</span> kiamol-ch12-cpu                                                   </span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">NAME</span>     READY   UP-TO-DATE   AVAILABLE   AGE</span>
@@ -1430,12 +1442,12 @@ Important
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="ex">%</span> kubectl describe replicaset <span class="at">-n</span> kiamol-ch12-cpu</span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Get resource quota</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="ex">%</span> kl get resourcequota <span class="at">-n</span> kiamol-ch12-memory</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="ex">%</span> kl get resourcequota <span class="at">-n</span> kiamol-ch12-memory</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="checking-available-resources" class="level2">
 <h2 class="anchored" data-anchor-id="checking-available-resources">Checking Available Resources</h2>
 <p>You can check cpu available on a node like so:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> get nodes <span class="at">-o</span> jsonpath=<span class="st">'{.items[].status.allocatable.cpu}'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> get nodes <span class="at">-o</span> jsonpath=<span class="st">'{.items[].status.allocatable.cpu}'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1450,7 +1462,7 @@ Important
 </div>
 </div>
 <p>Also, when you scale things up, it is helpful to check the ReplicaSet to see if it is scaling up. If it is not, it is likely because it is hitting a resource limit.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> get rs <span class="at">-l</span> app=pi-web <span class="at">--all-namespaces</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> get rs <span class="at">-l</span> app=pi-web <span class="at">--all-namespaces</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="dont-use-cpu-limits" class="level2">
 <h2 class="anchored" data-anchor-id="dont-use-cpu-limits">Don’t Use CPU Limits?</h2>
@@ -1539,13 +1551,14 @@ Important
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy

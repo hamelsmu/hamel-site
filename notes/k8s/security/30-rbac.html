@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.31">
+<meta name="generator" content="quarto-1.8.25">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="description" content="Rule Based Access Control">
 
-<title>RBAC – Hamel’s Blog</title>
+<title>RBAC – Hamel’s Blog - Hamel Husain</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -68,16 +68,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../../favicon.ico" rel="icon">
 <script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-707d8167ce6003fca903bfe2be84ab7f.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap-473cd3fdae26158324e3fa026112ebdf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../../site_libs/bootstrap/bootstrap-dark-5c21931d6ed7008fd1b1d77c416f53fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap-b0fe883f02db2f46296de4a3c19badbc.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark-b35f3af08095d3347dac7d8eef9bb0ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -116,6 +117,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </script>
 <!-- Custom head content for all pages -->
 <meta name="msvalidate.01" content="F9BFAF34FB8220973415C67CA60EB1A0">
+<meta property="og:type" content="article">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -126,16 +128,18 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 
 
 <link rel="stylesheet" href="../../../styles.css">
-<meta property="og:title" content="RBAC – Hamel’s Blog">
+<meta property="og:title" content="RBAC – Hamel’s Blog - Hamel Husain">
 <meta property="og:description" content="Rule Based Access Control">
 <meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
-<meta property="og:site_name" content="Hamel's Blog">
-<meta name="twitter:title" content="RBAC – Hamel’s Blog">
+<meta property="og:site_name" content="Hamel's Blog - Hamel Husain">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:title" content="RBAC – Hamel’s Blog - Hamel Husain">
 <meta name="twitter:description" content="Rule Based Access Control">
 <meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta name="twitter:creator" content="@HamelHusain">
 <meta name="twitter:site" content="@HamelHusain">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://hamel.dev/notes/k8s/security/30-rbac.html">
 </head>
 
 <body class="nav-sidebar docked nav-fixed quarto-dark"><script id="quarto-html-before-body" type="application/javascript">
@@ -313,13 +317,17 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+  </div>
           <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../../index.html" target="_blank"> 
+    <a class="nav-link active" href="../../../index.html" target="_blank" aria-current="page"> 
 <span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="../../../notes/index.html" target="_blank" aria-current="page"> 
+    <a class="nav-link" href="../../../notes/index.html" target="_blank"> 
 <span class="menu-text">Notes</span></a>
   </li>  
   <li class="nav-item">
@@ -356,6 +364,10 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../../../index.html" class="sidebar-logo-link">
+      </a>
+      </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item sidebar-item-section">
@@ -1369,13 +1381,13 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </ul></li>
 </ol>
 <p>Example of how to lookup the apiGroup and resource name for <code>kind: PriorityClass</code>:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">```</span><span class="fu">bash</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span>  kl api-resources <span class="at">--sort-by</span> name</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">NAME</span>                              SHORTNAMES   APIVERSION                             NAMESPACED   KIND</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">priorityclasses</span>                   pc           scheduling.k8s.io/v1                   false        PriorityClass</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">priorityclasses</span>                   pc           scheduling.k8s.io/v1                   false        PriorityClass</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>This tells us that the <code>PriorityClass</code> Kind is part of the <code>scheduling.k8s.io</code> apiGroup, and the resource name is <code>priorityclasses</code>.</p>
 </section>
 <section id="role-vs-clusterrole" class="level3">
@@ -1386,7 +1398,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <li><code>ClusterRole</code> and <code>ClusterRoleBinding</code> work on the whole cluster</li>
 </ul>
 <p>There are lots of built in <code>ClusterRole</code>s which you can see with:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kl</span> get clusterrole</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kl</span> get clusterrole</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 </section>
 <section id="authentication" class="level2">
@@ -1398,7 +1410,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <p>You can define your own <code>Role</code> and <code>ClusterRole</code> objects. In addition to <code>apiGroups</code> and<code>resources</code> which we discussed above, you will also need to know about <code>verbs</code>.</p>
 <p>You can see all the <a href="https://kubernetes.io/docs/reference/access-authn-authz/authorization/#review-your-request-attributes">api request verbs here</a>, which are: <code>get</code>, <code>list</code>, <code>create</code>, <code>update</code>, <code>patch</code>, <code>watch</code>, <code>delete</code>, and <code>deletecollection</code>.</p>
 <p>The <code>apiGroups</code> <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.26/#-strong-api-groups-strong-">referenced here</a> is helpful to see the correspondence between the <code>resource</code> and the <code>apiGroup</code>. Below is an example <code>Role</code> and <code>ClusterRole</code> (which are not related):</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io/v1</span><span class="co"> # this is the Group/Version used in the Binding</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io/v1</span><span class="co"> # this is the Group/Version used in the Binding</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Role</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">namespace</span><span class="kw">:</span><span class="at"> default</span></span>
@@ -1406,8 +1418,8 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">rules</span><span class="kw">:</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">apiGroups</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">""</span><span class="kw">]</span><span class="co"> # "" indicates the core API group</span></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">resources</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">"pods"</span><span class="kw">]</span><span class="co"> #pods are part of the Core: </span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">verbs</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">"get"</span><span class="kw">,</span><span class="at"> </span><span class="st">"watch"</span><span class="kw">,</span><span class="at"> </span><span class="st">"list"</span><span class="kw">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io/v1</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">verbs</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">"get"</span><span class="kw">,</span><span class="at"> </span><span class="st">"watch"</span><span class="kw">,</span><span class="at"> </span><span class="st">"list"</span><span class="kw">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io/v1</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> ClusterRole</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">  # "namespace" omitted since ClusterRoles are not namespaced</span></span>
@@ -1415,11 +1427,11 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">rules</span><span class="kw">:</span></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">apiGroups</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">""</span><span class="kw">]</span><span class="co"> # secrets are part of Core https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.26/#secret-v1-core</span></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">resources</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">"secrets"</span><span class="kw">]</span><span class="co"> # The name of the resource for accessing Secret objects is "secrets"</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">verbs</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">"get"</span><span class="kw">,</span><span class="at"> </span><span class="st">"watch"</span><span class="kw">,</span><span class="at"> </span><span class="st">"list"</span><span class="kw">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">verbs</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">"get"</span><span class="kw">,</span><span class="at"> </span><span class="st">"watch"</span><span class="kw">,</span><span class="at"> </span><span class="st">"list"</span><span class="kw">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <section id="rolebinding" class="level3">
 <h3 class="anchored" data-anchor-id="rolebinding">RoleBinding</h3>
 <p>Below is an example of a <code>RoleBinding</code> that grants the <code>pod-reader</code> role to the user <code>jane</code> in the namespace <code>default</code>. As a reminder, a RoleBinding assigns subjects to a Role, and a Role defines permissions. Thats why the below example doesn’t define any permissions. That is the associated Role’s job.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io/v1</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io/v1</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This role binding allows "jane" to read pods in the "default" namespace.</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># You need to already have a Role named "pod-reader" in that namespace.</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> RoleBinding</span></span>
@@ -1435,12 +1447,12 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">  # "roleRef" specifies the binding to a Role / ClusterRole</span></span>
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">kind</span><span class="kw">:</span><span class="at"> Role</span><span class="co"> #this must be Role or ClusterRole</span></span>
 <span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> pod-reader</span><span class="co"> # this must match the name of the Role or ClusterRole you wish to bind to</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">apiGroup</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">apiGroup</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>A RoleBinding can also reference a ClusterRole to grant the permissions defined in that ClusterRole to resources inside the RoleBinding’s namespace. This kind of reference lets you define a set of common roles across your cluster, then reuse them within multiple namespaces which we saw above with <a href="#rolebindings-w-existing-clusterroles">RoleBinding to a ClusterRole</a>.</p>
 <section id="rolebindings-w-existing-clusterroles" class="level4">
 <h4 class="anchored" data-anchor-id="rolebindings-w-existing-clusterroles">RoleBindings w/ existing ClusterRoles</h4>
 <p>An easy path is to use an existing built in <code>ClusterRole</code> and assign it to a subject. For example, we can assign the <code>view</code> role to a specific user:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io/v1</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io/v1</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> RoleBinding</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> reader-view</span></span>
@@ -1452,7 +1464,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">roleRef</span><span class="kw">:</span></span>
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">kind</span><span class="kw">:</span><span class="at"> ClusterRole</span></span>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> view</span><span class="co">                      # Gives them the view role from the built-in ClusterRole</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">apiGroup</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io</span><span class="co">   # The version of the K8s API used to specify the roleRef</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">apiGroup</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io</span><span class="co">   # The version of the K8s API used to specify the roleRef</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>By RoleBinding to an existing ClusterRole, you dont have to bother with creating a Role! Its a nice shortcut when you can get away with it.</p>
 <p>Several important notes:</p>
 <ul>
@@ -1469,7 +1481,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-You must have a RoleBinding
+<span class="screen-reader-only">Important</span>You must have a RoleBinding
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1477,7 +1489,7 @@ You must have a RoleBinding
 </div>
 </div>
 <p>Another example of a RoleBinding to a ClusterRole:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io/v1</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io/v1</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This role binding allows "dave" to read secrets in the "development" namespace.</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># You need to already have a ClusterRole named "secret-reader".</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> RoleBinding</span></span>
@@ -1494,13 +1506,13 @@ You must have a RoleBinding
 <span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="fu">roleRef</span><span class="kw">:</span></span>
 <span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">kind</span><span class="kw">:</span><span class="at"> ClusterRole</span></span>
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> secret-reader</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">apiGroup</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">apiGroup</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 </section>
 <section id="clusterrolebinding" class="level3">
 <h3 class="anchored" data-anchor-id="clusterrolebinding">ClusterRoleBinding</h3>
 <p>To grant permissions across a whole cluster, you can use a ClusterRoleBinding. The following ClusterRoleBinding allows any user in the group “manager” to read secrets in any namespace.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io/v1</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io/v1</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This cluster role binding allows anyone in the "manager" group to read secrets in any namespace.</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> ClusterRoleBinding</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
@@ -1512,7 +1524,7 @@ You must have a RoleBinding
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="fu">roleRef</span><span class="kw">:</span></span>
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">kind</span><span class="kw">:</span><span class="at"> ClusterRole</span></span>
 <span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> secret-reader</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">apiGroup</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">apiGroup</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1530,7 +1542,7 @@ Important
 <section id="a-more-complex-example" class="level3">
 <h3 class="anchored" data-anchor-id="a-more-complex-example">A More complex example</h3>
 <p>Below is an example of a custom <code>Role</code> with a <code>RoleBinding</code>:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io/v1</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io/v1</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Role</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> system-pod-reader</span></span>
@@ -1552,13 +1564,13 @@ Important
 <span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="fu">roleRef</span><span class="kw">:</span></span>
 <span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">apiGroup</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io</span></span>
 <span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">kind</span><span class="kw">:</span><span class="at"> Role</span></span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> system-pod-reader</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> system-pod-reader</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 </section>
 <section id="referring-to-resources" class="level2">
 <h2 class="anchored" data-anchor-id="referring-to-resources">Referring To Resources</h2>
 <p>There is something called a <em>subresource</em>, for examplethere are <code>pods</code> and also the subresource <code>pods/log</code>, which allows you to get the logs for a pod. You should try to lookup the subresource at the time you are trying to accomplish something and not try to memorize every subresource. this is how you might specify a subresource:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io/v1</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io/v1</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Role</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">namespace</span><span class="kw">:</span><span class="at"> default</span></span>
@@ -1566,9 +1578,9 @@ Important
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="fu">rules</span><span class="kw">:</span></span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">apiGroups</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">""</span><span class="kw">]</span></span>
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">resources</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">"pods"</span><span class="kw">,</span><span class="at"> </span><span class="st">"pods/log"</span><span class="kw">]</span><span class="co"> # this is applying the rules to both the resource AND the subresource</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">verbs</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">"get"</span><span class="kw">,</span><span class="at"> </span><span class="st">"list"</span><span class="kw">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">verbs</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">"get"</span><span class="kw">,</span><span class="at"> </span><span class="st">"list"</span><span class="kw">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>You can also use glob patterns like <code>*</code> to match all resources, verbs, etc:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io/v1</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io/v1</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Role</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">namespace</span><span class="kw">:</span><span class="at"> default</span></span>
@@ -1576,13 +1588,13 @@ Important
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="fu">rules</span><span class="kw">:</span></span>
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">apiGroups</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">"example.com"</span><span class="kw">]</span></span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">resources</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">"*"</span><span class="kw">]</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">verbs</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">"*"</span><span class="kw">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">verbs</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">"*"</span><span class="kw">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="referring-to-subjects" class="level2">
 <h2 class="anchored" data-anchor-id="referring-to-subjects">Referring to Subjects</h2>
 <p><code>Subjects</code> can be <code>groups</code>, <code>users</code>, or <code>ServiceAccounts</code>. ServiceAccounts have names prefixed with <code>system:serviceaccount:</code>, and belong to groups that have names prefixed with <code>system:serviceaccounts:</code>.</p>
 <p>Here is how you would refer to a <code>User</code>, <code>Group</code> and <code>ServiceAccount</code>:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># For a user named alice@example.com:</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># For a user named alice@example.com:</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">subjects</span><span class="kw">:</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">kind</span><span class="kw">:</span><span class="at"> User</span></span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> </span><span class="st">"alice@example.com"</span></span>
@@ -1609,30 +1621,30 @@ Important
 <span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a><span class="fu">subjects</span><span class="kw">:</span></span>
 <span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">kind</span><span class="kw">:</span><span class="at"> Group</span></span>
 <span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> system:serviceaccounts</span></span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">apiGroup</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">apiGroup</span><span class="kw">:</span><span class="at"> rbac.authorization.k8s.io</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="service-accounts" class="level2">
 <h2 class="anchored" data-anchor-id="service-accounts">Service Accounts</h2>
 <p>Every namespace has a default service account created automatically. Service accounts are for securing apps that use the Kubernetes API like Prometheus, which needs to get a list of pods. Any Pods that do not specify a service account are automatically assigned to the default service account, which has no permissions. However, you usually don’t want to mess with the default service account, because that is the “default” for all pods in the namespace! Instead, you should create a dedicated service account per app.</p>
 <p>You can see service accounts like this:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#create a namespace, which also creates a new service account</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#create a namespace, which also creates a new service account</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kl create ns foobar</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># see the service accounts in the namespace. one of the service accounts will be named "default"</span></span>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> kl get serviceaccounts <span class="at">-n</span> foobar                                                                                                              </span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="ex">NAME</span>      SECRETS   AGE</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="ex">default</span>   0         10m</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="ex">default</span>   0         10m</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <hr>
 <section id="creating-your-own-service-accounts" class="level3">
 <h3 class="anchored" data-anchor-id="creating-your-own-service-accounts">Creating Your Own Service Accounts</h3>
-<div class="sourceCode" id="cb14"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="at">kubectl apply -f - &lt;&lt;EOF</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="at">kubectl apply -f - &lt;&lt;EOF</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> v1</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> ServiceAccount</span></span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> build-robot</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="at">EOF</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="at">EOF</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Remember that unless otherwise specified, every Pod runs as the <code>default</code> service account in its namespace. This means by default, Pods cannot access the Kubernetes API. You can change this by specifying a service account in the Pod spec that has the correct permissions.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> v1</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> v1</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> ServiceAccount</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> build-robot</span></span>
@@ -1646,7 +1658,7 @@ Important
 <span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co">spec:</span></span>
 <span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co">  serviceAccountName: build-robot</span></span>
 <span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co">  automountServiceAccountToken: false</span></span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co">...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co">...</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Setting <code>automountServiceAccountToken</code> to <code>false</code> will prevent the service account token from being mounted into the Pod. Otherwise, this is mounted at <code>/var/run/secrets/kubernetes.io/serviceaccount/token</code>. This setting in the Pod spec takes precedence over the setting in the ServiceAccount.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1731,13 +1743,14 @@ Note
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy

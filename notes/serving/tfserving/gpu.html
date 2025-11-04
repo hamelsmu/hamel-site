@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.31">
+<meta name="generator" content="quarto-1.8.25">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="description" content="Dynamic batching and using a GPU">
 
-<title>GPUs &amp; Batching – Hamel’s Blog</title>
+<title>GPUs &amp; Batching – Hamel’s Blog - Hamel Husain</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -68,16 +68,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../../favicon.ico" rel="icon">
 <script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-707d8167ce6003fca903bfe2be84ab7f.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap-473cd3fdae26158324e3fa026112ebdf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../../site_libs/bootstrap/bootstrap-dark-5c21931d6ed7008fd1b1d77c416f53fd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap-b0fe883f02db2f46296de4a3c19badbc.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark-b35f3af08095d3347dac7d8eef9bb0ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -116,6 +117,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </script>
 <!-- Custom head content for all pages -->
 <meta name="msvalidate.01" content="F9BFAF34FB8220973415C67CA60EB1A0">
+<meta property="og:type" content="article">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -126,16 +128,18 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 
 
 <link rel="stylesheet" href="../../../styles.css">
-<meta property="og:title" content="GPUs &amp; Batching – Hamel’s Blog">
+<meta property="og:title" content="GPUs &amp; Batching – Hamel’s Blog - Hamel Husain">
 <meta property="og:description" content="Dynamic batching and using a GPU">
 <meta property="og:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
-<meta property="og:site_name" content="Hamel's Blog">
-<meta name="twitter:title" content="GPUs &amp; Batching – Hamel’s Blog">
+<meta property="og:site_name" content="Hamel's Blog - Hamel Husain">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:title" content="GPUs &amp; Batching – Hamel’s Blog - Hamel Husain">
 <meta name="twitter:description" content="Dynamic batching and using a GPU">
 <meta name="twitter:image" content="https://user-images.githubusercontent.com/1483922/208359430-f55d7503-3a98-4875-a35c-16314c9439d0.png">
 <meta name="twitter:creator" content="@HamelHusain">
 <meta name="twitter:site" content="@HamelHusain">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://hamel.dev/notes/serving/tfserving/gpu.html">
 </head>
 
 <body class="nav-sidebar docked nav-fixed quarto-dark"><script id="quarto-html-before-body" type="application/javascript">
@@ -313,13 +317,17 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+  </div>
           <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../../index.html" target="_blank"> 
+    <a class="nav-link active" href="../../../index.html" target="_blank" aria-current="page"> 
 <span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="../../../notes/index.html" target="_blank" aria-current="page"> 
+    <a class="nav-link" href="../../../notes/index.html" target="_blank"> 
 <span class="menu-text">Notes</span></a>
   </li>  
   <li class="nav-item">
@@ -356,6 +364,10 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../../../index.html" class="sidebar-logo-link">
+      </a>
+      </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item sidebar-item-section">
@@ -1377,11 +1389,11 @@ Warning
 </blockquote>
 <p>This is an example batching parameters file:</p>
 <div id="027a6526-a252-43a9-bf56-4875605ab022" class="cell" data-execution_count="71">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>writefile batch<span class="op">-</span>config.cfg</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>writefile batch<span class="op">-</span>config.cfg</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>max_batch_size { value: <span class="dv">1000</span> }</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>batch_timeout_micros { value: <span class="dv">1000</span> }</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>max_enqueued_batches { value: <span class="dv">16</span> }</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>num_batch_threads { value: <span class="dv">16</span> }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>num_batch_threads { value: <span class="dv">16</span> }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Overwriting batch-config.cfg</code></pre>
 </div>
@@ -1392,7 +1404,7 @@ Warning
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Guidance on batch configuration
+<span class="screen-reader-only">Important</span>Guidance on batch configuration
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1413,9 +1425,9 @@ Guidance on batch configuration
 <p>I’m going to start two TF Serving instances, one thats regular CPU and one that does batching on GPU. I’m running both commands from the <code>/home/hamel/tf-serving/</code> directory.</p>
 <section id="cpu-version" class="level3">
 <h3 class="anchored" data-anchor-id="cpu-version">CPU Version</h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="dt">\</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="dt">\</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>--mount type=bind,source=/home/hamel/hamel/notes/serving/tfserving/model/,target=/models/model <span class="dt">\</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>--net=host <span class="at">-t</span> tensorflow/serving <span class="at">--grpc_max_threads</span><span class="op">=</span>1000</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>--net=host <span class="at">-t</span> tensorflow/serving <span class="at">--grpc_max_threads</span><span class="op">=</span>1000</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1431,7 +1443,7 @@ Note
 </div>
 <p>Test the CPU version:</p>
 <div id="c4768f89-2d94-4dc2-9a0f-765567c4728e" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> curl http:<span class="op">//</span>localhost:<span class="dv">8501</span><span class="op">/</span>v1<span class="op">/</span>models<span class="op">/</span>model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> curl http:<span class="op">//</span>localhost:<span class="dv">8501</span><span class="op">/</span>v1<span class="op">/</span>models<span class="op">/</span>model</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>{
  "model_version_status": [
@@ -1459,18 +1471,18 @@ Note
 <h3 class="anchored" data-anchor-id="docker-command">Docker Command</h3>
 <p>You can pass additional arguments like <code>--enable_batching</code> to the <code>docker run ...</code> command just like you would if you were <a href="https://www.tensorflow.org/tfx/serving/docker#passing_additional_arguments">running tfserving locally</a>.</p>
 <p>Note that we need the <code>--gpus all</code> flag to enable GPUs with nvidia-Docker. Furthermore, use the <code>latest-gpu</code> tag to enable GPUs as well as the <code>--port</code> and <code>--rest_api_port</code> so that it doesn’t conflict with the other tf serving instance I have running:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--gpus</span> all <span class="dt">\</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--gpus</span> all <span class="dt">\</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>--mount type=bind,source=/home/hamel/hamel/notes/serving/tfserving,target=/models <span class="dt">\</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>--net=host <span class="at">-t</span> tensorflow/serving:latest-gpu <span class="at">--enable_batching</span> <span class="dt">\</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>--batching_parameters_file=/models/batch-config.cfg <span class="at">--port</span><span class="op">=</span>8505 <span class="dt">\</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>--rest_api_port=8506 <span class="at">--grpc_max_threads</span><span class="op">=</span>1000</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>--rest_api_port=8506 <span class="at">--grpc_max_threads</span><span class="op">=</span>1000</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<code>--grpc_max_threads</code> flag
+<span class="screen-reader-only">Note</span><code>--grpc_max_threads</code> flag
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1483,7 +1495,7 @@ Note
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Other flags
+<span class="screen-reader-only">Note</span>Other flags
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1499,13 +1511,13 @@ Other flags
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Understanding the volume mount
+<span class="screen-reader-only">Note</span>Understanding the volume mount
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <p>On the host, the config file is located at <code>/home/hamel/hamel/notes/serving/tfserving/batch-config.cfg</code> and the model is located at <code>/home/hamel/hamel/notes/serving/tfserving/model/</code></p>
 <p>The <a href="https://github.com/tensorflow/serving/blob/master/tensorflow_serving/tools/docker/Dockerfile.gpu">Docker file</a> will try to import the model like this:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode dockerfile code-with-copy"><code class="sourceCode dockerfile"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set where models should be stored in the container</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode dockerfile code-with-copy"><code class="sourceCode dockerfile"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set where models should be stored in the container</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ENV</span> MODEL_BASE_PATH=/models</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="fu">mkdir</span> <span class="at">-p</span> <span class="va">${MODEL_BASE_PATH}</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -1518,7 +1530,7 @@ Understanding the volume mount
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="st">tensorflow_model_server --port=8500 --rest_api_port=8501 \</span></span>
 <span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="st">--model_name=${MODEL_NAME} --model_base_path=${MODEL_BASE_PATH}/${MODEL_NAME} \</span></span>
 <span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="st">"$@"'</span> <span class="op">&gt;</span> /usr/bin/tf_serving_entrypoint.sh <span class="dt">\</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="kw">&amp;&amp;</span> <span class="fu">chmod</span> +x /usr/bin/tf_serving_entrypoint.sh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="kw">&amp;&amp;</span> <span class="fu">chmod</span> +x /usr/bin/tf_serving_entrypoint.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>By default it will try to get models from <code>${MODEL_BASE_PATH}/${MODEL_NAME}</code> which is <code>/models/model</code>. So when we mount <code>/home/hamel/hamel/notes/serving/tfserving</code> from the host to <code>/models</code> in the container.</p>
 <p>In the container:</p>
 <ul>
@@ -1529,7 +1541,7 @@ Understanding the volume mount
 </div>
 <p>Test the TF-Serving GPU api:</p>
 <div id="2ef71c40-0793-4d8f-b98f-f8e48328d925" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> curl http:<span class="op">//</span>localhost:<span class="dv">8506</span><span class="op">/</span>v1<span class="op">/</span>models<span class="op">/</span>model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> curl http:<span class="op">//</span>localhost:<span class="dv">8506</span><span class="op">/</span>v1<span class="op">/</span>models<span class="op">/</span>model</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>{
  "model_version_status": [
@@ -1554,7 +1566,7 @@ Understanding the volume mount
 <section id="prepare-the-data" class="level2">
 <h2 class="anchored" data-anchor-id="prepare-the-data">Prepare the data</h2>
 <div id="ae546006-469d-420f-9eb4-57ca70974f8e" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tensorflow <span class="im">import</span> keras</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tensorflow <span class="im">import</span> keras</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>vocab_size <span class="op">=</span> <span class="dv">20000</span>  <span class="co"># Only consider the top 20k words</span></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>maxlen <span class="op">=</span> <span class="dv">200</span>  <span class="co"># Only consider the first 200 words of each movie review</span></span>
@@ -1563,13 +1575,13 @@ Understanding the volume mount
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>x_val <span class="op">=</span> keras.preprocessing.sequence.pad_sequences(x_val, maxlen<span class="op">=</span>maxlen)</span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>sample_data <span class="op">=</span> x_val[:<span class="dv">5</span>, :]</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> [sample_data] <span class="op">*</span> <span class="dv">10000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> [sample_data] <span class="op">*</span> <span class="dv">10000</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="the-prediction-code" class="level2">
 <h2 class="anchored" data-anchor-id="the-prediction-code">The prediction code</h2>
 <div id="16bb6ffb-793a-44da-8951-00fed516c66b" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json, requests</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json, requests</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastcore.parallel <span class="im">import</span> parallel</span>
@@ -1586,11 +1598,11 @@ Understanding the volume mount
 <span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    json_response <span class="op">=</span> requests.post(url, data<span class="op">=</span>json_data)</span>
 <span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> json.loads(json_response.text)</span>
 <span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    rest_outputs <span class="op">=</span> np.array(response[<span class="st">"predictions"</span>])</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> rest_outputs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> rest_outputs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div id="a57b53cd-3eec-44d0-82eb-99c2aa97a8ad" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>rest_outputs <span class="op">=</span> predict_rest(sample_data, <span class="st">'8501'</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>rest_outputs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>rest_outputs <span class="op">=</span> predict_rest(sample_data, <span class="st">'8501'</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>rest_outputs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <pre><code>array([[0.89650154, 0.10349847],
        [0.00330466, 0.9966954 ],
@@ -1603,7 +1615,7 @@ Understanding the volume mount
 <h3 class="anchored" data-anchor-id="grpc">gRPC</h3>
 <p>This is the code that will be used to make gRPC prediction requests. For more discussion about gRPC, see <a href="../../../notes/serving/tfserving/tf-serving-basics.html#grpc">this note</a></p>
 <div id="edaf2aa5-af8a-4db5-ba3e-ebd999ed57b1" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> grpc</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> grpc</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tensorflow <span class="im">as</span> tf</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tensorflow_serving.apis <span class="im">import</span> predict_pb2, prediction_service_pb2_grpc</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a channel that will be connected to the gRPC port of the container</span></span>
@@ -1631,7 +1643,7 @@ Understanding the volume mount
 <span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Send the gRPC request to the TF Server</span></span>
 <span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> stub.Predict(request)</span>
-<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> result</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 </section>
@@ -1642,11 +1654,11 @@ Understanding the volume mount
 <h3 class="anchored" data-anchor-id="rest-cpu">REST CPU</h3>
 <p>The REST API endpoint on the CPU-bound server.</p>
 <div id="94cd3923-ba0a-4345-8384-dea312a7907c" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>cpu_pred <span class="op">=</span> partial(predict_rest, port <span class="op">=</span> <span class="st">'8501'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>cpu_pred <span class="op">=</span> partial(predict_rest, port <span class="op">=</span> <span class="st">'8501'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div id="d1372e0a-10f9-4a6e-a6b9-4fc4e59d9a47" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> parallel_pred(cpu_pred, data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> parallel_pred(cpu_pred, data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>CPU times: user 27.7 s, sys: 5.56 s, total: 33.3 s
 Wall time: 26 s</code></pre>
@@ -1657,11 +1669,11 @@ Wall time: 26 s</code></pre>
 <h3 class="anchored" data-anchor-id="grpc-cpu">grpc CPU</h3>
 <p>This is using the same CPU-bound TF Serving server, but is hitting the gRPC endpoint.</p>
 <div id="ccc8722f-0d40-4c65-974a-406f373ee8a2" class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>predict_grpc_cpu <span class="op">=</span> partial(predict_grpc, port<span class="op">=</span><span class="st">'8500'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>predict_grpc_cpu <span class="op">=</span> partial(predict_grpc, port<span class="op">=</span><span class="st">'8500'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div id="cbae9f7b-52a7-4b03-a809-1f1b1253312d" class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> parallel_pred(predict_grpc_cpu, data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> parallel_pred(predict_grpc_cpu, data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>CPU times: user 7.5 s, sys: 2.33 s, total: 9.84 s
 Wall time: 7.63 s</code></pre>
@@ -1675,11 +1687,11 @@ Wall time: 7.63 s</code></pre>
 <section id="rest" class="level3">
 <h3 class="anchored" data-anchor-id="rest">REST</h3>
 <div id="b1e93266-d86b-4f64-ba8d-4fbe085bd4ab" class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>gpu_pred <span class="op">=</span> partial(predict_rest, port <span class="op">=</span> <span class="st">'8506'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>gpu_pred <span class="op">=</span> partial(predict_rest, port <span class="op">=</span> <span class="st">'8506'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div id="27b7f35c-4918-4308-b4d8-b13fdef5dc5f" class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> parallel_pred(gpu_pred, data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> parallel_pred(gpu_pred, data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>CPU times: user 27.1 s, sys: 3.44 s, total: 30.6 s
 Wall time: 27 s</code></pre>
@@ -1690,8 +1702,8 @@ Wall time: 27 s</code></pre>
 <h3 class="anchored" data-anchor-id="grpc-with-batch">gRPC with batch</h3>
 <p>This is <strong>much</strong> faster than the REST endpoint! This is also much faster than the CPU version on this specific example. However, the batching part doesn’t appear to be providing any speedup at all, because the non-batch gRPC version is almost the same speed (if not a little bit faster).</p>
 <div id="a37cd459-a9bc-42c6-a6ce-eca12f5c300a" class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> parallel(predict_grpc, data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> parallel(predict_grpc, data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>CPU times: user 2.71 s, sys: 551 ms, total: 3.26 s
 Wall time: 6.6 s</code></pre>
@@ -1701,15 +1713,15 @@ Wall time: 6.6 s</code></pre>
 </section>
 <section id="gpu-server-without-batching" class="level2">
 <h2 class="anchored" data-anchor-id="gpu-server-without-batching">GPU server without batching</h2>
-<div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--gpus</span> all <span class="at">--mount</span> type=bind,source=/home/hamel/hamel/notes/serving/tfserving,target=/models <span class="at">--net</span><span class="op">=</span>host <span class="at">-t</span> tensorflow/serving:latest-gpu <span class="at">--port</span><span class="op">=</span>8507 <span class="at">--rest_api_port</span><span class="op">=</span>8508</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--gpus</span> all <span class="at">--mount</span> type=bind,source=/home/hamel/hamel/notes/serving/tfserving,target=/models <span class="at">--net</span><span class="op">=</span>host <span class="at">-t</span> tensorflow/serving:latest-gpu <span class="at">--port</span><span class="op">=</span>8507 <span class="at">--rest_api_port</span><span class="op">=</span>8508</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <section id="rest-1" class="level3">
 <h3 class="anchored" data-anchor-id="rest-1">REST</h3>
 <div id="bde84bc1-6be7-4f43-9e6b-33673a629044" class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>gpu_pred_no_batch <span class="op">=</span> partial(predict_rest, port <span class="op">=</span> <span class="st">'8508'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>gpu_pred_no_batch <span class="op">=</span> partial(predict_rest, port <span class="op">=</span> <span class="st">'8508'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div id="c5defa54-52e9-4e54-83b9-f42cc65378c3" class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> parallel_pred(gpu_pred_no_batch, data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> parallel_pred(gpu_pred_no_batch, data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>CPU times: user 26.9 s, sys: 3.61 s, total: 30.5 s
 Wall time: 25.7 s</code></pre>
@@ -1720,11 +1732,11 @@ Wall time: 25.7 s</code></pre>
 <h3 class="anchored" data-anchor-id="grpc-without-batching">gRPC without batching</h3>
 <p>When I initially did this I got an error that said “Resources Exhausted”. I was able to solve this by increasing the threads with the flag <code>--grpc_max_threads=1000</code> when running the Docker container.</p>
 <div id="74cd073a-6f84-4491-b406-38e046aec63e" class="cell" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>predict_grpc_no_batch <span class="op">=</span> partial(predict_grpc, port<span class="op">=</span><span class="st">'8507'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>predict_grpc_no_batch <span class="op">=</span> partial(predict_grpc, port<span class="op">=</span><span class="st">'8507'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div id="044123bc-83fb-4aaa-b8d7-97e421f7a0b2" class="cell" data-execution_count="35">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> parallel_pred(predict_grpc_no_batch, data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> parallel_pred(predict_grpc_no_batch, data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>CPU times: user 5.06 s, sys: 1.42 s, total: 6.48 s
 Wall time: 6.65 s</code></pre>
@@ -1801,13 +1813,14 @@ Wall time: 6.65 s</code></pre>
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
