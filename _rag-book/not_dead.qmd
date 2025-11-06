@@ -12,7 +12,7 @@ I'm tired of hearing "RAG is dead." That's why [Ben Clavié](https://ben.clavie.
 
 ## What's Actually Dead
 
-[Ben Clavié's opener](p1-intro.md) nailed it: what's dead is the 2023 marketing version of RAG. Chuck documents into a vector database, do cosine similarity, call it a day. This approach fails because compressing entire documents into single vectors loses critical information.
+[Ben Clavié's summary](p1-intro.md) explains the nuance: what's dead is the 2023 marketing version of RAG. Chuck documents into a vector database, do cosine similarity, call it a day. This approach fails because compressing entire documents into single vectors loses critical information.
 
 But retrieval is more important than ever. LLMs are frozen at training time. **Million-token context windows don't change the economics or efficiency of stuffing everything into every query.**
 
@@ -24,7 +24,9 @@ But retrieval is more important than ever. LLMs are frozen at training time. **M
 
 **Single vectors lose information.** [Antoine Chaffin demonstrated](p4_late_interaction.qmd) how late-interaction models like ColBERT preserve token-level information. No more forcing everything into one conflicted representation. Result: 150M parameter models outperforming 7B parameter alternatives on reasoning tasks.
 
-**One map isn't enough.** [Bryan and Ayush's finale](p5_map.qmd) showed why we need multiple representations. Their art search demo finds the same painting through literal descriptions, poetic interpretations, or similar images—each using different indices. Stop searching for the perfect embedding. Build specialized representations and route intelligently.
+**One map isn't enough.** [Bryan and Ayush showed](p5_map.qmd) why we need multiple representations. Their art search demo finds the same painting through literal descriptions, poetic interpretations, or similar images—each using different indices. Stop searching for the perfect embedding. Build specialized representations and route intelligently.
+
+**Large context windows aren't magic.** [Kelly Hong's research](p6-context_rot.qmd) on "Context Rot" shows that LLM performance degrades significantly as input length increases (even on simple tasks!). Semantic matching, distractors, and irrelevant information all cause failures that lexical benchmarks like "needle in a haystack" miss entirely. Thoughtful retrieval and context engineering beat dumping everything into the prompt.
 
 ## What's Next
 
