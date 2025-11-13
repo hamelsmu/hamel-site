@@ -1,0 +1,269 @@
+The Map Is Not The Territory – Highly Multimodal Search
+===
+
+[00:00:00] 
+
+[00:00:00] Bryan: I'm Brian. Aisha is here as well. He will take over here in a moment, but today we're gonna wrap up this rag series with a little bit of a [00:00:10] sort of like, um, contrarian view on the field and on retrieval.
+
+And even a little bit contrarian to some of the things that you've heard in the rest of this [00:00:20] series. I get to go last, which means it's easy for me to snipe all the people that came before. No big deal. But long story short I want to try to, I. [00:00:30] Maybe reframe some of the conversation around rag and retrieval, because I think that we sometimes slip into some, I would say, dangerous habits [00:00:40] with RAG and retrieval.
+
+A little bit about me. I've been doing retrieval stuff for a while. I. I previously wrote a book on recommendation systems. Um, AHA has also been doing a lot of stuff [00:00:50] related to retrieval. He and I have worked on a project almost four years ago now related to retrieval recommendation system. And AHA is also sort of like an expert in computer vision and some other [00:01:00] areas.
+
+And so you are hearing from people that have spent a lot of time thinking about classic retrieval. And so when you feel that come through, that's the context. To [00:01:10] kick us off, I want to talk about this. Start, uh, slide here, which says, the map is not the territory. For those of you that may not recognize what that phrase is in [00:01:20] reference to it is, uh, comes back to this philosophy concept, which is our senses and language and biases, and create mental maps that we mistake for [00:01:30] territory of real world experiences.
+
+Or said more simply when you walk around in the world, that's not the map. And when you look at a [00:01:40] map. That's not the real world. These are two totally separate things. Maps are very useful, but you should not mistake them for the [00:01:50] territory which they represent. And this was meant to be sort of a classic like, philosophical concept to help us understand the [00:02:00] disjoint between, or disjoint, uh, disjunction between our senses and what we experience and what matters.
+
+What's interesting is if you're [00:02:10] thinking about recommendations or machine learning through the lens of some object and this thing that you want to represent. Actually, this concept is very [00:02:20] powerful, but in almost the opposite way that it was originally intended. It was originally intended as a warning to be careful to not trust your senses too much, and in machine [00:02:30] learning it's actually like a tool or a weapon that you can use to kind of do a better job.
+
+And so let's talk a little bit about what that looks like. So what you've probably [00:02:40] heard ad nauseum at this point are different definitions of rag. Um, and so, rag, just a reminder is retrieval augmented generation. Um, if we break it down [00:02:50] into the different letters, we've got r for retrieval. This means getting stuff outta some store.
+
+Augmented means we're gonna use that stuff to help the next task and generation. [00:03:00] Now means put it into a language model and sort of ask for something from that language model. And so retrieval, augmented, uh, generation is purely just this [00:03:10] concept of grabbing the context that you think might be relevant for the model and then giving it to the model, um, this retrieval process.[00:03:20] 
+
+Is very deep though. Over the last year people occasionally will toss this term naive rag in a blog post. And naive rag is supposed to [00:03:30] be a sort of dunk on the people that are too uninformed to do any better. They're using naive. In the abusive sense instead of the way that mathematicians use it, [00:03:40] which is the simple sense.
+
+So anytime you hear the word naive, you should ask, is it abusive or is it simple? And in my claim I think you should think of it as simple [00:03:50] rag, which is you have some vector store and you're going to search that vector store with another vector, and things that are similar in vector [00:04:00] space are going to come back.
+
+This is usually what people mean by naive rac. Lately people are starting to get very excited about another concept called agentic Rag. [00:04:10] Um, a agentic rag is this very, uh, intimidating term, almost like the complete polar opposite of naive. They say it's a kind of like over glorify this new concept, which is [00:04:20] somehow the language model gets to choose how it searches.
+
+So you ask the language model, Hey, where do you wanna search? Or what mechanisms do you [00:04:30] want to search? People are very excited about this because right now, agents are giving people the impression that they can, uh, remove themselves from the loop of careful [00:04:40] engineering. You may have heard of hybrid rag.
+
+Hybrid rag is sort of if you take naive rag and you sprinkle on some old recommendation systems and search and [00:04:50] retrieval techniques. Um, this allows you to search with sort of multiple things simultaneously. The hybrid in hybrid RAG is naive rag plus some other search vectors. [00:05:00] If you go back to some of the earlier talks in the series, they talked a lot about hybrid rac.
+
+You might have heard of Graph Rag. So Graph Rag is this concept that [00:05:10] sort of objects that you might want to retrieve, may have relationships between them. How can you use the relationships between objects to further walk down the [00:05:20] path of retrieval? And let me give you a simple example.
+
+If you do a retrieval. For, um, the other day I needed to buy some new coffee filters and so I went to Google search, uh, Google [00:05:30] Maps, I should say, and I typed in the exact kind of coffee filter I wanted it not just found places that actually sold those exact coffee filters, but even the [00:05:40] ones near me. Why you might think of this as sort of like a grass structure problem is 'cause first.
+
+You want to think about places that sell home goods, and then from there you might want [00:05:50] to link out to the additional information that they have linked to them. And so this idea of like a graph is independent things or nodes and then information [00:06:00] corresponding to those nodes. Graph rack is very powerful.
+
+It's very useful for certain context. It's also very overhyped. Sometimes you'll hear about multimodal rag. Here [00:06:10] the modes can be one of two things. Um, we live in a fun world where multimodal means I. Multiple things. One way that we talk about multimodal rag is you can search with [00:06:20] images and text or audio and video.
+
+This can be really powerful because sometimes you want to kind of use multiple things simultaneously. But [00:06:30] wait, dear reader, there's another kind of multimodal rag, and that is when you sort of wanna search in multiple loci in your latent space. I'm not gonna talk a lot about that even though it is kind of related to the [00:06:40] thing here, but multimodal rag is pretty.
+
+Pretty exciting as well. But I have to say I'm pretty exhausted with this [00:06:50] list of retrieval. I'm not exhausted because these concepts aren't interesting, as you could probably tell from my, uh, rambling. Uh, all of these are actually [00:07:00] quite interesting and they all have a lot of value. Each of these has their applications and each of these unlocks new sort of avenues.
+
+The reason [00:07:10] I feel exhausted by this list is because they're all these different terms. They're all this overwhelming terminology and sort of, you know, [00:07:20] buzzword bloat. I claim that these are all the same thing. They're just different ways of sort of like talking about it. [00:07:30] And so what I wanna talk about in this talk is not, this is what naive rag is.
+
+This is what a Agentic rag is. This is what hybrid rag is. This is what Multi vector, I don't really wanna do that. [00:07:40] I'm much more interested in trying to teach you the concepts behind all of this, because you could have invented literally all of these. None of these required a [00:07:50] very big brain. And so let's talk how my small brain would've approached it.
+
+Let's talk about multimodal first. So, [00:08:00] um, one thing that you might have had the opportunity to hear about is hypothetical document embeddings. Sometimes we'll say hide. I'm looking forward to hearing about Jekyll embeddings, but for [00:08:10] now we'll focus on hide embeddings. So the concept here is you've got a bunch of documents.
+
+Let's call those documents tickets in your tracking [00:08:20] system. So these are tickets for your, uh, engineers that they need to work through. And if you've ever worked on an engineering team, you know that a ticket consists of the name of the ticket, a [00:08:30] description of what the ticket entails. Lots of examples of what's important in the product spec and ways that that could go wrong.
+
+Just kidding. That's not what tickets are. Tickets are a [00:08:40] little title with no explanation and the engineer has to figure it out on the fly. So if you're an engineer and you're looking at your ticket system, you've just got like a bunch of like weird poor grammar [00:08:50] explanations of shit you need to get done.
+
+And that's fine. But if you are this PM who's trying to remember like, do we have a ticket for this? You are [00:09:00] not writing the name of the ticket. You're writing some weird, cryptic thing that makes sense in your brain because the user just hit the bug for the 19th [00:09:10] time and you can't remember if there's even a ticket for it.
+
+So what you write is you write, oh, uh, modal doesn't load after [00:09:20] user clicked on popover. Okay. That's not the name of the ticket. The name of the ticket is actually like, you know, sort of like a React component name of [00:09:30] component. Doesn't fire when other React component hasn't been ejected. That's what the name of the ticket is, because the engineer that wrote it when you yelled at him last time, just wrote what [00:09:40] meant something to them.
+
+How do you marry these things? One way that you can marry these things is hypothetical document embedding, because you want that concept from the [00:09:50] PM to map to something that is in the database. Hypothetical document embedding says, here are large language model. Here is all of this vectors that you [00:10:00] want to, or sorry, here are all the objects that you want to search for.
+
+Rewrite them in the language that we think people will search with. And so that [00:10:10] is one simple example of a document enrichment pipeline. A agentic rag on the other hand, is a query enrichment [00:10:20] pipeline. I already told you a little bit about what a agentic rag is. It's when someone puts something in and the agent decides how it wants to search.
+
+So when I, when I want to [00:10:30] find when I go to Google Maps, like I did in that V 60 example, if I type the name of a restaurant, I want it to search through names of restaurants. [00:10:40] When I type V 60 filters, I don't want it to search name of restaurant called V 60 Filter. How does Google Maps [00:10:50] know?
+
+And you can see it in the ui, at least I can see it in my app on my phone. It'll change. It actually like uses a different color and even a different icon. It can [00:11:00] switch between searching the name of a restaurant or maybe a thing that some random store in SF sells. How does it do that? It's a very, very primitive concept of [00:11:10] a gen rag that is query enrichment, and so you can see it's on the other part of the query retrieval pipeline.
+
+You've got the [00:11:20] objects underneath. They live in some little space. Hypothetical document batting, like rebuilds those, it makes them make more sense in their space. A agentic [00:11:30] rag is query enrichment. It takes the query side and it rewrites that to make it make more sense for the space you're trying to search.
+
+Rank [00:11:40] Fusion. I hate this term, but this is a multi-stage processing technique. Rank fusion basically means you do multiple searches and you stitch 'em together. You can kind of think of this as sort [00:11:50] of, you, you wanna get, um, groceries for camping and you and four friends are all going camping. You tell each of your friends, Hey friends.
+
+Pick out a couple things that you wanna bring camping [00:12:00] and you say, neat. Thanks for your lists. Okay, this object was on two people's list. We'll definitely get that this object was on this person's list, but that sounds like a pain in the ass to cook while [00:12:10] camping. I'm nixing it and this thing over here.
+
+I hadn't thought of it before, but it's on my friends list and I love that. We're definitely getting that. That's all Rank Fusion [00:12:20] is, but the concept is this thing called multi-stage processing. It's basically just taking this process of retrieval and breaking it into pieces. Okay, [00:12:30] so I made a claim, which is that you could have invented all this shit from before and.
+
+The reason is because information retrieval has [00:12:40] always been about these ideas. It's always been sort of like the same thing, but what is the task? What is the job to be done? As the information retrieval engineer, it's asking [00:12:50] yourself the following questions, what is the most likely representation of the user's desire?
+
+How does Google Maps understand that? I want the V 60 filters as an [00:13:00] object in the store in sf. And not, I want to go to this hot new restaurant on the Michelin Gorman list called V 60. What representations can you [00:13:10] generate ahead of time from the entities? So how can I take those like tickets in linear and turn them into something searchable?
+
+[00:13:20] How can I take that weird bespoke thing from the, like the software engineer and turn that into something that the PM could have searched for? The PM may know react, but they may not [00:13:30] know in your particular code base what this damn component is called. How can you presage that? How can you think of it ahead of time and be prepared?
+
+And how [00:13:40] can you correctly match these up? Because that's all retrieval really is. It's taking a query, it's taking an object, and it's saying these go together. [00:13:50] So that's what information retrieval engineering has always been about. And so it still is. Next up I [00:14:00] wanna talk about sort of like a little bit of a, a contrived example, and this is to kind of give you a little bit more intuition about how these things fit together.
+
+So let's talk [00:14:10] about an example where you wanna retrieve financial documents. I. Okay, maybe you've got thousands of financial documents of many, many different types. Maybe you work at some bank and you [00:14:20] know, you've got all these things. You've got people applying to mortgages, you've got people applying to homeowners loans.
+
+Sorry, those are the same thing. Uh, uh, like, you know, business loans. You've got people sort of like sending in their [00:14:30] W2. You've got documents you need to send to. Other people for their taxes, all these different financial documents. And what are the different concepts that you can think about [00:14:40] related to the financial documents?
+
+I call this curving space because we sometimes call the space in which you search. Uh, we call that a space, oftentimes a latent space, but [00:14:50] we wanna bend that space into the right shapes. That's that when you do your retrieval, you get the right shit back. And so what are the right things that we could do?
+
+Let's come back to this hypothetical [00:15:00] document. Embeddings idea. You could write summaries from those documents. You could pull out the tables of the data and you could sort of make the table of [00:15:10] data its own searchable thing. You could pull all the named entities out of the document. You could form typographies or ontologies or categories [00:15:20] of the document types.
+
+What else could you do?
+
+I'm gonna read chat.[00:15:30] 
+
+Okay. You could make some questions about the documents. What questions do they answer? That's very much in the spirit of the original hide. [00:15:40] What else could you do with these hypothetical or these documents? These financial documents? Okay. You could actually sort of like use the [00:15:50] picture of the document to embed that.
+
+What else?[00:16:00] [00:16:10] 
+
+Okay. You could simplify it.
+
+You could look at metadata. Super [00:16:20] interesting, Varun. So metadata can actually be really exciting, right? 'cause you could sort of understand like who it's connected to. Maybe there's some relationship there. [00:16:30] Okay, amazing. Lots of cool things that we can do here. What is the appropriate indexing strategy? So now that [00:16:40] I've got all these different representations.
+
+How should I make it searchable? Classically, we think of like text and keyword [00:16:50] search with like something like BM 25. That's great. Some of those things that we mentioned are actually like really nice for keyword searching. For instance, named entities. That [00:17:00] seems like a keyword search type of problem.
+
+Maybe not BM 25, but maybe more just like, like string matching summaries Could be interesting for keyword search or BM [00:17:10] 25. What about tables of data? How do you search that? How do you index tables?
+
+Some really [00:17:20] interesting research on that one. I'll leave that to you to look up later. Okay. Sometimes you wanna use vectors. I. I know that you've heard a lot about vectors in this rag series, and so I [00:17:30] won't belabor the point, but vectors or like late interaction vectors or multi vectors, there's a, there's a very deep sort of like iceberg that we could go [00:17:40] into there.
+
+I think the last talk was about that iceberg. Maybe it was the one before, I forget, but there's lots of interesting vector stuff to do here. Okay. But the reality is [00:17:50] you need to think about those indices. So think about it. We've got one corpus. Financial documents. I've now [00:18:00] reframed that corpus of financial documents many, many different ways, and each of those ways has its own index.
+
+And now [00:18:10] how do you fan out to those different indices? How do you match the query to the right index to make the search actually function? [00:18:20] We think about that as a sort of staging process. We talked about a agentic rag briefly. This is where the agent would fit in depending on what they type [00:18:30] in. How are you gonna search?
+
+Are you gonna search multiple into see simultaneously? Maybe you're only gonna search one index. Maybe you're gonna sort of like pray to the gods of [00:18:40] multimodality and say, I don't wanna think about any of this. I'm just gonna use one crazy multimodal model.
+
+So [00:18:50] now we'll sort of appease everybody and we'll talk a little bit more about agents. I think of agents as transformers and, no, no, [00:19:00] I don't mean like, you know, like attention mechanism, blah, blah, blah. They transform information that come in and out. [00:19:10] Some people think of agents as this, like little brain and other people think of agents as like just a function call on somebody else's computer.
+
+[00:19:20] My favorite way of thinking about agents and making them functional is by thinking them as transformers. If I wanna convert a natural language prompt into a [00:19:30] tool selection, that's a transformation. If I wanna convert some long paragraph of, rambling and some transcript into [00:19:40] some structured data, that's a transformation.
+
+If I want to let the agent decide on what code it needs to write and then call [00:19:50] another agent, that's actually still a transformation, is transforming a task into a selection of steps. And then each of those steps could later sort [00:20:00] of, be mutated. And so I sometimes just call them routers. And actually my favorite agents, the ones that are most successful in my [00:20:10] world, have been routers.
+
+And the last key thing that I want to cover is that maps aren't final. [00:20:20] So if you've ever had a chance to look at Globes from, a hundred years ago, they look quite different than today. I. You may say, well, like a hundred years ago, we [00:20:30] kind of had a pretty good sense of what the world looked like.
+
+We kind of knew where everything was and like, we didn't like discover that much new land. Maybe some islands here and there. But like why has the [00:20:40] map changed so much in the last a hundred years? Everything from sort of like, uh, geographic change to political change, maps changed quite a lot.
+
+And so too for [00:20:50] representations, because if you were to. Leave your map static or leave your embedding static. You would be [00:21:00] missing out on a really dramatic amount of signal. One. Documents change. Documents change in context to other [00:21:10] documents. They change in context to your business. They change in context.
+
+To your world. We talked about named entity recognition for those financial documents. What [00:21:20] was a named entity recognition on a financial document from last year? May need updating because your set of named entities may be updated since [00:21:30] you may know about entities that you didn't know a year ago that now exist, or you may want to link them to new things that didn't exist then and exist now.
+
+I. One [00:21:40] example that we have in my current job is we do transcript enrichment, and one of the things that we wanna do there is named entity recognition. How do you pull out names of [00:21:50] companies and names of people and link those to the people and what they're doing? People do new things as time goes on.
+
+If I do this once and leave it, never return to it, it's gonna get [00:22:00] outdated. But that's not the only thing. The context of these financial documents may matter based on sort of like events that have taken place. A [00:22:10] financial document that was produced in 2022 may have a very different meaning in the context of something now for the company, if they've.
+
+iPod since. [00:22:20] And so it's actually quite important to not just update old feature engineering, but to also add new features. As time goes on, [00:22:30] you've got more and more signal and more and more opportunity to enrich the data that you have. So those, from my perspective, are the [00:22:40] core concepts of how you build maps and how you traverse maps, and so.
+
+I [00:22:50] wanna show you what it looks like to do this, and so I'm gonna turn it over to Aush.[00:23:00] [00:23:10] 
+
+He has now become the cohost [00:23:20] one step at a time.
+
+[00:23:21] Ayush: Okay. Cool. Yeah, I'll just take over the screen. Awesome. Let me know [00:23:30] if you can see my screen. You can. Okay. Um, so this is a small demo app demo version of an application that we're working on. It's called Semantic Do Part, [00:23:40] and the purpose is to allow you to discover artworks in various ways. Right? So you, you might be looking at a, a. You might describe it, an artwork using a specific mood, or you can [00:23:50] describe, uh, it in an art artistic fashion using a poem or a prose, or you just wanna find something similar to something that you've discovered that might be synthetic synthetically generated, or something that [00:24:00] inspires you to look.
+
+And these, these are real artworks. Uh, these are not synthetic generated artwork. So this, this uses a bunch of these concepts that Brian just discussed, and we'll come to [00:24:10] those in a minute. Just wanted to show you what this does. So just to test it out a little bit, what I did was I asked few lms, like Gemini, HRG, BT and stuff [00:24:20] to describe any artwork of their choice using different ways, right?
+
+One could be an artistic fashion or one could be like in a literal sense. And I got a few that I can show. Uh, so this is, [00:24:30] uh, persistence of memory, which was described in a poetic fashion by I think, Gemini or something, And [00:24:40] so, you know, you, you get to see not just the original artwork, but something that is similar to that, but also derivative artwork of that original artwork. And this is the [00:24:50] original, or there are a few versions of it Because this data set has it's, it's, combination of a few. And then, then you also see a bunch of others that are just inspired by this original [00:25:00] artwork. So this is more like you, you described this in, in a poetic fashion. We can also do something in a more literal sense, uh, like this which again is described [00:25:10] by in an LLM and, you know, again, gets you the that, that you were looking for and. Still includes a bunch of derivative [00:25:20] work, uh, as well. And so you can do a bunch of other things like, I mean, these are, this is just in domain data. We can also search for some things that are not in domain, right? For example, this is another artwork that [00:25:30] an LLM just guest, uh, randomly, but it's called, you know, path through the, uh, fields.
+
+And you can see that it gets you the images that show parts through the fields [00:25:40] and some other like that. And again, it's, it's pretty much, it's, uh, multimodal. Uh, you can also search through images or text or combine both. For that I'll just, uh, quickly show [00:25:50] you an example. Um, but the idea here is that, you know, you can find an artwork, uh, that's maybe a derivative work of an original artwork, or it's a synthetically generated artwork, but you wanna see [00:26:00] something like that real, really exists in, in the real world. So here's an artwork that's sort of, uh, a modified version of, uh, the wave. And let's search by image. See what [00:26:10] we get and we get the original ones as well as the, uh, the derivative work on, on top of it or something similar to that. [00:26:20] Uh, I can also, find ones that are similar to a specific artwork as well. But the basic idea here is that you can use inputs of different types, [00:26:30] different semantic meanings and and so on. For some reason this did not work. But yeah, let me try again.
+
+[00:26:39] Bryan: I think [00:26:40] that search modality is just a little slow ish.
+
+[00:26:44] Ayush: I did. Cool. But yeah, the idea is that, you know, you can forget about a specific kind of query. [00:26:50] You can address multiple types of queries at once. And I'll come to how this works and how all these concepts that Brian explained, how, how these apply here. Let me just [00:27:00] reshare the right tab for [00:27:10] [00:27:20] that. Let's first talk about the problem of representation. This artwork, what this [00:27:30] application does, it sources artworks from different sources, different data sets. Here are a few, what we can do here is that we can extract many features, right? [00:27:40] And the, the idea is that we want to be able to have. Multiple ways or multiple representations of the same data point. So moving forward, we have the flexibility [00:27:50] to, you know, create different search paths depending on the need of changes in the future. So for example, here each one of these, features that we extract from the, uh, [00:28:00] artworks, we can create multiple features out of, uh, them.
+
+These can, these can be a group of dense features, uh, like, you know, vectors of the image or, you know, simple [00:28:10] multimodal embeddings like clip or things like that. But also generate captions and then indices out of that as well. But also we can do BM 25 full texts, things like that. [00:28:20] And once we extract a bunch of features, these are some you can expand to even more, but that just makes that just allows you to create more flexible search PO parts in the future. Uh, [00:28:30] here I'm using Lens DB so I can just, uh, use it is both, uh, an object store and feature store. So I can just embed all of these here and. [00:28:40] This is the basic ingestion pipeline. And obviously the idea here is that you're not limited to one feature or, uh, or a few features. You can just expand this dynamically to more [00:28:50] features and the kind of idea with the. With this, uh, complex representation is that it allows you to create dynamic search path and how to [00:29:00] do that.
+
+It's, it's a challenge in itself. Like how do you, uh, use, uh, which, which search path to use for a specific type of query and to determine which is the right search path to use. That's a, that's another problem, which [00:29:10] that comes for which we will look at discovery. So let me just list down the. Uh, the few basic components and the few basic [00:29:20] search parts that we can create using those. So first user input can be any of these, and so based on that, we have a few operations like determining query [00:29:30] path or generating image caption, then rewriting, query or extracting the mood. And then out of all of these, we can then create pre-filters or create [00:29:40] and then perform different kinds of searches, you know, advanced retrieval techniques like habit search, which, you know, is essentially combining multiple search results and then re-ranking them. It's [00:29:50] also called, I think Brian covered this in Rank Fusion part. But this is the idea and you can. becomes more and more complex, right? You can also like then re-rank using specific [00:30:00] features as well. Because we have a lot of features now based on this, we can create multiple search bot. And the challenge here is how to determine the [00:30:10] search bot and to do that, I think one of the things that algorithms are good at, or, or at least decent as is doing basic language tasks, right? You know, more [00:30:20] classification. Speci, uh, especially you see this in in rag where you just in, in the g part of the rag, which is the generators, you just simply give them few, uh, documents and they [00:30:30] stitch together as a sentence, right?
+
+The idea here is to use LLMs or, search in a way that it acts as an agent router. Creating its own dynamic [00:30:40] search path, uh, you know, across different indices that we have, because this is what exactly is, this is multiple indices and multiple features. You can use an LLM to [00:30:50] extract the mode or you can, if, if the user input is, uh, of a multimodal category, you can use those two and get the query style or caption the image. [00:31:00] If it contains both, you can just rewrite the query. And then you can extract the mood. And finally, once we have the mood, we can, and this is one of the search [00:31:10] parts, I can do a bunch of other things with that you can perform a basic search and then keep performing more and more searches. But in this pathway, what you can do is you can u use the mood to pre-filter your entire data set so that you are [00:31:20] only looking at a specific kind of, uh, artwork. And then you can perform habit search because you have. features, you have image features, you have both tens and sparse [00:31:30] features for both of them. And then you can finally reran those results based on your the feature that you choose, right? So this is like one dynamic pathway, and this is sort of [00:31:40] decided by agent routing through the features. So here's the complete idea, which is, have multiple ways to represent your data points.
+
+I mean, this is just what we covered is [00:31:50] just specific to the, the artwork But think of this as like for example, when you're, when you're thinking of recommending products or like specifically clothes, you can [00:32:00] multiple features. Like new user can search. Uh, like based on the rest type, or they can search based on, uh, a season, they can search based on texture or color, and it's [00:32:10] useful to have features for all of them so that later down the road you can create these agent routers to that route, the query to the right search path instead of sticking [00:32:20] to one feature.
+
+And then you can continuously evolve it over time. So that's the basic idea that we're presenting here. Think, yeah, [00:32:30] that's pretty much it. Over to Brian.
+
+[00:32:33] Bryan: Awesome. Sweet. So yeah, so that's what we wanna show. And then obviously, you know, we [00:32:40] have plenty of time for questions.
+
+[00:32:41] Hamel Husain: Where do you think people go? Most wrong with regards to like thinking that there's only one. Map for the [00:32:50] territory? Like where do you think that comes from in terms of that thinking of like, hey, there's only one representation. I still find also that a lot of [00:33:00] retrieval systems for rag, like people only have one representation by far.
+
+[00:33:07] Bryan: Yeah, I think because a lot of times we think that [00:33:10] there's a natural representation, we like trick ourselves, right? We like think it's like easier than it is. We start by thinking like, what's the best way? And then when it comes time for us [00:33:20] to realize it's not good enough, instead of saying like, what do I want to add?
+
+We start thinking like, oh, I guess I was wrong. I'll like try to fix it. [00:33:30] It's this like, it's the fixing the, the one thing mindset. You can kind of think about this as like cars versus bicycles. [00:33:40] And I'm gonna, I'm gonna really expose myself here for a second because I think you should have one car and many bicycles.
+
+You don't really need like four different vehicles unless you're like really [00:33:50] doing interesting shit. Uh, I feel like those people were maybe outta my like, you know, experience, but you need one car, maybe you need two car. If you have like a partner and they need to do [00:34:00] shit too. But like, usually like you got one car and that's your, like you go to the work and you also have fun in it and you like put down the top and maybe like ride down [00:34:10] highway one and you can do all these things with one vehicle.
+
+But those of you that have spent time cycling, you probably are like, no, no, no. I need my road bike. I need my try bike. [00:34:20] I need my like gravel bike. I need my mountain bike. I need my backpacking bike. That's a lot of bikes. And the mentality, I think,
+
+[00:34:28] Hamel Husain: Do you have that many bikes?[00:34:30] 
+
+[00:34:30] Bryan: listen, don't ask personal questions in public humel, that's inappropriate.
+
+So as I was saying, I think the mindset is like. [00:34:40] We wanna fix the thing that's broken. We wanna, we wanna like, oh, it's not good enough. I wanna make it better. I'll like replace it. But actually a lot of times, like augmenting it is really powerful. And also, [00:34:50] it's not always been so easy to fan out to different approaches.
+
+I. So let's go back to like, uh, the good old days of like Google search. You know, you've [00:35:00] heard about sort of like these like complicated search algorithms that do sort of like boosting and like multi-index and stuff. They had to build systems around the ability to search over many different [00:35:10] indices simultaneously and factor all that in.
+
+But if you came with a totally different way of searching, they had to build some infrastructure to be able to [00:35:20] understand how you were searching. That's why image search and tech search were totally different on Google. I. We live in a new world where models can help you do that. And so we do live in an [00:35:30] exciting time where some things are getting easier.
+
+That's part of the story, but it's also, I just think a sort of like mental, um, maybe sort of like naivete [00:35:40] or, or newness of thinking about these things.
+
+[00:35:45] Hamel Husain: Before your talk in the series, there was two talks that thought were [00:35:50] highly related from Anton and Orion. You know, Orion talked about reasoning models for rag, but not like in the [00:36:00] sense that you would normally think, he talked about how you can have re have these reasoning models. Think about the meta search [00:36:10] objective and
+
+[00:36:10] Bryan: Sure.
+
+[00:36:10] Hamel Husain: in directly into the representation on the fly,
+
+[00:36:14] Bryan: Yep.
+
+[00:36:14] Hamel Husain: based on the query. And then you know, obviously Anton talked about [00:36:20] the Colbert family of, you know, representations. And those two things seem like they're trying to go with the angle of, make your representations [00:36:30] flexible somehow. Where do you, how. Where do you think we are at the current point in terms of things [00:36:40] being flexible enough or do you
+
+[00:36:42] Bryan: I think they fit. Yeah, I think they fit perfectly into this model as well because like why would you want reasoning as part of this flow? [00:36:50] Well, it's reasoning is query understanding. It's query rewriting. It's user put in a thing. That thing is confusing. It's not enough context, it's [00:37:00] not enough sort of information to answer it.
+
+When I, you know, in my example about like engineering tickets, the PM puts something that like, [00:37:10] it's not like I. Like illogical. It's not an unreasonable way, it's just not correct for the context of the rest of it. So what you would love that reasoning agent to do [00:37:20] is start exposing the things that are sort of missing or exposing the additional relevant things.
+
+Let's say you have a rag system connected to that well, that rag system can go and get [00:37:30] information about the code base. It might be relevant to enrich that query. And so the reasoning step is just part of query understanding. It's [00:37:40] just part of query rewriting. I think it's a really powerful and super exciting way to do it, and these agents can do that.
+
+One thing that we could do with semantic.art is [00:37:50] slap a reasoning agent in that first stage, and we candidly already have some reasoning going on, we just have some very specific reasoning. But you could add that it could sort of [00:38:00] like. Really, you know, expand the, the way that it queries. Totally reasonable.
+
+But let's talk about multi-vector or things like, um, called poly or things like [00:38:10] that. What is that asking? That's asking sort of one model to come up with multiple representations. That's actually all late. Interaction is late interaction says [00:38:20] during the sort of decoder process, or maybe it's. I think, yeah, the decoder process.
+
+You're basically sort of, you're forming multiple latent space representations. One thing that I went [00:38:30] quickly through is this concept of multimodal in the latent space. IE one thing lives in multiple places in the same space. [00:38:40] Let me give you a quick example of that. Pinterest came out with a paper quite a while ago, and the paper was about this concept of multimodality, and it says [00:38:50] sometimes a user will ask for a chair and they're gonna get images of a chair.
+
+I. But they may want [00:39:00] images of sort of like a nice fancy chair in a living room. They might want some images of sort of like designs of a chair, and they may want some sort of like, [00:39:10] architectural design sketches of like what the, like geometry of a chair looks like. Those are all reasonable things for the user to get back.
+
+What I could do [00:39:20] is I could say, well, based on this user and their previous sort of interactions. They want the chair in the living room. I'm just gonna give it chair in the [00:39:30] living room. But believe it or not, users are happier if you give them mostly that a little bit of the second thing, and even a little bit of the third [00:39:40] thing.
+
+By giving them all of these things simultaneously, they're actually the happiest for a recommendation problem. This is really exciting. This is called [00:39:50] multimodality because there are different modes of that one. Signal in your space. So they found that this is really, really [00:40:00] powerful for recommendation systems.
+
+How is this related to things like late interaction? 
+
+[00:40:04] Hamel Husain: About that? That's really
+
+[00:40:05] Bryan: go ahead.
+
+[00:40:05] Hamel Husain: So some might okay, if you have a. Ambiguous query like [00:40:10] chair. We need to gather user intent. Kind of like the deep research
+
+[00:40:14] Bryan: Sure.
+
+[00:40:15] Hamel Husain: Are you saying that pa, that specific paper kind of found [00:40:20] that educating the user in a way by showing them all the different po, like these different dimensions, like made them happier.
+
+[00:40:28] Bryan: Isn't that [00:40:30] interesting? Even just the way you said that question, like educating the user, believe it or not, diversity in recommendations. Is a type of [00:40:40] education. How many times have you done a search thinking what you knew, what you wanted back. You're like, I know what I'm looking for, and you get a search result back and [00:40:50] you think, well I didn't know that and I now I wanna read that too.
+
+How often has that happened? 'cause it happens to me all the time and maybe I've got like a very small brain and I don't [00:41:00] think of all the different things that could come back, but like regardless, I'm constantly surprised by diversity and recommendations. So education of the user. One way to [00:41:10] do it is through diversity.
+
+Why am I interested in semantic art in this very multimodal [00:41:20] approach? Because I actually think that the diversity that you can give back by different interpretations of the query is interesting. Why might you care about something like late interaction models? [00:41:30] Because the diversity of representations that the model comes up with when trying to, fit to the training data, some of those other representations can [00:41:40] be valuable too.
+
+I think I often hear people get really excited about late interaction as like number go up. But actually I get excited about late interaction because it's [00:41:50] diversity as sort of like part of the model. You're building diversity into the model. Late interaction is far from the first, uh, sort of recommendation approach [00:42:00] that we've built that builds that in Multi objective has been the name of the game for about a decade, candidly.
+
+From my perspective, that's why Multi-Vector is really interesting on this sort of [00:42:10] like late interaction style. But yeah it's just diversity is maybe like my oversimplification.
+
+[00:42:15] Hamel Husain: We might even say that guiding people towards looking at the [00:42:20] data makes them happier.
+
+[00:42:21] Bryan: Whoa, whoa, whoa, whoa. Let's not get ahead of ourselves. Cool.
+
+[00:42:26] Hamel Husain: so there was some, there was quite a bit of discussion question, [00:42:30] so on so forth about routing, 
+
+[00:42:32] Bryan: yeah.
+
+[00:42:32] Hamel Husain: is routing exactly? Is it, is it a classifier? Is it something else? Is that, how do you do that? Any, any [00:42:40] thoughts?
+
+[00:42:40] Bryan: Yeah, I mean, I'll ask a use to respond as well, but I think one. Okay uh, like talk to my book [00:42:50] here a little bit. Routing is one stage in the failure funnel for those of you that have heard my spiel when you ask, uh, LLMA question, it's a [00:43:00] series of multiple steps and every step can screw up the rest.
+
+And if you don't get it right at one step, you're probably downstream screwed. One stage is routing. You should evaluate routing just [00:43:10] like the, you evaluate everything else. You should build evaluation data sets. And you should build priors around how things you want routed. Let me give you a quick example of routing.
+
+We [00:43:20] need to take transcripts from calls and run different LLM extraction pipelines. Depending on the call, if I have one call I. Where I'm talking to a [00:43:30] buddy, I want different notes from that than if I have another call where I'm talking to a collaborator about a project. And so too, if I'm talking to a potential customer, [00:43:40] all of those are different things that I want the transcript to do.
+
+Obviously, I would like a full text transcript, but I'd love to process that information into different ways so that my rag system and [00:43:50] search system built on top can be more valuable. That is a routing problem. So how do I make it good? I grab some examples of all these [00:44:00] transcripts. I label them by hand, God forbid, and then I try different routing approaches, plenty of different ways to build a classifier in the, age of [00:44:10] our, our Lord.
+
+Uh, you choose your own. Um, I'll hand it over to Ish. I think he also has thought a lot about routing, 
+
+[00:44:18] Ayush: yeah, in short, right now [00:44:20] it is acting as a simple classifier. But there's more to it than that, right? LLMs are decent classifiers by default. But it's in, in a very hard [00:44:30] coded and guided setting. Right? Because the real problem with LMS is that most of, uh, the responses are, I mean, not a hundred percent reproducible, right?
+
+So, in a very [00:44:40] guided environment, in a very hard coded setting. Yes. If you're working with a few features, it can be a decent classifier. If, if you want to expand this to like, a hundred classes more, you [00:44:50] might want to think of testing your own classifiers on top of that. And obviously you can think of how you wanna change, train that classifier like what, what metric you wanna optimize.
+
+But I think, uh, yeah, l LMS is a [00:45:00] good proof of concept that, uh, a semantic routing can work, um, based on classification of the input types. Um, but yeah, it's not, it's not foolproof as a [00:45:10] scalable, multi label classification
+
+[00:45:11] Hamel Husain: was, I was, I was gonna ask with the routing, okay. Do you want to route via kind of a traditional [00:45:20] classifier or like a tool call? And it seems to me like at the order of a hundred, you probably don't wanna stuff that into tool calls. 'cause models feel [00:45:30] like at the moment they're not able to deal with that. of tools,
+
+Uh, is, is that, is that the right, would you agree, disagree, have any something? Okay.
+
+[00:45:39] Ayush: [00:45:40] I, I would, I would agree to that. And also I would add that, you know, I think Mr. Did did, uh, release like a classifier model recently. They pretty much use their LLM [00:45:50] backbone and put a classifier ahead, which is an overkill for most classification tasks. But it works pretty well. So you kind of have the situation where you can create like, a [00:46:00] reproducible classification pipeline out of an LLM with some training. So that's like approach that you could test when the, the labels are in, or, or the [00:46:10] classes are in, in like, uh, like in hundreds or thousands. Something like that. Yeah.
+
+[00:46:15] Hamel Husain: sense. There's always a Bert and it's a family of models as [00:46:20] well. Okay. No, I think that's it. I think we're at the top of the hour. I think there's a really. Entertaining talk as usual. Uh, lots of memes are gonna come [00:46:30] out of this, yeah, I really appreciate it.
+
+[00:46:34] Bryan: Awesome. Awesome. Well, thanks everyone, and I hope it was, uh, I hope it was fun, and I hope you add [00:46:40] some more representations to your data.
+
