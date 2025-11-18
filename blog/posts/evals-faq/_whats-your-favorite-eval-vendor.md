@@ -8,4 +8,4 @@ I have no favorite vendor.  At the core, their features are very similar - and I
 
 Here is a [video series](/blog/posts/eval-tools/) that has a live commentary on the relative strengths and weaknesses of the three aforementioned vendors.
 
-[↗ Focus view](/blog/posts/evals-faq/seriously-hamel-stop-the-bullshit-whats-your-favorite-eval-vendor.html){.faq-individual-link}
+[↗ Focus view](/blog/posts/evals-faq/whats-your-favorite-eval-vendor.html){.faq-individual-link}
