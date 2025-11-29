@@ -1,0 +1,94 @@
+---
+title: "Evals Memes"
+image: cover.png
+css: styles.css
+page-layout: full
+include-after-body: carousel.html
+---
+
+::: {.meme-page}
+
+::: {.intro}
+
+## Background
+
+Evals can be a dry subject: data pipelines, metrics, LLM-as-a-judge calibration. But that doesn't mean we can't have fun with it.
+
+I've been collecting these memes while teaching our [AI Evals course](https://evals.info){target="_blank"}. If you've ever stared at a "100% pass rate" and felt suspicious, or watched someone reach for a new vector database before running a single eval, you'll probably relate.
+
+## Memes
+
+Click on any image to open it full-size. Feel free to steal these for your team's Slack.
+
+If you want something more serious, check out the [Evals FAQ](https://hamel.dev/blog/posts/evals-faq/){target="_blank"} or the [Evals Flashcards](../flashcards/){target="_blank"}.
+
+:::
+
+:::
+
+```{python}
+#| echo: false
+#| output: asis
+#| cache: false
+
+from pathlib import Path
+from IPython.display import HTML, display
+
+# Get all image files from directory (exclude cover.png)
+meme_dir = Path(".")
+images = sorted([f.name for f in meme_dir.iterdir()
+                 if f.suffix.lower() in ['.png', '.jpeg', '.jpg']
+                 and f.name != 'cover.png'])
+
+# Put midwit.png first as it's a good intro meme
+images = ['midwit.png'] + [img for img in images if img != 'midwit.png']
+
+total = len(images)
+
+download_svg = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>'''
+
+slide_template = '''<div class="carousel-slide" data-index="{index}">
+  <div class="slide-header">
+    <span class="slide-counter">{num} / {total}</span>
+    <a href="{image}" download class="slide-action-btn" title="Download">
+      {download_svg}
+    </a>
+  </div>
+  <a href="{image}" target="_blank" class="slide-link">
+    <img src="{image}" alt="Evals meme {num}" loading="lazy">
+  </a>
+</div>'''
+
+html = '''
+<div class="carousel-container">
+  <div class="carousel-track" id="carouselTrack">
+'''
+
+for i, img in enumerate(images):
+    html += slide_template.format(
+        image=img,
+        index=i,
+        num=i+1,
+        total=total,
+        download_svg=download_svg
+    )
+
+html += '''
+  </div>
+
+  <button class="carousel-btn carousel-btn-prev" id="prevBtn" aria-label="Previous">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M15 18l-6-6 6-6"/>
+    </svg>
+  </button>
+
+  <button class="carousel-btn carousel-btn-next" id="nextBtn" aria-label="Next">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M9 18l6-6-6-6"/>
+    </svg>
+  </button>
+</div>
+'''
+
+display(HTML(html))
+```
