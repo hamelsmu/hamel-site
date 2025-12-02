@@ -1354,8 +1354,8 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </div>
 <hr>
 <p><img src="p7-images/intro_slide.jpg" class="img-fluid"></p>
-<section id="the-hunt-for-a-silver-bullet" class="level3">
-<h3 class="anchored" data-anchor-id="the-hunt-for-a-silver-bullet">The Hunt for a Silver Bullet</h3>
+<section id="the-hunt-for-a-silver-bullet" class="level2">
+<h2 class="anchored" data-anchor-id="the-hunt-for-a-silver-bullet">The Hunt for a Silver Bullet</h2>
 <p>Interest in RAG has exploded since late 2022. More engineers than ever are tackling search problems. But this led to a frantic search for a silver bullet.</p>
 <p>First, it was the specialized vector database. Now, with the popularity of a Microsoft paper on “GraphRAG,” the pendulum is swinging toward graph databases.</p>
 <p>Jo argues this is flawed thinking. There is no single tool that will solve all your problems. The desire to map a new technique (GraphRAG) to a technology (a graph DB) is a trap many engineers fall into.</p>
@@ -1366,8 +1366,8 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </figure>
 </div>
 </section>
-<section id="do-you-even-need-rag" class="level3">
-<h3 class="anchored" data-anchor-id="do-you-even-need-rag">Do You Even Need RAG?</h3>
+<section id="do-you-even-need-rag" class="level2">
+<h2 class="anchored" data-anchor-id="do-you-even-need-rag">Do You Even Need RAG?</h2>
 <p>Before we get to graphs: do you need a retrieval component?</p>
 <p>The “R” in RAG stands for retrieval. The classic information retrieval (IR) model involves a user with an information need, a query, a retrieval system, and a ranked list of documents.</p>
 <div class="quarto-figure quarto-figure-center">
@@ -1400,8 +1400,8 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </div>
 </div>
 </section>
-<section id="deconstructing-graphrag" class="level3">
-<h3 class="anchored" data-anchor-id="deconstructing-graphrag">Deconstructing GraphRAG</h3>
+<section id="deconstructing-graphrag" class="level2">
+<h2 class="anchored" data-anchor-id="deconstructing-graphrag">Deconstructing GraphRAG</h2>
 <p>So what is this “GraphRAG” that’s causing all the fuss? The technique, as described in the Microsoft paper, involves a few steps:</p>
 <ul>
 <li>Process the corpus: Use an LLM to read your entire document collection. This is an expensive, offline process.</li>
@@ -1417,8 +1417,8 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </div>
 <p>The hard part is keeping everything accurate. That means either spending tokens on LLM calls, or getting domain experts to help.</p>
 </section>
-<section id="evaluation" class="level3">
-<h3 class="anchored" data-anchor-id="evaluation">Evaluation</h3>
+<section id="evaluation" class="level2">
+<h2 class="anchored" data-anchor-id="evaluation">Evaluation</h2>
 <p>How do you know if adding a knowledge graph, or any new technique, is improving your results? You have to measure it.</p>
 <p>This is the step most teams skip. They jump from one new method to the next without a stable benchmark. As <a href="../../../notes/llm/rag/p2-evals.html">Nandan showed in Part 2</a>, you need an evaluation framework <em>before</em> you can make good decisions about retrieval techniques. In retrieval, we use metrics like:</p>
 <ul>
@@ -1434,8 +1434,8 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </figure>
 </div>
 </section>
-<section id="when-to-use-a-graph-database" class="level3">
-<h3 class="anchored" data-anchor-id="when-to-use-a-graph-database">When to Use a Graph Database</h3>
+<section id="when-to-use-a-graph-database" class="level2">
+<h2 class="anchored" data-anchor-id="when-to-use-a-graph-database">When to Use a Graph Database</h2>
 <p>Once you have an evaluation framework, you can start asking the right questions. A specialized graph database (like Neo4j) is optimized for fast traversal of graph structures, usually by keeping the graph in memory.</p>
 <p>Before you add one to your stack, ask yourself:</p>
 <ul>
@@ -1451,8 +1451,8 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </figure>
 </div>
 </section>
-<section id="the-graph-hidden-in-your-vector-search" class="level3">
-<h3 class="anchored" data-anchor-id="the-graph-hidden-in-your-vector-search">The Graph Hidden in Your Vector Search</h3>
+<section id="the-graph-hidden-in-your-vector-search" class="level2">
+<h2 class="anchored" data-anchor-id="the-graph-hidden-in-your-vector-search">The Graph Hidden in Your Vector Search</h2>
 <p>If you’re using modern vector search, you’re already using graphs.</p>
 <p>The most common algorithm for approximate nearest neighbor (ANN) search is <strong>HNSW (Hierarchical Navigable Small World)</strong>. HNSW works by building a graph where the nodes are your vectors and the edges connect vectors that are close in the embedding space. Searching for nearest neighbors means traversing this graph.</p>
 <p>Jo mentioned the “cluster hypothesis” in information retrieval: documents that are similar to a relevant document are also likely to be relevant.</p>
@@ -1464,8 +1464,8 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 </ol>
 <p>This is a form of graph traversal (finding neighbors of your best results) that can improve recall. You don’t need a specialized graph database to do it.</p>
 </section>
-<section id="key-takeaways" class="level3">
-<h3 class="anchored" data-anchor-id="key-takeaways">Key Takeaways</h3>
+<section id="key-takeaways" class="level2">
+<h2 class="anchored" data-anchor-id="key-takeaways">Key Takeaways</h2>
 <p>We’ve spent six parts showing you how to move beyond naive RAG: better evals, reasoning, late interaction, multiple representations, context engineering. But the goal was never complexity for its own sake.</p>
 <p>Jo’s talk reinforces this. There is no silver bullet. Before you adopt a new method like GraphRAG, build a golden dataset to measure if it improves performance (<a href="../../../notes/llm/rag/p2-evals.html">Part 2</a>). You don’t need special tools. A knowledge graph can live in a CSV file or Postgres. Early Facebook ran their social graph on MySQL. Vector search algorithms like HNSW are already graph-based, so you can implement graph-like retrieval strategies without adding new infrastructure.</p>
 <div class="quarto-figure quarto-figure-center">

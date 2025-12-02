@@ -5018,7 +5018,98 @@
     "href": "notes/llm/rag/p7-graph-db.html",
     "title": "P7: You Don’t Need a Graph DB (Probably)",
     "section": "",
-    "text": "Every so often, a technology captures the industry’s attention. Graph databases are having their turn, fueled by a desire to have a powerful way to augment LLMs with your data. The logic seems simple: if your data is connected, you need a graph.\nThroughout this series, we’ve argued that naive single-vector RAG is dead and shown more sophisticated approaches: better evals, reasoning, late interaction and multiple representations. But sophistication isn’t the same as complexity. There’s no better example of unnecessary complexity than reaching for a graph database before you’ve exhausted simpler options.\nThat’s why I hosted a talk with Jo Kristian Bergum. Jo is a 25-year veteran in search and retrieval, with experience at Yahoo and Vespa. He’s one of the few who publicly shares this skepticism.\nJo covers when graph databases are overkill and when they make sense.\nBelow is an annotated version of his presentation.\n\n\n👉 These are the kinds of things we cover in our AI Evals course. You can learn more about the course here. 👈 \n\n\n\n\nThe Hunt for a Silver Bullet\nInterest in RAG has exploded since late 2022. More engineers than ever are tackling search problems. But this led to a frantic search for a silver bullet.\nFirst, it was the specialized vector database. Now, with the popularity of a Microsoft paper on “GraphRAG,” the pendulum is swinging toward graph databases.\nJo argues this is flawed thinking. There is no single tool that will solve all your problems. The desire to map a new technique (GraphRAG) to a technology (a graph DB) is a trap many engineers fall into.\n\n\n\nMeme about being pitched a graph database\n\n\n\n\nDo You Even Need RAG?\nBefore we get to graphs: do you need a retrieval component?\nThe “R” in RAG stands for retrieval. The classic information retrieval (IR) model involves a user with an information need, a query, a retrieval system, and a ranked list of documents.\n\n\n\nThe information retrieval process\n\n\nWhen LLMs had tiny 8k context windows, retrieval was a necessity. But now, models like Gemini can handle 1 million tokens. That’s about 3 megabytes of raw text, the equivalent of an old floppy disk.\n\n\n\n1 million tokens is about 3MB, the size of a floppy disk\n\n\nJo shared an anecdote about a company struggling with a complex RAG pipeline. When he asked how many documents they had, the answer was 300. For that scale, he advised them to feed all the documents into the LLM’s context window. It was simpler, cheaper, and more effective than over-engineering a retrieval stack.\nIf your document set is small enough and your query volume is low, stuffing the context window is a valid strategy.\n\n\n\n\n\n\nNoteHamel’s note\n\n\n\nThis connects to Kelly Hong’s research on context rot (Part 6). Her experiments showed that LLM performance degrades with distractors (documents that are similar but contain different information). When your documents cover distinct topics with little overlap, you sidestep this problem. Few distractors means less context rot.\nBut most real-world corpora don’t look like this. They have overlapping content, similar documents, and scale beyond what fits in context. That’s when retrieval becomes essential.\n\n\n\n\nDeconstructing GraphRAG\nSo what is this “GraphRAG” that’s causing all the fuss? The technique, as described in the Microsoft paper, involves a few steps:\n\nProcess the corpus: Use an LLM to read your entire document collection. This is an expensive, offline process.\nBuild a knowledge graph: Prompt the LLM to extract entities (nodes) and relationships between them (edges).\nQuery the graph: At query time, traverse this graph to find relevant information.\n\nThe challenge is building and maintaining the graph. A knowledge graph is a collection of triplets: (source_entity, relationship, target_entity). You can store this in a CSV file, a JSON object, or a standard relational database like Postgres.\n\n\n\nKnowledge graphs are triplets: (source, relationship, target)\n\n\nThe hard part is keeping everything accurate. That means either spending tokens on LLM calls, or getting domain experts to help.\n\n\nEvaluation\nHow do you know if adding a knowledge graph, or any new technique, is improving your results? You have to measure it.\nThis is the step most teams skip. They jump from one new method to the next without a stable benchmark. As Nandan showed in Part 2, you need an evaluation framework before you can make good decisions about retrieval techniques. In retrieval, we use metrics like:\n\nMean Reciprocal Rank (MRR): Measures how high up the list the first relevant document appears.\nPrecision: Of the documents you returned, how many were relevant?\nRecall: Of all possible relevant documents, how many did you find?\n\nTo use these metrics, you need an evaluation dataset. This involves taking a sample of real user queries and manually labeling which documents are relevant for each query. This “golden dataset” is your ground truth. It allows you to compare retrieval methods and know if a change is an improvement.\n\n\n\nEvaluation metrics: MRR, Precision, Recall\n\n\n\n\nWhen to Use a Graph Database\nOnce you have an evaluation framework, you can start asking the right questions. A specialized graph database (like Neo4j) is optimized for fast traversal of graph structures, usually by keeping the graph in memory.\nBefore you add one to your stack, ask yourself:\n\nDo I need fast, low-latency graph traversal?\nIs my graph so large that a simpler solution (like Postgres or a file) is too slow?\nDoes my use case require complex, multi-hop queries (e.g., finding friends of friends of friends)?\n\nIf the answer to these questions isn’t a clear “yes,” you probably don’t need a specialized graph DB. The operational complexity and cost of adding another database to your stack is high. As Jo pointed out, early Facebook ran its massive social graph on MySQL. You can get surprisingly far with general-purpose tools.\n\n\n\nKey questions before adding a graph database\n\n\n\n\nThe Graph Hidden in Your Vector Search\nIf you’re using modern vector search, you’re already using graphs.\nThe most common algorithm for approximate nearest neighbor (ANN) search is HNSW (Hierarchical Navigable Small World). HNSW works by building a graph where the nodes are your vectors and the edges connect vectors that are close in the embedding space. Searching for nearest neighbors means traversing this graph.\nJo mentioned the “cluster hypothesis” in information retrieval: documents that are similar to a relevant document are also likely to be relevant.\nYou can use this with any vector DB:\n\nRun your standard vector search for a user’s query.\nUse an LLM or reranker to identify the most relevant results from this initial set.\nPerform a second vector search, this time looking for documents similar to the relevant documents you just found.\n\nThis is a form of graph traversal (finding neighbors of your best results) that can improve recall. You don’t need a specialized graph database to do it.\n\n\nKey Takeaways\nWe’ve spent six parts showing you how to move beyond naive RAG: better evals, reasoning, late interaction, multiple representations, context engineering. But the goal was never complexity for its own sake.\nJo’s talk reinforces this. There is no silver bullet. Before you adopt a new method like GraphRAG, build a golden dataset to measure if it improves performance (Part 2). You don’t need special tools. A knowledge graph can live in a CSV file or Postgres. Early Facebook ran their social graph on MySQL. Vector search algorithms like HNSW are already graph-based, so you can implement graph-like retrieval strategies without adding new infrastructure.\n\n\n\nNo single silver bullet\n\n\nJo and his team at Hornet are working on retrieval for AI agents. If you’re interested in retrieval, check out their open roles or follow Jo on X.",
+    "text": "Every so often, a technology captures the industry’s attention. Graph databases are having their turn, fueled by a desire to have a powerful way to augment LLMs with your data. The logic seems simple: if your data is connected, you need a graph.\nThroughout this series, we’ve argued that naive single-vector RAG is dead and shown more sophisticated approaches: better evals, reasoning, late interaction and multiple representations. But sophistication isn’t the same as complexity. There’s no better example of unnecessary complexity than reaching for a graph database before you’ve exhausted simpler options.\nThat’s why I hosted a talk with Jo Kristian Bergum. Jo is a 25-year veteran in search and retrieval, with experience at Yahoo and Vespa. He’s one of the few who publicly shares this skepticism.\nJo covers when graph databases are overkill and when they make sense.\nBelow is an annotated version of his presentation.",
+    "crumbs": [
+      "Notes",
+      "LLMs",
+      "RAG",
+      "P7: You Don't Need a Graph DB (Probably)"
+    ]
+  },
+  {
+    "objectID": "notes/llm/rag/p7-graph-db.html#the-hunt-for-a-silver-bullet",
+    "href": "notes/llm/rag/p7-graph-db.html#the-hunt-for-a-silver-bullet",
+    "title": "P7: You Don’t Need a Graph DB (Probably)",
+    "section": "The Hunt for a Silver Bullet",
+    "text": "The Hunt for a Silver Bullet\nInterest in RAG has exploded since late 2022. More engineers than ever are tackling search problems. But this led to a frantic search for a silver bullet.\nFirst, it was the specialized vector database. Now, with the popularity of a Microsoft paper on “GraphRAG,” the pendulum is swinging toward graph databases.\nJo argues this is flawed thinking. There is no single tool that will solve all your problems. The desire to map a new technique (GraphRAG) to a technology (a graph DB) is a trap many engineers fall into.\n\n\n\nMeme about being pitched a graph database",
+    "crumbs": [
+      "Notes",
+      "LLMs",
+      "RAG",
+      "P7: You Don't Need a Graph DB (Probably)"
+    ]
+  },
+  {
+    "objectID": "notes/llm/rag/p7-graph-db.html#do-you-even-need-rag",
+    "href": "notes/llm/rag/p7-graph-db.html#do-you-even-need-rag",
+    "title": "P7: You Don’t Need a Graph DB (Probably)",
+    "section": "Do You Even Need RAG?",
+    "text": "Do You Even Need RAG?\nBefore we get to graphs: do you need a retrieval component?\nThe “R” in RAG stands for retrieval. The classic information retrieval (IR) model involves a user with an information need, a query, a retrieval system, and a ranked list of documents.\n\n\n\nThe information retrieval process\n\n\nWhen LLMs had tiny 8k context windows, retrieval was a necessity. But now, models like Gemini can handle 1 million tokens. That’s about 3 megabytes of raw text, the equivalent of an old floppy disk.\n\n\n\n1 million tokens is about 3MB, the size of a floppy disk\n\n\nJo shared an anecdote about a company struggling with a complex RAG pipeline. When he asked how many documents they had, the answer was 300. For that scale, he advised them to feed all the documents into the LLM’s context window. It was simpler, cheaper, and more effective than over-engineering a retrieval stack.\nIf your document set is small enough and your query volume is low, stuffing the context window is a valid strategy.\n\n\n\n\n\n\nNoteHamel’s note\n\n\n\nThis connects to Kelly Hong’s research on context rot (Part 6). Her experiments showed that LLM performance degrades with distractors (documents that are similar but contain different information). When your documents cover distinct topics with little overlap, you sidestep this problem. Few distractors means less context rot.\nBut most real-world corpora don’t look like this. They have overlapping content, similar documents, and scale beyond what fits in context. That’s when retrieval becomes essential.",
+    "crumbs": [
+      "Notes",
+      "LLMs",
+      "RAG",
+      "P7: You Don't Need a Graph DB (Probably)"
+    ]
+  },
+  {
+    "objectID": "notes/llm/rag/p7-graph-db.html#deconstructing-graphrag",
+    "href": "notes/llm/rag/p7-graph-db.html#deconstructing-graphrag",
+    "title": "P7: You Don’t Need a Graph DB (Probably)",
+    "section": "Deconstructing GraphRAG",
+    "text": "Deconstructing GraphRAG\nSo what is this “GraphRAG” that’s causing all the fuss? The technique, as described in the Microsoft paper, involves a few steps:\n\nProcess the corpus: Use an LLM to read your entire document collection. This is an expensive, offline process.\nBuild a knowledge graph: Prompt the LLM to extract entities (nodes) and relationships between them (edges).\nQuery the graph: At query time, traverse this graph to find relevant information.\n\nThe challenge is building and maintaining the graph. A knowledge graph is a collection of triplets: (source_entity, relationship, target_entity). You can store this in a CSV file, a JSON object, or a standard relational database like Postgres.\n\n\n\nKnowledge graphs are triplets: (source, relationship, target)\n\n\nThe hard part is keeping everything accurate. That means either spending tokens on LLM calls, or getting domain experts to help.",
+    "crumbs": [
+      "Notes",
+      "LLMs",
+      "RAG",
+      "P7: You Don't Need a Graph DB (Probably)"
+    ]
+  },
+  {
+    "objectID": "notes/llm/rag/p7-graph-db.html#evaluation",
+    "href": "notes/llm/rag/p7-graph-db.html#evaluation",
+    "title": "P7: You Don’t Need a Graph DB (Probably)",
+    "section": "Evaluation",
+    "text": "Evaluation\nHow do you know if adding a knowledge graph, or any new technique, is improving your results? You have to measure it.\nThis is the step most teams skip. They jump from one new method to the next without a stable benchmark. As Nandan showed in Part 2, you need an evaluation framework before you can make good decisions about retrieval techniques. In retrieval, we use metrics like:\n\nMean Reciprocal Rank (MRR): Measures how high up the list the first relevant document appears.\nPrecision: Of the documents you returned, how many were relevant?\nRecall: Of all possible relevant documents, how many did you find?\n\nTo use these metrics, you need an evaluation dataset. This involves taking a sample of real user queries and manually labeling which documents are relevant for each query. This “golden dataset” is your ground truth. It allows you to compare retrieval methods and know if a change is an improvement.\n\n\n\nEvaluation metrics: MRR, Precision, Recall",
+    "crumbs": [
+      "Notes",
+      "LLMs",
+      "RAG",
+      "P7: You Don't Need a Graph DB (Probably)"
+    ]
+  },
+  {
+    "objectID": "notes/llm/rag/p7-graph-db.html#when-to-use-a-graph-database",
+    "href": "notes/llm/rag/p7-graph-db.html#when-to-use-a-graph-database",
+    "title": "P7: You Don’t Need a Graph DB (Probably)",
+    "section": "When to Use a Graph Database",
+    "text": "When to Use a Graph Database\nOnce you have an evaluation framework, you can start asking the right questions. A specialized graph database (like Neo4j) is optimized for fast traversal of graph structures, usually by keeping the graph in memory.\nBefore you add one to your stack, ask yourself:\n\nDo I need fast, low-latency graph traversal?\nIs my graph so large that a simpler solution (like Postgres or a file) is too slow?\nDoes my use case require complex, multi-hop queries (e.g., finding friends of friends of friends)?\n\nIf the answer to these questions isn’t a clear “yes,” you probably don’t need a specialized graph DB. The operational complexity and cost of adding another database to your stack is high. As Jo pointed out, early Facebook ran its massive social graph on MySQL. You can get surprisingly far with general-purpose tools.\n\n\n\nKey questions before adding a graph database",
+    "crumbs": [
+      "Notes",
+      "LLMs",
+      "RAG",
+      "P7: You Don't Need a Graph DB (Probably)"
+    ]
+  },
+  {
+    "objectID": "notes/llm/rag/p7-graph-db.html#the-graph-hidden-in-your-vector-search",
+    "href": "notes/llm/rag/p7-graph-db.html#the-graph-hidden-in-your-vector-search",
+    "title": "P7: You Don’t Need a Graph DB (Probably)",
+    "section": "The Graph Hidden in Your Vector Search",
+    "text": "The Graph Hidden in Your Vector Search\nIf you’re using modern vector search, you’re already using graphs.\nThe most common algorithm for approximate nearest neighbor (ANN) search is HNSW (Hierarchical Navigable Small World). HNSW works by building a graph where the nodes are your vectors and the edges connect vectors that are close in the embedding space. Searching for nearest neighbors means traversing this graph.\nJo mentioned the “cluster hypothesis” in information retrieval: documents that are similar to a relevant document are also likely to be relevant.\nYou can use this with any vector DB:\n\nRun your standard vector search for a user’s query.\nUse an LLM or reranker to identify the most relevant results from this initial set.\nPerform a second vector search, this time looking for documents similar to the relevant documents you just found.\n\nThis is a form of graph traversal (finding neighbors of your best results) that can improve recall. You don’t need a specialized graph database to do it.",
+    "crumbs": [
+      "Notes",
+      "LLMs",
+      "RAG",
+      "P7: You Don't Need a Graph DB (Probably)"
+    ]
+  },
+  {
+    "objectID": "notes/llm/rag/p7-graph-db.html#key-takeaways",
+    "href": "notes/llm/rag/p7-graph-db.html#key-takeaways",
+    "title": "P7: You Don’t Need a Graph DB (Probably)",
+    "section": "Key Takeaways",
+    "text": "Key Takeaways\nWe’ve spent six parts showing you how to move beyond naive RAG: better evals, reasoning, late interaction, multiple representations, context engineering. But the goal was never complexity for its own sake.\nJo’s talk reinforces this. There is no silver bullet. Before you adopt a new method like GraphRAG, build a golden dataset to measure if it improves performance (Part 2). You don’t need special tools. A knowledge graph can live in a CSV file or Postgres. Early Facebook ran their social graph on MySQL. Vector search algorithms like HNSW are already graph-based, so you can implement graph-like retrieval strategies without adding new infrastructure.\n\n\n\nNo single silver bullet\n\n\nJo and his team at Hornet are working on retrieval for AI agents. If you’re interested in retrieval, check out their open roles or follow Jo on X.",
     "crumbs": [
       "Notes",
       "LLMs",
