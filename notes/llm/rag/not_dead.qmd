@@ -8,34 +8,25 @@ date: 2025-07-12
 ---
 <br>
 
-I'm tired of hearing "RAG is dead." That's why [Ben Clavié](https://ben.clavie.eu/) and I put together this [open 6-part series](index.qmd) to discuss why RAG is not dead, and what the future of RAG looks like.
+I'm tired of hearing "RAG is dead." That's why [Ben Clavié](https://ben.clavie.eu/) and I put together this [open 7-part series](index.qmd) to discuss why RAG is not dead, and what the future of RAG looks like.
 
-## What's Actually Dead
+The oversimplified version from 2023 deserves the criticism: chuck documents into a vector database, do cosine similarity, call it a day. That approach fails because compressing entire documents into single vectors loses critical information. But retrieval itself is more important than ever. LLMs are frozen at training time. Million-token context windows don't change the economics of stuffing everything into every query.
 
-What's dead is the 2023 marketing version of RAG. Chuck documents into a vector database, do cosine similarity, call it a day. This approach fails because compressing entire documents into single vectors loses critical information.
+## What We Learned
 
-But retrieval is more important than ever. LLMs are frozen at training time. **Million-token context windows don't change the economics or efficiency of stuffing everything into every query.**
+We started by questioning how we measure success. [Nandan Thakur showed](p2-evals.md) that traditional IR metrics optimize for finding the #1 result. RAG needs different goals: coverage (getting all the facts), diversity (corroborating facts), and relevance. Models that ace BEIR benchmarks often fail at real RAG tasks.
 
-## Takeaways From the Series
+From there, we explored how retrieval can reason. [Orion Weller's models](p3_reasoning.qmd) understand instructions like "find documents about data privacy using metaphors." His Rank1 system generates explicit reasoning traces about relevance, surfacing documents that traditional systems never find.
 
-**We've been measuring wrong.** [Nandan Thakur showed](p2-evals.md) that traditional IR metrics optimize for finding the #1 result. RAG needs different goals: coverage (getting all the facts), diversity (corroborating facts), and relevance. Models that ace BEIR benchmarks often fail at real RAG tasks.
+[Antoine Chaffin then showed](p4_late_interaction.qmd) why single vectors lose information. Late-interaction models like ColBERT preserve token-level detail instead of forcing everything into one conflicted representation. The result: 150M parameter models outperforming 7B parameter alternatives on reasoning tasks.
 
-**Retrieval can reason.** [Orion Weller's models](p3_reasoning.qmd) understand instructions like "find documents about data privacy using metaphors." His Rank1 system generates explicit reasoning traces about relevance. These models find documents that traditional systems never surface.
+[Bryan Bischof and Ayush Chaurasia](p5_map.qmd) made the case for multiple representations. Their art search demo finds the same painting through literal descriptions, poetic interpretations, or similar images, each using different indices. Stop searching for the perfect embedding. Build specialized representations and route intelligently.
 
-**Single vectors lose information.** [Antoine Chaffin demonstrated](p4_late_interaction.qmd) how late-interaction models like ColBERT preserve token-level information. No more forcing everything into one conflicted representation. Result: 150M parameter models outperforming 7B parameter alternatives on reasoning tasks.
+[Kelly Hong's research](p6-context_rot.qmd) on "Context Rot" revealed that LLM performance degrades significantly as input length increases, even on simple tasks. Semantic matching, distractors, and irrelevant information cause failures that lexical benchmarks like "needle in a haystack" miss entirely. Thoughtful retrieval and context engineering beat dumping everything into the prompt.
 
-**One map isn't enough.** [Bryan and Ayush showed](p5_map.qmd) why we need multiple representations. Their art search demo finds the same painting through literal descriptions, poetic interpretations, or similar images—each using different indices. Stop searching for the perfect embedding. Build specialized representations and route intelligently.
+Finally, [Jo Kristian Bergum reminded us](p7-graph-db.qmd) that sophistication isn't complexity. You don't need a graph database for GraphRAG. A CSV or Postgres works fine. Vector search already uses graphs (HNSW), so you can do graph-like retrieval without new infrastructure.
 
-**Large context windows aren't magic.** [Kelly Hong's research](p6-context_rot.qmd) on "Context Rot" shows that LLM performance degrades significantly as input length increases (even on simple tasks!). Semantic matching, distractors, and irrelevant information all cause failures that lexical benchmarks like "needle in a haystack" miss entirely. Thoughtful retrieval and context engineering beat dumping everything into the prompt.
-
-## What's Next
-
-I think a path forward is to combine these ideas:
-
-- Evaluation systems that measure what matters for your use case
-- Retrievers that understand instructions and reason about relevance
-- Representations that preserve information instead of compressing it away
-- Multiple specialized indices with intelligent routing
+Each talk is covered in more detail below.
 
 ---
 
@@ -50,7 +41,8 @@ Each post includes timestamped annotations of slides, saving you hours of video 
 | [![](p3-images/slide_97.png){width=100px}](p3_reasoning.qmd) | [Part 3](p3_reasoning.qmd): **Optimizing Retrieval with Reasoning Models** | Orion Weller demonstrates retrievers that understand instructions and reason about relevance |
 | [![](p4-images/slide_13.png){width=100px}](p4_late_interaction.qmd) | [Part 4](p4_late_interaction.qmd): **Late Interaction Models For RAG** | Antoine Chaffin reveals how ColBERT-style models preserve information that single vectors lose |
 | [![](p5-images/slide_2.png){width=100px}](p5_map.qmd) | [Part 5](p5_map.qmd): **RAG with Multiple Representations** | Bryan Bischof and Ayush Chaurasia show why multiple specialized indices beat one perfect embedding |
-| [![](p6-images/crot_cover.png){width=100px}](p6-context_rot.qmd) | [Part 6](p6-context_rot.qmd): **Context Rot** | Kelly Hong explains how LLM performance degrades with longer inputs and why context engineering is critical. |
+| [![](p6-images/crot_cover.png){width=100px}](p6-context_rot.qmd) | [Part 6](p6-context_rot.qmd): **Context Rot** | Kelly Hong explains how LLM performance degrades with longer inputs and why context engineering is critical |
+| [![](p7-images/intro_slide.jpg){width=100px}](p7-graph-db.qmd) | [Part 7](p7-graph-db.qmd): **You Don't Need a Graph DB (Probably)** | Jo Kristian Bergum explains why graph databases are usually overkill for RAG |
 : {tbl-colwidths="[20, 35, 45]"}
 
 
