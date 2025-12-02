@@ -598,6 +598,12 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
  <span class="menu-text">P6: Context Rot</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../notes/llm/rag/p7-graph-db.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">P7: You Don’t Need a Graph DB (Probably)</span></a>
+  </div>
+</li>
       </ul>
   </li>
           <li class="sidebar-item sidebar-item-section">
@@ -1284,9 +1290,7 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#whats-actually-dead" id="toc-whats-actually-dead" class="nav-link active" data-scroll-target="#whats-actually-dead">What’s Actually Dead</a></li>
-  <li><a href="#takeaways-from-the-series" id="toc-takeaways-from-the-series" class="nav-link" data-scroll-target="#takeaways-from-the-series">Takeaways From the Series</a></li>
-  <li><a href="#whats-next" id="toc-whats-next" class="nav-link" data-scroll-target="#whats-next">What’s Next</a></li>
+  <li><a href="#what-we-learned" id="toc-what-we-learned" class="nav-link active" data-scroll-target="#what-we-learned">What We Learned</a></li>
   <li><a href="#annotated-notes-from-the-series" id="toc-annotated-notes-from-the-series" class="nav-link" data-scroll-target="#annotated-notes-from-the-series">Annotated Notes From the Series</a></li>
   <li><a href="#pdf-version" id="toc-pdf-version" class="nav-link" data-scroll-target="#pdf-version">PDF Version</a></li>
   </ul>
@@ -1340,29 +1344,17 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 
 
 <p><br></p>
-<p>I’m tired of hearing “RAG is dead.” That’s why <a href="https://ben.clavie.eu/">Ben Clavié</a> and I put together this <a href="../../../notes/llm/rag/index.html">open 6-part series</a> to discuss why RAG is not dead, and what the future of RAG looks like.</p>
-<section id="whats-actually-dead" class="level2">
-<h2 class="anchored" data-anchor-id="whats-actually-dead">What’s Actually Dead</h2>
-<p>What’s dead is the 2023 marketing version of RAG. Chuck documents into a vector database, do cosine similarity, call it a day. This approach fails because compressing entire documents into single vectors loses critical information.</p>
-<p>But retrieval is more important than ever. LLMs are frozen at training time. <strong>Million-token context windows don’t change the economics or efficiency of stuffing everything into every query.</strong></p>
-</section>
-<section id="takeaways-from-the-series" class="level2">
-<h2 class="anchored" data-anchor-id="takeaways-from-the-series">Takeaways From the Series</h2>
-<p><strong>We’ve been measuring wrong.</strong> <a href="../../../notes/llm/rag/p2-evals.html">Nandan Thakur showed</a> that traditional IR metrics optimize for finding the #1 result. RAG needs different goals: coverage (getting all the facts), diversity (corroborating facts), and relevance. Models that ace BEIR benchmarks often fail at real RAG tasks.</p>
-<p><strong>Retrieval can reason.</strong> <a href="../../../notes/llm/rag/p3_reasoning.html">Orion Weller’s models</a> understand instructions like “find documents about data privacy using metaphors.” His Rank1 system generates explicit reasoning traces about relevance. These models find documents that traditional systems never surface.</p>
-<p><strong>Single vectors lose information.</strong> <a href="../../../notes/llm/rag/p4_late_interaction.html">Antoine Chaffin demonstrated</a> how late-interaction models like ColBERT preserve token-level information. No more forcing everything into one conflicted representation. Result: 150M parameter models outperforming 7B parameter alternatives on reasoning tasks.</p>
-<p><strong>One map isn’t enough.</strong> <a href="../../../notes/llm/rag/p5_map.html">Bryan and Ayush showed</a> why we need multiple representations. Their art search demo finds the same painting through literal descriptions, poetic interpretations, or similar images—each using different indices. Stop searching for the perfect embedding. Build specialized representations and route intelligently.</p>
-<p><strong>Large context windows aren’t magic.</strong> <a href="../../../notes/llm/rag/p6-context_rot.html">Kelly Hong’s research</a> on “Context Rot” shows that LLM performance degrades significantly as input length increases (even on simple tasks!). Semantic matching, distractors, and irrelevant information all cause failures that lexical benchmarks like “needle in a haystack” miss entirely. Thoughtful retrieval and context engineering beat dumping everything into the prompt.</p>
-</section>
-<section id="whats-next" class="level2">
-<h2 class="anchored" data-anchor-id="whats-next">What’s Next</h2>
-<p>I think a path forward is to combine these ideas:</p>
-<ul>
-<li>Evaluation systems that measure what matters for your use case</li>
-<li>Retrievers that understand instructions and reason about relevance</li>
-<li>Representations that preserve information instead of compressing it away</li>
-<li>Multiple specialized indices with intelligent routing</li>
-</ul>
+<p>I’m tired of hearing “RAG is dead.” That’s why <a href="https://ben.clavie.eu/">Ben Clavié</a> and I put together this <a href="../../../notes/llm/rag/index.html">open 7-part series</a> to discuss why RAG is not dead, and what the future of RAG looks like.</p>
+<p>The oversimplified version from 2023 deserves the criticism: chuck documents into a vector database, do cosine similarity, call it a day. That approach fails because compressing entire documents into single vectors loses critical information. But retrieval itself is more important than ever. LLMs are frozen at training time. Million-token context windows don’t change the economics of stuffing everything into every query.</p>
+<section id="what-we-learned" class="level2">
+<h2 class="anchored" data-anchor-id="what-we-learned">What We Learned</h2>
+<p>We started by questioning how we measure success. <a href="../../../notes/llm/rag/p2-evals.html">Nandan Thakur showed</a> that traditional IR metrics optimize for finding the #1 result. RAG needs different goals: coverage (getting all the facts), diversity (corroborating facts), and relevance. Models that ace BEIR benchmarks often fail at real RAG tasks.</p>
+<p>From there, we explored how retrieval can reason. <a href="../../../notes/llm/rag/p3_reasoning.html">Orion Weller’s models</a> understand instructions like “find documents about data privacy using metaphors.” His Rank1 system generates explicit reasoning traces about relevance, surfacing documents that traditional systems never find.</p>
+<p><a href="../../../notes/llm/rag/p4_late_interaction.html">Antoine Chaffin then showed</a> why single vectors lose information. Late-interaction models like ColBERT preserve token-level detail instead of forcing everything into one conflicted representation. The result: 150M parameter models outperforming 7B parameter alternatives on reasoning tasks.</p>
+<p><a href="../../../notes/llm/rag/p5_map.html">Bryan Bischof and Ayush Chaurasia</a> made the case for multiple representations. Their art search demo finds the same painting through literal descriptions, poetic interpretations, or similar images, each using different indices. Stop searching for the perfect embedding. Build specialized representations and route intelligently.</p>
+<p><a href="../../../notes/llm/rag/p6-context_rot.html">Kelly Hong’s research</a> on “Context Rot” revealed that LLM performance degrades significantly as input length increases, even on simple tasks. Semantic matching, distractors, and irrelevant information cause failures that lexical benchmarks like “needle in a haystack” miss entirely. Thoughtful retrieval and context engineering beat dumping everything into the prompt.</p>
+<p>Finally, <a href="../../../notes/llm/rag/p7-graph-db.html">Jo Kristian Bergum reminded us</a> that sophistication isn’t complexity. You don’t need a graph database for GraphRAG. A CSV or Postgres works fine. Vector search already uses graphs (HNSW), so you can do graph-like retrieval without new infrastructure.</p>
+<p>Each talk is covered in more detail below.</p>
 <hr>
 </section>
 <section id="annotated-notes-from-the-series" class="level2">
@@ -1410,7 +1402,12 @@ gtag('config', 'G-ZSZXL3KFR5', { 'anonymize_ip': true});
 <tr class="even">
 <td style="text-align: center;"><a href="../../../notes/llm/rag/p6-context_rot.html"><img src="p6-images/crot_cover.png" class="img-fluid" width="100"></a></td>
 <td style="text-align: left;"><a href="../../../notes/llm/rag/p6-context_rot.html">Part 6</a>: <strong>Context Rot</strong></td>
-<td style="text-align: left;">Kelly Hong explains how LLM performance degrades with longer inputs and why context engineering is critical.</td>
+<td style="text-align: left;">Kelly Hong explains how LLM performance degrades with longer inputs and why context engineering is critical</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><a href="../../../notes/llm/rag/p7-graph-db.html"><img src="p7-images/intro_slide.jpg" class="img-fluid" width="100"></a></td>
+<td style="text-align: left;"><a href="../../../notes/llm/rag/p7-graph-db.html">Part 7</a>: <strong>You Don’t Need a Graph DB (Probably)</strong></td>
+<td style="text-align: left;">Jo Kristian Bergum explains why graph databases are usually overkill for RAG</td>
 </tr>
 </tbody>
 </table>
