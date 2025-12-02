@@ -1,122 +1,101 @@
----
-title: "Context Rot: When Long Context Windows Fail"
-description: "Kelly Hong from Chroma explains 'Context Rot,' a phenomenon where LLM performance degrades with longer inputs, and why thoughtful context engineering is critical for reliable AI applications."
-image: p6-images/crot_cover.png
-page-navigation: true
-date: 2025-09-10
----
+# Context Rot
 
-*Based on a presentation by Kelly Hong*
+As part of our [LLM Evals course](https://bit.ly/evals-ai), I hosted Kelly Hong, a researcher at Chroma, to discuss [her research](https://research.trychroma.com/context-rot) on "Context Rot." Despite the narrative that RAG is dead because of large context windows (e.g. 1 million tokens), Kelly's research shows that performance is not uniform. As you add more information, models become increasingly unreliable, even on simple tasks. This phenomenon, which Kelly coined as "Context Rot," is worth paying attention to if you are building AI applications. Kelly's talk breaks down the experiments that uncovered this issue and highlights why thoughtful context engineering and retrieval is more important than ever.
 
-[Kelly Hong](https://www.linkedin.com/in/kellyshong/){target="_blank"} is a researcher at Chroma who investigates how LLMs handle long-context inputs. Despite marketing claims that models with 1M+ token context windows make RAG obsolete, Kelly's [research](https://research.trychroma.com/context-rot){target="_blank"} reveals that performance degrades significantly as context length increases—a phenomenon she coined "Context Rot." Her experiments across 18 state-of-the-art models show that simply having information in context isn't enough; how that information is presented matters critically for reliable AI applications.
+Below is an annotated version of her presentation.
 
-## Introduction
 
-![Title Slide](p6-images/slide_1.png)
+## Annotated Presentation
+
+![Title Slide](../notes/llm/rag/p6-images/slide_1.png)
 
 *([Timestamp: 00:00:00](https://youtu.be/3s_N60u0jEY?t=0s){target="_blank"})*
 
 This slide introduces the concept of "Context Rot," a term coined by Chroma to describe how an LLM's performance becomes increasingly unreliable as the length of its input context grows. The research evaluates 18 state-of-the-art LLMs and finds that, contrary to the assumption of uniform context processing, performance degrades significantly with longer inputs.
 
-## The Long Context Promise
-
-![The Rise of Long Context Windows](p6-images/slide_2.png)
+![The Rise of Long Context Windows](../notes/llm/rag/p6-images/slide_2.png)
 
 *([Timestamp: 01:47](https://youtu.be/3s_N60u0jEY?t=107s){target="_blank"})*
 
 Major LLM providers prominently advertise massive context windows—often 1 million tokens or more—as a key feature of their frontier models like Gemini, Claude, and GPT-4.1. This marketing suggests that models can effectively process and utilize vast amounts of information.
 
-![The Common Assumption: More Context is Better](p6-images/slide_3.png)
+![The Common Assumption: More Context is Better](../notes/llm/rag/p6-images/slide_3.png)
 
 *([Timestamp: 02:07](https://youtu.be/3s_N60u0jEY?t=127s){target="_blank"})*
 
 The availability of large context windows has led to the common assumption that providing more context is always beneficial. This has inspired new use cases, such as large-scale code analysis and extensive document synthesis. Benchmarks like the "needle in a haystack" test, which often show near-perfect retrieval accuracy across the entire context window, appear to reinforce this assumption, creating a potentially misleading picture of model capabilities.
 
-## Limitations of Needle in a Haystack
-
-![Explaining the "Needle in a Haystack" (NIAH) Benchmark](p6-images/slide_4.png)
+![Explaining the "Needle in a Haystack" (NIAH) Benchmark](../notes/llm/rag/p6-images/slide_4.png)
 
 *([Timestamp: 03:33](https://youtu.be/3s_N60u0jEY?t=213s){target="_blank"})*
 
 The Needle in a Haystack (NIAH) test is a simple retrieval task where a specific fact (the "needle") is placed within a long document (the "haystack"), and the model is asked to retrieve it. Kelly explains that this benchmark primarily assesses direct **lexical matching**. As seen in the example, the query and the needle share many of the same words ("best writing advice," "college classmate"). This makes the task relatively easy and not representative of real-world scenarios, which often require more complex **semantic** understanding where direct word overlap is minimal.
 
-## Experiment 1: Semantic vs. Lexical Matching
-
-![Experiment 1: Adding Ambiguity (Semantic vs. Lexical Matching)](p6-images/slide_5.png)
+![Experiment 1: Adding Ambiguity (Semantic vs. Lexical Matching)](../notes/llm/rag/p6-images/slide_5.png)
 
 *([Timestamp: 04:49](https://youtu.be/3s_N60u0jEY?t=289s){target="_blank"})*
 
 To test performance on more realistic tasks, Chroma's first experiment introduced ambiguity. They compared a **lexical matching** task (similar to the original NIAH) with a **semantic matching** task, where the answer contained the same core information but was phrased differently, requiring the model to understand meaning beyond direct word overlap. The results show a clear trend: while performance on lexical matching remains relatively high, performance on the more complex semantic matching task degrades significantly as the input context grows longer.
 
-![Implications of Ambiguity in Real-World Applications](p6-images/slide_6.png)
+![Implications of Ambiguity in Real-World Applications](../notes/llm/rag/p6-images/slide_6.png)
 
 *([Timestamp: 08:08](https://youtu.be/3s_N60u0jEY?t=488s){target="_blank"})*
 
 This slide illustrates the real-world implications of the previous experiment using a financial report analysis example. A user is unlikely to know the exact phrasing in a document to formulate a perfect lexical query. Instead, they will ask a more ambiguous, semantic question like "How is our overseas expansion going?" This requires the model to connect "overseas expansion" to specific countries and revenue figures. As Experiment 1 showed, this is precisely the kind of task where performance degrades with longer contexts.
 
-## Experiment 2: The Impact of Distractors
-
-![Experiment 2: Adding Distractors](p6-images/slide_7.png)
+![Experiment 2: Adding Distractors](../notes/llm/rag/p6-images/slide_7.png)
 
 *([Timestamp: 09:39](https://youtu.be/3s_N60u0jEY?t=579s){target="_blank"})*
 
 The second experiment investigates how performance is affected by **distractors**—pieces of information that are semantically similar to the correct answer but are incorrect. In the example, the correct "needle" is writing advice from a "college classmate." The distractors include similar advice from a "college professor" or advice about writing essays in different styles. These distractors mimic the kind of noise often found in real-world documents.
 
-![Visualizing the Distractor Setup](p6-images/slide_8.png)
+![Visualizing the Distractor Setup](../notes/llm/rag/p6-images/slide_8.png)
 
 This slide provides a simple visual model of the experiment. The researchers tested the LLM's performance under three conditions: with no distractors, with one distractor, and with four distractors placed in the context alongside the correct needle.
 
-![Results: Performance Degrades with More Distractors](p6-images/slide_9.png)
+![Results: Performance Degrades with More Distractors](../notes/llm/rag/p6-images/slide_9.png)
 
 *([Timestamp: 11:00](https://youtu.be/3s_N60u0jEY?t=660s){target="_blank"})*
 
 The results of the distractor experiment show two clear trends. First, across all model groups, performance degrades as the input length increases. Second, performance also degrades as the number of distractors increases. The combination of long context and distracting information proves particularly challenging for LLMs, causing a significant drop in accuracy.
 
-![Implications of Distractors in Domain-Specific Contexts](p6-images/slide_10.png)
+![Implications of Distractors in Domain-Specific Contexts](../notes/llm/rag/p6-images/slide_10.png)
 
 *([Timestamp: 11:43](https://youtu.be/3s_N60u0jEY?t=703s){target="_blank"})*
 
 This experiment is highly relevant to real-world applications, especially in domain-specific contexts like finance or law. Documents in these fields often contain highly similar, templated information where only small details (like a year or a name) differ. These similar pieces of information act as natural distractors, making it difficult for the model to retrieve the correct fact, a problem that is exacerbated by longer contexts.
 
-![Analyzing Failure Modes: Model Hallucinations vs. Abstention](p6-images/slide_11.png)
+![Analyzing Failure Modes: Model Hallucinations vs. Abstention](../notes/llm/rag/p6-images/slide_11.png)
 
 *([Timestamp: 12:55](https://youtu.be/3s_N60u0jEY?t=775s){target="_blank"})*
 
 When the models failed in the 4-distractor condition, the researchers analyzed *how* they failed. A key finding was that models often **hallucinate** by confidently providing an answer based on one of the distractors, rather than **abstaining** (stating "I don't know"). This tendency varies by model family: Claude models are more likely to abstain when uncertain, whereas GPT models have the highest rate of hallucination, confidently returning an incorrect answer.
 
-## Experiment 3: Context Structure Matters
-
-![Experiment 3: Shuffling Haystack Content](p6-images/slide_12.png)
+![Experiment 3: Shuffling Haystack Content](../notes/llm/rag/p6-images/slide_12.png)
 
 *([Timestamp: 14:12](https://youtu.be/3s_N60u0jEY?t=852s){target="_blank"})*
 
 This experiment tested whether models process context in a structured, order-sensitive manner. A "needle" (a sentence about writing advice) was placed in a coherent essay. Because the needle disrupts the essay's logical flow, it stands out. The same needle was also placed in a "haystack" of randomly shuffled, unrelated sentences, where it should logically blend in more. The hypothesis was that the model would find it easier to retrieve the needle from the coherent essay where it was an anomaly.
 
-![Surprising Results: Models Perform Better on Shuffled Context](p6-images/slide_13.png)
+![Surprising Results: Models Perform Better on Shuffled Context](../notes/llm/rag/p6-images/slide_13.png)
 
 *([Timestamp: 15:34](https://youtu.be/3s_N60u0jEY?t=934s){target="_blank"})*
 
 Counter-intuitively, the results showed that models performed slightly *better* when the haystack was randomly shuffled. This surprising finding suggests that LLMs do not necessarily process context in the linear, structured way humans do and that a disruption in logical flow can actually make a key piece of information harder, not easier, to find.
 
-## Experiment 4: Conversational Memory
-
-![Experiment 4: Conversational Memory](p6-images/slide_14.png)
+![Experiment 4: Conversational Memory](../notes/llm/rag/p6-images/slide_14.png)
 
 *([Timestamp: 17:54](https://youtu.be/3s_N60u0jEY?t=1074s){target="_blank"})*
 
 This experiment tested conversational memory using the LongMemEval benchmark. Models were tested under two conditions: a "focused" condition with only the relevant conversational history (around 100 tokens), and a "full" condition where the context was padded with irrelevant conversations up to 120k tokens. The results clearly show that all Claude models perform significantly better in the focused condition, demonstrating that irrelevant information degrades performance quickly.
 
-## Experiment 5: Simple Tasks Aren't Immune
-
-![Experiment 5: Text Replication Task](p6-images/slide_15.png)
+![Experiment 5: Text Replication Task](../notes/llm/rag/p6-images/slide_15.png)
 
 *([Timestamp: 19:20](https://youtu.be/3s_N60u0jEY?t=1160s){target="_blank"})*
 
 This experiment involved a very simple task: replicating a given text of repeated words. Despite the simplicity, all models showed a significant drop in performance as the input length increased. Some models exhibited strange failure modes; for example, at long input lengths, Claude models would refuse to generate the output, citing concerns about copyrighted material, while Gemini models would produce completely random outputs.
 
-## Key Takeaways
-
-![Key Takeaways](p6-images/slide_16.png)
+![Key Takeaways](../notes/llm/rag/p6-images/slide_16.png)
 
 *([Timestamp: 20:15](https://youtu.be/3s_N60u0jEY?t=1215s){target="_blank"})*
 
@@ -126,9 +105,7 @@ The research provides three takeaways:
 2.  Simply having the right information in the context is not enough; *how* that information is presented matters significantly.
 3.  As a result, thoughtful **context engineering** is critical for building reliable AI applications.
 
-## Practical Solutions: Context Engineering
-
-![Context Engineering Example: Orchestrator and Subagents](p6-images/slide_17.png)
+![Context Engineering Example: Orchestrator and Subagents](../notes/llm/rag/p6-images/slide_17.png)
 
 *([Timestamp: 21:07](https://youtu.be/3s_N60u0jEY?t=1267s){target="_blank"})*
 
@@ -137,13 +114,13 @@ Kelly provides a practical example of context engineering for a coding agent wit
 - **Naive Approach:** Append the entire conversation history, including every tool call and output, to the context. This causes the context to grow quickly and become bloated with irrelevant information (e.g., the full content of a file read), leading to context rot.
 - **Better Approach:** Use a main "orchestrator" agent that breaks the task into subtasks and spawns "subagents" for each one. Each subagent operates with its own clean, focused context. It completes its subtask and returns only the most relevant information to the orchestrator, which maintains a concise, filtered history. This prevents context overload and improves reliability.
 
-## Further Resources
-
-![Further Reading](p6-images/slide_18.png)
+![Further Reading](../notes/llm/rag/p6-images/slide_18.png)
 
 *([Timestamp: 22:47](https://youtu.be/3s_N60u0jEY?t=1367s){target="_blank"})*
 
 The presentation concludes by directing the audience to the full technical report and other related research on Chroma's website, [research.trychroma.com](https://research.trychroma.com/).
+
+***
 
 ## Q&A Session
 
@@ -162,3 +139,10 @@ The presentation concludes by directing the audience to the full technical repor
 - **Prior research found a U-shaped retrieval curve, where information at the very beginning and very end of the context is recalled best. Does that still hold true?**
     *([Timestamp: 29:06](https://youtu.be/3s_N60u0jEY?t=1746s){target="_blank"})*
     In Chroma's experiments, they did not observe this U-shaped pattern. They tested placing the "needle" at various positions throughout the context—from the beginning to the middle to the end—and found no consistent performance advantage for any particular position. While putting important information at the start or end is a common piece of advice, this research suggests it may not be a reliable solution for mitigating context rot.
+
+
+## Video
+
+Here is the full video:
+
+{{< video https://youtu.be/3s_N60u0jEY >}}
