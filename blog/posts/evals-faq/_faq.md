@@ -20,7 +20,7 @@ This document curates the most common questions Shreya and I received while [tea
 
 <hr>
 <div class="cta" style="text-align: center;"> 
-<strong>👉 <em>Check out our [AI Evals course](https://bit.ly/evals-ai){target="_blank"}</strong>. Here is a [15% discount code](https://bit.ly/evals-ai){target="_blank"} for readers.</em> 👈
+<strong>👉 <em>Check out our [AI Evals course](https://bit.ly/evals-ai){target="_blank"}</strong>. Here is a [25% discount code](https://bit.ly/evals-ai){target="_blank"} for readers.</em> 👈
 </div>
 <hr>
 
@@ -167,7 +167,7 @@ To see an example of basic error analysis in action, [see this video](https://yo
 
 <hr>
 <div class="cta" style="text-align: center;">
-<strong>👉 <em>Check out our [AI Evals course](https://bit.ly/evals-ai)</strong>. Here is a [15% discount code](https://bit.ly/evals-ai) for readers.</em> 👈
+<strong>👉 <em>Check out our [AI Evals course](https://bit.ly/evals-ai)</strong>. Here is a [25% discount code](https://bit.ly/evals-ai) for readers.</em> 👈
 </div>
 <hr>
 
@@ -416,7 +416,7 @@ AI maturity differs from IT maturity.  Mature engineering organizations often st
 
 <hr>
 <div class="cta" style="text-align: center;">
-<strong>👉 <em>Check out our [AI Evals course](https://bit.ly/evals-ai)</strong>. Here is a [15% discount code](https://bit.ly/evals-ai) for readers.</em> 👈
+<strong>👉 <em>Check out our [AI Evals course](https://bit.ly/evals-ai)</strong>. Here is a [25% discount code](https://bit.ly/evals-ai) for readers.</em> 👈
 </div>
 
 [^1]: [Eleanor Berger](https://www.linkedin.com/in/intellectronica/), our wonderful TA.
