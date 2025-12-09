@@ -21,22 +21,32 @@ function Meta(meta)
   local author_name = "Hamel Husain"
   local author_url = "https://hamel.dev"
   if meta.author then
-    -- Handle both single author and list of authors
     local author = meta.author
-    if author[1] then
+    local author_type = pandoc.utils.type(author)
+    
+    -- Handle list of authors (MetaList) - use first author
+    if author_type == "List" and author[1] then
       author = author[1]
+      author_type = pandoc.utils.type(author)
     end
-    if author.name then
+    
+    -- Extract name and URL from author
+    if author_type == "table" and author.name then
+      -- Structured author: {name: "...", url: "..."}
       author_name = stringify(author.name)
-    elseif type(author) == "table" or pandoc.utils.type(author) == "Inlines" then
+      if author.url then
+        author_url = stringify(author.url)
+      end
+    elseif author_type == "Inlines" then
+      -- Simple string author: "Hamel Husain"
       author_name = stringify(author)
-    end
-    if author.url then
-      author_url = stringify(author.url)
+    elseif author_type == "string" then
+      author_name = author
     end
   end
 
   local function escape_json(s)
+    if not s then return "" end
     s = s:gsub('\\', '\\\\')
     s = s:gsub('"', '\\"')
     s = s:gsub('\n', '\\n')
