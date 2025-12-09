@@ -130,10 +130,15 @@ function Pandoc(doc)
 
   local block = pandoc.RawBlock("html", faq_json)
 
-  if not meta["header-includes"] then
-    meta["header-includes"] = {}
+  -- Handle header-includes safely (may be MetaList, MetaBlocks, or nil)
+  local hi = meta["header-includes"]
+  if not hi then
+    hi = pandoc.List{}
+  elseif pandoc.utils.type(hi) ~= "List" then
+    hi = pandoc.List{hi}
   end
-  table.insert(meta["header-includes"], block)
+  hi:insert(block)
+  meta["header-includes"] = hi
 
   doc.meta = meta
   return doc
