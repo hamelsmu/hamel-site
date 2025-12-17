@@ -2,9 +2,7 @@ New video from @sh_reya on data processing with LLMs at scale, an underrated top
 
 Shreya starts with a real use case: public defenders analyzing case files for racial bias (4:08). Hundreds of pages per defendant. Court transcripts, police reports, news articles. This is something you need LLMs for. Running GPT-5 on everything costs a fortune.
 
-Her solution: treat LLMs like database operators. Semantic Map, Filter, Reduce (9:18). Databricks, BigQuery, and Snowflake are already shipping this as "AI SQL."
-
-The interesting part starts at 12:51: a query optimizer for LLMs.
+Her solution: treat LLMs like database operators. Semantic Map, Filter, Reduce (9:18). Databricks, BigQuery, and Snowflake are already shipping this as "AI SQL."  She discusses how starting at 12:51: a query optimizer for LLMs.
 
 Traditional databases rewrite queries for efficiency. Shreya does the same for LLM pipelines. Split long documents into chunks, process each, merge results. Decompose complex prompts into simpler ones. Replace trivial LLM calls with Python functions.
 
@@ -34,7 +32,7 @@ In one study, a medical analyst extracted medications from doctor-patient transc
 
 Shreya calls this "criteria drift." Your evaluation criteria evolve as you see more outputs. This matters because standard ML assumes fixed metrics: define them upfront, collect labels, measure. But with LLMs on fuzzy tasks, that assumption breaks. You discover what you actually want through the process of evaluating.
 
-If you don't account for criteria drift, you end up optimizing for a rubric you no longer believe in. DocWrangler and EvalGen accommodate this by placing the human in the loop thoughtfully.
+If you don't account for criteria drift, you end up optimizing for a stale rubric. DocWrangler and EvalGen accommodate this by placing the human in the loop thoughtfully.
 
 ---
 
@@ -48,6 +46,6 @@ Chapter timestamps:
 (44:35) - Three Gulfs framework
 (51:50) - Evaluation criteria drift
 
-Full write-up with annotated slides: [LINK]
+Notes with annotated slides: [LINK]
 
 Video: https://youtu.be/t6r4U0SlnPc
