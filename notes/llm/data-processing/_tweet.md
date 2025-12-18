@@ -1,18 +1,18 @@
-New video from @sh_reya on data processing with LLMs at scale, an underrated topic:
+New video from @sh_reya on data processing with LLMs at scale, an underrated topic!
 
-Shreya starts with a real use case: public defenders analyzing case files for racial bias (4:08). Hundreds of pages per defendant. Court transcripts, police reports, news articles. This is something you need LLMs for. Running GPT-5 on everything costs a fortune.
+Shreya starts with a real use case: public defenders analyzing case files for racial bias (4:08). Hundreds of pages per defendant. Court transcripts, police reports, news articles. Running GPT-5 on everything costs a fortune.
 
-Her solution: treat LLMs like database operators. Semantic Map, Filter, Reduce (9:18). Databricks, BigQuery, and Snowflake are already shipping this as "AI SQL."  She discusses how starting at 12:51: a query optimizer for LLMs.
+Her solution: treat LLMs like database operators. Semantic Map, Filter, Reduce (9:18). Databricks, BigQuery, and Snowflake are already shipping this as "AI SQL." She discusses how starting at 12:51: a query optimizer for LLMs.
 
-Traditional databases rewrite queries for efficiency. Shreya does the same for LLM pipelines. Split long documents into chunks, process each, merge results. Decompose complex prompts into simpler ones. Replace trivial LLM calls with Python functions.
+Traditional databases rewrite queries for efficiency. Shreya does the same for LLM pipelines (semantic versions of split, map, reduce that are LLM specific, along with query decomposition). For example, trivial LLM calls are replaced with Python functions.
 
 These "rewrite directives" improve both cost AND accuracy.
 
 She also talks about a cost optimization technique: Task Cascades (30:00).
 
-Instead of running GPT-5 on every document, first ask cheap questions. "Is there any lower court mentioned?" If no, the document clearly doesn't overturn a lower court.  There are many other routing questions you can ask to reduce the amount of text sent to the LLM.  This requires careful optimization and tuning to get right.  She explains how to do this in the video.
+Instead of running GPT-5 on every document, first ask cheap questions. "Is there any lower court mentioned?" If no, the document clearly doesn't overturn a lower court. There are many other routing questions you can ask to reduce the amount of text sent to the LLM. This requires careful optimization and tuning to get right. She explains how to do this in the video.
 
-Result: 86% cost reduction, 90% accuracy retained.
+She runs through a production example that achieved 86% cost reduction while retaining 90% accuracy.
 
 ---
 
@@ -26,7 +26,7 @@ Users invented "throwaway pipelines" just to explore their data before doing rea
 
 ---
 
-My favorite message from the video: you don't know what "good" means until you see examples.
+In the last bit of the video Shreya discusses why you can't know what "good" means until you see examples.
 
 In one study, a medical analyst extracted medications from doctor-patient transcripts. As they inspected outputs, they noticed every medication appeared with a dosage. They hadn't anticipated this. Now they wanted dosages too. They also saw Tylenol and ibuprofen appearing and realized: "Actually, I only want prescription medications."
 
@@ -46,6 +46,4 @@ Chapter timestamps:
 (44:35) - Three Gulfs framework
 (51:50) - Evaluation criteria drift
 
-Notes with annotated slides: [LINK]
-
-Video: https://youtu.be/t6r4U0SlnPc
+More links in reply
